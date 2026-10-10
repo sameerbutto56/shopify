@@ -85,9 +85,25 @@
 - **Deterministic Test Fixtures**: 6 reproducible test scenarios (Product Selection, Variant Validation, Customization Success, Validation Error Handling, Cross-Sell Matching, and Mock Cart Total).
 - **Safety**: 100% isolated test harness — zero live inventory tampering, zero real orders, zero real charges.
 
+### Milestone 6 — Fully Populated 35-Product Catalogue & Checkout Simulator (Completed)
+- **Complete Product Master**: Built [`assets/enamels-catalogue-data.js`](file:///Users/apple/Desktop/shopify/assets/enamels-catalogue-data.js) containing 35 realistic products covering:
+  - Men's Scrubs (Sprinter, Velora, Crown, Joggers, Tops)
+  - Women's Scrubs (Velora, Summit, Wide-Leg, Sprinter, Crown, Flora)
+  - Unisex Scrubs & Underscrubs (Base layers, Mock-neck, Classic sets)
+  - Surgical Caps (BunFit™ Extra Volume, Kennedy, Printed Cardiac, Anaesthesia, Flora)
+  - Lab Coats (Helium Series Women's Fitted, Consultant Men's, Short Jacket)
+  - Accessories (Med Compression Sleeves, Clinical Socks, Orthopaedic Clogs)
+  - Customization Services (Direct Embroidery, Velcro Patch, Hospital Logo)
+  - Duo & Resident Bundles (Sprinter Duo, Executive Resident, ICU Kit)
+- **High-Resolution Medical Apparel Imagery**: Studio product photography created for Sprinter Navy ([`assets/demo-sprinter-navy.jpg`](file:///Users/apple/Desktop/shopify/assets/demo-sprinter-navy.jpg)), Velora Teal ([`assets/demo-velora-teal.jpg`](file:///Users/apple/Desktop/shopify/assets/demo-velora-teal.jpg)), and Crown Burgundy ([`assets/demo-crown-burgundy.jpg`](file:///Users/apple/Desktop/shopify/assets/demo-crown-burgundy.jpg)).
+- **Interactive Multi-Criteria Catalogue Grid**: Built [`sections/enamels-interactive-catalogue.liquid`](file:///Users/apple/Desktop/shopify/sections/enamels-interactive-catalogue.liquid) with tabbed category filters, gender filters, series filters, hospital color filters, price ranges, and sorting.
+- **Configurator & Size Guide Modals**: Interactive PDP simulator with real-time pocket embroidery canvas, measurement tables in inches/cm, and logo upload simulation.
+- **Isolated Checkout Simulator**: Complete order placement modal supporting Cash on Delivery (COD), hospital delivery addresses, and deterministic confirmation (#ENM-DEMO-XXXXX) with zero real charges.
+- **Shopify Product CSV Export**: Prepared [`enamels_products_import.csv`](file:///Users/apple/Desktop/shopify/enamels_products_import.csv) formatted for 1-click administrative catalogue import.
+
 ## 5. Deployment & Verification
 - **Target Theme ID**: `#192354877728` (`Horizon - Editorial Edition`, unpublished preview theme).
 - **Preview Link**: [https://j7jfh1-0s.myshopify.com?preview_theme_id=192354877728](https://j7jfh1-0s.myshopify.com?preview_theme_id=192354877728)
 - **Theme Editor**: [https://j7jfh1-0s.myshopify.com/admin/themes/192354877728/editor](https://j7jfh1-0s.myshopify.com/admin/themes/192354877728/editor)
-- **Theme Check Result**: 0 errors across 373 inspected files.
+- **Theme Check Result**: 0 errors across 374 inspected files.
 - **Git Repository**: Synced to branch `main` on [`git@github.com:sameerbutto56/shopify.git`](https://github.com/sameerbutto56/shopify).
