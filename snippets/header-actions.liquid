@@ -113,6 +113,10 @@
     </div>
   {% endif %}
 
+  <div class="header-actions__action enamels-header-lang-wrapper" style="display: inline-flex; align-items: center;">
+    {% render 'enamels-multilingual' %}
+  </div>
+
   {% if settings.cart_type == 'drawer' and template.name != 'cart' %}
     <button
       class="header-actions__action button-unstyled{% if display_style == 'text' %} header-actions__text-style{% endif %}"

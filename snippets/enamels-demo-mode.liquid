@@ -1,0 +1,505 @@
+{% comment %}
+  Enamels Safe Demo Mode & Test Fixtures Engine
+  Provides isolated test catalog, sample products, deterministic test responses, and demo state reset.
+  Completely isolated: zero real orders, zero live inventory tampering, zero real payments.
+{% endcomment %}
+
+<div class="enamels-demo-wrapper" id="enamels-demo-root">
+  <!-- Floating Demo Toggle Pill -->
+  <button type="button" class="enamels-demo-toggle-btn" id="enamels-demo-pill" title="Enamels QA & Demo Mode">
+    <span class="demo-pill-badge">🧪 QA MODE</span>
+    <span class="demo-pill-title">Demo & Test Fixtures</span>
+  </button>
+
+  <!-- Demo & QA Modal Drawer -->
+  <div class="enamels-demo-modal" id="enamels-demo-modal">
+    <div class="demo-modal-header">
+      <div class="demo-title-group">
+        <span class="demo-env-badge">Isolated Test Environment</span>
+        <h3 class="demo-modal-title">Enamels QA & Simulation Console</h3>
+      </div>
+      <button type="button" class="demo-close-btn" id="demo-modal-close" aria-label="Close Demo Console">&times;</button>
+    </div>
+
+    <div class="demo-modal-body">
+      <div class="demo-safety-notice">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00b8a9" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v4m0 4h.01"></path>
+        </svg>
+        <span><strong>Safety Guard:</strong> Live store inventory, payments, and checkout remain untouched. All transactions in this console are mock test scenarios.</span>
+      </div>
+
+      <!-- Test Scenarios Runner -->
+      <div class="demo-section">
+        <h4 class="demo-section-title">Deterministic Test Scenarios</h4>
+        <div class="demo-scenarios-grid">
+          <button type="button" class="demo-test-btn" onclick="window.enamelsRunTestFixture('product_selection')">
+            <span>1. Product Selection</span>
+          </button>
+          <button type="button" class="demo-test-btn" onclick="window.enamelsRunTestFixture('variant_selection')">
+            <span>2. Variant Validation</span>
+          </button>
+          <button type="button" class="demo-test-btn" onclick="window.enamelsRunTestFixture('customization')">
+            <span>3. Customization Success</span>
+          </button>
+          <button type="button" class="demo-test-btn" onclick="window.enamelsRunTestFixture('validation_failure')">
+            <span>4. Validation Failure (Error)</span>
+          </button>
+          <button type="button" class="demo-test-btn" onclick="window.enamelsRunTestFixture('cross_selling')">
+            <span>5. Cross-Sell Matching</span>
+          </button>
+          <button type="button" class="demo-test-btn" onclick="window.enamelsRunTestFixture('cart')">
+            <span>6. Mock Cart Total</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Simulated Response Console Output -->
+      <div class="demo-section">
+        <div class="demo-console-header">
+          <span class="demo-console-label">Simulated Response Payload (JSON):</span>
+          <span class="demo-status-indicator" id="demo-response-status">STATUS: READY</span>
+        </div>
+        <pre class="demo-json-console" id="demo-json-output">
+{
+  "mode": "demo",
+  "status": "ready",
+  "message": "Select a test scenario above to execute simulated test fixture."
+}
+        </pre>
+      </div>
+
+      <!-- Sample Demo Products List -->
+      <div class="demo-section">
+        <h4 class="demo-section-title">Isolated Sample Demo Catalogue</h4>
+        <div class="demo-products-list">
+          <!-- Sample 1 -->
+          <div class="demo-product-card">
+            <div class="demo-prod-info">
+              <span class="demo-prod-tag">Sample 1 • Men Scrubs</span>
+              <strong>DEMO — Sprinter Navy Scrub Set</strong>
+              <span class="demo-prod-specs">Sizes: S, M, L, XL | Colors: Navy, Black, Burgundy | Personalization: Yes</span>
+            </div>
+            <span class="demo-price-badge">TEST Rs. 5,150</span>
+          </div>
+
+          <!-- Sample 2 -->
+          <div class="demo-product-card">
+            <div class="demo-prod-info">
+              <span class="demo-prod-tag">Sample 2 • Unisex Scrubs</span>
+              <strong>DEMO — Crown Unisex Scrub Set</strong>
+              <span class="demo-prod-specs">Sizes: XS, S, M, L, XL | Colors: Black, Burgundy, Navy | Tailored Cut</span>
+            </div>
+            <span class="demo-price-badge">TEST Rs. 6,200</span>
+          </div>
+
+          <!-- Sample 3 -->
+          <div class="demo-product-card">
+            <div class="demo-prod-info">
+              <span class="demo-prod-tag">Sample 3 • Headwear</span>
+              <strong>DEMO — Printed Surgical Cap</strong>
+              <span class="demo-prod-specs">Designs: Medical Print, ECG Print | BunFit Pleating</span>
+            </div>
+            <span class="demo-price-badge">TEST Rs. 650</span>
+          </div>
+
+          <!-- Sample 4 -->
+          <div class="demo-product-card">
+            <div class="demo-prod-info">
+              <span class="demo-prod-tag">Sample 4 • Personalization Add-On</span>
+              <strong>DEMO — Name Patch</strong>
+              <span class="demo-prod-specs">Type: Embroidered Uniform Patch</span>
+            </div>
+            <span class="demo-price-badge">TEST Rs. 350</span>
+          </div>
+
+          <!-- Sample 5 -->
+          <div class="demo-product-card">
+            <div class="demo-prod-info">
+              <span class="demo-prod-tag">Sample 5 • Cross-Sell Add-On</span>
+              <strong>DEMO — Medical Accessory</strong>
+              <span class="demo-prod-specs">Type: Med Compression Sleeves (Pair)</span>
+            </div>
+            <span class="demo-price-badge">TEST Rs. 750</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo State Reset Action -->
+      <div class="demo-modal-footer">
+        <button type="button" class="demo-reset-btn" onclick="window.enamelsResetDemoState()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset Demo State
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .enamels-demo-toggle-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #102a43;
+    color: #ffffff;
+    border: 1px solid #00b8a9;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(16, 42, 67, 0.35);
+    font-size: 0.8rem;
+    transition: all 0.25s ease;
+  }
+
+  .enamels-demo-toggle-btn:hover {
+    background: #0f172a;
+    box-shadow: 0 0 20px rgba(0, 184, 169, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .demo-pill-badge {
+    background: #00b8a9;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .demo-pill-title {
+    font-weight: 700;
+  }
+
+  .enamels-demo-modal {
+    position: fixed;
+    bottom: 80px;
+    left: 24px;
+    width: min(480px, calc(100vw - 48px));
+    max-height: 80vh;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(16, 42, 67, 0.3);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .enamels-demo-modal.open {
+    display: flex;
+  }
+
+  .demo-modal-header {
+    padding: 16px 20px;
+    background: #102a43;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .demo-env-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #39d5f6;
+    letter-spacing: 0.05em;
+  }
+
+  .demo-modal-title {
+    margin: 2px 0 0 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .demo-close-btn {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .demo-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .demo-safety-notice {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #f0fdfa;
+    border: 1px solid #ccfbf1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: #0f766e;
+    line-height: 1.45;
+  }
+
+  .demo-section-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #102a43;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 10px 0;
+  }
+
+  .demo-scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .demo-test-btn {
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #1e293b;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+  }
+
+  .demo-test-btn:hover {
+    background: #102a43;
+    color: #ffffff;
+    border-color: #102a43;
+  }
+
+  .demo-console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .demo-console-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .demo-status-indicator {
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-family: monospace;
+    color: #00b8a9;
+  }
+
+  .demo-json-console {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-family: monospace;
+    overflow-x: auto;
+    margin: 0;
+    line-height: 1.4;
+    border: 1px solid #1e293b;
+  }
+
+  .demo-products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .demo-product-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+
+  .demo-prod-tag {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #00b8a9;
+    text-transform: uppercase;
+  }
+
+  .demo-prod-specs {
+    display: block;
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+
+  .demo-price-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #e11d48;
+    background: #ffe4e6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .demo-modal-footer {
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .demo-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .demo-reset-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+  }
+</style>
+
+<script>
+  (function() {
+    // Deterministic Test Fixtures per Requirement 11
+    const fixtures = {
+      product_selection: {
+        mode: "demo",
+        success: true,
+        message: "Demo product selected",
+        product: "DEMO — Sprinter Navy Scrub Set",
+        series: "Sprinter",
+        gender: "Men",
+        test_sku: "DEMO-SPR-NVY-001"
+      },
+      variant_selection: {
+        mode: "demo",
+        success: true,
+        colour: "Navy",
+        size: "M",
+        available: true,
+        inventory_policy: "simulate_in_stock",
+        test_price_pkr: 5150
+      },
+      customization: {
+        mode: "demo",
+        success: true,
+        personalization: "Direct Embroidery",
+        name: "Dr. Sample",
+        department: "General Surgery",
+        thread_color: "#ffffff",
+        font_style: "Sans-Serif Modern",
+        additional_charge_pkr: 450
+      },
+      validation_failure: {
+        mode: "demo",
+        success: false,
+        error_code: "MISSING_REQUIRED_FIELD",
+        message: "Please select a size before continuing."
+      },
+      cross_selling: {
+        mode: "demo",
+        success: true,
+        recommendations: [
+          "DEMO — Surgical Cap",
+          "DEMO — Medical Accessory"
+        ],
+        bundle_savings_pkr: 200
+      },
+      cart: {
+        mode: "demo",
+        success: true,
+        message: "Demo item added to preview cart",
+        items_count: 3,
+        total_price_pkr: 6400,
+        free_shipping_eligible: false,
+        amount_to_free_shipping_pkr: 600
+      }
+    };
+
+    window.enamelsRunTestFixture = function(fixtureKey) {
+      const data = fixtures[fixtureKey];
+      const consoleEl = document.getElementById('demo-json-output');
+      const statusEl = document.getElementById('demo-response-status');
+
+      if (consoleEl && data) {
+        consoleEl.textContent = JSON.stringify(data, null, 2);
+      }
+
+      if (statusEl) {
+        if (data && data.success) {
+          statusEl.textContent = 'STATUS: SUCCESS 200 OK';
+          statusEl.style.color = '#00b8a9';
+        } else {
+          statusEl.textContent = 'STATUS: 422 VALIDATION ERROR';
+          statusEl.style.color = '#e11d48';
+        }
+      }
+    };
+
+    window.enamelsResetDemoState = function() {
+      const consoleEl = document.getElementById('demo-json-output');
+      const statusEl = document.getElementById('demo-response-status');
+      if (consoleEl) {
+        consoleEl.textContent = JSON.stringify({
+          mode: "demo",
+          status: "reset_completed",
+          message: "Demo state reset successfully. Zero live data modified."
+        }, null, 2);
+      }
+      if (statusEl) {
+        statusEl.textContent = 'STATUS: RESET DONE';
+        statusEl.style.color = '#38bdf8';
+      }
+    };
+
+    // Toggle Modal
+    const pill = document.getElementById('enamels-demo-pill');
+    const modal = document.getElementById('enamels-demo-modal');
+    const closeBtn = document.getElementById('demo-modal-close');
+
+    if (pill && modal) {
+      pill.addEventListener('click', function() {
+        modal.classList.toggle('open');
+      });
+    }
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', function() {
+        modal.classList.remove('open');
+      });
+    }
+  })();
+</script>

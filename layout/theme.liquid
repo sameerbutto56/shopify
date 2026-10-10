@@ -20,6 +20,7 @@
     {%- render 'meta-tags' -%}
     {%- render 'stylesheets' -%}
     {{ 'enamels-3d-tilt.css' | asset_url | stylesheet_tag }}
+    <link rel="stylesheet" href="{{ 'enamels-rtl.css' | asset_url }}" id="enamels-rtl-stylesheet">
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
@@ -175,5 +176,6 @@
     {% endif %}
 
     {% render 'whatsapp-floating-button' %}
+    {% render 'enamels-demo-mode' %}
   </body>
 </html>

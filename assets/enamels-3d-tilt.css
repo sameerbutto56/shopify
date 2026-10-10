@@ -1,38 +1,89 @@
 /**
- * Enamels Medical Apparel — 3D Perspective & Motion Engine
- * Lightweight, hardware-accelerated, zero-dependency 3D transforms.
+ * Enamels Medical Apparel — Futuristic 3D Perspective & Motion Engine
+ * Lightweight, hardware-accelerated, zero-dependency visual system.
  */
 
 :root {
-  --enamels-navy: #0f172a;
-  --enamels-burgundy: #581c87;
-  --enamels-teal: #0d9488;
-  --enamels-slate: #334155;
-  --enamels-cream: #fafafa;
+  /* Medical Fashion Palette */
+  --enamels-deep-navy: #102a43;
+  --enamels-teal: #00b8a9;
+  --enamels-cyan: #39d5f6;
+  --enamels-mint: #b8f3e5;
+  --enamels-clean-white: #ffffff;
+  --enamels-clinical-bg: #f3f8fc;
+  --enamels-lavender: #a855f7;
+  --enamels-coral: #ff6b6b;
   --enamels-border: #e2e8f0;
-  --enamels-shadow-3d: 0 16px 36px -10px rgba(15, 23, 42, 0.12), 0 0 1px 1px rgba(15, 23, 42, 0.05);
+  --enamels-shadow-3d: 0 20px 40px -12px rgba(16, 42, 67, 0.16), 0 0 1px 1px rgba(16, 42, 67, 0.06);
+  --enamels-glow-teal: 0 0 24px rgba(0, 184, 169, 0.25);
+  --enamels-glow-cyan: 0 0 24px rgba(57, 213, 246, 0.3);
 }
 
-/* 3D Card Hover Tilt */
+/* Flowing Medical Gradient Mesh */
+.enamels-gradient-mesh {
+  background: linear-gradient(-45deg, #102a43, #00b8a9, #0f172a, #39d5f6);
+  background-size: 400% 400%;
+  animation: enamels-mesh-flow 18s ease infinite;
+}
+
+@keyframes enamels-mesh-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glassmorphism Panels */
+.enamels-glass-panel,
+.enamels-glass-box {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 12px 36px rgba(16, 42, 67, 0.08);
+  border-radius: 16px;
+}
+
+/* 3D Card Hover Perspective */
 .enamels-3d-card {
-  perspective: 1000px;
+  perspective: 1200px;
   transform-style: preserve-3d;
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.3s ease;
   will-change: transform;
+  position: relative;
 }
 
 .enamels-3d-card-inner {
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform-style: preserve-3d;
+  height: 100%;
 }
 
 .enamels-3d-card:hover {
-  transform: translateY(-6px) rotateX(2deg) rotateY(-1deg);
+  transform: translateY(-8px) rotateX(3deg) rotateY(-1.5deg);
   box-shadow: var(--enamels-shadow-3d);
+  border-color: rgba(0, 184, 169, 0.4);
 }
 
 .enamels-3d-card:hover .enamels-3d-pop {
-  transform: translateZ(24px);
+  transform: translateZ(28px);
+}
+
+/* Shimmer Progress Indicator */
+.enamels-progress-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.enamels-progress-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: enamels-shimmer 2.2s infinite;
+}
+
+@keyframes enamels-shimmer {
+  100% { left: 100%; }
 }
 
 /* Technical Medical Fabric Badges */
@@ -60,39 +111,25 @@
 }
 
 .fabric-tech-pill svg {
-  color: #0d9488;
+  color: var(--enamels-teal);
 }
 
 .fabric-tech-pill:hover {
-  background: #0f172a;
+  background: var(--enamels-deep-navy);
   color: #ffffff;
-  border-color: #0f172a;
+  border-color: var(--enamels-deep-navy);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.2);
 }
 
 .fabric-tech-pill:hover svg {
-  color: #2dd4bf;
-}
-
-/* Glassmorphic Feature Callout */
-.enamels-glass-box {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
-  border-radius: 12px;
-}
-
-/* Smooth Image Color Transition */
-.enamels-product-img-fade {
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--enamels-cyan);
 }
 
 /* Product Card Color Dots */
 .product-card-color-dots {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   margin-top: 6px;
   padding: 2px 0;
   z-index: 2;
@@ -100,17 +137,18 @@
 }
 
 .card-color-dot {
-  width: 12px;
-  height: 12px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.15);
   display: inline-block;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .card-color-dot:hover {
-  transform: scale(1.25);
+  transform: scale(1.35);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .card-color-more {
@@ -120,12 +158,26 @@
   margin-left: 2px;
 }
 
+/* Interactive Glowing Action Buttons */
+.enamels-btn-glow {
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.enamels-btn-glow:hover {
+  box-shadow: 0 6px 20px rgba(0, 184, 169, 0.35);
+  transform: translateY(-2px);
+}
+
 /* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
   .enamels-3d-card,
   .enamels-3d-card:hover,
-  .enamels-3d-pop {
+  .enamels-3d-pop,
+  .enamels-gradient-mesh,
+  .card-color-dot:hover {
     transform: none !important;
     transition: none !important;
+    animation: none !important;
   }
 }

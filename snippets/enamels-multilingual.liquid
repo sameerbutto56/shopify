@@ -1,0 +1,377 @@
+{% comment %}
+  Enamels Multilingual Engine & Language Selector
+  Supports 5 Languages: English, Urdu (اردو), Arabic (العربية), Pashto (پښتو), and Punjabi (پنجابی).
+  Includes persistent locale state and automatic RTL/LTR direction switching.
+{% endcomment %}
+
+<div class="enamels-lang-widget" id="enamels-lang-root">
+  <button type="button" class="enamels-lang-btn" id="enamels-lang-trigger" aria-expanded="false" aria-haspopup="listbox" title="Select Language">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>
+    <span id="current-lang-label">English</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <div class="enamels-lang-dropdown" id="enamels-lang-menu" role="listbox">
+    <button type="button" class="lang-option-btn active" data-lang="en" data-dir="ltr" role="option" aria-selected="true">
+      <span class="lang-flag">🇬🇧</span>
+      <span class="lang-name">English</span>
+      <span class="lang-native">(Default)</span>
+    </button>
+    <button type="button" class="lang-option-btn" data-lang="ur" data-dir="rtl" role="option" aria-selected="false">
+      <span class="lang-flag">🇵🇰</span>
+      <span class="lang-name">Urdu</span>
+      <span class="lang-native">(اردو)</span>
+    </button>
+    <button type="button" class="lang-option-btn" data-lang="ar" data-dir="rtl" role="option" aria-selected="false">
+      <span class="lang-flag">🇸🇦</span>
+      <span class="lang-name">Arabic</span>
+      <span class="lang-native">(العربية)</span>
+    </button>
+    <button type="button" class="lang-option-btn" data-lang="ps" data-dir="rtl" role="option" aria-selected="false">
+      <span class="lang-flag">🇦🇫</span>
+      <span class="lang-name">Pashto</span>
+      <span class="lang-native">(پښتو)</span>
+    </button>
+    <button type="button" class="lang-option-btn" data-lang="pa" data-dir="rtl" role="option" aria-selected="false">
+      <span class="lang-flag">🇵🇰</span>
+      <span class="lang-name">Punjabi</span>
+      <span class="lang-native">(پنجابی)</span>
+    </button>
+  </div>
+</div>
+
+<style>
+  .enamels-lang-widget {
+    position: relative;
+    display: inline-block;
+    z-index: 99;
+  }
+
+  .enamels-lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(16, 42, 67, 0.15);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #102a43;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .enamels-lang-btn:hover {
+    background: #ffffff;
+    border-color: #00b8a9;
+    box-shadow: 0 2px 8px rgba(0, 184, 169, 0.2);
+  }
+
+  @media screen and (max-width: 749px) {
+    .enamels-lang-btn {
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      gap: 4px;
+    }
+  }
+
+  .enamels-lang-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 190px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(16, 42, 67, 0.15);
+    padding: 6px;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  [dir="rtl"] .enamels-lang-dropdown {
+    right: auto;
+    left: 0;
+  }
+
+  .enamels-lang-dropdown.open {
+    display: flex;
+  }
+
+  .lang-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease;
+  }
+
+  [dir="rtl"] .lang-option-btn {
+    text-align: right;
+  }
+
+  .lang-option-btn:hover {
+    background: #f1f5f9;
+    color: #102a43;
+  }
+
+  .lang-option-btn.active {
+    background: #e6fffa;
+    color: #00b8a9;
+    font-weight: 700;
+  }
+
+  .lang-flag {
+    font-size: 1rem;
+  }
+
+  .lang-native {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  [dir="rtl"] .lang-native {
+    margin-left: 0;
+    margin-right: auto;
+  }
+</style>
+
+<script>
+  (function() {
+    // Comprehensive UI Translations Dictionary
+    const translations = {
+      en: {
+        dir: 'ltr',
+        label: 'English',
+        hero_title: 'ENGINEERED FOR CLINICAL EXCELLENCE',
+        hero_sub: "Pakistan's Premium Technical Medical Scrubs, Surgical Caps & Lab Coats",
+        hero_btn: 'Explore Scrub Collections',
+        trust_delivery: 'Nationwide Delivery',
+        trust_delivery_sub: 'Fast 3-5 days delivery in Pakistan',
+        trust_cod: 'Cash on Delivery',
+        trust_cod_sub: 'Pay cash at your doorstep',
+        trust_exchange: '7-Day Easy Exchange',
+        trust_exchange_sub: 'Hassle-free size & style exchange',
+        trust_quality: '100% Original Quality',
+        trust_quality_sub: '4-Way Stretch & tailored stitching',
+        series_heading: 'Engineered Series for Every Clinical Demand',
+        series_sub: "From dynamic ER shifts to executive consultation rounds, explore Enamels' purpose-built scrub lines.",
+        color_heading: 'Shop by Official Hospital & Clinical Shade',
+        cart_free_shipping: 'FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000',
+        cart_checkout: 'Proceed to Checkout',
+        wizard_title: 'Custom Fit & Name Personalization',
+        wizard_btn_size: 'Continue to Size & Fit →',
+        wizard_btn_emb: 'Personalize with Embroidery →',
+        wizard_btn_review: 'Review Custom Scrub →',
+        wizard_btn_add: 'Add Tailored Uniform to Cart',
+        announcement: '✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000'
+      },
+      ur: {
+        dir: 'rtl',
+        label: 'اردو',
+        hero_title: 'طبی معیار اور اعلیٰ کارکردگی کے لیے تیار کردہ',
+        hero_sub: 'پاکستان کے بہترین میڈیکل اسکرربز، سرجیکل کیپس اور لیب کوٹس',
+        hero_btn: 'اسکرب کلیکشن دیکھیں',
+        trust_delivery: 'پورے پاکستان میں ڈلیوری',
+        trust_delivery_sub: 'تیز رفتار 3 سے 5 دن میں ترسیل',
+        trust_cod: 'کیش آن ڈلیوری دستیاب',
+        trust_cod_sub: 'اپنے دروازے پر رقم ادا کریں',
+        trust_exchange: '7 دن کی آسان تبدیلی',
+        trust_exchange_sub: 'سائز یا ڈیزائن کی فوری تبدیلی',
+        trust_quality: '100٪ اصل کوالٹی',
+        trust_quality_sub: '4 طرفہ لچکدار اور مضبوط سلائی',
+        series_heading: 'ہر طبی ضرورت کے لیے خصوصی سیریز',
+        series_sub: 'ایمرجنسی وارڈ سے لے کر او پی ڈی تک، انیملز کے جدید اسکرربز۔',
+        color_heading: 'ہسپتال اور شعبہ کے مطابق رنگ منتخب کریں',
+        cart_free_shipping: '7,000 روپے سے زائد کے آرڈر پر مفت ڈلیوری',
+        cart_checkout: 'چیک آؤٹ مکمل کریں',
+        wizard_title: 'کسٹم سائز اور نام کی کڑھائی',
+        wizard_btn_size: 'سائز اور ناپ منتخب کریں ←',
+        wizard_btn_emb: 'نام کی کڑھائی منتخب کریں ←',
+        wizard_btn_review: 'آرڈر کا جائزہ لیں ←',
+        wizard_btn_add: 'یونیفارم کارٹ میں شامل کریں',
+        announcement: '✨ 7,000 روپے سے زائد کے آرڈر پر مفت ڈلیوری'
+      },
+      ar: {
+        dir: 'rtl',
+        label: 'العربية',
+        hero_title: 'مصممة للتميز الطبي والأداء السريري',
+        hero_sub: 'أحدث الأزياء الطبية الفاخرة، قبعات الجراحة ومعاطف المختبرات',
+        hero_btn: 'استكشف تشكيلة الأزياء الطبية',
+        trust_delivery: 'توصيل سريع لجميع المناطق',
+        trust_delivery_sub: 'شحن آمن وموثوق خلال 3-5 أيام',
+        trust_cod: 'الدفع عند الاستلام',
+        trust_cod_sub: 'ادفع نقداً عند استلام طلبك',
+        trust_exchange: 'استبدال مجاني خلال 7 أيام',
+        trust_exchange_sub: 'مرونة تامة في تبديل المقاسات',
+        trust_quality: 'أقمشة طبية أصلية 100٪',
+        trust_quality_sub: 'مرونة رباعية ومقاومة للتجعد',
+        series_heading: 'سلاسل مبتكرة لمختلف التخصصات الطبية',
+        series_sub: 'أزياء طبية متينة ومريحة لساعات العمل الطويلة.',
+        color_heading: 'تسوق حسب الألوان الطبية المعتمدة',
+        cart_free_shipping: 'شحن مجاني للطلبات فوق 7,000 روبية',
+        cart_checkout: 'متابعة إلى الدفع',
+        wizard_title: 'المقاس المخصص وتطريز الاسم',
+        wizard_btn_size: 'متابعة إلى المقاس ←',
+        wizard_btn_emb: 'تطريز الاسم والشعار ←',
+        wizard_btn_review: 'مراجعة الطلب ←',
+        wizard_btn_add: 'أضف الزي الطبي إلى السلة',
+        announcement: '✨ توصيل مجاني للطلبات التي تزيد عن 7,000 روبية'
+      },
+      ps: {
+        dir: 'rtl',
+        label: 'پښتو',
+        hero_title: 'د مسلکي او کلینیکي معیار لپاره جوړ شوی',
+        hero_sub: 'په پاکستان کې د لوړ کیفیت طبي جامې، جراحي خولۍ او لیب کوټونه',
+        hero_btn: 'طبي جامې وګورئ',
+        trust_delivery: 'په ټول هیواد کې سپارل',
+        trust_delivery_sub: 'په 3 تر 5 ورځو کې ګړندی استول',
+        trust_cod: 'نغدې پیسې په لاس کې',
+        trust_cod_sub: 'په کور کې نغدې پیسې ورکړئ',
+        trust_exchange: 'د 7 ورځو اسانه تبادله',
+        trust_exchange_sub: 'د سایز او سټایل چټکه بدلون',
+        trust_quality: '100٪ اصلي لوړ کیفیت',
+        trust_quality_sub: 'څلور طرفه کشیدونکی ټوکر',
+        series_heading: 'د هر ډاکټر او جراح لپاره ځانګړې لړۍ',
+        series_sub: 'د بیړنیو خدماتو او روغتون لپاره اسانه جامې.',
+        color_heading: 'د روغتون د اړتیا سره سم رنګونه وټاکئ',
+        cart_free_shipping: 'له 7,000 روپیو څخه په پورته پیرود وړیا استول',
+        cart_checkout: 'چیک آوټ ته لاړ شئ',
+        wizard_title: 'ځانګړی سایز او د نوم ګلدوزي',
+        wizard_btn_size: 'سایز ټاکلو ته دوام ورکړئ ←',
+        wizard_btn_emb: 'د نوم کیندنه اضافه کړئ ←',
+        wizard_btn_review: 'کتنه او تایید ←',
+        wizard_btn_add: 'جامې کارټ ته اضافه کړئ',
+        announcement: '✨ له 7,000 روپیو څخه په لوړ پیرود وړیا لیږد'
+      },
+      pa: {
+        dir: 'rtl',
+        label: 'پنجابی',
+        hero_title: 'ڈاکٹراں تے سرجناں لئی اعلٰی ترین میڈیکل یونیفارم',
+        hero_sub: 'پاکستان دا نمبر 1 برانڈ: سکرربز، سرجیکل کیپس تے لیب کوٹس',
+        hero_btn: 'کلیکشن ویکھو',
+        trust_delivery: 'پورے پاکستان چ ڈلیوری',
+        trust_delivery_sub: '3 توں 5 دناں چ تیر وانگوں ترسیل',
+        trust_cod: 'کیش آن ڈلیوری',
+        trust_cod_sub: 'بوہے تے ہتھ چ پیسے دیو',
+        trust_exchange: '7 دناں چ بدلن دی سہولت',
+        trust_exchange_sub: 'سائز ٹھیک نہ ہووے تے فوراً بدلو',
+        trust_quality: '100٪ اصلی کوالٹی کپڑا',
+        trust_quality_sub: 'کھچن والا سٹریچ ایبل کپڑا',
+        series_heading: 'ہر ہسپتال دی لوڑ لئی اچیچی سیریز',
+        series_sub: 'سپرنٹر، ویلورا تے کراؤن سیریز توں فائدہ چکو۔',
+        color_heading: 'اپنے محکمے دے رنگ مطابق چنو',
+        cart_free_shipping: '7,000 روپے توں ودھ تے مفت ڈلیوری',
+        cart_checkout: 'چیک آؤٹ کرو',
+        wizard_title: 'کسٹم فٹ تے ناں دی کڑھائی',
+        wizard_btn_size: 'سائز چنو ←',
+        wizard_btn_emb: 'ناں لکھواؤ ←',
+        wizard_btn_review: 'جائزہ لوو ←',
+        wizard_btn_add: 'کارٹ چ پاؤ',
+        announcement: '✨ 7,000 روپے توں ودھ آرڈر تے مفت ڈلیوری'
+      }
+    };
+
+    function applyLanguage(langCode) {
+      const data = translations[langCode] || translations.en;
+      const html = document.documentElement;
+
+      // Set lang and dir attributes
+      html.setAttribute('lang', langCode);
+      html.setAttribute('dir', data.dir);
+
+      // Save to localStorage
+      localStorage.setItem('enamels_selected_lang', langCode);
+
+      // Update trigger label
+      const label = document.getElementById('current-lang-label');
+      if (label) label.textContent = data.label;
+
+      // Update active option
+      document.querySelectorAll('.lang-option-btn').forEach(btn => {
+        const isMatch = btn.dataset.lang === langCode;
+        btn.classList.toggle('active', isMatch);
+        btn.setAttribute('aria-selected', isMatch);
+      });
+
+      // Update key UI elements if found on page
+      const heroTitle = document.querySelector('.hero h2, .customizer-section-title');
+      if (heroTitle && data.hero_title) heroTitle.textContent = data.hero_title;
+
+      const heroSub = document.querySelector('.hero p');
+      if (heroSub && data.hero_sub) heroSub.textContent = data.hero_sub;
+
+      const seriesTitle = document.querySelector('.series-section-title');
+      if (seriesTitle && data.series_heading) seriesTitle.textContent = data.series_heading;
+
+      const seriesSub = document.querySelector('.series-section-subtitle');
+      if (seriesSub && data.series_sub) seriesSub.textContent = data.series_sub;
+
+      const colorTitle = document.querySelector('.colour-section-title');
+      if (colorTitle && data.color_heading) colorTitle.textContent = data.color_heading;
+
+      const wizardHead = document.querySelector('.wizard-heading');
+      if (wizardHead && data.wizard_title) wizardHead.textContent = data.wizard_title;
+
+      const wizardAddBtn = document.getElementById('wizard-submit-btn');
+      if (wizardAddBtn && data.wizard_btn_add) wizardAddBtn.textContent = data.wizard_btn_add;
+
+      // Toggle RTL CSS link if needed
+      const rtlLink = document.getElementById('enamels-rtl-stylesheet');
+      if (rtlLink) {
+        rtlLink.disabled = (data.dir !== 'rtl');
+      }
+    }
+
+    // Toggle menu
+    const trigger = document.getElementById('enamels-lang-trigger');
+    const menu = document.getElementById('enamels-lang-menu');
+
+    if (trigger && menu) {
+      trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = menu.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', isOpen);
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('#enamels-lang-root')) {
+          menu.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      document.querySelectorAll('.lang-option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const selected = this.dataset.lang;
+          applyLanguage(selected);
+          menu.classList.remove('open');
+          trigger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    // Initialize from saved preference
+    const savedLang = localStorage.getItem('enamels_selected_lang') || 'en';
+    applyLanguage(savedLang);
+  })();
+</script>

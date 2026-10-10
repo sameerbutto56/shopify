@@ -1,0 +1,151 @@
+/**
+ * Enamels Medical Apparel — Comprehensive RTL Layout Stylesheet
+ * Full Right-To-Left support for Urdu (اردو), Arabic (العربية), Pashto (پښتو), and Punjabi (پنجابی).
+ */
+
+[dir="rtl"],
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Typography & Direction adjustments */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+[dir="rtl"] p,
+[dir="rtl"] span,
+[dir="rtl"] a {
+  text-align: right;
+}
+
+[dir="rtl"] .text-center {
+  text-align: center !important;
+}
+
+/* Header & Navigation */
+[dir="rtl"] .header__column {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .header-actions {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .menu-list {
+  flex-direction: row-reverse;
+}
+
+/* Flip Directional Arrow Icons */
+[dir="rtl"] .series-explore-btn svg,
+[dir="rtl"] .colour-link-indicator svg,
+[dir="rtl"] .wizard-next-btn svg,
+[dir="rtl"] .breadcrumb-separator svg,
+[dir="rtl"] .slideshow-arrow--next svg,
+[dir="rtl"] .slideshow-arrow--prev svg {
+  transform: scaleX(-1);
+}
+
+/* Step-by-Step Customization Wizard in RTL */
+[dir="rtl"] .wizard-steps-nav {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .step-title-with-action {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .wizard-nav-btns {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .simulated-stitch-text {
+  text-align: right;
+}
+
+[dir="rtl"] .enamels-pocket-canvas {
+  direction: rtl;
+}
+
+/* Trust Badges Grid */
+[dir="rtl"] .trust-badge-item {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+[dir="rtl"] .trust-badge-content {
+  text-align: right;
+}
+
+/* FAQ Accordion */
+[dir="rtl"] .faq-question {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+[dir="rtl"] .faq-answer {
+  text-align: right;
+}
+
+/* Cart Drawer */
+[dir="rtl"] .theme-drawer {
+  right: auto;
+  left: 0;
+}
+
+[dir="rtl"] .theme-drawer__header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .cart-drawer-upsell-item {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .cart-drawer-upsell-details {
+  text-align: right;
+}
+
+[dir="rtl"] .cart-items__properties {
+  text-align: right;
+}
+
+[dir="rtl"] .cart-trust-badges {
+  flex-direction: row-reverse;
+}
+
+/* Floating WhatsApp & Demo buttons positioning */
+[dir="rtl"] .whatsapp-floating-btn {
+  right: auto !important;
+  left: 24px !important;
+}
+
+[dir="rtl"] .enamels-demo-toggle-btn {
+  left: auto !important;
+  right: 24px !important;
+}
+
+/* Product Cards */
+[dir="rtl"] .product-card-color-dots {
+  justify-content: flex-end;
+}
+
+[dir="rtl"] .series-card-header-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .series-card-desc {
+  text-align: right;
+}
+
+[dir="rtl"] .series-swatches-preview {
+  flex-direction: row-reverse;
+}
