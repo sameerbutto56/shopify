@@ -60,7 +60,7 @@
 %}
 
 <product-card
-  class="product-card size-style"
+  class="product-card size-style enamels-3d-card"
   style="{% render 'size-style', settings: block_settings %}"
   data-product-id="{{ product.id }}"
   id="product-card-{{ block.id }}"
@@ -113,6 +113,48 @@
     "
   >
     {{ children }}
+
+    {%- unless onboarding -%}
+      {%- for option in product.options_with_values -%}
+        {%- assign opt_name = option.name | downcase -%}
+        {%- if opt_name == 'color' or opt_name == 'colour' -%}
+          <div class="product-card-color-dots" aria-label="Available Colors">
+            {%- for val in option.values limit: 6 -%}
+              {%- liquid
+                assign hex = '#0f172a'
+                assign val_lower = val | downcase
+                if val_lower contains 'burgundy' or val_lower contains 'maroon' or val_lower contains 'wine'
+                  assign hex = '#581c87'
+                elsif val_lower contains 'navy' or val_lower contains 'royal'
+                  assign hex = '#0f172a'
+                elsif val_lower contains 'olive' or val_lower contains 'army'
+                  assign hex = '#3f4e3b'
+                elsif val_lower contains 'ceil' or val_lower contains 'sky' or val_lower contains 'light blue'
+                  assign hex = '#6ba4b8'
+                elsif val_lower contains 'hunter' or val_lower contains 'green' or val_lower contains 'emerald'
+                  assign hex = '#14532d'
+                elsif val_lower contains 'black'
+                  assign hex = '#18181b'
+                elsif val_lower contains 'grey' or val_lower contains 'gray' or val_lower contains 'heather'
+                  assign hex = '#64748b'
+                elsif val_lower contains 'lilac' or val_lower contains 'purple' or val_lower contains 'lavender'
+                  assign hex = '#a855f7'
+                elsif val_lower contains 'teal'
+                  assign hex = '#0d9488'
+                elsif val_lower contains 'white'
+                  assign hex = '#f8fafc'
+                endif
+              -%}
+              <span class="card-color-dot" style="background-color: {{ hex }};" title="{{ val | escape }}"></span>
+            {%- endfor -%}
+            {%- if option.values.size > 6 -%}
+              <span class="card-color-more">+{{ option.values.size | minus: 6 }}</span>
+            {%- endif -%}
+          </div>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
   </div>
 </product-card>
 

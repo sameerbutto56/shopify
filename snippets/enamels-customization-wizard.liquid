@@ -978,21 +978,80 @@
         lineItemProps['Includes Addon'] = 'Matching Sprinter Cap (+Rs. 800)';
       }
 
+      const sleeveAddon = document.getElementById('addon-sleeves');
+      if (sleeveAddon && sleeveAddon.checked) {
+        lineItemProps['Includes Sleeves'] = 'Med Sleeves (+Rs. 750)';
+      }
+
+      const itemsToAdd = [
+        {
+          id: variantId,
+          quantity: 1,
+          properties: lineItemProps
+        }
+      ];
+
+      {% liquid
+        assign emb_id = embroidery_product.selected_or_first_available_variant.id | default: 0
+        assign patch_id = patch_product.selected_or_first_available_variant.id | default: 0
+        assign logo_id = logo_product.selected_or_first_available_variant.id | default: 0
+        assign cap_id = cap_product.selected_or_first_available_variant.id | default: 0
+        assign sleeves_id = sleeves_product.selected_or_first_available_variant.id | default: 0
+      %}
+
+      let companionId = null;
+      if (wizardState.personalizationTier === 'embroidery' && {{ emb_id }} > 0) {
+        companionId = {{ emb_id }};
+      } else if (wizardState.personalizationTier === 'patch' && {{ patch_id }} > 0) {
+        companionId = {{ patch_id }};
+      } else if (wizardState.personalizationTier === 'logo' && {{ logo_id }} > 0) {
+        companionId = {{ logo_id }};
+      }
+
+      if (companionId) {
+        itemsToAdd.push({
+          id: companionId,
+          quantity: 1,
+          properties: {
+            '_Customization For': 'Item ' + variantId,
+            'Name Details': wizardState.line1 + (wizardState.line2 ? ' | ' + wizardState.line2 : '')
+          }
+        });
+      }
+
+      if (capAddon && capAddon.checked && {{ cap_id }} > 0) {
+        itemsToAdd.push({
+          id: {{ cap_id }},
+          quantity: 1,
+          properties: {
+            'Color Match': wizardState.color
+          }
+        });
+      }
+
+      if (sleeveAddon && sleeveAddon.checked && {{ sleeves_id }} > 0) {
+        itemsToAdd.push({
+          id: {{ sleeves_id }},
+          quantity: 1
+        });
+      }
+
       try {
         const res = await fetch('/cart/add.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: variantId,
-            quantity: 1,
-            properties: lineItemProps
-          })
+          body: JSON.stringify({ items: itemsToAdd })
         });
 
         if (res.ok) {
           submitBtn.textContent = 'Uniform Added!';
           submitBtn.style.background = '#0d9488';
-          window.location.reload();
+          const cartTrigger = document.querySelector('[data-testid="cart-drawer-trigger"], #cart-icon-bubble, .header-actions__cart, [aria-controls="cart-drawer"]');
+          if (cartTrigger) {
+            cartTrigger.click();
+          } else {
+            window.location.reload();
+          }
         } else {
           submitBtn.textContent = 'Error Adding';
           submitBtn.disabled = false;

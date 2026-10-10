@@ -213,10 +213,58 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "trust_badges_collection": {
+      "type": "trust-badges",
+      "blocks": {
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "icon": "truck",
+            "title": "Nationwide Delivery",
+            "subtitle": "Fast 3-5 days delivery in Pakistan"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "icon": "cash",
+            "title": "Cash on Delivery",
+            "subtitle": "Pay cash at your doorstep"
+          }
+        },
+        "badge_3": {
+          "type": "badge",
+          "settings": {
+            "icon": "repeat",
+            "title": "7-Day Easy Exchange",
+            "subtitle": "Hassle-free size & style exchange"
+          }
+        },
+        "badge_4": {
+          "type": "badge",
+          "settings": {
+            "icon": "shield",
+            "title": "100% Original Quality",
+            "subtitle": "4-Way Stretch & tailored stitching"
+          }
+        }
+      },
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
+      ],
+      "settings": {
+        "bg_color": "#ffffff",
+        "text_color": "#0f172a"
+      }
     }
   },
   "order": [
     "section",
-    "main"
+    "main",
+    "trust_badges_collection"
   ]
 }

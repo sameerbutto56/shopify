@@ -28,7 +28,13 @@
     {% endif %}
 
     <div class="customizer-wizard-embed-container">
-      {% render 'enamels-customization-wizard' %}
+      {% render 'enamels-customization-wizard',
+        embroidery_product: section.settings.embroidery_product,
+        patch_product: section.settings.patch_product,
+        logo_product: section.settings.logo_product,
+        cap_product: section.settings.cap_product,
+        sleeves_product: section.settings.sleeves_product
+      %}
     </div>
   </div>
 </div>
@@ -62,6 +68,43 @@
       "id": "subtitle",
       "label": "Subheading",
       "default": "Tailor your scrubs with clinical precision: choose your fit, select official shades, and preview live chest pocket embroidery."
+    },
+    {
+      "type": "header",
+      "content": "Add-On Products & Services (Optional)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Select existing products to bill separately in checkout for customization and accessories. If left blank, details attach as line-item order properties."
+    },
+    {
+      "type": "product",
+      "id": "embroidery_product",
+      "label": "Name Embroidery Service Product"
+    },
+    {
+      "type": "product",
+      "id": "patch_product",
+      "label": "Name Patch Service Product"
+    },
+    {
+      "type": "product",
+      "id": "logo_product",
+      "label": "Hospital Logo Service Product"
+    },
+    {
+      "type": "product",
+      "id": "cap_product",
+      "label": "Matching Cap Companion Product"
+    },
+    {
+      "type": "product",
+      "id": "sleeves_product",
+      "label": "Arm Sleeves Companion Product"
+    },
+    {
+      "type": "header",
+      "content": "Layout & Colors"
     },
     {
       "type": "color",
