@@ -7,13 +7,14 @@
 -%}
 
 {% if upsell_collection != blank and upsell_collection.products_count > 0 %}
+  {%- assign cart_product_ids = cart.items | map: 'product_id' -%}
   <div class="cart-drawer-upsell-wrapper">
     <div class="cart-drawer-upsell-header">
       <span class="upsell-title">Frequently Added Together</span>
     </div>
     <div class="cart-drawer-upsell-list">
       {% for product in upsell_collection.products limit: 3 %}
-        {% unless cart.items | map: 'product_id' contains product.id %}
+        {% unless cart_product_ids contains product.id %}
           <div class="cart-drawer-upsell-item" data-product-id="{{ product.id }}">
             <div class="upsell-item-image">
               {% if product.featured_image %}
