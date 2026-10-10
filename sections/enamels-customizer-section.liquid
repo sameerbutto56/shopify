@@ -1,0 +1,99 @@
+{% comment %}
+  Section contract: Enamels Customization Wizard Section
+  Provides step-by-step product customization & embroidery engine on product or landing pages.
+  @example
+  <!-- In templates/product.json or page.customizer.json -->
+{% endcomment %}
+
+<div class="enamels-customizer-section section-padding" style="background-color: {{ section.settings.bg_color | default: '#f8fafc' }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="page-width">
+    {% if section.settings.show_header %}
+      <div class="customizer-section-header text-center" style="max-width: 720px; margin: 0 auto 36px auto; text-align: center;">
+        {% if section.settings.badge != blank %}
+          <span class="customizer-badge" style="display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #0d9488; background: #ccfbf1; padding: 4px 12px; border-radius: 999px; margin-bottom: 12px;">
+            {{ section.settings.badge | escape }}
+          </span>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2 class="customizer-section-title" style="font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 800; color: #0f172a; margin: 0 0 12px 0; letter-spacing: -0.02em;">
+            {{ section.settings.title | escape }}
+          </h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="customizer-section-subtitle" style="font-size: 1rem; color: #64748b; line-height: 1.6; margin: 0;">
+            {{ section.settings.subtitle | escape }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="customizer-wizard-embed-container">
+      {% render 'enamels-customization-wizard' %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Customization Wizard",
+  "tag": "section",
+  "class": "section-enamels-customizer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show section header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge label",
+      "default": "Official Clinical Personalization"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Step-by-Step Custom Fit & Embroidery"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Tailor your scrubs with clinical precision: choose your fit, select official shades, and preview live chest pocket embroidery."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Customization Wizard"
+    }
+  ]
+}
+{% endschema %}

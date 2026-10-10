@@ -15,7 +15,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h2>ELEVATE YOUR EVERYDAY STYLE</h2>",
+            "text": "<h2>ENGINEERED FOR CLINICAL EXCELLENCE</h2><p>Pakistan's Premium Technical Medical Scrubs, Surgical Caps & Lab Coats</p>",
             "text_color": "{{ settings.color_palette.background }}",
             "width": "fit-content",
             "max_width": "normal",
@@ -41,7 +41,7 @@
           "type": "button",
           "name": "t:names.button",
           "settings": {
-            "label": "Shop New Collection",
+            "label": "Explore Scrub Collections",
             "link": "shopify://collections/all",
             "open_in_new_tab": false,
             "style_class": "button-custom",
@@ -324,6 +324,170 @@
         "text_color": "#111827"
       }
     },
+    "shop_by_series_section": {
+      "type": "shop-by-series",
+      "blocks": {
+        "series_1": {
+          "type": "series_card",
+          "settings": {
+            "title": "Sprinter Series",
+            "subtitle": "High-Mobility Athletic Scrubs",
+            "tag": "Most Popular",
+            "tag_bg": "#0d9488",
+            "price_text": "From Rs. 5,150",
+            "description": "Engineered for active surgical and ER shifts. 4-way mechanical stretch, raglan sleeve mobility, and deep cargo utility pockets.",
+            "features": "4-Way Stretch • Moisture-Wicking • Anti-Static",
+            "colors": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d",
+            "button_label": "Shop Sprinter Series"
+          }
+        },
+        "series_2": {
+          "type": "series_card",
+          "settings": {
+            "title": "Velora Series",
+            "subtitle": "Refined Elegance & Comfort",
+            "tag": "Signature",
+            "tag_bg": "#581c87",
+            "price_text": "From Rs. 5,500",
+            "description": "Ultra-soft touch with graceful fluid drape. Available in Summit top and tailored Wide-Leg cuts for elevated clinical style.",
+            "features": "Ultra-Soft Touch • Fluid Drape • Wrinkle-Resistant",
+            "colors": "#581c87,#0f172a,#3f4e3b,#18181b,#64748b",
+            "button_label": "Shop Velora Series"
+          }
+        },
+        "series_3": {
+          "type": "series_card",
+          "settings": {
+            "title": "Crown Series",
+            "subtitle": "Executive Tailored Fit",
+            "tag": "Executive",
+            "tag_bg": "#0f172a",
+            "price_text": "From Rs. 6,200",
+            "description": "Structured executive presence designed for hospital consultants and department heads with clean notch lapels and tailored lines.",
+            "features": "Structured Collar • Anti-Microbial • Executive Cut",
+            "colors": "#0f172a,#18181b,#334155",
+            "button_label": "Shop Crown Series"
+          }
+        },
+        "series_4": {
+          "type": "series_card",
+          "settings": {
+            "title": "BunFit™ & Caps",
+            "subtitle": "Extra-Volume Surgical Caps",
+            "tag": "Essential",
+            "tag_bg": "#0284c7",
+            "price_text": "From Rs. 620",
+            "description": "Patented expandable pleating accommodating all hair volumes and buns, integrated sweatband, and matching Sprinter fabric tones.",
+            "features": "Hair Volume Pleating • Sweatband Lining • Matching Colors",
+            "colors": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d",
+            "button_label": "Shop Surgical Caps"
+          }
+        }
+      },
+      "block_order": [
+        "series_1",
+        "series_2",
+        "series_3",
+        "series_4"
+      ],
+      "settings": {
+        "badge": "Signature Apparel Lines",
+        "title": "Engineered Series for Every Clinical Demand",
+        "subtitle": "From dynamic ER shifts to executive consultation rounds, explore Enamels' purpose-built scrub lines crafted with technical fabrics.",
+        "bg_color": "#ffffff",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "shop_by_colour_section": {
+      "type": "shop-by-colour",
+      "blocks": {
+        "color_1": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Burgundy",
+            "hex_code": "#581c87",
+            "department": "Cardiology, OB-GYN & Dentistry"
+          }
+        },
+        "color_2": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Royal Navy",
+            "hex_code": "#0f172a",
+            "department": "Critical Care, ICU & Emergency"
+          }
+        },
+        "color_3": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Olive Shine",
+            "hex_code": "#3f4e3b",
+            "department": "Internal Medicine & Outpatient"
+          }
+        },
+        "color_4": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Ceil Blue",
+            "hex_code": "#6ba4b8",
+            "department": "Operating Theatres & Inpatient Wards"
+          }
+        },
+        "color_5": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Hunter Green",
+            "hex_code": "#14532d",
+            "department": "Surgical Suites & Traumatology"
+          }
+        },
+        "color_6": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Obsidian Black",
+            "hex_code": "#18181b",
+            "department": "Aesthetics, Dermatology & Clinic"
+          }
+        },
+        "color_7": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Heather Grey",
+            "hex_code": "#64748b",
+            "department": "Radiology, Oncology & Diagnostics"
+          }
+        },
+        "color_8": {
+          "type": "colour_item",
+          "settings": {
+            "title": "Lilac Bloom",
+            "hex_code": "#a855f7",
+            "department": "Pediatrics & Neonatal Care"
+          }
+        }
+      },
+      "block_order": [
+        "color_1",
+        "color_2",
+        "color_3",
+        "color_4",
+        "color_5",
+        "color_6",
+        "color_7",
+        "color_8"
+      ],
+      "settings": {
+        "badge": "Clinical Color Harmony",
+        "title": "Shop by Official Hospital & Clinical Shade",
+        "subtitle": "Whether adhering to strict hospital ward regulations or expressing personal style, discover medical apparel in your required clinical tone.",
+        "bg_color": "#f8fafc",
+        "show_cta": true,
+        "cta_text": "Explore Full Color Range in Catalogue",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
     "testimonials_section": {
       "type": "testimonials",
       "blocks": {
@@ -331,27 +495,27 @@
           "type": "testimonial",
           "settings": {
             "rating": 5,
-            "review": "The fabric quality and stitching are truly exceptional. Delivered via COD within 3 days in Lahore, and the fit was perfect.",
-            "author": "Ayesha M.",
-            "city": "Lahore"
+            "review": "The 4-way mechanical stretch on the Sprinter scrub is extraordinary. Survives 36-hour surgical calls without wrinkling or losing shape. Delivered promptly via COD in Karachi.",
+            "author": "Dr. Ayesha M.",
+            "city": "Aga Khan University Hospital, Karachi"
           }
         },
         "review_2": {
           "type": "testimonial",
           "settings": {
             "rating": 5,
-            "review": "Ordered a 2-piece stitched suit. Exceeded my expectations! Packaging was pristine and WhatsApp support was super responsive.",
-            "author": "Fatima K.",
-            "city": "Islamabad"
+            "review": "The custom chest pocket embroidery is crisp and clean. Best medical apparel in Pakistan by far. Size exchange was completely seamless through WhatsApp.",
+            "author": "Dr. Hamza R.",
+            "city": "Shaukat Khanum Memorial Hospital, Lahore"
           }
         },
         "review_3": {
           "type": "testimonial",
           "settings": {
             "rating": 5,
-            "review": "Very smooth Cash on Delivery experience. I requested a size exchange and they handled it without any hassle. Highly recommended!",
-            "author": "Hamza R.",
-            "city": "Karachi"
+            "review": "Velora fabric feels softer than regular scrubs and the BunFit surgical cap accommodates thick hair comfortably through back-to-back surgeries.",
+            "author": "Dr. Fatima K.",
+            "city": "PIMS, Islamabad"
           }
         }
       },
@@ -361,17 +525,73 @@
         "review_3"
       ],
       "settings": {
-        "heading": "Loved by Thousands Across Pakistan",
-        "subheading": "Verified Customer Reviews",
-        "bg_color": "#f9fafb",
-        "text_color": "#111827"
+        "heading": "Trusted by Healthcare Professionals Across Pakistan",
+        "subheading": "Verified Clinical Reviews",
+        "bg_color": "#ffffff",
+        "text_color": "#0f172a"
+      }
+    },
+    "faq_section": {
+      "type": "faq-accordion",
+      "blocks": {
+        "faq_1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is the delivery time across Pakistan?",
+            "answer": "Standard shipping takes 2-4 business days for major cities (Karachi, Lahore, Islamabad, Rawalpindi) and 3-5 business days for other regions across Pakistan via Trax, PostEx, and TCS."
+          }
+        },
+        "faq_2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is Cash on Delivery (COD) available?",
+            "answer": "Yes! Cash on Delivery is available nationwide across all cities, towns, and medical institutions in Pakistan."
+          }
+        },
+        "faq_3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I choose the correct scrub size?",
+            "answer": "Our scrubs follow standard clinical sizing from XS to XXL. Check the detailed Size Guide on any product page, or contact our WhatsApp concierge team for instant sizing recommendations."
+          }
+        },
+        "faq_4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your size exchange and return policy?",
+            "answer": "We offer a 7-day hassle-free exchange policy. If your scrubs don't fit perfectly, simply reach out to us on WhatsApp and we will dispatch your replacement size."
+          }
+        },
+        "faq_5": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I add custom doctor name embroidery?",
+            "answer": "Yes! Use our Step-by-Step Customization Wizard on any scrub page to choose Direct Name Embroidery (+Rs. 450), Name Patch (+Rs. 350), or Hospital Logo Embroidery (+Rs. 650) with live chest pocket preview."
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4",
+        "faq_5"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions",
+        "subheading": "Care, Sizing & Delivery",
+        "bg_color": "#f8fafc",
+        "text_color": "#0f172a"
       }
     }
   },
   "order": [
     "hero_jVaWmY",
     "trust_badges_section",
+    "shop_by_series_section",
     "product_list_fa6P9H",
-    "testimonials_section"
+    "shop_by_colour_section",
+    "testimonials_section",
+    "faq_section"
   ]
 }

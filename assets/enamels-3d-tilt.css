@@ -1,0 +1,99 @@
+/**
+ * Enamels Medical Apparel — 3D Perspective & Motion Engine
+ * Lightweight, hardware-accelerated, zero-dependency 3D transforms.
+ */
+
+:root {
+  --enamels-navy: #0f172a;
+  --enamels-burgundy: #581c87;
+  --enamels-teal: #0d9488;
+  --enamels-slate: #334155;
+  --enamels-cream: #fafafa;
+  --enamels-border: #e2e8f0;
+  --enamels-shadow-3d: 0 16px 36px -10px rgba(15, 23, 42, 0.12), 0 0 1px 1px rgba(15, 23, 42, 0.05);
+}
+
+/* 3D Card Hover Tilt */
+.enamels-3d-card {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+  will-change: transform;
+}
+
+.enamels-3d-card-inner {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.enamels-3d-card:hover {
+  transform: translateY(-6px) rotateX(2deg) rotateY(-1deg);
+  box-shadow: var(--enamels-shadow-3d);
+}
+
+.enamels-3d-card:hover .enamels-3d-pop {
+  transform: translateZ(24px);
+}
+
+/* Technical Medical Fabric Badges */
+.fabric-tech-badge-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.fabric-tech-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.fabric-tech-pill svg {
+  color: #0d9488;
+}
+
+.fabric-tech-pill:hover {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.fabric-tech-pill:hover svg {
+  color: #2dd4bf;
+}
+
+/* Glassmorphic Feature Callout */
+.enamels-glass-box {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06);
+  border-radius: 12px;
+}
+
+/* Smooth Image Color Transition */
+.enamels-product-img-fade {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  .enamels-3d-card,
+  .enamels-3d-card:hover,
+  .enamels-3d-pop {
+    transform: none !important;
+    transition: none !important;
+  }
+}

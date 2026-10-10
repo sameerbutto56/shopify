@@ -1,0 +1,327 @@
+{% comment %}
+  Section contract: Shop by Colour
+  Interactive medical palette discovery section allowing healthcare professionals to browse scrubs by official hospital department shade.
+  @example
+  <!-- Included in templates/index.json or collection pages -->
+{% endcomment %}
+
+<div class="shop-by-colour-section section-padding" style="background-color: {{ section.settings.bg_color | default: '#f8fafc' }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="page-width">
+    <div class="colour-section-header" style="max-width: 760px; margin: 0 auto 40px auto; text-align: center;">
+      {% if section.settings.badge != blank %}
+        <span class="colour-section-badge" style="display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #581c87; background: #faf5ff; border: 1px solid #f3e8ff; padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;">
+          {{ section.settings.badge | escape }}
+        </span>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h2 class="colour-section-title" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; color: #0f172a; margin: 0 0 14px 0; letter-spacing: -0.02em;">
+          {{ section.settings.title | escape }}
+        </h2>
+      {% endif %}
+      {% if section.settings.subtitle != blank %}
+        <p class="colour-section-subtitle" style="font-size: 1.05rem; color: #64748b; line-height: 1.6; margin: 0;">
+          {{ section.settings.subtitle | escape }}
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Color Swatch Tabs Grid -->
+    <div class="colour-palette-grid">
+      {% for block in section.blocks %}
+        <a href="{{ block.settings.link | default: '/collections/all' }}" class="colour-swatch-card enamels-3d-card" {{ block.shopify_attributes }}>
+          <div class="colour-card-inner">
+            <div class="colour-swatch-preview" style="background-color: {{ block.settings.hex_code }};">
+              <span class="colour-swatch-code">{{ block.settings.hex_code }}</span>
+            </div>
+            <div class="colour-card-content">
+              <h3 class="colour-name">{{ block.settings.title | escape }}</h3>
+              <p class="colour-dept">{{ block.settings.department | escape }}</p>
+              <div class="colour-link-indicator">
+                <span>View Scrubs</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_cta %}
+      <div class="colour-footer-cta" style="margin-top: 48px; text-align: center;">
+        <a href="{{ section.settings.cta_link | default: '/collections/all' }}" class="button button--secondary" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 14px 28px; border-radius: 8px;">
+          <span>{{ section.settings.cta_text | default: 'Browse All Colors in Catalogue' }}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .colour-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .colour-swatch-card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: block;
+  }
+
+  .colour-swatch-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+  }
+
+  .colour-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .colour-swatch-preview {
+    height: 110px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 14px;
+  }
+
+  .colour-swatch-code {
+    font-size: 0.68rem;
+    font-family: monospace;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+    backdrop-filter: blur(4px);
+  }
+
+  .colour-card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .colour-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.01em;
+  }
+
+  .colour-dept {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0 0 14px 0;
+    line-height: 1.4;
+    flex-grow: 1;
+  }
+
+  .colour-link-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0d9488;
+    margin-top: auto;
+    transition: gap 0.2s ease;
+  }
+
+  .colour-swatch-card:hover .colour-link-indicator {
+    gap: 10px;
+    color: #0f172a;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Shop by Colour",
+  "tag": "section",
+  "class": "section-shop-by-colour",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge text",
+      "default": "Clinical Color Harmony"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Shop by Official Hospital & Clinical Shade"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Whether adhering to strict hospital ward regulations or expressing personal style, discover medical apparel crafted in your required clinical tone."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show View All CTA button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "Explore Full Color Range in Catalogue"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA Link"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "colour_item",
+      "name": "Colour Shade",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Color Name",
+          "default": "Burgundy"
+        },
+        {
+          "type": "color",
+          "id": "hex_code",
+          "label": "Color HEX",
+          "default": "#581c87"
+        },
+        {
+          "type": "text",
+          "id": "department",
+          "label": "Recommended Department",
+          "default": "Cardiology, OB-GYN & Dental"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Collection Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by Colour",
+      "blocks": [
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Burgundy",
+            "hex_code": "#581c87",
+            "department": "Cardiology, OB-GYN & Dentistry"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Royal Navy",
+            "hex_code": "#0f172a",
+            "department": "Critical Care, ICU & Emergency"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Olive Shine",
+            "hex_code": "#3f4e3b",
+            "department": "Internal Medicine & Outpatient"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Ceil Blue",
+            "hex_code": "#6ba4b8",
+            "department": "Operating Theatres & Inpatient Wards"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Hunter Green",
+            "hex_code": "#14532d",
+            "department": "Surgical Suites & Traumatology"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Obsidian Black",
+            "hex_code": "#18181b",
+            "department": "Aesthetics, Dermatology & Private Practice"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Heather Grey",
+            "hex_code": "#64748b",
+            "department": "Radiology, Oncology & Diagnostics"
+          }
+        },
+        {
+          "type": "colour_item",
+          "settings": {
+            "title": "Lilac Bloom",
+            "hex_code": "#a855f7",
+            "department": "Pediatrics & Neonatal Care"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

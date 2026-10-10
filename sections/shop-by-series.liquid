@@ -1,0 +1,502 @@
+{% comment %}
+  Section contract: Shop by Series
+  Interactive 3D-tilt showcase for Enamels signature scrub lines (Sprinter, Velora, Crown, BunFit).
+  @example
+  <!-- Included in templates/index.json -->
+{% endcomment %}
+
+<div class="shop-by-series-section section-padding" style="background-color: {{ section.settings.bg_color | default: '#ffffff' }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="page-width">
+    <div class="series-section-header" style="max-width: 760px; margin: 0 auto 48px auto; text-align: center;">
+      {% if section.settings.badge != blank %}
+        <span class="series-section-badge" style="display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #0d9488; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;">
+          {{ section.settings.badge | escape }}
+        </span>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h2 class="series-section-title" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; color: #0f172a; margin: 0 0 14px 0; letter-spacing: -0.02em;">
+          {{ section.settings.title | escape }}
+        </h2>
+      {% endif %}
+      {% if section.settings.subtitle != blank %}
+        <p class="series-section-subtitle" style="font-size: 1.05rem; color: #64748b; line-height: 1.6; margin: 0;">
+          {{ section.settings.subtitle | escape }}
+        </p>
+      {% endif %}
+    </div>
+
+    <div class="series-cards-grid">
+      {% for block in section.blocks %}
+        <div class="series-card enamels-3d-card" {{ block.shopify_attributes }}>
+          <div class="series-card-inner">
+            <div class="series-card-media-wrapper">
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'series-card-img', alt: block.settings.title }}
+              {% else %}
+                <div class="series-card-placeholder-bg" style="background: linear-gradient(135deg, {{ block.settings.accent_color | default: '#0f172a' }} 0%, #1e293b 100%);">
+                  <div class="series-placeholder-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5">
+                      <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+                    </svg>
+                  </div>
+                </div>
+              {% endif %}
+
+              {% if block.settings.tag != blank %}
+                <span class="series-card-tag" style="background-color: {{ block.settings.tag_bg | default: '#0f172a' }}; color: #ffffff;">
+                  {{ block.settings.tag | escape }}
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="series-card-body">
+              <div class="series-card-header-row">
+                <div>
+                  <h3 class="series-card-title">{{ block.settings.title | escape }}</h3>
+                  <span class="series-card-type">{{ block.settings.subtitle | escape }}</span>
+                </div>
+                {% if block.settings.price_text != blank %}
+                  <div class="series-card-price-pill">
+                    {{ block.settings.price_text | escape }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <p class="series-card-desc">{{ block.settings.description | escape }}</p>
+
+              {% if block.settings.features != blank %}
+                <div class="series-card-features">
+                  {% assign feature_list = block.settings.features | split: '•' %}
+                  {% for feat in feature_list %}
+                    <span class="series-feature-chip">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      {{ feat | strip }}
+                    </span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <!-- Color Palette Dots Preview -->
+              {% if block.settings.colors != blank %}
+                <div class="series-swatches-preview">
+                  <span class="series-swatch-label">Available Colors:</span>
+                  <div class="series-swatch-dots">
+                    {% assign color_list = block.settings.colors | split: ',' %}
+                    {% for hex in color_list %}
+                      <span class="series-swatch-dot" style="background-color: {{ hex | strip }};" title="{{ hex | strip }}"></span>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+
+              <div class="series-card-footer">
+                <a href="{{ block.settings.link | default: '/collections/all' }}" class="series-explore-btn">
+                  <span>{{ block.settings.button_label | default: 'Explore Series' }}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .series-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .series-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+  }
+
+  .series-card-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .series-card-media-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #f1f5f9;
+  }
+
+  .series-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .series-card:hover .series-card-img {
+    transform: scale(1.05);
+  }
+
+  .series-card-placeholder-bg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .series-card-tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .series-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .series-card-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .series-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .series-card-type {
+    display: block;
+    font-size: 0.82rem;
+    color: #0d9488;
+    font-weight: 600;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .series-card-price-pill {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0f172a;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .series-card-desc {
+    font-size: 0.92rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+    flex-grow: 1;
+  }
+
+  .series-card-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .series-feature-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .series-swatches-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-top: 12px;
+    border-top: 1px dashed #e2e8f0;
+  }
+
+  .series-swatch-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  .series-swatch-dots {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .series-swatch-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.15);
+    display: inline-block;
+  }
+
+  .series-card-footer {
+    margin-top: auto;
+  }
+
+  .series-explore-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 20px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .series-explore-btn:hover {
+    background: #0d9488;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);
+  }
+
+  .series-explore-btn svg {
+    transition: transform 0.2s ease;
+  }
+
+  .series-explore-btn:hover svg {
+    transform: translateX(3px);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Shop by Series",
+  "tag": "section",
+  "class": "section-shop-by-series",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge text",
+      "default": "Signature Apparel Lines"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Engineered Series for Every Clinical Demand"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "From dynamic ER shifts to executive consultation rounds, explore Enamels' purpose-built scrub lines crafted with technical fabrics."
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "series_card",
+      "name": "Series Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Series Name",
+          "default": "Sprinter Series"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle / Category",
+          "default": "High-Mobility Athletic Scrubs"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Badge Tag",
+          "default": "Best Seller"
+        },
+        {
+          "type": "color",
+          "id": "tag_bg",
+          "label": "Tag Background",
+          "default": "#0d9488"
+        },
+        {
+          "type": "color",
+          "id": "accent_color",
+          "label": "Placeholder Color",
+          "default": "#0f172a"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Series Image"
+        },
+        {
+          "type": "text",
+          "id": "price_text",
+          "label": "Price Tag",
+          "default": "From Rs. 5,150"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Engineered for doctors on the move. Features 4-way mechanical stretch, raglan sleeve mobility, and moisture-wicking technology."
+        },
+        {
+          "type": "text",
+          "id": "features",
+          "label": "Key Features (separated by •)",
+          "default": "4-Way Stretch • Moisture Wicking • Fade Resistant"
+        },
+        {
+          "type": "text",
+          "id": "colors",
+          "label": "Color Swatches (Hex codes separated by comma)",
+          "default": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Series Link"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Shop Sprinter Series"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by Series",
+      "blocks": [
+        {
+          "type": "series_card",
+          "settings": {
+            "title": "Sprinter Series",
+            "subtitle": "High-Mobility Athletic Scrubs",
+            "tag": "Most Popular",
+            "tag_bg": "#0d9488",
+            "price_text": "From Rs. 5,150",
+            "description": "Engineered for active surgical and ER shifts. 4-way mechanical stretch, athletic raglan sleeves, and deep cargo utility pockets.",
+            "features": "4-Way Stretch • Moisture-Wicking • Anti-Static",
+            "colors": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d",
+            "button_label": "Shop Sprinter Series"
+          }
+        },
+        {
+          "type": "series_card",
+          "settings": {
+            "title": "Velora Series",
+            "subtitle": "Refined Elegance & Comfort",
+            "tag": "Signature",
+            "tag_bg": "#581c87",
+            "price_text": "From Rs. 5,500",
+            "description": "Ultra-soft touch with graceful fluid drape. Available in Summit top and tailored Wide-Leg cuts for elevated clinical style.",
+            "features": "Ultra-Soft Touch • Fluid Drape • Wrinkle-Resistant",
+            "colors": "#581c87,#0f172a,#3f4e3b,#18181b,#64748b",
+            "button_label": "Shop Velora Series"
+          }
+        },
+        {
+          "type": "series_card",
+          "settings": {
+            "title": "Crown Series",
+            "subtitle": "Executive Tailored Fit",
+            "tag": "Premium",
+            "tag_bg": "#0f172a",
+            "price_text": "From Rs. 6,200",
+            "description": "Structured executive presence designed for hospital consultants and department heads with clean notch lapels and tailored lines.",
+            "features": "Structured Collar • Anti-Microbial • Executive Cut",
+            "colors": "#0f172a,#18181b,#334155",
+            "button_label": "Shop Crown Series"
+          }
+        },
+        {
+          "type": "series_card",
+          "settings": {
+            "title": "BunFit™ & Headwear",
+            "subtitle": "Extra-Volume Surgical Caps",
+            "tag": "Essential",
+            "tag_bg": "#0284c7",
+            "price_text": "From Rs. 620",
+            "description": "Patented expandable pleating accommodating all hair volumes and buns, integrated sweatband, and matching Sprinter fabric tones.",
+            "features": "Hair Volume Pleating • Sweatband Lining • Matching Colors",
+            "colors": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d",
+            "button_label": "Shop Surgical Caps"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

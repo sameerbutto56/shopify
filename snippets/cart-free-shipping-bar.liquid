@@ -3,7 +3,7 @@
 {% enddoc %}
 
 {%- liquid
-  assign threshold_amount = settings.free_shipping_threshold | default: 2999
+  assign threshold_amount = settings.free_shipping_threshold | default: 7000
   assign threshold_cents = threshold_amount | times: 100
   assign current_total = cart.total_price
   assign remaining_cents = threshold_cents | minus: current_total

@@ -108,7 +108,7 @@
       "color1": "#333333",
       "color2": "#DFDFDF"
     },
-    "free_shipping_threshold": 2999,
+    "free_shipping_threshold": 7000,
     "enable_whatsapp": true,
     "whatsapp_number": "923001234567",
     "whatsapp_message": "Hello! I am browsing your store and would like assistance with an order."

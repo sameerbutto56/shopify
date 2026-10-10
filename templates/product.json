@@ -466,14 +466,121 @@
         "padding-block-end": 48
       }
     },
+    "enamels_customizer": {
+      "type": "enamels-customizer-section",
+      "settings": {
+        "show_header": true,
+        "badge": "Official Clinical Personalization",
+        "title": "Step-by-Step Custom Fit & Embroidery",
+        "subtitle": "Tailor your scrubs with clinical precision: choose your fit, select official shades, and preview live chest pocket embroidery.",
+        "bg_color": "#f8fafc",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
     "frequently_bought_together": {
       "type": "frequently-bought-together",
       "settings": {}
+    },
+    "trust_badges_pdp": {
+      "type": "trust-badges",
+      "blocks": {
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "icon": "truck",
+            "title": "Nationwide Delivery",
+            "subtitle": "Fast 3-5 days delivery in Pakistan"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "icon": "cash",
+            "title": "Cash on Delivery",
+            "subtitle": "Pay cash at your doorstep"
+          }
+        },
+        "badge_3": {
+          "type": "badge",
+          "settings": {
+            "icon": "repeat",
+            "title": "7-Day Easy Exchange",
+            "subtitle": "Hassle-free size & style exchange"
+          }
+        },
+        "badge_4": {
+          "type": "badge",
+          "settings": {
+            "icon": "shield",
+            "title": "100% Original Quality",
+            "subtitle": "4-Way Stretch & tailored stitching"
+          }
+        }
+      },
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
+      ],
+      "settings": {
+        "bg_color": "#ffffff",
+        "text_color": "#0f172a"
+      }
+    },
+    "faq_pdp": {
+      "type": "faq-accordion",
+      "blocks": {
+        "faq_1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is the delivery time across Pakistan?",
+            "answer": "Orders are dispatched within 24 hours. Delivery takes 2-4 business days for major cities (Karachi, Lahore, Islamabad/Rawalpindi) and 3-5 business days for other cities via Trax, PostEx, and TCS."
+          }
+        },
+        "faq_2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I pay via Cash on Delivery (COD)?",
+            "answer": "Yes! We offer Cash on Delivery across Pakistan. You can inspect the package and pay cash to the courier representative at your doorstep."
+          }
+        },
+        "faq_3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does custom name embroidery take?",
+            "answer": "Custom embroidery (direct name or name patch) typically adds 1-2 business days to the preparation time before shipping."
+          }
+        },
+        "faq_4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What if the scrub size does not fit me?",
+            "answer": "We provide a hassle-free 7-day size exchange policy! Simply message our WhatsApp support team at +92 300 1234567 and we will arrange a replacement size for you."
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4"
+      ],
+      "settings": {
+        "heading": "Frequently Asked Questions",
+        "subheading": "Care, Sizing & Delivery",
+        "bg_color": "#f8fafc",
+        "text_color": "#0f172a"
+      }
     }
   },
   "order": [
     "main",
+    "enamels_customizer",
     "frequently_bought_together",
-    "product_recommendations_qggXJq"
+    "product_recommendations_qggXJq",
+    "trust_badges_pdp",
+    "faq_pdp"
   ]
 }

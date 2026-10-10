@@ -1,28 +1,52 @@
-# Shopify Store Project Specification
+# Enamels Medical Apparel — Master Project Specification
 
-## 1. Project Overview & Objectives
-- **Platform**: Shopify
-- **Store Mode**: Full Custom Production E-Commerce Store
-- **Target Market**: Pakistan (PKR currency, Cash on Delivery (COD), local courier integrations, phone number formatting, Urdu/English localization where relevant)
-- **Design Philosophy**: Branded, modern, mobile-first, high-conversion, non-generic template appearance with rich section customizability via Shopify Theme Editor.
-- **Key Strategy**: Native Shopify OS 2.0 architecture, zero unnecessary paid apps, maximum self-service admin customization.
+## 1. Brand Identity & Objectives
+- **Brand**: Enamels (`enamelsonline.com`)
+- **Industry**: Premium Healthcare Fashion & Technical Medical Apparel
+- **Tagline / Value Proposition**: Pakistan's Leading Premium Medical Scrubs, Surgical Caps & Lab Coats. 4-Way Stretch, Wrinkle-Free, Breathable Technical Fabrics.
+- **Primary References**:
+  - Enamels: https://enamelsonline.com/ (Catalogue, Series, Fabrics, Pricing)
+  - Medfit: https://wearmedfit.com/ (Category navigation, clean medical UI)
+  - DR. SCRUBS: https://drscrubspk.com/
+  - Scrubs.pk: https://scrubs.pk/
 
-## 2. Market Specifics (Pakistan E-Commerce Architecture)
-- **Primary Payment Method**: Cash on Delivery (COD) with custom checkout instructions and address phone validation.
-- **Digital Payment Gateways**: Safepay (certified Shopify payment app in Pakistan) / PayFast (1Link) / Manual Bank Transfer / EasyPaisa / JazzCash.
-- **Logistics & Courier Integrations**: Trax, PostEx, Call Courier, Leopards, TCS.
-- **Conversion Accelerators**: Free Shipping Progress Bar, Sticky Add to Cart, Cart Drawer Upsells, WhatsApp Quick Chat / Order support.
+## 2. Core Category Hierarchy & Series
+- **Scrubs**:
+  - **Men**: Sprinter Series, Velora Series, Crown Series, FlexFit Stretch, Cargo Joggers
+  - **Women**: Sprinter Series, Velora Series (Summit & Wide Leg), Crown Series, FlexFit Stretch
+  - **Unisex**: Basic Scrub Sets, Underscrub Breathable Tees
+- **Surgical Caps**:
+  - BunFit™ Extra Volume Caps (for hair/buns)
+  - Kennedy Series Designer Caps
+  - Sprinter-Fabric Matching Caps
+  - Themed Printed Caps (Anaesthesia, Cardiac Surgery, Squid Games, Royal Flora)
+- **Lab Coats**:
+  - Helium Series Female Fitted Lab Coat (Rs. 2,950)
+  - Men's Professional Consultation Lab Coat
+- **Medical Accessories**:
+  - Medical Arm Sleeves (Med Sleeves: Black, Navy - Rs. 750)
+  - Medical Compression Socks (Rs. 550)
+  - Healthcare Clogs
 
-## 3. High-Priority Features
-- **Cross-Selling & Upselling**:
-  - Complementary product recommendations on Product Detail Page (PDP).
-  - "Frequently Bought Together" dynamic bundle block.
-  - In-cart drawer upsells and quick-add add-ons.
-  - Free Shipping threshold progress bar with dynamic PKR countdown.
-- **Theme Architecture**:
-  - Shopify Online Store 2.0 (OS 2.0) JSON templates.
-  - Modular, reusable Liquid sections and blocks.
-  - Native Shopify Search & Discovery integration.
-- **SEO & Performance**:
-  - Semantic HTML5, Schema.org JSON-LD microdata for rich snippets.
-  - Zero heavy third-party tracking bloat, optimized web fonts and image loading.
+## 3. High-Value Custom Features
+1. **Interactive 3D Card Hover & Depth Experience**:
+   - Lightweight CSS 3D perspective transforms (`perspective: 1000px`, dynamic tilt on hover, glassmorphism badges).
+   - Medical fabric performance badges: *4-Way Stretch*, *Wrinkle-Resistant*, *Moisture-Wicking*, *Anti-Microbial*.
+2. **Step-by-Step Product Customization Wizard (PDP & Drawer)**:
+   - Garment selection -> Color selection -> Size selection (with Size Chart Modal) -> Sleeve length -> Personalization:
+     - No Personalization
+     - Direct Name Embroidery (+Rs. 450)
+     - Name Patch (+Rs. 350)
+     - Hospital / Custom Logo (+Rs. 650)
+   - Real-time chest pocket embroidery preview simulation with live text input and thread color.
+   - Shopify line-item property integration for 100% order integrity.
+3. **Smart Cross-Selling & Add-Ons**:
+   - Matching Surgical Cap recommendation
+   - Med Sleeves & Compression Socks add-on
+   - Frequently Bought Together bundle with 1-click cart addition
+4. **Slide-Out Cart Drawer**:
+   - Free Shipping Goal: Rs. 7,000 threshold (matching Enamels policy)
+   - In-cart cross-sells
+   - Cash on Delivery trust badges
+5. **Shop by Series & Shop by Colour Discovery Matrix**:
+   - Rich color swatches (Burgundy, Navy, Olive Shine, Royal Blue, Teal, Hunter Green, Black, Heather Grey).

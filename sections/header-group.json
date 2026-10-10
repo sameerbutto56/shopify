@@ -17,7 +17,7 @@
         "announcement_1": {
           "type": "_announcement",
           "settings": {
-            "text": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 2,999",
+            "text": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000",
             "font": "var(--font-subheading--family)",
             "font_size": "0.75rem",
             "letter_spacing": "normal",
