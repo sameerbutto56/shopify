@@ -573,12 +573,17 @@
         "bg_color": "#f8fafc",
         "text_color": "#0f172a"
       }
+    },
+    "interactive_catalogue_section": {
+      "type": "enamels-interactive-catalogue",
+      "settings": {}
     }
   },
   "order": [
     "main",
     "enamels_customizer",
     "frequently_bought_together",
+    "interactive_catalogue_section",
     "product_recommendations_qggXJq",
     "trust_badges_pdp",
     "faq_pdp"

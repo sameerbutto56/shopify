@@ -583,12 +583,17 @@
         "bg_color": "#f8fafc",
         "text_color": "#0f172a"
       }
+    },
+    "interactive_catalogue_section": {
+      "type": "enamels-interactive-catalogue",
+      "settings": {}
     }
   },
   "order": [
     "hero_jVaWmY",
     "trust_badges_section",
     "shop_by_series_section",
+    "interactive_catalogue_section",
     "product_list_fa6P9H",
     "shop_by_colour_section",
     "testimonials_section",
