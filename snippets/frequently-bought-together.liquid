@@ -3,7 +3,7 @@
 {% enddoc %}
 
 {%- liquid
-  assign recommendations_to_show = product.metafields.custom.frequently_bought_together.value | default: recommendations.products
+  assign recommendations_to_show = product.metafields.custom.frequently_bought_together.value
   if recommendations_to_show == blank or recommendations_to_show.size == 0
     assign bundle_collection = collections[product.collections.first.handle] | default: collections.all
     assign recommendations_to_show = bundle_collection.products
