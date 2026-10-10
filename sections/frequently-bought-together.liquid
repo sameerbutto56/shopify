@@ -1,0 +1,22 @@
+{% doc %}
+  Frequently Bought Together section for Product Detail Page
+{% enddoc %}
+
+<div class="fbt-section-wrapper page-width">
+  {% render 'frequently-bought-together' %}
+  {% render 'sticky-add-to-cart' %}
+</div>
+
+{% schema %}
+{
+  "name": "Bought Together & Sticky",
+  "tag": "section",
+  "class": "section-frequently-bought-together",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Frequently Bought Together"
+    }
+  ]
+}
+{% endschema %}

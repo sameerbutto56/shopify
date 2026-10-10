@@ -280,6 +280,45 @@
   {% endif %}
 </div>
 
+<div class="cart-trust-badges">
+  <div class="cart-trust-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+      <circle cx="12" cy="12" r="2"></circle>
+    </svg>
+    <span>Cash on Delivery Available</span>
+  </div>
+  <div class="cart-trust-item">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+    <span>100% Safe & Secure Checkout</span>
+  </div>
+</div>
+
+<style>
+  .cart-trust-badges {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+    margin-top: 12px;
+    border-top: 1px dashed #e2e8f0;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .cart-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .cart-trust-item svg {
+    color: #059669;
+  }
+</style>
+
 {% stylesheet %}
   .cart-actions {
     display: flex;

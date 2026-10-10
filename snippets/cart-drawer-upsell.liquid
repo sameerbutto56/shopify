@@ -1,0 +1,171 @@
+{% doc %}
+  In-Cart Drawer Cross-Sell & Recommendations
+{% enddoc %}
+
+{%- liquid
+  assign upsell_collection = collections[settings.cart_upsell_collection] | default: collections.all
+-%}
+
+{% if upsell_collection != blank and upsell_collection.products_count > 0 %}
+  <div class="cart-drawer-upsell-wrapper">
+    <div class="cart-drawer-upsell-header">
+      <span class="upsell-title">Frequently Added Together</span>
+    </div>
+    <div class="cart-drawer-upsell-list">
+      {% for product in upsell_collection.products limit: 3 %}
+        {% unless cart.items | map: 'product_id' contains product.id %}
+          <div class="cart-drawer-upsell-item" data-product-id="{{ product.id }}">
+            <div class="upsell-item-image">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 120 }}"
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                  width="50"
+                  height="50"
+                >
+              {% endif %}
+            </div>
+            <div class="upsell-item-details">
+              <a href="{{ product.url }}" class="upsell-item-title">{{ product.title | truncate: 26 }}</a>
+              <div class="upsell-item-price">
+                <span>{{ product.price | money }}</span>
+                {% if product.compare_at_price > product.price %}
+                  <s class="upsell-item-compare">{{ product.compare_at_price | money }}</s>
+                {% endif %}
+              </div>
+            </div>
+            <div class="upsell-item-action">
+              {% if product.available %}
+                <button
+                  type="button"
+                  class="upsell-add-btn button button--secondary"
+                  data-variant-id="{{ product.first_available_variant.id }}"
+                  onclick="window.quickAddToCart(this, {{ product.first_available_variant.id }})"
+                >
+                  + Add
+                </button>
+              {% else %}
+                <span class="upsell-sold-out">Sold Out</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endunless %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <style>
+    .cart-drawer-upsell-wrapper {
+      padding: 16px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .cart-drawer-upsell-header {
+      margin-bottom: 12px;
+    }
+    .upsell-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #334155;
+    }
+    .cart-drawer-upsell-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cart-drawer-upsell-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #f1f5f9;
+    }
+    .upsell-item-image img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .upsell-item-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .upsell-item-title {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #0f172a;
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .upsell-item-price {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-top: 2px;
+    }
+    .upsell-item-compare {
+      color: #94a3b8;
+      font-weight: normal;
+      margin-left: 4px;
+    }
+    .upsell-add-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .upsell-add-btn:hover {
+      background: #334155;
+    }
+    .upsell-sold-out {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+  </style>
+
+  <script>
+    if (!window.quickAddToCart) {
+      window.quickAddToCart = async function(btn, variantId) {
+        btn.disabled = true;
+        btn.textContent = '...';
+        try {
+          const res = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: variantId, quantity: 1 })
+          });
+          if (res.ok) {
+            btn.textContent = 'Added!';
+            btn.style.background = '#059669';
+            // Reload or trigger Shopify Section Rendering for cart drawer
+            if (window.routes && window.routes.cart_url) {
+              window.location.reload();
+            } else {
+              window.location.reload();
+            }
+          } else {
+            btn.textContent = 'Error';
+            btn.disabled = false;
+          }
+        } catch (e) {
+          btn.textContent = '+ Add';
+          btn.disabled = false;
+        }
+      };
+    }
+  </script>
+{% endif %}

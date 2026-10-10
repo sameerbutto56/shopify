@@ -1,0 +1,232 @@
+{% doc %}
+  Customer Reviews & Testimonials Section
+{% enddoc %}
+
+<div class="testimonials-section section-padding" style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};">
+  <div class="page-width">
+    {% if section.settings.heading != blank %}
+      <div class="section-header text-center">
+        {% if section.settings.subheading != blank %}
+          <p class="section-subheading">{{ section.settings.subheading | escape }}</p>
+        {% endif %}
+        <h2 class="section-title h3">{{ section.settings.heading | escape }}</h2>
+      </div>
+    {% endif %}
+
+    <div class="testimonials-grid">
+      {% for block in section.blocks %}
+        <div class="testimonial-card" {{ block.shopify_attributes }}>
+          <div class="testimonial-stars" aria-label="{{ block.settings.rating }} out of 5 stars">
+            {% for i in (1..block.settings.rating) %}
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="#f59e0b">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            {% endfor %}
+          </div>
+          <p class="testimonial-text">“{{ block.settings.review | escape }}”</p>
+          <div class="testimonial-author">
+            <span class="testimonial-name">{{ block.settings.author | escape }}</span>
+            {% if block.settings.city != blank %}
+              <span class="testimonial-city">{{ block.settings.city | escape }}</span>
+            {% endif %}
+            <span class="testimonial-badge">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="#10b981">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Verified Buyer
+            </span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .testimonials-section {
+    padding: 60px 0;
+  }
+  .section-header {
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .section-subheading {
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    margin: 0;
+    font-weight: 700;
+  }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .testimonial-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .testimonial-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .testimonial-stars {
+    display: flex;
+    gap: 3px;
+    margin-bottom: 16px;
+  }
+  .testimonial-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #374151;
+    margin: 0 0 20px;
+    flex-grow: 1;
+    font-style: italic;
+  }
+  .testimonial-author {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 14px;
+  }
+  .testimonial-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+  }
+  .testimonial-city {
+    font-size: 12px;
+    color: #6b7280;
+  }
+  .testimonial-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #059669;
+    margin-top: 4px;
+  }
+  @media screen and (max-width: 989px) {
+    .testimonials-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Customer Testimonials",
+  "tag": "section",
+  "class": "section-testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Loved by Thousands"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#111827"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Customer Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Rating Stars",
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review",
+          "label": "Review Text",
+          "default": "The fabric quality and stitching are truly exceptional. Delivered via COD within 3 days in Lahore, and the fit was perfect."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Customer Name",
+          "default": "Ayesha Malik"
+        },
+        {
+          "type": "text",
+          "id": "city",
+          "label": "City / Location",
+          "default": "Lahore, Pakistan"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "review": "The fabric quality and stitching are truly exceptional. Delivered via COD within 3 days in Lahore, and the fit was perfect.",
+            "author": "Ayesha M.",
+            "city": "Lahore"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "review": "Ordered a 2-piece stitched suit. Exceeded my expectations! Packaging was pristine and WhatsApp support was super responsive.",
+            "author": "Fatima K.",
+            "city": "Islamabad"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "review": "Very smooth Cash on Delivery experience. I requested a size exchange and they handled it without any hassle. Highly recommended!",
+            "author": "Hamza R.",
+            "city": "Karachi"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

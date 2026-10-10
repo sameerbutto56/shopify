@@ -465,10 +465,15 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "frequently_bought_together": {
+      "type": "frequently-bought-together",
+      "settings": {}
     }
   },
   "order": [
     "main",
+    "frequently_bought_together",
     "product_recommendations_qggXJq"
   ]
 }

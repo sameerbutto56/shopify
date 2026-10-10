@@ -1,0 +1,87 @@
+{% doc %}
+  Floating WhatsApp quick contact and order assistance widget
+{% enddoc %}
+
+{%- liquid
+  assign whatsapp_number = settings.whatsapp_number | default: '923001234567'
+  assign whatsapp_message = settings.whatsapp_message | default: 'Hello! I need help with an order on your store.' | url_encode
+-%}
+
+{% if settings.enable_whatsapp %}
+  <a
+    href="https://wa.me/{{ whatsapp_number }}?text={{ whatsapp_message }}"
+    class="whatsapp-float"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Chat with us on WhatsApp"
+  >
+    <div class="whatsapp-tooltip">Chat with us</div>
+    <div class="whatsapp-icon-wrapper">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.58 3.38 17.07L2 22L7.07 20.66C8.54 21.52 10.22 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" fill="#25D366"/>
+        <path d="M17.47 14.38C17.17 14.23 15.71 13.51 15.44 13.41C15.17 13.31 14.97 13.26 14.77 13.56C14.57 13.86 14 14.58 13.82 14.78C13.65 14.98 13.47 15.01 13.17 14.86C12.87 14.71 11.9 14.39 10.76 13.37C9.87 12.58 9.27 11.6 9.12 11.35C8.97 11.1 9.1 10.96 9.25 10.81C9.39 10.67 9.56 10.45 9.71 10.28C9.86 10.11 9.91 9.98 10.01 9.78C10.11 9.58 10.06 9.41 9.98 9.26C9.91 9.11 9.31 7.63 9.06 7.03C8.82 6.44 8.57 6.52 8.39 6.51C8.22 6.5 8.02 6.5 7.82 6.5C7.62 6.5 7.3 6.57 7.03 6.87C6.75 7.17 6 7.87 6 9.3C6 10.73 7.05 12.11 7.2 12.31C7.35 12.51 9.25 15.44 12.17 16.7C12.86 17 13.41 17.18 13.82 17.31C14.52 17.53 15.16 17.5 15.66 17.43C16.22 17.35 17.38 16.73 17.62 16.05C17.87 15.38 17.87 14.8 17.79 14.68C17.72 14.55 17.52 14.48 17.47 14.38Z" fill="#FFFFFF"/>
+      </svg>
+    </div>
+  </a>
+
+  <style>
+    .whatsapp-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: transform 0.25s ease, filter 0.25s ease;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.06);
+    }
+    .whatsapp-icon-wrapper {
+      width: 54px;
+      height: 54px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+    }
+    .whatsapp-tooltip {
+      background: #111827;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0.95;
+      animation: pulse-tooltip 3s infinite ease-in-out;
+    }
+    @keyframes pulse-tooltip {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    @media screen and (max-width: 640px) {
+      .whatsapp-float {
+        bottom: 20px;
+        right: 16px;
+      }
+      .whatsapp-tooltip {
+        display: none;
+      }
+      .whatsapp-icon-wrapper {
+        width: 48px;
+        height: 48px;
+      }
+      .whatsapp-icon-wrapper svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  </style>
+{% endif %}

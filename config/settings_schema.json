@@ -2116,5 +2116,47 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Free Shipping & Cart Upsells",
+    "settings": [
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free Shipping Threshold (in store currency)",
+        "default": 2999,
+        "info": "Example: 2999 for Rs. 2,999. If cart total reaches this amount, customers get free shipping."
+      },
+      {
+        "type": "collection",
+        "id": "cart_upsell_collection",
+        "label": "Cart Drawer Upsell Collection",
+        "info": "Select a collection of accessories or add-ons to show in the cart drawer."
+      }
+    ]
+  },
+  {
+    "name": "WhatsApp Customer Support",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_whatsapp",
+        "label": "Enable Floating WhatsApp Button",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_number",
+        "label": "WhatsApp Phone Number (with Country Code)",
+        "default": "923001234567",
+        "info": "Example: 923001234567 (without + or spaces)"
+      },
+      {
+        "type": "text",
+        "id": "whatsapp_message",
+        "label": "Default Inquire Message",
+        "default": "Hi, I am browsing your store and would like assistance with an order."
+      }
+    ]
   }
 ]
