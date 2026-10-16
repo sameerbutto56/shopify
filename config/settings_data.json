@@ -111,7 +111,21 @@
     "free_shipping_threshold": 7000,
     "enable_whatsapp": true,
     "whatsapp_number": "923011331133",
-    "whatsapp_message": "Hello Enamels! I am browsing your store and would like assistance with an order."
+    "whatsapp_message": "Hello Enamels! I am browsing your store and would like assistance with an order.",
+    "enable_embroidery": true,
+    "embroidery_fee_direct": 450,
+    "embroidery_fee_patch": 350,
+    "enable_hospital_logos": true,
+    "logo_fee": 650,
+    "enable_custom_sizing": true,
+    "custom_size_fee": 500,
+    "require_advance_payment": true,
+    "advance_payment_percentage": 50,
+    "advance_notice_text": "Personalized orders with custom embroidery, hospital crests, or made-to-measure sizing require a minimum 50% advance deposit via bank transfer before production begins.",
+    "bank_transfer_title": "Direct Bank Transfer (Meezan Bank / HBL)",
+    "bank_transfer_details": "Bank: Meezan Bank Ltd\nAccount Title: Enamels Medical Apparel\nAccount Number: 0102-0103948291\nIBAN: PK64MEZN0001020103948291\nBranch: Main Boulevard Gulberg, Lahore\n\nPlease share your payment receipt on WhatsApp with your Order Number.",
+    "support_phone": "+92 301 13 31 133",
+    "exchange_policy_days": 7
   },
   "presets": {
     "Horizon": {
@@ -213,7 +227,25 @@
         "foreground": "#000000",
         "color1": "#333333",
         "color2": "#DFDFDF"
-      }
+      },
+      "free_shipping_threshold": 5000,
+      "enable_whatsapp": true,
+      "whatsapp_number": "1234567890",
+      "whatsapp_message": "Hello, I would like assistance with an order.",
+      "enable_embroidery": true,
+      "embroidery_fee_direct": 450,
+      "embroidery_fee_patch": 350,
+      "enable_hospital_logos": true,
+      "logo_fee": 650,
+      "enable_custom_sizing": true,
+      "custom_size_fee": 500,
+      "require_advance_payment": true,
+      "advance_payment_percentage": 50,
+      "advance_notice_text": "Personalized orders with custom embroidery or tailoring require a deposit via bank transfer before production begins.",
+      "bank_transfer_title": "Direct Bank Transfer",
+      "bank_transfer_details": "Please transfer the required amount to our official merchant account and share your receipt on WhatsApp with your Order Number.",
+      "support_phone": "+1 800 555 0199",
+      "exchange_policy_days": 14
     }
   }
 }

@@ -1,0 +1,429 @@
+{% comment %}
+  ENAMELS ONLINE — MODULAR CATEGORY GRID SECTION
+  Supports configurable category tiles, collection links, custom images,
+  subtitles, and responsive column layouts in Shopify Theme Editor.
+{% endcomment %}
+
+<section class="enamels-category-grid-section section-padding" id="CategoryGrid-{{ section.id }}" style="padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0; background-color: {{ section.settings.bg_color }};">
+  <div class="page-container">
+    {% if section.settings.title != blank or section.settings.badge != blank %}
+      <div class="section-header-wrap" style="text-align: {{ section.settings.header_alignment }};">
+        {% if section.settings.badge != blank %}
+          <span class="section-tag-sub">{{ section.settings.badge | escape }}</span>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2 class="section-title-main" style="color: {{ section.settings.heading_color }};">
+            {{ section.settings.title | escape }}
+          </h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="section-title-desc" style="color: {{ section.settings.text_color }};">
+            {{ section.settings.subtitle | escape }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="enamels-category-grid cols-{{ section.settings.columns_desktop }}" style="grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);">
+      {% if section.blocks.size > 0 %}
+        {% for block in section.blocks %}
+          {% assign link_target = block.settings.collection.url | default: block.settings.custom_link | default: '#category-scrubs' %}
+          <a
+            href="{{ link_target }}"
+            class="category-tile-card"
+            id="CategoryTile-{{ block.id }}"
+            {% if block.settings.onclick_action != blank %}onclick="{{ block.settings.onclick_action }}; return false;"{% endif %}
+            {{ block.shopify_attributes }}
+          >
+            <div class="category-tile-img-wrap ratio-{{ section.settings.image_ratio }}">
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 800 | image_tag:
+                  loading: 'lazy',
+                  class: 'category-tile-img',
+                  widths: '300, 400, 600, 800'
+                }}
+              {% elsif block.settings.asset_image_name != blank %}
+                <img
+                  src="{{ block.settings.asset_image_name | asset_url }}"
+                  alt="{{ block.settings.title | escape }}"
+                  class="category-tile-img"
+                  width="400"
+                  height="400"
+                  loading="lazy"
+                />
+              {% else %}
+                <div class="category-tile-placeholder">
+                  {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="category-tile-body">
+              {% if block.settings.badge != blank %}
+                <span class="category-tile-badge">{{ block.settings.badge | escape }}</span>
+              {% endif %}
+              <h3 class="category-tile-name" style="color: {{ section.settings.heading_color }};">
+                {{ block.settings.title | escape }}
+              </h3>
+              {% if block.settings.subtitle != blank %}
+                <p class="category-tile-sub" style="color: {{ section.settings.text_color }};">
+                  {{ block.settings.subtitle | escape }}
+                </p>
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      {% else %}
+        <!-- Default Fallback: Authentic Enamels Categories -->
+        <a href="#collection-sprinter" class="category-tile-card" onclick="if(window.navigateToCollection){window.navigateToCollection('Sprinter'); return false;}">
+          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Sprinter Series" class="category-tile-img" width="400" height="400" loading="lazy" />
+          <div class="category-tile-body">
+            <h3 class="category-tile-name">Sprinter Series</h3>
+            <p class="category-tile-sub">4-Way Mechanical Athletic Stretch</p>
+          </div>
+        </a>
+        <a href="#category-scrubs" class="category-tile-card" onclick="if(window.navigateToGenderCollection){window.navigateToGenderCollection('men'); return false;}">
+          <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs" class="category-tile-img" width="400" height="400" loading="lazy" />
+          <div class="category-tile-body">
+            <h3 class="category-tile-name">Men's Scrubs</h3>
+            <p class="category-tile-sub">Tailored Raglan & Cargo Jogger Sets</p>
+          </div>
+        </a>
+        <a href="#category-scrubs" class="category-tile-card" onclick="if(window.navigateToGenderCollection){window.navigateToGenderCollection('women'); return false;}">
+          <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs" class="category-tile-img" width="400" height="400" loading="lazy" />
+          <div class="category-tile-body">
+            <h3 class="category-tile-name">Women's Scrubs</h3>
+            <p class="category-tile-sub">Princess Contour & Fluid Drape Cuts</p>
+          </div>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .enamels-category-grid {
+    display: grid;
+    gap: 20px;
+    margin-top: 32px;
+  }
+  .category-tile-card {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .category-tile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -6px rgba(16, 42, 67, 0.08);
+    border-color: #cbd5e1;
+  }
+  .category-tile-img-wrap {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background: #f1f5f9;
+  }
+  .category-tile-img-wrap.ratio-square { aspect-ratio: 1 / 1; }
+  .category-tile-img-wrap.ratio-portrait { aspect-ratio: 4 / 5; }
+  .category-tile-img-wrap.ratio-landscape { aspect-ratio: 16 / 10; }
+  .category-tile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .category-tile-card:hover .category-tile-img {
+    transform: scale(1.04);
+  }
+  .category-tile-body {
+    padding: 16px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .category-tile-badge {
+    align-self: flex-start;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #0369a1;
+    background: #e0f2fe;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .category-tile-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.25;
+  }
+  .category-tile-sub {
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.4;
+  }
+  @media (max-width: 990px) {
+    .enamels-category-grid.cols-3,
+    .enamels-category-grid.cols-4 {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+  @media (max-width: 600px) {
+    .enamels-category-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px;
+    }
+    .category-tile-body {
+      padding: 10px;
+    }
+    .category-tile-name {
+      font-size: 13px;
+    }
+    .category-tile-sub {
+      font-size: 11px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Category Navigation Grid",
+  "tag": "section",
+  "class": "section-enamels-category-grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Section Tag Badge",
+      "default": "OFFICIAL TAXONOMY"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "Explore Pakistan's most comprehensive medical uniform and clinical apparel catalogue."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on Desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Card Image Aspect Ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "landscape", "label": "Landscape (16:10)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Subtitle Color",
+      "default": "#64748b"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category_item",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title",
+          "default": "Sprinter Series"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle / Description",
+          "default": "4-Way Mechanical Athletic Stretch"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Sub-badge (Optional)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Category Image"
+        },
+        {
+          "type": "text",
+          "id": "asset_image_name",
+          "label": "Theme Asset Image Fallback (e.g. cat-sprinter.jpg)"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Shopify Collection"
+        },
+        {
+          "type": "url",
+          "id": "custom_link",
+          "label": "Custom URL Link (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "onclick_action",
+          "label": "Custom JS Action (Optional)",
+          "info": "e.g. window.navigateToCollection('Sprinter')"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Category Grid",
+      "blocks": [
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Sprinter Series",
+            "subtitle": "4-Way Mechanical Athletic Stretch",
+            "asset_image_name": "cat-sprinter.jpg",
+            "onclick_action": "window.navigateToCollection('Sprinter')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Men's Scrubs",
+            "subtitle": "Tailored Raglan & Cargo Jogger Sets",
+            "asset_image_name": "cat-men-scrubs.jpg",
+            "onclick_action": "window.navigateToGenderCollection('men')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Women's Scrubs",
+            "subtitle": "Princess Contour & Fluid Drape Cuts",
+            "asset_image_name": "cat-women-scrubs.jpg",
+            "onclick_action": "window.navigateToGenderCollection('women')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Crown Series",
+            "subtitle": "Executive Mandarin Standing Collar",
+            "asset_image_name": "cat-crown.jpg",
+            "onclick_action": "window.navigateToCollection('Crown')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Lab Coats",
+            "subtitle": "Helium Notch Lapel & Consultant Cuts",
+            "asset_image_name": "cat-labcoat.jpg",
+            "onclick_action": "window.navigateToCollection('lab-coat', 'category')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Surgical Caps",
+            "subtitle": "BunFit™ Volume Pleats & Printed Themes",
+            "asset_image_name": "cat-caps.jpg",
+            "onclick_action": "window.navigateToCollection('caps', 'category')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Velora Series",
+            "subtitle": "Silky Soft Luxury Micro-Drape",
+            "asset_image_name": "cat-velora.jpg",
+            "onclick_action": "window.navigateToCollection('Velora')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "Clinical Clogs",
+            "subtitle": "Ergonomic Cushioning & Anti-Slip Soles",
+            "asset_image_name": "cat-clogs.jpg",
+            "onclick_action": "window.navigateToCollection('clogs', 'category')"
+          }
+        },
+        {
+          "type": "category_item",
+          "settings": {
+            "title": "FlexFit Series",
+            "subtitle": "Laser-Cut Ventilation & Aerocool Weave",
+            "asset_image_name": "cat-flexfit.jpg",
+            "onclick_action": "window.navigateToCollection('FlexFit')"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

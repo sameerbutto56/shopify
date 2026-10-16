@@ -1,37 +1,89 @@
-# Enamels Implementation Task Tracker (GSD / Ralph Loop)
+# Enamels Shopify Theme — Optimization, Conversion & Commercialization Tracker
 
-## Phase 1: Audit & Planning
-- [x] Audit Enamels live website (`enamelsonline.com`) collections, series, products, pricing, and customization methods
-- [x] Inspect existing Shopify theme structure (Horizon OS 2.0 component framework)
-- [x] Create and maintain full Git backup on GitHub (`sameerbutto56/shopify`)
-- [x] Define catalogue hierarchy: Scrubs (Men/Women/Unisex) -> Series (Sprinter, Velora, Crown, FlexFit) -> Caps (BunFit, Kennedy) -> Lab Coats -> Accessories
+## Phase 1: Architecture Audit & Dependency Mapping
+- [x] Complete inventory of theme directory structure, Liquid templates, sections, snippets, assets, and config.
+- [x] Analyze monolithic `enamels-chromatic-lab.liquid` and its 6 rendered snippets.
+- [x] Audit JavaScript state, cart properties, price calculations, and embroidery studio rendering.
+- [x] Generate comprehensive `theme_architecture_audit.md` artifact with dependency map (Liquid, JS, CSS, Metafields, Theme Editor).
 
-## Milestone 1: Catalogue & Design
-- [x] Navigation hierarchy and mega-menu support for Scrubs (Men, Women, Unisex), Surgical Caps, Lab Coats, Accessories
-- [x] Premium editorial homepage with 3D depth, Technical Fabric Performance Badges, Shop by Series, and Shop by Colour
-- [x] Collection pages with horizontal filters, sorting, responsive product grid, and trust perks (`templates/collection.json`)
-- [x] Colour swatches: automatic clinical shade dot indicator on all product cards in collection and search grids
-- [x] Responsive product cards with CSS3 hardware-accelerated 3D hover elevation (`assets/enamels-3d-tilt.css`)
+## Phase 2: Theme Settings & Data Architecture (`config/settings_schema.json`)
+- [x] Add `Customization & Embroidery Engine` settings group (direct embroidery price, patch price, logo fee, custom size surcharge).
+- [x] Add `Advance Payment & Custom Order Policy` settings group (mandatory advance toggle, percentage/flat amount, bank transfer details).
+- [x] Add `Customer Care & Guarantees` settings group (support phone, WhatsApp number, exchange policy days).
+- [x] Ensure all settings use native translation tokens or clean labels with sensible commercial fallbacks.
+- [x] Verify `config/settings_data.json` holds Enamels-specific values in current preset and clean generic defaults in commercial preset.
 
-## Milestone 2: Product Configurator
-- [x] Multi-step Customization Wizard (`snippets/enamels-customization-wizard.liquid` & `sections/enamels-customizer-section.liquid`)
-- [x] Interactive size selection with pop-up Size Guide modal (measurements in inches and centimeters)
-- [x] Medical shade swatches (Burgundy, Navy, Olive Shine, Ceil Blue, Hunter Green, Obsidian Black, Heather Grey)
-- [x] Sleeve length selector: Half Sleeve (Clinical Standard) vs Full Sleeve (Modest Cut +Rs. 250)
-- [x] Personalization tiers: Plain, Direct Name Embroidery (+Rs. 450), Name Patch (+Rs. 350), Hospital Logo (+Rs. 650)
-- [x] Live Visual Chest Pocket Embroidery Simulator with live text rendering, thread colors, and font styles
-- [x] Line-item property binding (`properties['Embroidery Line 1']`, `properties['Color']`, etc.) to guarantee order accuracy
-- [x] Companion add-on products support for checkout billing integrity
+## Phase 3: Modular OS 2.0 Sections & Theme Editor Compatibility
+- [x] **Announcement Bar & Header (`sections/enamels-header.liquid`)**:
+  - Expose native Shopify menu (`linklists`), custom logo with desktop/mobile width, search toggle, wishlist, phone support, and cart drawer trigger.
+- [x] **Hero Slideshow Section (`sections/enamels-hero-slideshow.liquid`)**:
+  - Configurable slide blocks (desktop image, mobile image, title, subtitle, badge, button label, button link, overlay color/opacity, text alignment).
+  - Section settings (autoplay, autoplay speed, transition effects, navigation arrows/dots, section height).
+- [x] **Category Navigation Grid (`sections/enamels-category-grid.liquid`)**:
+  - Configurable category blocks (Scrubs, Lab Coats, Caps, Sleeves, Accessories, Ready to Wear) with image picker, title, badge, link.
+- [x] **Featured Scrubs & Collection Filter Section (`sections/enamels-featured-scrubs.liquid`)**:
+  - Collection picker, product limit, columns per row (desktop/mobile), gender filter toggle (All / Men / Women), series tabs (Sprinter, Crown, Velora).
+  - Responsive product cards with color swatches, sale badges, 3D tilt, and quick customization launcher.
+- [x] **Fabric Technology & Performance Section (`sections/enamels-fabric-tech.liquid`)**:
+  - Configurable feature blocks (4-Way Stretch, Antimicrobial, Liquid Repellent, Breathable CoolMax, Fade Resistant).
+- [x] **Ready to Wear / Make Your Own Scrub Section (`sections/ready-to-wear-wizard.liquid`)**:
+  - Standalone section with full schema settings (headline, description, fabric selections, design options, surcharge rules, advance payment alerts).
+- [x] **Product Customizer & Macro Embroidery Studio Section (`sections/product-customizer.liquid`)**:
+  - Standalone section usable on `templates/product.json` or custom landing pages with photorealistic Macro Pocket Studio, 3D stitch deboss/emboss, thread colors, and hospital insignia.
+- [x] **Trust Badges & Perks Section (`sections/trust-badges.liquid`)**:
+  - Configurable badge blocks (Nationwide Delivery, COD, 7-Day Exchange, Doctor Name Embroidery, WhatsApp Assistance).
+- [x] **Frequently Bought Together & Cross-Sell (`sections/frequently-bought-together.liquid`)**:
+  - Dynamic companion accessories bundle (scrub set + cap + sleeves) with 1-click cart addition.
+- [x] **FAQ Accordion Section (`sections/faq-accordion.liquid`)**:
+  - Configurable FAQ item blocks with clean clinical styling.
 
-## Milestone 3: Cross-Selling & Checkout
-- [x] Connect in-wizard matching surgical cap (+Rs. 800) and medical sleeves (+Rs. 750) add-ons
-- [x] Frequently Bought Together curated bundle section on product pages with 1-click cart addition
-- [x] Slide-out Cart Drawer with PKR 7,000 Free Shipping threshold progress bar (`snippets/cart-free-shipping-bar.liquid`)
-- [x] In-cart cross-sell carousel (`snippets/cart-drawer-upsell.liquid`)
-- [x] Cash on Delivery (COD) assurance badges below checkout button
-- [x] Smooth drawer slide-open trigger upon adding customized uniform
+## Phase 4: OS 2.0 Templates Modularization
+- [x] Refactor `templates/index.json` to compose modular sections (`hero-slideshow`, `trust-badges`, `category-grid`, `featured-scrubs`, `fabric-tech`, `shop-by-colour`, `ready-to-wear`, `faq-accordion`).
+- [x] Update `templates/product.json` to integrate `product-customizer`, `frequently-bought-together`, `trust-badges`, and `faq-accordion`.
+- [x] Verified native drag-and-drop, section addition, deletion, and block reordering in Shopify Theme Editor.
 
-## Verification & Deployment
-- [x] `shopify theme check` passed with 0 errors across 371 files
-- [x] Pushed to unpublished preview theme `Horizon - Editorial Edition` (`#192354877728`)
-- [x] Git repository synced with `origin/main` on GitHub
+## Phase 5: JavaScript Modularization & Performance Optimization
+- [x] Inject global settings through `snippets/theme-settings-json.liquid` into `window.ShopifyThemeSettings`.
+- [x] Settings-driven price engine: dynamically computes direct embroidery, patch, logo, and custom size fees without hardcoded values.
+- [x] Add Shopify Theme Editor lifecycle handlers (`shopify:section:load`, `shopify:section:select`).
+- [x] Optimize images (responsive `srcset`, `sizes`, `loading="lazy"` for below-the-fold, `fetchpriority="high"` for hero slide).
+- [x] Passed official Shopify Theme Check with **0 errors**.
+
+## Phase 6: Commercial Portability & Data Isolation
+- [x] Eliminated hardcoded store assumptions, hardcoded variant locks, and private keys.
+- [x] Graceful fallback: dynamically reads from Shopify `collection` and `product` objects, falling back to demo mode when the store has no products yet.
+- [x] Standardized line-item properties (`properties['Embroidery Line 1']`, `properties['Color']`, etc.) for zero-app checkout persistence.
+
+## Phase 7: Verification & Testing (24-Point QA Checklist)
+- [x] 1. Homepage & Slideshow (desktop & mobile)
+- [x] 2. Main Navigation & Mobile Drawer
+- [x] 3. Product & Collection Templates
+- [x] 4. Gender Filtering & Series Tabs
+- [x] 5. Product Variants & Color Swatches
+- [x] 6. Sprinter, Crown, Velora Business Rules
+- [x] 7. Make Your Own Color Availability
+- [x] 8. Fabric, Color, Article, Design Selection
+- [x] 9. Standard & Custom Sizing (Inches & CM)
+- [x] 10. Alterations & Surcharge Calculation
+- [x] 11. Direct & Stitched-Patch Personalization
+- [x] 12. Photorealistic Live Embroidery Preview
+- [x] 13. Hospital Logo Selection & Placement
+- [x] 14. Advance Payment Disclaimers & Calculation
+- [x] 15. Cross-Selling & Companion Add-ons
+- [x] 16. Cart Drawer Add, Update, Remove, Refresh
+- [x] 17. Shopify Checkout Handoff & Order Properties
+- [x] 18. Bank Transfer Modal & Payment Status
+- [x] 19. WhatsApp Concierge Assisted Ordering
+- [x] 20. Theme Editor Add, Remove, Reorder, Block Settings
+- [x] 21. Mobile Responsiveness & WCAG Accessibility
+- [x] 22. Browser Console Errors & Broken Images Check
+- [x] 23. Store-Specific Data Isolation
+- [x] 24. Clean Dev Store Installation & Demo Mode
+
+## Phase 8: Deliverables & Documentation
+- [x] Author `theme_architecture_audit.md` (complete inventory and dependency map).
+- [x] Author `COMMERCIAL_THEME_GUIDE.md` (merchant setup & onboarding handbook).
+- [x] Author `METAFIELDS_SETUP.md` (custom data and line-item properties protocol).
+- [x] Author `TEST_REPORT.md` (24-point verification matrix).
+- [ ] Push to unpublished development theme `#192354877728` (`Horizon - Editorial Edition`).
+- [ ] Commit all changes to git repository.

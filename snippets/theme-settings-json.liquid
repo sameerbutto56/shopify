@@ -1,0 +1,24 @@
+{% comment %}
+  Global Theme Settings JSON Injection
+  Provides dynamic access to merchant configuration across all customizer modules.
+{% endcomment %}
+<script>
+  window.ShopifyThemeSettings = {
+    embroideryFeeDirect: {{ settings.embroidery_fee_direct | default: 450 | json }},
+    embroideryFeePatch: {{ settings.embroidery_fee_patch | default: 350 | json }},
+    enableHospitalLogos: {{ settings.enable_hospital_logos | default: true | json }},
+    logoFee: {{ settings.logo_fee | default: 650 | json }},
+    enableCustomSizing: {{ settings.enable_custom_sizing | default: true | json }},
+    customSizeFee: {{ settings.custom_size_fee | default: 500 | json }},
+    freeShippingThreshold: {{ settings.free_shipping_threshold | default: 7000 | json }},
+    requireAdvancePayment: {{ settings.require_advance_payment | default: true | json }},
+    advancePaymentPercentage: {{ settings.advance_payment_percentage | default: 50 | json }},
+    advanceNoticeText: {{ settings.advance_notice_text | default: "Personalized orders with custom embroidery or tailoring require a minimum 50% advance deposit via bank transfer before production begins." | json }},
+    bankTransferTitle: {{ settings.bank_transfer_title | default: "Direct Bank Transfer" | json }},
+    bankTransferDetails: {{ settings.bank_transfer_details | default: "Please transfer the required amount to our official merchant account and share your receipt on WhatsApp with your Order Number." | json }},
+    whatsappNumber: {{ settings.whatsapp_number | default: "923011331133" | json }},
+    whatsappMessage: {{ settings.whatsapp_message | default: "Hello, I would like assistance with an order." | json }},
+    supportPhone: {{ settings.support_phone | default: "+92 301 13 31 133" | json }},
+    exchangePolicyDays: {{ settings.exchange_policy_days | default: 7 | json }}
+  };
+</script>

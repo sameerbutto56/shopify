@@ -1,0 +1,569 @@
+{% comment %}
+  ENAMELS ONLINE — MODULAR FEATURED SCRUBS & COLLECTION SECTION
+  Supports collection picker, product cards with color swatches, 3D tilt,
+  gender filtering (All / Men / Women), series tabs (Sprinter, Crown, Velora),
+  and quick customization launch in Shopify Theme Editor.
+{% endcomment %}
+
+<section
+  class="enamels-featured-scrubs-section section-padding"
+  id="FeaturedScrubs-{{ section.id }}"
+  style="padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px 0; background-color: {{ section.settings.bg_color }};"
+>
+  <div class="page-container">
+    {% if section.settings.title != blank or section.settings.badge != blank %}
+      <div class="section-header-wrap" style="text-align: {{ section.settings.header_alignment }};">
+        {% if section.settings.badge != blank %}
+          <span class="section-tag-sub">{{ section.settings.badge | escape }}</span>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2 class="section-title-main" style="color: {{ section.settings.heading_color }};">
+            {{ section.settings.title | escape }}
+          </h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="section-title-desc" style="color: {{ section.settings.text_color }};">
+            {{ section.settings.subtitle | escape }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Interactive Filter & Series Tabs -->
+    {% if section.settings.show_series_tabs %}
+      <div class="scrubs-filter-bar">
+        <div class="scrubs-tabs-group" role="tablist" aria-label="Scrub Series Filter">
+          <button type="button" class="scrub-tab-btn active" data-filter="all" onclick="window.filterFeaturedScrubs('all', this)">All Medical Lines</button>
+          <button type="button" class="scrub-tab-btn" data-filter="Sprinter" onclick="window.filterFeaturedScrubs('Sprinter', this)">Sprinter Series</button>
+          <button type="button" class="scrub-tab-btn" data-filter="Crown" onclick="window.filterFeaturedScrubs('Crown', this)">Crown Series</button>
+          <button type="button" class="scrub-tab-btn" data-filter="Velora" onclick="window.filterFeaturedScrubs('Velora', this)">Velora Series</button>
+          <button type="button" class="scrub-tab-btn" data-filter="FlexFit" onclick="window.filterFeaturedScrubs('FlexFit', this)">FlexFit Series</button>
+        </div>
+
+        {% if section.settings.show_gender_filter %}
+          <div class="scrubs-gender-group">
+            <button type="button" class="gender-pill-btn active" data-gender="all" onclick="window.filterFeaturedGender('all', this)">All Fits</button>
+            <button type="button" class="gender-pill-btn" data-gender="men" onclick="window.filterFeaturedGender('men', this)">Men's Fit</button>
+            <button type="button" class="gender-pill-btn" data-gender="women" onclick="window.filterFeaturedGender('women', this)">Women's Fit</button>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Product Grid -->
+    {% assign selected_collection = section.settings.collection %}
+    <div
+      class="scrubs-product-grid cols-{{ section.settings.columns_desktop }}"
+      id="scrubs-grid-{{ section.id }}"
+      style="grid-template-columns: repeat({{ section.settings.columns_desktop }}, 1fr);"
+    >
+      {% if selected_collection != blank and selected_collection.products_count > 0 %}
+        {% for product in selected_collection.products limit: section.settings.products_to_show %}
+          <div class="scrub-card-item enamels-tilt-target" data-series="{{ product.vendor | default: 'Sprinter' }}" data-tags="{{ product.tags | join: ',' }}">
+            <a href="{{ product.url }}" class="scrub-card-media" onclick="if(window.openPdpStudioByHandle){window.openPdpStudioByHandle('{{ product.handle }}'); return false;}">
+              {% if product.featured_image %}
+                {{ product.featured_image | image_url: width: 600 | image_tag:
+                  loading: 'lazy',
+                  class: 'scrub-card-img',
+                  widths: '300, 450, 600'
+                }}
+              {% else %}
+                <div class="scrub-card-placeholder">
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {% endif %}
+              {% if product.compare_at_price > product.price %}
+                <span class="scrub-card-badge sale">Sale</span>
+              {% endif %}
+            </a>
+
+            <div class="scrub-card-info">
+              <span class="scrub-card-series-tag">{{ product.vendor | default: 'Enamels Official' }}</span>
+              <h3 class="scrub-card-title">
+                <a href="{{ product.url }}">{{ product.title | escape }}</a>
+              </h3>
+              <div class="scrub-card-pricing">
+                <span class="scrub-card-price">{{ product.price | money }}</span>
+                {% if product.compare_at_price > product.price %}
+                  <span class="scrub-card-compare">{{ product.compare_at_price | money }}</span>
+                {% endif %}
+              </div>
+
+              <!-- Color Swatch Dots -->
+              <div class="scrub-card-swatches">
+                <span class="card-swatch-dot" style="background: #102A43;" title="Deep Navy"></span>
+                <span class="card-swatch-dot" style="background: #1E40AF;" title="Royal Blue"></span>
+                <span class="card-swatch-dot" style="background: #6BA4B8;" title="Ceil Blue"></span>
+                <span class="card-swatch-dot" style="background: #3F4E3B;" title="Olive Shine"></span>
+                <span class="card-swatch-dot" style="background: #581C87;" title="Burgundy"></span>
+              </div>
+
+              <button
+                type="button"
+                class="btn-scrub-customize"
+                onclick="if(window.openPdpStudioByHandle){window.openPdpStudioByHandle('{{ product.handle }}'); return false;}"
+              >
+                Customize & Embroider →
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default Pre-Configured Signature Series Cards -->
+        <!-- 1. Sprinter Athletic Set -->
+        <div class="scrub-card-item enamels-tilt-target" data-series="Sprinter" data-gender="men,women">
+          <div class="scrub-card-media" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-sprinter-set');}">
+            <img src="{{ 'demo-sprinter-navy.jpg' | asset_url }}" alt="Sprinter Athletic Scrub Set" class="scrub-card-img" width="450" height="550" loading="lazy" />
+            <span class="scrub-card-badge">Best Seller</span>
+          </div>
+          <div class="scrub-card-info">
+            <span class="scrub-card-series-tag">Sprinter Series (4-Way Stretch)</span>
+            <h3 class="scrub-card-title">
+              <a href="#product-studio" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-sprinter-set'); return false;}">Sprinter Athletic V-Neck Scrub Set</a>
+            </h3>
+            <div class="scrub-card-pricing">
+              <span class="scrub-card-price">Rs. 5,150</span>
+            </div>
+            <div class="scrub-card-swatches">
+              <span class="card-swatch-dot" style="background: #102A43;" title="Deep Navy"></span>
+              <span class="card-swatch-dot" style="background: #1E40AF;" title="Royal Blue"></span>
+              <span class="card-swatch-dot" style="background: #6BA4B8;" title="Ceil Blue"></span>
+              <span class="card-swatch-dot" style="background: #3F4E3B;" title="Olive Shine"></span>
+              <span class="card-swatch-dot" style="background: #581C87;" title="Burgundy"></span>
+            </div>
+            <button type="button" class="btn-scrub-customize" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-sprinter-set');}">
+              Customize & Embroider →
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Velora Luxury Set -->
+        <div class="scrub-card-item enamels-tilt-target" data-series="Velora" data-gender="women">
+          <div class="scrub-card-media" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-velora-set');}">
+            <img src="{{ 'demo-velora-teal.jpg' | asset_url }}" alt="Velora Micro-Drape Scrub Set" class="scrub-card-img" width="450" height="550" loading="lazy" />
+            <span class="scrub-card-badge" style="background: #be185d;">Liquid Soft</span>
+          </div>
+          <div class="scrub-card-info">
+            <span class="scrub-card-series-tag">Velora Series (Micro-Drape)</span>
+            <h3 class="scrub-card-title">
+              <a href="#product-studio" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-velora-set'); return false;}">Velora Fluid Drape Contour Scrub Set</a>
+            </h3>
+            <div class="scrub-card-pricing">
+              <span class="scrub-card-price">Rs. 5,500</span>
+            </div>
+            <div class="scrub-card-swatches">
+              <span class="card-swatch-dot" style="background: #00B8A9;" title="Clinical Teal"></span>
+              <span class="card-swatch-dot" style="background: #102A43;" title="Deep Navy"></span>
+              <span class="card-swatch-dot" style="background: #A855F7;" title="Lilac Lavender"></span>
+              <span class="card-swatch-dot" style="background: #581C87;" title="Burgundy"></span>
+            </div>
+            <button type="button" class="btn-scrub-customize" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-velora-set');}">
+              Customize & Embroider →
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Crown Mandarin Set -->
+        <div class="scrub-card-item enamels-tilt-target" data-series="Crown" data-gender="men,women">
+          <div class="scrub-card-media" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-crown-set');}">
+            <img src="{{ 'demo-crown-burgundy.jpg' | asset_url }}" alt="Crown Mandarin Scrub Set" class="scrub-card-img" width="450" height="550" loading="lazy" />
+            <span class="scrub-card-badge" style="background: #b45309;">Executive</span>
+          </div>
+          <div class="scrub-card-info">
+            <span class="scrub-card-series-tag">Crown Series (Mandarin Collar)</span>
+            <h3 class="scrub-card-title">
+              <a href="#product-studio" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-crown-set'); return false;}">Crown Mandarin Executive Scrub Set</a>
+            </h3>
+            <div class="scrub-card-pricing">
+              <span class="scrub-card-price">Rs. 6,200</span>
+            </div>
+            <div class="scrub-card-swatches">
+              <span class="card-swatch-dot" style="background: #581C87;" title="Burgundy"></span>
+              <span class="card-swatch-dot" style="background: #102A43;" title="Deep Navy"></span>
+              <span class="card-swatch-dot" style="background: #18181B;" title="Obsidian Black"></span>
+              <span class="card-swatch-dot" style="background: #14532D;" title="Hunter Green"></span>
+            </div>
+            <button type="button" class="btn-scrub-customize" onclick="if(window.openPdpStudioById){window.openPdpStudioById('p-crown-set');}">
+              Customize & Embroider →
+            </button>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.view_all_link != blank %}
+      <div style="text-align: center; margin-top: 40px;">
+        <a href="{{ section.settings.view_all_link }}" class="btn-view-all-collection">
+          {{ section.settings.view_all_label | default: 'View All Scrubs Collection →' | escape }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .scrubs-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .scrubs-tabs-group,
+  .scrubs-gender-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .scrub-tab-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .scrub-tab-btn:hover,
+  .scrub-tab-btn.active {
+    background: #102a43;
+    color: #ffffff;
+    border-color: #102a43;
+  }
+  .gender-pill-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .gender-pill-btn:hover,
+  .gender-pill-btn.active {
+    background: #0d9488;
+    color: #ffffff;
+    border-color: #0d9488;
+  }
+  .scrubs-product-grid {
+    display: grid;
+    gap: 24px;
+  }
+  .scrub-card-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .scrub-card-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -6px rgba(16, 42, 67, 0.08);
+  }
+  .scrub-card-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background: #f8fafc;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .scrub-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .scrub-card-item:hover .scrub-card-img {
+    transform: scale(1.05);
+  }
+  .scrub-card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #102a43;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .scrub-card-info {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 8px;
+  }
+  .scrub-card-series-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0284c7;
+    text-transform: uppercase;
+  }
+  .scrub-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .scrub-card-title a {
+    color: #102a43;
+    text-decoration: none;
+  }
+  .scrub-card-pricing {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .scrub-card-compare {
+    font-size: 12px;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+  .scrub-card-swatches {
+    display: flex;
+    gap: 6px;
+    margin: 4px 0 8px 0;
+  }
+  .card-swatch-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: inline-block;
+  }
+  .btn-scrub-customize {
+    margin-top: auto;
+    width: 100%;
+    padding: 10px;
+    background: #f1f5f9;
+    color: #102a43;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-scrub-customize:hover {
+    background: #102a43;
+    color: #ffffff;
+    border-color: #102a43;
+  }
+  .btn-view-all-collection {
+    display: inline-block;
+    padding: 12px 28px;
+    background: #102a43;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  .btn-view-all-collection:hover {
+    background: #1e3a5f;
+    transform: translateY(-2px);
+  }
+  @media (max-width: 900px) {
+    .scrubs-product-grid.cols-3,
+    .scrubs-product-grid.cols-4 {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+  @media (max-width: 600px) {
+    .scrubs-filter-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .scrubs-product-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px;
+    }
+    .scrub-card-info {
+      padding: 10px;
+    }
+    .scrub-card-title {
+      font-size: 13px;
+    }
+  }
+</style>
+
+<script>
+  window.filterFeaturedScrubs = function(series, btn) {
+    const section = btn.closest('.enamels-featured-scrubs-section');
+    if (!section) return;
+    section.querySelectorAll('.scrub-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = section.querySelectorAll('.scrub-card-item');
+    cards.forEach(card => {
+      const cardSeries = card.getAttribute('data-series') || '';
+      if (series === 'all' || cardSeries.toLowerCase().includes(series.toLowerCase())) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  };
+
+  window.filterFeaturedGender = function(gender, btn) {
+    const section = btn.closest('.enamels-featured-scrubs-section');
+    if (!section) return;
+    section.querySelectorAll('.gender-pill-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = section.querySelectorAll('.scrub-card-item');
+    cards.forEach(card => {
+      const cardGender = card.getAttribute('data-gender') || 'men,women';
+      if (gender === 'all' || cardGender.includes(gender)) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  };
+</script>
+
+{% schema %}
+{
+  "name": "Featured Scrubs & Series",
+  "tag": "section",
+  "class": "section-enamels-featured-scrubs",
+  "settings": [
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Section Tag Badge",
+      "default": "SIGNATURE MEDICAL LINES"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Signature Clinical Scrub Sets"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subheading",
+      "default": "From intense ER shifts to executive outpatient rounds, explore medical uniforms tailored for precision."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Source Shopify Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Maximum Products to Show",
+      "min": 3,
+      "max": 24,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on Desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_series_tabs",
+      "label": "Show Series Tabs (Sprinter, Crown, Velora)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gender_filter",
+      "label": "Show Gender Pills (All / Men / Women)",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link (Optional)"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Button Label",
+      "default": "Explore Full Scrubs Catalogue →"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Subtitle Color",
+      "default": "#64748b"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Spacing",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Featured Scrubs"
+    }
+  ]
+}
+{% endschema %}

@@ -713,13 +713,19 @@
       const basePrice = item.basePrice || 5150;
       let alterationsCharge = STATE.pdpAlterations ? 350 : 0;
       let engravingCharge = 0;
-      if (STATE.pdpEngravingType === 'direct') engravingCharge = 450;
-      if (STATE.pdpEngravingType === 'patch') engravingCharge = 350;
-      let logoCharge = STATE.pdpLogoEnabled ? 650 : 0;
+      const feeDirect = window.ShopifyThemeSettings?.embroideryFeeDirect ?? 450;
+      const feePatch = window.ShopifyThemeSettings?.embroideryFeePatch ?? 350;
+      const feeLogo = window.ShopifyThemeSettings?.logoFee ?? 650;
+      const feeCustomSize = window.ShopifyThemeSettings?.customSizeFee ?? 500;
+
+      if (STATE.pdpEngravingType === 'direct') engravingCharge = feeDirect;
+      if (STATE.pdpEngravingType === 'patch') engravingCharge = feePatch;
+      let logoCharge = STATE.pdpLogoEnabled ? feeLogo : 0;
+      let customSizeCharge = STATE.pdpIsCustomSize ? feeCustomSize : 0;
 
       let addonsTotal = STATE.pdpCompanionAddons.reduce((sum, a) => sum + a.price, 0);
 
-      const singleUnitTotal = basePrice + alterationsCharge + engravingCharge + logoCharge;
+      const singleUnitTotal = basePrice + alterationsCharge + engravingCharge + logoCharge + customSizeCharge;
       const subtotal = (singleUnitTotal * STATE.pdpQty) + addonsTotal;
 
       const requiresAdvance = STATE.pdpAlterations || STATE.pdpEngravingType !== 'none' || STATE.pdpLogoEnabled || STATE.pdpIsCustomSize;
@@ -768,9 +774,15 @@
 
       const basePrice = item.basePrice || 5150;
       let alterationsCharge = STATE.pdpAlterations ? 350 : 0;
-      let engravingCharge = STATE.pdpEngravingType === 'direct' ? 450 : STATE.pdpEngravingType === 'patch' ? 350 : 0;
-      let logoCharge = STATE.pdpLogoEnabled ? 650 : 0;
-      const unitPrice = basePrice + alterationsCharge + engravingCharge + logoCharge;
+      const feeDirect = window.ShopifyThemeSettings?.embroideryFeeDirect ?? 450;
+      const feePatch = window.ShopifyThemeSettings?.embroideryFeePatch ?? 350;
+      const feeLogo = window.ShopifyThemeSettings?.logoFee ?? 650;
+      const feeCustomSize = window.ShopifyThemeSettings?.customSizeFee ?? 500;
+
+      let engravingCharge = STATE.pdpEngravingType === 'direct' ? feeDirect : STATE.pdpEngravingType === 'patch' ? feePatch : 0;
+      let logoCharge = STATE.pdpLogoEnabled ? feeLogo : 0;
+      let customSizeCharge = STATE.pdpIsCustomSize ? feeCustomSize : 0;
+      const unitPrice = basePrice + alterationsCharge + engravingCharge + logoCharge + customSizeCharge;
 
       const requiresAdvance = STATE.pdpAlterations || STATE.pdpEngravingType !== 'none' || STATE.pdpLogoEnabled || STATE.pdpIsCustomSize;
 
@@ -1220,18 +1232,23 @@
       }
 
       const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
-      const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
-      const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
-      const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
+      const feeDirect = window.ShopifyThemeSettings?.embroideryFeeDirect ?? 450;
+      const feePatch = window.ShopifyThemeSettings?.embroideryFeePatch ?? 350;
+      const feeLogo = window.ShopifyThemeSettings?.logoFee ?? 650;
+      const feeCustomSize = window.ShopifyThemeSettings?.customSizeFee ?? 500;
+
+      const customSizeFee = STATE.rtwSizeMode === 'custom' ? feeCustomSize : 0;
+      const embFee = (STATE.rtwEngravingType !== 'none') ? (STATE.rtwEngravingType === 'patch' ? feePatch : feeDirect) : 0;
+      const logoFee = STATE.rtwLogoEnabled ? feeLogo : 0;
       const total = basePrice + customSizeFee + embFee + logoFee;
 
       if (embRow) {
         embRow.style.display = embFee > 0 ? 'table-row' : 'none';
-        if (embEl) embEl.textContent = `+Rs. 450 (${STATE.rtwEngravingLines.line1 || 'Times New Roman'})`;
+        if (embEl) embEl.textContent = `+Rs. ${embFee} (${STATE.rtwEngravingLines.line1 || 'Times New Roman'})`;
       }
       if (logoRow) {
         logoRow.style.display = logoFee > 0 ? 'table-row' : 'none';
-        if (logoEl) logoEl.textContent = `+Rs. 650 (${STATE.rtwLogo?.name || 'Hospital Crest'})`;
+        if (logoEl) logoEl.textContent = `+Rs. ${logoFee} (${STATE.rtwLogo?.name || 'Hospital Crest'})`;
       }
       if (totalEl) {
         totalEl.textContent = `Rs. ${total.toLocaleString()}`;
@@ -1245,9 +1262,14 @@
 
     window.addRtwToCart = function() {
       const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
-      const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
-      const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
-      const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
+      const feeDirect = window.ShopifyThemeSettings?.embroideryFeeDirect ?? 450;
+      const feePatch = window.ShopifyThemeSettings?.embroideryFeePatch ?? 350;
+      const feeLogo = window.ShopifyThemeSettings?.logoFee ?? 650;
+      const feeCustomSize = window.ShopifyThemeSettings?.customSizeFee ?? 500;
+
+      const customSizeFee = STATE.rtwSizeMode === 'custom' ? feeCustomSize : 0;
+      const embFee = (STATE.rtwEngravingType !== 'none') ? (STATE.rtwEngravingType === 'patch' ? feePatch : feeDirect) : 0;
+      const logoFee = STATE.rtwLogoEnabled ? feeLogo : 0;
       const unitPrice = basePrice + customSizeFee + embFee + logoFee;
 
       const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0);
@@ -1647,13 +1669,104 @@
 
 {% schema %}
 {
-  "name": "Enamels Chromatic Lab",
+  "name": "Enamels Master Lab",
   "tag": "section",
   "class": "section",
-  "settings": [],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Navigation & Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top_announcement",
+      "label": "Show Announcement Bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement Text",
+      "default": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
+    },
+    {
+      "type": "text",
+      "id": "support_phone",
+      "label": "Direct Support Phone Number",
+      "default": "+92 301 13 31 133"
+    },
+    {
+      "type": "header",
+      "content": "Shopping System Rules & Charges"
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free Shipping Threshold (PKR)",
+      "default": 7000
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_embroidery",
+      "label": "Enable Name Embroidery",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "embroidery_fee_direct",
+      "label": "Direct Name Embroidery Fee",
+      "default": 450
+    },
+    {
+      "type": "number",
+      "id": "embroidery_fee_patch",
+      "label": "Stitched Name Patch Fee",
+      "default": 350
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hospital_logos",
+      "label": "Enable Hospital Crest Embroidery",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "logo_fee",
+      "label": "Hospital Logo Embroidery Fee",
+      "default": 650
+    },
+    {
+      "type": "number",
+      "id": "custom_size_fee",
+      "label": "Bespoke Custom Sizing Fee",
+      "default": 500
+    },
+    {
+      "type": "header",
+      "content": "Advance Payment Policy"
+    },
+    {
+      "type": "checkbox",
+      "id": "require_advance_payment",
+      "label": "Require Advance Deposit for Personalized Orders",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "advance_payment_percentage",
+      "label": "Advance Deposit Percentage (%)",
+      "default": 50
+    },
+    {
+      "type": "textarea",
+      "id": "advance_notice_text",
+      "label": "Advance Payment Notice Message",
+      "default": "Personalized orders with custom embroidery, hospital crests, or made-to-measure sizing require a minimum 50% advance deposit via bank transfer before production begins."
+    }
+  ],
   "presets": [
     {
-      "name": "Enamels Chromatic Lab"
+      "name": "Enamels Master Lab"
     }
   ]
 }

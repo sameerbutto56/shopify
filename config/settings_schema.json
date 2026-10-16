@@ -2158,5 +2158,109 @@
         "default": "Hi, I am browsing your store and would like assistance with an order."
       }
     ]
+  },
+  {
+    "name": "Customization & Embroidery Engine",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_embroidery",
+        "label": "Enable Doctor Name Embroidery",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "embroidery_fee_direct",
+        "label": "Direct Chest Name Embroidery Fee",
+        "default": 450,
+        "info": "Amount charged for direct chest pocket text embroidery (in store currency)."
+      },
+      {
+        "type": "number",
+        "id": "embroidery_fee_patch",
+        "label": "Stitched Name Patch Fee",
+        "default": 350,
+        "info": "Amount charged for stitched fabric name patch embroidery."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_hospital_logos",
+        "label": "Enable Hospital Crest Embroidery",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "logo_fee",
+        "label": "Hospital Logo Embroidery Fee",
+        "default": 650,
+        "info": "Amount charged for hospital or institutional crest embroidery."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_custom_sizing",
+        "label": "Enable Bespoke Custom Sizing",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "custom_size_fee",
+        "label": "Custom Sizing Surcharge",
+        "default": 500,
+        "info": "Surcharge for made-to-measure tailored uniforms (in store currency)."
+      }
+    ]
+  },
+  {
+    "name": "Advance Payment & Custom Order Policy",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "require_advance_payment",
+        "label": "Require Advance Deposit for Personalized Orders",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "advance_payment_percentage",
+        "label": "Advance Deposit Percentage (%)",
+        "default": 50,
+        "info": "Percentage of total required in advance (e.g. 50 for 50%)."
+      },
+      {
+        "type": "textarea",
+        "id": "advance_notice_text",
+        "label": "Advance Payment Policy Notice",
+        "default": "Personalized orders with custom embroidery, hospital crests, or made-to-measure sizing require a minimum 50% advance deposit via bank transfer before production begins."
+      },
+      {
+        "type": "text",
+        "id": "bank_transfer_title",
+        "label": "Bank Transfer Instructions Title",
+        "default": "Direct Bank Transfer (Meezan Bank / HBL)"
+      },
+      {
+        "type": "textarea",
+        "id": "bank_transfer_details",
+        "label": "Bank Transfer Account Information",
+        "default": "Bank: Meezan Bank Ltd\nAccount Title: Enamels Medical Apparel\nAccount Number: 0102-0103948291\nIBAN: PK64MEZN0001020103948291\nBranch: Main Boulevard Gulberg, Lahore\n\nPlease share your payment receipt on WhatsApp with your Order Number."
+      }
+    ]
+  },
+  {
+    "name": "Customer Care & Guarantees",
+    "settings": [
+      {
+        "type": "text",
+        "id": "support_phone",
+        "label": "Customer Support Phone Number",
+        "default": "+92 301 13 31 133"
+      },
+      {
+        "type": "number",
+        "id": "exchange_policy_days",
+        "label": "Hassle-Free Exchange Window (Days)",
+        "default": 7
+      }
+    ]
   }
 ]

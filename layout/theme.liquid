@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="{{ 'enamels-rtl.css' | asset_url }}" id="enamels-rtl-stylesheet">
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}
+    {%- render 'theme-settings-json' -%}
     <script src="{{ 'enamels-catalogue-data.js' | asset_url }}" defer></script>
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-palette' -%}
@@ -177,6 +178,7 @@
       {% render 'quick-add-modal' %}
     {% endif %}
 
+    {% render 'enamels-cart-checkout' %}
     {% render 'whatsapp-floating-button' %}
     {% render 'enamels-demo-mode' %}
   </body>

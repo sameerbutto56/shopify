@@ -1,11 +1,364 @@
 {
   "sections": {
-    "chromatic_lab": {
-      "type": "enamels-chromatic-lab",
+    "slideshow": {
+      "type": "enamels-hero-slideshow",
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "asset_image_name": "banner-autumn.jpg",
+            "badge": "Sprinter Series",
+            "heading": "Autumn Clinical Collection",
+            "subheading": "Engineered with 4-way mechanical stretch twill for superior hospital endurance.",
+            "button_label": "Shop Sprinter Collection",
+            "button_link": "#collection-sprinter",
+            "button_onclick": "window.navigateToCollection('Sprinter')",
+            "secondary_button_label": "Make Your Own Scrub",
+            "secondary_button_link": "#ready-to-wear",
+            "secondary_button_onclick": "window.navigateToView('ready-to-wear')"
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "asset_image_name": "banner-clogs.jpg",
+            "badge": "Ergonomic Footwear",
+            "heading": "Clinical Clogs & Comfort",
+            "subheading": "Anti-slip medical soles engineered for 24-hour ward and surgical shifts.",
+            "button_label": "Explore Clogs",
+            "button_link": "#collection-clogs",
+            "button_onclick": "window.navigateToCollection('clogs', 'category')"
+          }
+        },
+        "slide_3": {
+          "type": "slide",
+          "settings": {
+            "asset_image_name": "banner-abbotabad.jpg",
+            "badge": "New Arrivals 2026",
+            "heading": "Medical Uniform Architecture",
+            "subheading": "Precision-tailored lab coats, scrubs, and surgical headwear.",
+            "button_label": "Explore Complete Catalog",
+            "button_link": "#category-scrubs",
+            "button_onclick": "window.navigateToCollection('all', 'category')"
+          }
+        },
+        "slide_4": {
+          "type": "slide",
+          "settings": {
+            "asset_image_name": "banner-caps.jpg",
+            "badge": "Surgical Headwear",
+            "heading": "BunFit™ Surgical Caps",
+            "subheading": "Contoured volume pleats, breathable antimicrobial cotton, and sweatband lining.",
+            "button_label": "Shop Surgical Caps",
+            "button_link": "#collection-caps",
+            "button_onclick": "window.navigateToCollection('caps', 'category')"
+          }
+        },
+        "slide_5": {
+          "type": "slide",
+          "settings": {
+            "asset_image_name": "banner-velora.jpg",
+            "badge": "Luxury Micro-Drape",
+            "heading": "Velora Series Scrubs",
+            "subheading": "Silky-soft drape with wrinkle-release properties that stay sharp all day.",
+            "button_label": "Discover Velora",
+            "button_link": "#collection-velora",
+            "button_onclick": "window.navigateToCollection('Velora')"
+          }
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2",
+        "slide_3",
+        "slide_4",
+        "slide_5"
+      ],
+      "settings": {
+        "autoplay": true,
+        "autoplay_interval": 5,
+        "show_arrows": true,
+        "show_dots": true
+      }
+    },
+    "trust_badges": {
+      "type": "trust-badges",
+      "blocks": {
+        "badge_1": {
+          "type": "badge",
+          "settings": {
+            "icon": "truck",
+            "title": "Nationwide Delivery",
+            "subtitle": "Free delivery over Rs. 7,000"
+          }
+        },
+        "badge_2": {
+          "type": "badge",
+          "settings": {
+            "icon": "cash",
+            "title": "Cash on Delivery",
+            "subtitle": "Available across all cities in Pakistan"
+          }
+        },
+        "badge_3": {
+          "type": "badge",
+          "settings": {
+            "icon": "repeat",
+            "title": "7-Day Easy Exchange",
+            "subtitle": "Hassle-free size exchange via WhatsApp"
+          }
+        },
+        "badge_4": {
+          "type": "badge",
+          "settings": {
+            "icon": "needle",
+            "title": "Custom Embroidery",
+            "subtitle": "Computerized doctor names & crests"
+          }
+        }
+      },
+      "block_order": [
+        "badge_1",
+        "badge_2",
+        "badge_3",
+        "badge_4"
+      ],
+      "settings": {
+        "bg_color": "#ffffff",
+        "text_color": "#102a43"
+      }
+    },
+    "category_grid": {
+      "type": "enamels-category-grid",
+      "blocks": {
+        "cat_1": {
+          "type": "category_item",
+          "settings": {
+            "title": "Sprinter Series",
+            "subtitle": "4-Way Mechanical Athletic Stretch",
+            "asset_image_name": "cat-sprinter.jpg",
+            "onclick_action": "window.navigateToCollection('Sprinter')"
+          }
+        },
+        "cat_2": {
+          "type": "category_item",
+          "settings": {
+            "title": "Men's Scrubs",
+            "subtitle": "Tailored Raglan & Cargo Jogger Sets",
+            "asset_image_name": "cat-men-scrubs.jpg",
+            "onclick_action": "window.navigateToGenderCollection('men')"
+          }
+        },
+        "cat_3": {
+          "type": "category_item",
+          "settings": {
+            "title": "Women's Scrubs",
+            "subtitle": "Princess Contour & Fluid Drape Cuts",
+            "asset_image_name": "cat-women-scrubs.jpg",
+            "onclick_action": "window.navigateToGenderCollection('women')"
+          }
+        },
+        "cat_4": {
+          "type": "category_item",
+          "settings": {
+            "title": "Crown Series",
+            "subtitle": "Executive Mandarin Standing Collar",
+            "asset_image_name": "cat-crown.jpg",
+            "onclick_action": "window.navigateToCollection('Crown')"
+          }
+        },
+        "cat_5": {
+          "type": "category_item",
+          "settings": {
+            "title": "Lab Coats",
+            "subtitle": "Helium Notch Lapel & Consultant Cuts",
+            "asset_image_name": "cat-labcoat.jpg",
+            "onclick_action": "window.navigateToCollection('lab-coat', 'category')"
+          }
+        },
+        "cat_6": {
+          "type": "category_item",
+          "settings": {
+            "title": "Surgical Caps",
+            "subtitle": "BunFit™ Volume Pleats & Printed Themes",
+            "asset_image_name": "cat-caps.jpg",
+            "onclick_action": "window.navigateToCollection('caps', 'category')"
+          }
+        },
+        "cat_7": {
+          "type": "category_item",
+          "settings": {
+            "title": "Velora Series",
+            "subtitle": "Silky Soft Luxury Micro-Drape",
+            "asset_image_name": "cat-velora.jpg",
+            "onclick_action": "window.navigateToCollection('Velora')"
+          }
+        },
+        "cat_8": {
+          "type": "category_item",
+          "settings": {
+            "title": "Clinical Clogs",
+            "subtitle": "Ergonomic Cushioning & Anti-Slip Soles",
+            "asset_image_name": "cat-clogs.jpg",
+            "onclick_action": "window.navigateToCollection('clogs', 'category')"
+          }
+        },
+        "cat_9": {
+          "type": "category_item",
+          "settings": {
+            "title": "FlexFit Series",
+            "subtitle": "Laser-Cut Ventilation & Aerocool Weave",
+            "asset_image_name": "cat-flexfit.jpg",
+            "onclick_action": "window.navigateToCollection('FlexFit')"
+          }
+        }
+      },
+      "block_order": [
+        "cat_1",
+        "cat_2",
+        "cat_3",
+        "cat_4",
+        "cat_5",
+        "cat_6",
+        "cat_7",
+        "cat_8",
+        "cat_9"
+      ],
+      "settings": {
+        "columns_desktop": 3,
+        "image_ratio": "square"
+      }
+    },
+    "featured_scrubs": {
+      "type": "enamels-featured-scrubs",
+      "settings": {
+        "show_series_tabs": true,
+        "show_gender_filter": true,
+        "columns_desktop": 3
+      }
+    },
+    "fabric_tech": {
+      "type": "enamels-fabric-tech",
+      "blocks": {
+        "tech_1": {
+          "type": "feature",
+          "settings": {
+            "icon_emoji": "🔄",
+            "icon_bg": "#e0f2fe",
+            "icon_color": "#0284c7",
+            "title": "4-Way Mechanical Stretch",
+            "description": "72% Poly, 21% Rayon, 7% Spandex. Unrestricted mobility during surgeries and long shifts.",
+            "spec_badge": "Zero Sag Recovery"
+          }
+        },
+        "tech_2": {
+          "type": "feature",
+          "settings": {
+            "icon_emoji": "🛡️",
+            "icon_bg": "#dcfce7",
+            "icon_color": "#16a34a",
+            "title": "Antimicrobial Shield",
+            "description": "Infused with silver-ion technology that neutralizes odor-causing bacteria and resists pathogens.",
+            "spec_badge": "ISO 20743 Certified"
+          }
+        },
+        "tech_3": {
+          "type": "feature",
+          "settings": {
+            "icon_emoji": "💧",
+            "icon_bg": "#fef3c7",
+            "icon_color": "#d97706",
+            "title": "Fluid Barrier Nanotech",
+            "description": "Liquid droplets bead and roll off upon contact, preventing fluid penetration to base layers.",
+            "spec_badge": "Repel-Tech Matrix"
+          }
+        },
+        "tech_4": {
+          "type": "feature",
+          "settings": {
+            "icon_emoji": "👔",
+            "icon_bg": "#ede9fe",
+            "icon_color": "#7c3aed",
+            "title": "Wrinkle-Release & Autoclave Safe",
+            "description": "Tested through 100+ industrial laundry autoclave wash cycles with zero color fade.",
+            "spec_badge": "Autoclave Safe"
+          }
+        }
+      },
+      "block_order": [
+        "tech_1",
+        "tech_2",
+        "tech_3",
+        "tech_4"
+      ],
+      "settings": {
+        "columns_desktop": 4
+      }
+    },
+    "shop_by_colour": {
+      "type": "shop-by-colour",
+      "settings": {
+        "show_header": true,
+        "badge": "Color Harmony",
+        "title": "Shop by Hospital & Clinical Shade",
+        "subtitle": "Adhere to strict hospital ward color guidelines or express individual professional style."
+      }
+    },
+    "ready_to_wear": {
+      "type": "ready-to-wear-wizard",
+      "settings": {
+        "show_header": false
+      }
+    },
+    "faq_accordion": {
+      "type": "faq-accordion",
+      "blocks": {
+        "faq_1": {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I choose between Sprinter, Velora, and Crown scrubs?",
+            "answer": "Sprinter is built with 4-way mechanical athletic stretch twill for high-activity wards and ERs. Velora features a luxury micro-drape with fluid contour and wrinkle-release for outpatient comfort. Crown provides executive structure with a standing mandarin collar for department heads."
+          }
+        },
+        "faq_2": {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I get my name and hospital logo embroidered?",
+            "answer": "Yes. We offer computerized precision embroidery for doctor names, qualifications, department titles, and certified hospital crests (including AKUH, Shaukat Khanum, Doctors Hospital, and custom institutional logos)."
+          }
+        },
+        "faq_3": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is the advance payment requirement for custom orders?",
+            "answer": "Standard ready-to-wear scrubs can be ordered via Cash on Delivery (COD). Any orders featuring personalized name embroidery, hospital crests, or custom tailored sizing require a minimum 50% advance deposit via bank transfer before production begins."
+          }
+        },
+        "faq_4": {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your size exchange policy?",
+            "answer": "We offer a 7-day hassle-free size exchange policy across Pakistan. Simply contact our WhatsApp concierge (+92 301 13 31 133) with your order number, and our team will guide you through the instant exchange process."
+          }
+        }
+      },
+      "block_order": [
+        "faq_1",
+        "faq_2",
+        "faq_3",
+        "faq_4"
+      ],
       "settings": {}
     }
   },
   "order": [
-    "chromatic_lab"
+    "slideshow",
+    "trust_badges",
+    "category_grid",
+    "featured_scrubs",
+    "fabric_tech",
+    "shop_by_colour",
+    "ready_to_wear",
+    "faq_accordion"
   ]
 }
