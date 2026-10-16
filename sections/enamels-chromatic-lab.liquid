@@ -107,14 +107,17 @@
     };
 
     // ------------------------------------------------------------
-    // 2. INITIALIZATION
+    // 2. INITIALIZATION (PROTECTED AGAINST DUPLICATE EXECUTION)
     // ------------------------------------------------------------
+    let isEnamelsAppInitialized = false;
     document.addEventListener('DOMContentLoaded', initEnamelsApp);
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       setTimeout(initEnamelsApp, 50);
     }
 
     function initEnamelsApp() {
+      if (isEnamelsAppInitialized) return;
+      isEnamelsAppInitialized = true;
       initSlideshow();
       renderScrubsGrid();
       updateCartBadge();
@@ -122,6 +125,18 @@
       renderRtwDesignsForArticle('Sprinter');
       handleHashRouting();
       window.addEventListener('hashchange', handleHashRouting);
+    }
+
+    // Debounce guard for cart and checkout submissions
+    let isCartSubmissionBusy = false;
+    function withCartDebounce(callback) {
+      if (isCartSubmissionBusy) return;
+      isCartSubmissionBusy = true;
+      try {
+        callback();
+      } finally {
+        setTimeout(() => { isCartSubmissionBusy = false; }, 400);
+      }
     }
 
     // ------------------------------------------------------------
@@ -337,7 +352,7 @@
         return `
           <div class="product-preview-card">
             <div class="card-thumb-wrap" onclick="window.openProductStudio('${item.id}')">
-              <img src="${item.image ? (window.ShopifyThemeAssets?.[item.image] || item.image) : ''}" alt="${cleanTitle}" class="card-img" onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'" />
+              <img src="${item.image ? (window.ShopifyThemeAssets?.[item.image] || item.image) : ''}" alt="${cleanTitle}" class="card-img" onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'" loading="lazy" />
               ${item.badge ? `<span class="card-pill-tag">${item.badge}</span>` : ''}
             </div>
             <div class="card-body-wrap">
@@ -763,64 +778,66 @@
     }
 
     window.addConfiguredScrubToCart = function() {
-      const item = STATE.pdpProduct;
-      if (!item) return;
+      withCartDebounce(() => {
+        const item = STATE.pdpProduct;
+        if (!item) return;
 
-      const basePrice = item.basePrice || 5150;
-      let alterationsCharge = STATE.pdpAlterations ? 350 : 0;
-      let engravingCharge = STATE.pdpEngravingType === 'direct' ? 450 : STATE.pdpEngravingType === 'patch' ? 350 : 0;
-      let logoCharge = STATE.pdpLogoEnabled ? 650 : 0;
-      const unitPrice = basePrice + alterationsCharge + engravingCharge + logoCharge;
+        const basePrice = item.basePrice || 5150;
+        let alterationsCharge = STATE.pdpAlterations ? 350 : 0;
+        let engravingCharge = STATE.pdpEngravingType === 'direct' ? 450 : STATE.pdpEngravingType === 'patch' ? 350 : 0;
+        let logoCharge = STATE.pdpLogoEnabled ? 650 : 0;
+        const unitPrice = basePrice + alterationsCharge + engravingCharge + logoCharge;
 
-      const requiresAdvance = STATE.pdpAlterations || STATE.pdpEngravingType !== 'none' || STATE.pdpLogoEnabled || STATE.pdpIsCustomSize;
+        const requiresAdvance = STATE.pdpAlterations || STATE.pdpEngravingType !== 'none' || STATE.pdpLogoEnabled || STATE.pdpIsCustomSize;
 
-      const cartItem = {
-        id: `${item.id}-${Date.now()}`,
-        productId: item.id,
-        title: item.title.replace('DEMO — ', ''),
-        series: item.series || 'Clinical',
-        image: item.image,
-        color: STATE.pdpColor.name,
-        colorHex: STATE.pdpColor.hex,
-        size: STATE.pdpIsCustomSize ? 'Custom Tailored' : STATE.pdpSize,
-        customMeasurements: STATE.pdpIsCustomSize ? STATE.pdpCustomMeasurements : null,
-        alterations: STATE.pdpAlterations ? STATE.pdpAlterationDetails : null,
-        engraving: STATE.pdpEngravingType !== 'none' ? {
-          type: STATE.pdpEngravingType,
-          lines: STATE.pdpEngravingLines,
-          threadColor: STATE.pdpThreadColor.name,
-          font: 'Times New Roman'
-        } : null,
-        logo: STATE.pdpLogoEnabled ? STATE.pdpLogo : null,
-        quantity: STATE.pdpQty,
-        unitPrice: unitPrice,
-        lineTotal: unitPrice * STATE.pdpQty,
-        requiresAdvancePayment: requiresAdvance
-      };
+        const cartItem = {
+          id: `${item.id}-${Date.now()}`,
+          productId: item.id,
+          title: item.title.replace('DEMO — ', ''),
+          series: item.series || 'Clinical',
+          image: item.image,
+          color: STATE.pdpColor.name,
+          colorHex: STATE.pdpColor.hex,
+          size: STATE.pdpIsCustomSize ? 'Custom Tailored' : STATE.pdpSize,
+          customMeasurements: STATE.pdpIsCustomSize ? STATE.pdpCustomMeasurements : null,
+          alterations: STATE.pdpAlterations ? STATE.pdpAlterationDetails : null,
+          engraving: STATE.pdpEngravingType !== 'none' ? {
+            type: STATE.pdpEngravingType,
+            lines: STATE.pdpEngravingLines,
+            threadColor: STATE.pdpThreadColor.name,
+            font: 'Times New Roman'
+          } : null,
+          logo: STATE.pdpLogoEnabled ? STATE.pdpLogo : null,
+          quantity: STATE.pdpQty,
+          unitPrice: unitPrice,
+          lineTotal: unitPrice * STATE.pdpQty,
+          requiresAdvancePayment: requiresAdvance
+        };
 
-      const cart = getStoredCart();
-      cart.push(cartItem);
+        const cart = getStoredCart();
+        cart.push(cartItem);
 
-      // Add any companion add-ons
-      STATE.pdpCompanionAddons.forEach((addon, idx) => {
-        cart.push({
-          id: `companion-${Date.now()}-${idx}`,
-          productId: 'companion-addon',
-          title: addon.title,
-          series: 'Addon',
-          image: 'cat-caps.jpg',
-          color: 'Standard',
-          size: 'Standard',
-          quantity: 1,
-          unitPrice: addon.price,
-          lineTotal: addon.price,
-          requiresAdvancePayment: false
+        // Add any companion add-ons
+        STATE.pdpCompanionAddons.forEach((addon, idx) => {
+          cart.push({
+            id: `companion-${Date.now()}-${idx}`,
+            productId: 'companion-addon',
+            title: addon.title,
+            series: 'Addon',
+            image: 'cat-caps.jpg',
+            color: 'Standard',
+            size: 'Standard',
+            quantity: 1,
+            unitPrice: addon.price,
+            lineTotal: addon.price,
+            requiresAdvancePayment: false
+          });
         });
-      });
 
-      saveCart(cart);
-      updateCartBadge();
-      window.openCartDrawer();
+        saveCart(cart);
+        updateCartBadge();
+        window.openCartDrawer();
+      });
     };
 
     // ------------------------------------------------------------
@@ -967,7 +984,7 @@
 
       grid.innerHTML = list.map((d, i) => `
         <div class="design-choice-card ${i === 0 ? 'active' : ''}" data-design-id="${d.id}" onclick="window.selectRtwDesign('${d.id}', '${d.name}', ${d.price}, '${d.image}')" style="cursor: pointer; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; transition: all 0.2s ease;">
-          <img src="${window.ShopifyThemeAssets?.[d.image] || d.image}" alt="${d.name}" class="design-thumb-img" width="160" height="200" onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'" style="max-height: 160px; object-fit: contain; margin: 0 auto 10px; display: block;" />
+          <img src="${window.ShopifyThemeAssets?.[d.image] || d.image}" alt="${d.name}" class="design-thumb-img" width="160" height="200" onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'" loading="lazy" style="max-height: 160px; object-fit: contain; margin: 0 auto 10px; display: block;" />
           <h4 style="font-size: 13px; font-weight: 700; color: #102a43; margin: 0 0 4px;">${d.name}</h4>
           <span style="font-size: 13px; font-weight: 700; color: #00b8a9;">Rs. ${d.price.toLocaleString()}</span>
         </div>
@@ -1244,43 +1261,45 @@
     }
 
     window.addRtwToCart = function() {
-      const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
-      const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
-      const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
-      const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
-      const unitPrice = basePrice + customSizeFee + embFee + logoFee;
+      withCartDebounce(() => {
+        const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
+        const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
+        const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
+        const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
+        const unitPrice = basePrice + customSizeFee + embFee + logoFee;
 
-      const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0);
+        const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0);
 
-      const cartItem = {
-        id: `rtw-${Date.now()}`,
-        productId: STATE.rtwDesign?.id || 'rtw-custom',
-        title: `RTW Bespoke — ${STATE.rtwDesign?.name || 'Medical Scrub'}`,
-        series: STATE.rtwArticle?.name || 'Sprinter Series',
-        image: STATE.rtwDesign?.image || 'cat-sprinter.jpg',
-        fabric: STATE.rtwFabric?.name || 'Sprinter Performance Twill',
-        color: STATE.rtwColor?.name || 'Deep Navy',
-        colorHex: STATE.rtwColor?.hex || '#102A43',
-        size: STATE.rtwSizeMode === 'standard' ? `Standard Size ${STATE.rtwStandardSize}` : 'Custom Tailored Measurements',
-        customMeasurements: STATE.rtwSizeMode === 'custom' ? STATE.rtwCustomMeasurements : null,
-        engraving: STATE.rtwEngravingType !== 'none' ? {
-          type: 'direct',
-          lines: STATE.rtwEngravingLines,
-          threadColor: STATE.rtwThreadColor?.name || 'White',
-          font: 'Times New Roman'
-        } : null,
-        logo: STATE.rtwLogoEnabled ? STATE.rtwLogo : null,
-        quantity: 1,
-        unitPrice: unitPrice,
-        lineTotal: unitPrice,
-        requiresAdvancePayment: requiresAdvance
-      };
+        const cartItem = {
+          id: `rtw-${Date.now()}`,
+          productId: STATE.rtwDesign?.id || 'rtw-custom',
+          title: `RTW Bespoke — ${STATE.rtwDesign?.name || 'Medical Scrub'}`,
+          series: STATE.rtwArticle?.name || 'Sprinter Series',
+          image: STATE.rtwDesign?.image || 'cat-sprinter.jpg',
+          fabric: STATE.rtwFabric?.name || 'Sprinter Performance Twill',
+          color: STATE.rtwColor?.name || 'Deep Navy',
+          colorHex: STATE.rtwColor?.hex || '#102A43',
+          size: STATE.rtwSizeMode === 'standard' ? `Standard Size ${STATE.rtwStandardSize}` : 'Custom Tailored Measurements',
+          customMeasurements: STATE.rtwSizeMode === 'custom' ? STATE.rtwCustomMeasurements : null,
+          engraving: STATE.rtwEngravingType !== 'none' ? {
+            type: 'direct',
+            lines: STATE.rtwEngravingLines,
+            threadColor: STATE.rtwThreadColor?.name || 'White',
+            font: 'Times New Roman'
+          } : null,
+          logo: STATE.rtwLogoEnabled ? STATE.rtwLogo : null,
+          quantity: 1,
+          unitPrice: unitPrice,
+          lineTotal: unitPrice,
+          requiresAdvancePayment: requiresAdvance
+        };
 
-      const cart = getStoredCart();
-      cart.push(cartItem);
-      saveCart(cart);
-      updateCartBadge();
-      window.openCartDrawer();
+        const cart = getStoredCart();
+        cart.push(cartItem);
+        saveCart(cart);
+        updateCartBadge();
+        window.openCartDrawer();
+      });
     };
 
     // Option 3 Self Service modal architecture (Section 12)
@@ -1347,29 +1366,31 @@
     };
 
     window.addSimpleProductToCart = function() {
-      const item = STATE.simpleProduct;
-      if (!item) return;
+      withCartDebounce(() => {
+        const item = STATE.simpleProduct;
+        if (!item) return;
 
-      const cartItem = {
-        id: `simple-${item.id}-${Date.now()}`,
-        productId: item.id,
-        title: item.title.replace('DEMO — ', ''),
-        series: item.category,
-        image: item.image,
-        color: STATE.simpleColor,
-        size: 'Standard',
-        quantity: STATE.simpleQty,
-        unitPrice: item.basePrice,
-        lineTotal: item.basePrice * STATE.simpleQty,
-        requiresAdvancePayment: false
-      };
+        const cartItem = {
+          id: `simple-${item.id}-${Date.now()}`,
+          productId: item.id,
+          title: item.title.replace('DEMO — ', ''),
+          series: item.category,
+          image: item.image,
+          color: STATE.simpleColor,
+          size: 'Standard',
+          quantity: STATE.simpleQty,
+          unitPrice: item.basePrice,
+          lineTotal: item.basePrice * STATE.simpleQty,
+          requiresAdvancePayment: false
+        };
 
-      const cart = getStoredCart();
-      cart.push(cartItem);
-      saveCart(cart);
-      updateCartBadge();
-      window.closeSimpleProductModal();
-      window.openCartDrawer();
+        const cart = getStoredCart();
+        cart.push(cartItem);
+        saveCart(cart);
+        updateCartBadge();
+        window.closeSimpleProductModal();
+        window.openCartDrawer();
+      });
     };
 
     // ------------------------------------------------------------
@@ -1559,30 +1580,34 @@
     };
 
     window.submitBankOrder = function() {
-      const name = document.getElementById('bank-order-name')?.value;
-      const phone = document.getElementById('bank-order-phone')?.value;
-      const addr = document.getElementById('bank-order-address')?.value;
+      withCartDebounce(() => {
+        const name = document.getElementById('bank-order-name')?.value;
+        const phone = document.getElementById('bank-order-phone')?.value;
+        const addr = document.getElementById('bank-order-address')?.value;
 
-      if (!name || !phone || !addr) {
-        alert('Please provide your Name, WhatsApp/Phone, and Delivery Address to receive your reference number.');
-        return;
-      }
+        if (!name || !phone || !addr) {
+          alert('Please provide your Name, WhatsApp/Phone, and Delivery Address to receive your reference number.');
+          return;
+        }
 
-      const refNumber = `ENM-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-      showOrderConfirmation(refNumber, 'Payment Pending Verification (Unpaid)', 'Direct Manual Bank Transfer (Meezan Bank)');
+        const refNumber = `ENM-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+        showOrderConfirmation(refNumber, 'Payment Pending Verification (Unpaid)', 'Direct Manual Bank Transfer (Meezan Bank)');
+      });
     };
 
     window.submitRepOrder = function() {
-      const name = document.getElementById('rep-order-name')?.value;
-      const phone = document.getElementById('rep-order-phone')?.value;
+      withCartDebounce(() => {
+        const name = document.getElementById('rep-order-name')?.value;
+        const phone = document.getElementById('rep-order-phone')?.value;
 
-      if (!name || !phone) {
-        alert('Please enter your Name and WhatsApp contact number so our sizing concierge can assist you.');
-        return;
-      }
+        if (!name || !phone) {
+          alert('Please enter your Name and WhatsApp contact number so our sizing concierge can assist you.');
+          return;
+        }
 
-      const refNumber = `ENM-REQ-${Math.floor(10000 + Math.random() * 90000)}`;
-      showOrderConfirmation(refNumber, 'Concierge Sizing Request Received', 'Customer Representative Assisted Order');
+        const refNumber = `ENM-REQ-${Math.floor(10000 + Math.random() * 90000)}`;
+        showOrderConfirmation(refNumber, 'Concierge Sizing Request Received', 'Customer Representative Assisted Order');
+      });
     };
 
     function showOrderConfirmation(refId, statusText, paymentMode) {
