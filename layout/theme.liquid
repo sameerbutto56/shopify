@@ -19,6 +19,7 @@
 
     {%- render 'meta-tags' -%}
     {%- render 'stylesheets' -%}
+    {{ 'enamels-white-theme.css' | asset_url | stylesheet_tag }}
     {{ 'enamels-3d-tilt.css' | asset_url | stylesheet_tag }}
     <link rel="stylesheet" href="{{ 'enamels-rtl.css' | asset_url }}" id="enamels-rtl-stylesheet">
     {%- render 'card-hover-effect-styles' -%}

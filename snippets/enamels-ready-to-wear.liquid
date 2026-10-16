@@ -1,0 +1,585 @@
+{% comment %}
+  ENAMELS ONLINE — READY TO WEAR / MAKE YOUR OWN SCRUB WIZARD
+  Sections 11 and 12
+  Features:
+  - Step 1: Select Fabric (Sprinter Twill, Velora Silk Touch, Crown Gabardine, FlexFit)
+  - Step 2: Select Colour (filtered by fabric)
+  - Step 3: Select Article (Sprinter, Crown, Velora)
+  - Step 4: Select Design (designs belonging to chosen article)
+  - Step 5: Size: Option A Standard Size or Option B Make My Measurements (inches/cm)
+  - Step 6: Customization (Alterations, Engraving, Logo)
+  - Step 7: Review & Add to Cart
+  - Section 12: Self Service Architecture Path
+{% endcomment %}
+
+<div class="chroma-view-panel" id="view-ready-to-wear">
+  <div class="page-container rtw-wizard-container">
+
+    <!-- Header Breadcrumb & Title -->
+    <div style="font-size: 12px; color: #64748b; margin-bottom: 14px;">
+      <a href="#" onclick="window.navigateToView('home'); return false;" style="color: #64748b; text-decoration: none;">Home</a>
+      <span style="margin: 0 6px;">/</span>
+      <strong style="color: #102a43;">Ready to Wear / Make Your Own Scrub</strong>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+      <div>
+        <h1 style="font-size: 26px; font-weight: 700; color: #102a43; margin: 0 0 6px; text-transform: uppercase;">
+          Ready to Wear / Make Your Own Scrub
+        </h1>
+        <p style="font-size: 13px; color: #64748b; margin: 0;">
+          Architectural medical uniform configurator. Select your technical fabric, hospital shade, article series, and tailoring fit.
+        </p>
+      </div>
+
+      <!-- Section 12: Third Option — Self Service Architecture Button -->
+      <div>
+        <button type="button" class="btn-card-action" onclick="window.openSelfServiceModal()" style="background: #f1f5f9; color: #102a43; border: 1px solid #cbd5e1; padding: 10px 16px;">
+          🛠️ Option 3: Self Service Tailoring Portal
+        </button>
+      </div>
+    </div>
+
+    <!-- Wizard Steps Navigation Track -->
+    <div class="rtw-steps-nav">
+      <div class="rtw-nav-step active" id="rtw-step-nav-1" onclick="window.jumpRtwStep(1)">
+        <span class="rtw-step-num">1</span>
+        <span>1. Fabric</span>
+      </div>
+      <div class="rtw-nav-step" id="rtw-step-nav-2" onclick="window.jumpRtwStep(2)">
+        <span class="rtw-step-num">2</span>
+        <span>2. Colour</span>
+      </div>
+      <div class="rtw-nav-step" id="rtw-step-nav-3" onclick="window.jumpRtwStep(3)">
+        <span class="rtw-step-num">3</span>
+        <span>3. Article</span>
+      </div>
+      <div class="rtw-nav-step" id="rtw-step-nav-4" onclick="window.jumpRtwStep(4)">
+        <span class="rtw-step-num">4</span>
+        <span>4. Design</span>
+      </div>
+      <div class="rtw-nav-step" id="rtw-step-nav-5" onclick="window.jumpRtwStep(5)">
+        <span class="rtw-step-num">5</span>
+        <span>5. Sizing & Fit</span>
+      </div>
+      <div class="rtw-nav-step" id="rtw-step-nav-6" onclick="window.jumpRtwStep(6)">
+        <span class="rtw-step-num">6</span>
+        <span>6. Customization</span>
+      </div>
+      <div class="rtw-nav-step" id="rtw-step-nav-7" onclick="window.jumpRtwStep(7)">
+        <span class="rtw-step-num">7</span>
+        <span>7. Review & Order</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: SELECT FABRIC -->
+    <div class="rtw-step-pane active" id="rtw-pane-1">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 1: Choose Your Medical Fabric</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">Each fabric is certified for clinical durability, autoclaving resistance, and moisture control.</p>
+      </div>
+
+      <div class="fabric-card-grid">
+        <!-- Fabric 1: Sprinter Twill -->
+        <div class="fabric-choice-card active" onclick="window.selectRtwFabric('sprinter-twill', 'Sprinter Performance Twill', 0, '4-Way Mechanical Stretch (72% Poly, 21% Rayon, 7% Spandex)')">
+          <div class="fabric-swatch-rect" style="background: linear-gradient(135deg, #102a43, #1e40af);">
+            4-WAY STRETCH
+          </div>
+          <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 4px; color: #102a43;">Sprinter Twill</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">72% Poly, 21% Rayon, 7% Spandex. Highly elastic, wrinkle-free athletic weave.</p>
+          <span style="font-size: 12px; font-weight: 700; color: #00b8a9;">Base Price (Included)</span>
+        </div>
+
+        <!-- Fabric 2: Velora Micro-Drape -->
+        <div class="fabric-choice-card" onclick="window.selectRtwFabric('velora-micro', 'Velora Silk Micro-Drape', 350, 'Ultra-Soft Fluid Drape (75% Poly, 19% Rayon, 6% Spandex)')">
+          <div class="fabric-swatch-rect" style="background: linear-gradient(135deg, #00b8a9, #0d9488);">
+            SILKY MICRO-DRAPE
+          </div>
+          <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 4px; color: #102a43;">Velora Silk Touch</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">75% Poly, 19% Rayon, 6% Spandex. Silky soft hand-feel with anti-microbial finish.</p>
+          <span style="font-size: 12px; font-weight: 700; color: #102a43;">+Rs. 350</span>
+        </div>
+
+        <!-- Fabric 3: Crown Executive Gabardine -->
+        <div class="fabric-choice-card" onclick="window.selectRtwFabric('crown-gabardine', 'Crown Executive Gabardine', 1050, 'Structured Antimicrobial Twill (65% Poly, 35% Cotton)')">
+          <div class="fabric-swatch-rect" style="background: linear-gradient(135deg, #581c87, #4c1d95);">
+            STRUCTURED TWILL
+          </div>
+          <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 4px; color: #102a43;">Crown Gabardine</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">65% Poly, 35% Cotton. Crisp standing drape for executive consultation rounds.</p>
+          <span style="font-size: 12px; font-weight: 700; color: #102a43;">+Rs. 1,050</span>
+        </div>
+
+        <!-- Fabric 4: FlexFit Aerocool -->
+        <div class="fabric-choice-card" onclick="window.selectRtwFabric('flexfit-aerocool', 'FlexFit Hyper-Stretch Aerocool', 250, 'Hyper-Stretch Breathable Technical Weave (88% Poly, 12% Spandex)')">
+          <div class="fabric-swatch-rect" style="background: linear-gradient(135deg, #3f4e3b, #14532d);">
+            AEROCOOL WEAVE
+          </div>
+          <h4 style="font-size: 14px; font-weight: 700; margin: 0 0 4px; color: #102a43;">FlexFit Aerocool</h4>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 8px;">88% Poly, 12% Spandex. Quick-dry moisture-wicking weave for warm wards.</p>
+          <span style="font-size: 12px; font-weight: 700; color: #102a43;">+Rs. 250</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; text-align: right;">
+        <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(2)" style="width: auto; padding: 12px 28px;">
+          Next: Select Colour →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 2: SELECT COLOUR (FILTERED BY FABRIC) -->
+    <div class="rtw-step-pane" id="rtw-pane-2">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 2: Choose Available Hospital Shade</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">
+          Showing official shades supported by <strong id="rtw-active-fabric-label">Sprinter Performance Twill</strong>.
+        </p>
+      </div>
+
+      <div class="pdp-swatches-grid" id="rtw-color-swatches-grid">
+        <!-- Injected via JS based on selected fabric -->
+      </div>
+
+      <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+        <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(1)">← Back to Fabric</button>
+        <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(3)" style="width: auto; padding: 12px 28px;">
+          Next: Select Article Series →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 3: SELECT ARTICLE SERIES -->
+    <div class="rtw-step-pane" id="rtw-pane-3">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 3: Select Scrub Article Series</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">Choose the garment architecture that matches your hospital routine.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        <!-- Sprinter -->
+        <div class="category-tile-card active" id="rtw-article-sprinter" onclick="window.selectRtwArticle('Sprinter')" style="padding: 20px;">
+          <h4 style="font-size: 15px; font-weight: 700; color: #102a43; margin: 0 0 6px;">Sprinter Series</h4>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Athletic raglan cut with multi-pocket cargo joggers. Base: Rs. 5,150</p>
+          <span style="font-size: 11px; font-weight: 700; color: #00b8a9;">Select Series</span>
+        </div>
+
+        <!-- Velora -->
+        <div class="category-tile-card" id="rtw-article-velora" onclick="window.selectRtwArticle('Velora')" style="padding: 20px;">
+          <h4 style="font-size: 15px; font-weight: 700; color: #102a43; margin: 0 0 6px;">Velora Series</h4>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Princess seam tailoring with fluid drape straight pants. Base: Rs. 5,500</p>
+          <span style="font-size: 11px; font-weight: 700; color: #00b8a9;">Select Series</span>
+        </div>
+
+        <!-- Crown -->
+        <div class="category-tile-card" id="rtw-article-crown" onclick="window.selectRtwArticle('Crown')" style="padding: 20px;">
+          <h4 style="font-size: 15px; font-weight: 700; color: #102a43; margin: 0 0 6px;">Crown Series</h4>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Executive mandarin collar with structured concealed zip. Base: Rs. 6,200</p>
+          <span style="font-size: 11px; font-weight: 700; color: #00b8a9;">Select Series</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+        <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(2)">← Back to Colour</button>
+        <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(4)" style="width: auto; padding: 12px 28px;">
+          Next: Select Design →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 4: SELECT DESIGN -->
+    <div class="rtw-step-pane" id="rtw-pane-4">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 4: Select Design Cut</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">Showing designs compatible with your selected article and technical fabric.</p>
+      </div>
+
+      <div class="products-cards-grid" id="rtw-designs-grid">
+        <!-- Injected via JS -->
+      </div>
+
+      <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+        <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(3)">← Back to Article</button>
+        <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(5)" style="width: auto; padding: 12px 28px;">
+          Next: Sizing & Fit →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 5: SIZING & FIT (OPTION A STANDARD VS OPTION B MAKE MY MEASUREMENTS) -->
+    <div class="rtw-step-pane" id="rtw-pane-5">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 5: Select Standard Size or Enter Tailored Measurements</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">Choose ready-to-wear standard sizes or provide bespoke tailoring specifications.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <!-- Option A: Standard Sizing -->
+        <div class="pdp-step-box" id="rtw-box-std-size">
+          <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0 0 10px;">Option A: Standard Clinical Sizing</h4>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Available in XS through 2XL according to standard hospital dimensions.</p>
+          <div class="pdp-sizes-grid">
+            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('XS')">XS</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('S')">S</button>
+            <button type="button" class="pdp-size-chip active" onclick="window.selectRtwStdSize('M')">M</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('L')">L</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('XL')">XL</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('2XL')">2XL</button>
+          </div>
+          <button type="button" onclick="window.openSizeGuideModal()" style="margin-top: 14px; background: none; border: none; font-size: 12px; font-weight: 600; color: #00b8a9; cursor: pointer; text-decoration: underline;">
+            📏 View Reference Chart
+          </button>
+        </div>
+
+        <!-- Option B: Make My Measurements -->
+        <div class="pdp-step-box" id="rtw-box-custom-size">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0;">Option B: Make My Measurements</h4>
+            <div style="display: flex; gap: 4px;">
+              <button type="button" class="gender-pill-btn active" id="rtw-meas-unit-in" onclick="window.setRtwMeasurementUnit('in')" style="padding: 2px 6px; font-size: 10px;">Inches</button>
+              <button type="button" class="gender-pill-btn" id="rtw-meas-unit-cm" onclick="window.setRtwMeasurementUnit('cm')" style="padding: 2px 6px; font-size: 10px;">CM</button>
+            </div>
+          </div>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 12px;">Tailored to your body measurements (+Rs. 750 custom pattern cutting fee).</p>
+
+          <div class="alteration-fields-grid">
+            <div class="form-field-group">
+              <label>Chest / Bust (<span class="rtw-unit-label">in</span>)</label>
+              <input type="number" class="form-field-input" id="rtw-meas-chest" placeholder="e.g. 38" />
+            </div>
+            <div class="form-field-group">
+              <label>Waist (<span class="rtw-unit-label">in</span>)</label>
+              <input type="number" class="form-field-input" id="rtw-meas-waist" placeholder="e.g. 32" />
+            </div>
+            <div class="form-field-group">
+              <label>Hips (<span class="rtw-unit-label">in</span>)</label>
+              <input type="number" class="form-field-input" id="rtw-meas-hips" placeholder="e.g. 40" />
+            </div>
+            <div class="form-field-group">
+              <label>Shoulder Width (<span class="rtw-unit-label">in</span>)</label>
+              <input type="number" class="form-field-input" id="rtw-meas-shoulder" placeholder="e.g. 17" />
+            </div>
+            <div class="form-field-group">
+              <label>Shirt / Top Length (<span class="rtw-unit-label">in</span>)</label>
+              <input type="number" class="form-field-input" id="rtw-meas-shirt" placeholder="e.g. 28" />
+            </div>
+            <div class="form-field-group">
+              <label>Trouser Length / Inseam (<span class="rtw-unit-label">in</span>)</label>
+              <input type="number" class="form-field-input" id="rtw-meas-inseam" placeholder="e.g. 30" />
+            </div>
+          </div>
+          <button type="button" class="btn-card-action" onclick="window.saveRtwCustomMeasurements()" style="margin-top: 12px; padding: 8px;">
+            Apply Tailored Measurements
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+        <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(4)">← Back to Design</button>
+        <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(6)" style="width: auto; padding: 12px 28px;">
+          Next: Personalization →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 6: APPLY CUSTOMIZATION (ALTERATIONS, EMBROIDERY, LOGO) -->
+    <div class="rtw-step-pane" id="rtw-pane-6">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 6: Clinical Personalization & Embroidery Studio</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">Computerized high-density satin embroidery in certified Times New Roman serif.</p>
+      </div>
+
+      <div class="embroidery-studio-grid">
+        <!-- Left: Precision Needlework Options -->
+        <div>
+          <!-- Embroidery Style Pill Selector -->
+          <div class="embroidery-type-selector">
+            <div class="embroidery-type-pill active" id="rtw-type-direct" onclick="window.setRtwEmbroideryType('direct')">
+              <span class="embroidery-type-title">🪡 Direct Needlework</span>
+              <span class="embroidery-type-price">+Rs. 450</span>
+            </div>
+            <div class="embroidery-type-pill" id="rtw-type-patch" onclick="window.setRtwEmbroideryType('patch')">
+              <span class="embroidery-type-title">🏷️ Stitched Patch</span>
+              <span class="embroidery-type-price">+Rs. 350</span>
+            </div>
+            <div class="embroidery-type-pill" id="rtw-type-none" onclick="window.setRtwEmbroideryType('none')">
+              <span class="embroidery-type-title">Plain Uniform</span>
+              <span class="embroidery-type-price" style="color: #64748b;">No Surcharge</span>
+            </div>
+          </div>
+
+          <div id="rtw-embroidery-inputs-card" class="pdp-step-box" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 12px; font-weight: 700; color: #102a43; text-transform: uppercase; letter-spacing: 0.05em;">Text Specification</span>
+              <span style="font-size: 11px; color: #00B8A9; font-weight: 600;">Times New Roman (Standard)</span>
+            </div>
+
+            <!-- Line 1 -->
+            <div class="stitch-input-wrap">
+              <div class="stitch-input-header">
+                <label class="stitch-input-label">Line 1: Full Name & Title</label>
+                <span class="stitch-char-counter" id="rtw-count-1">0 / 28</span>
+              </div>
+              <span class="stitch-input-icon">👨‍⚕️</span>
+              <input type="text" class="stitch-input-field" id="rtw-embroidery-name" placeholder="e.g. Dr. Ayesha Malik" maxlength="28" oninput="window.updateRtwSim()" />
+            </div>
+
+            <!-- Line 2 -->
+            <div class="stitch-input-wrap">
+              <div class="stitch-input-header">
+                <label class="stitch-input-label">Line 2: Department / Specialty</label>
+                <span class="stitch-char-counter" id="rtw-count-2">0 / 32</span>
+              </div>
+              <span class="stitch-input-icon">🩺</span>
+              <input type="text" class="stitch-input-field" id="rtw-embroidery-dept" placeholder="e.g. Consultant Cardiologist" maxlength="32" oninput="window.updateRtwSim()" />
+            </div>
+
+            <!-- Line 3 (Optional) -->
+            <div class="stitch-input-wrap">
+              <div class="stitch-input-header">
+                <label class="stitch-input-label">Line 3: Institute / Society (Optional)</label>
+                <span class="stitch-char-counter" id="rtw-count-3">0 / 35</span>
+              </div>
+              <span class="stitch-input-icon">🏛️</span>
+              <input type="text" class="stitch-input-field" id="rtw-embroidery-hosp" placeholder="e.g. Aga Khan University Hospital" maxlength="35" oninput="window.updateRtwSim()" />
+            </div>
+
+            <!-- Thread Color Selection -->
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+              <label style="font-size: 12px; font-weight: 700; color: #102a43; display: block; margin-bottom: 4px;">
+                Madeira Polyneon™ Thread Colour:
+              </label>
+              <div class="thread-swatches-grid">
+                <div class="thread-swatch-card active" id="rtw-th-white" onclick="window.setRtwThreadColor('#FFFFFF')">
+                  <div class="thread-disc" style="background: linear-gradient(135deg, #ffffff, #e2e8f0);"></div>
+                  <div class="thread-meta">
+                    <span class="thread-name">Silk White</span>
+                    <span class="thread-sub">Pearl Sheen</span>
+                  </div>
+                </div>
+                <div class="thread-swatch-card" id="rtw-th-gold" onclick="window.setRtwThreadColor('#D4AF37')">
+                  <div class="thread-disc" style="background: linear-gradient(135deg, #fbbf24, #d97706);"></div>
+                  <div class="thread-meta">
+                    <span class="thread-name">Metallic Gold</span>
+                    <span class="thread-sub">18K Luster</span>
+                  </div>
+                </div>
+                <div class="thread-swatch-card" id="rtw-th-cyan" onclick="window.setRtwThreadColor('#00B8A9')">
+                  <div class="thread-disc" style="background: linear-gradient(135deg, #2dd4bf, #0f766e);"></div>
+                  <div class="thread-meta">
+                    <span class="thread-name">Clinical Cyan</span>
+                    <span class="thread-sub">Surgical Teal</span>
+                  </div>
+                </div>
+                <div class="thread-swatch-card" id="rtw-th-silver" onclick="window.setRtwThreadColor('#C0C0C0')">
+                  <div class="thread-disc" style="background: linear-gradient(135deg, #e2e8f0, #94a3b8);"></div>
+                  <div class="thread-meta">
+                    <span class="thread-name">Platinum Silver</span>
+                    <span class="thread-sub">Metallic Gray</span>
+                  </div>
+                </div>
+                <div class="thread-swatch-card" id="rtw-th-black" onclick="window.setRtwThreadColor('#18181B')">
+                  <div class="thread-disc" style="background: linear-gradient(135deg, #27272a, #09090b);"></div>
+                  <div class="thread-meta">
+                    <span class="thread-name">Midnight Black</span>
+                    <span class="thread-sub">Matte Obsidian</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hospital Crest Selection -->
+          <div class="pdp-step-box">
+            <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+              <span style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #102a43;">
+                <input type="checkbox" id="rtw-check-logo" onchange="window.toggleRtwLogo(this.checked)" style="width: 16px; height: 16px; accent-color: #00b8a9;" />
+                <span>Add Official Hospital / Society Crest</span>
+              </span>
+              <span style="font-size: 12px; font-weight: 700; color: #00b8a9;">+Rs. 650</span>
+            </label>
+
+            <div id="rtw-logo-select-wrap" style="display: none; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
+              <label style="font-size: 11px; font-weight: 600; color: #64748b; display: block; margin-bottom: 6px;">
+                Select Medical University or Hospital Insignia:
+              </label>
+              <select class="form-field-select" id="rtw-logo-select" onchange="window.updateRtwSim()">
+                <option value="AKUH" selected>Aga Khan University Hospital (AKUH)</option>
+                <option value="SKMCH">Shaukat Khanum Memorial Cancer Hospital</option>
+                <option value="PIMS">Pakistan Institute of Medical Sciences (PIMS)</option>
+                <option value="DUHS">Dow University of Health Sciences (DUHS)</option>
+                <option value="KEMU">King Edward Medical University (KEMU)</option>
+                <option value="CUSTOM">Custom Medical Society Monogram (Consultant Contact)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Modern Interactive Embroidery Preview Studio -->
+        <div class="embroidery-preview-studio">
+          <!-- Studio Top Bar -->
+          <div class="studio-top-bar">
+            <div class="studio-status-indicator">
+              <span class="live-pulse-dot"></span>
+              <span>Live Needlework Emulation</span>
+            </div>
+            <div class="studio-view-toggle">
+              <button type="button" class="studio-toggle-btn active" id="rtw-view-macro" onclick="window.setRtwStudioView('macro')">
+                🔍 Macro Pocket
+              </button>
+              <button type="button" class="studio-toggle-btn" id="rtw-view-garment" onclick="window.setRtwStudioView('garment')">
+                👔 Full Garment
+              </button>
+            </div>
+          </div>
+
+          <!-- 1. MACRO POCKET VIEW (High-Definition Technical Fabric & Seam Rendering) -->
+          <div class="macro-pocket-canvas" id="rtw-macro-stage" style="--rtw-preview-fabric: #102a43;">
+            <div class="macro-fabric-yoke"></div>
+
+            <!-- Authentic 3D Chest Pocket with Double Topstitch -->
+            <div class="macro-chest-pocket" id="rtw-macro-pocket-card">
+              <div class="pocket-top-hem"></div>
+              <div class="pocket-pen-stitch"></div>
+              <div class="pocket-brand-label">ENAMELS</div>
+
+              <!-- Embroidered Hospital Crest Badge -->
+              <div class="macro-crest-emblem" id="rtw-crest-emblem" style="display: none;">
+                <svg viewBox="0 0 24 24"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-4H8v-2h3V7h2v3h3v2h-3v4z"/></svg>
+                <span id="rtw-crest-code">AKUH</span>
+              </div>
+
+              <!-- Computerized Needlework Text Lines -->
+              <div class="stitch-display-container">
+                <div class="stitch-text-line line-name" id="rtw-sim-line-1" style="color: #FFFFFF;">DR. AYESHA MALIK</div>
+                <div class="stitch-text-line line-dept" id="rtw-sim-line-2" style="color: #FFFFFF;">CARDIOLOGY</div>
+                <div class="stitch-text-line line-hosp" id="rtw-sim-line-3" style="color: #FFFFFF; display: none;">AGA KHAN HOSPITAL</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. FULL GARMENT VIEW (Clean Studio Garment Perspective) -->
+          <div class="full-garment-stage" id="rtw-garment-stage">
+            <img src="{{ 'cat-sprinter.jpg' | asset_url }}" id="rtw-garment-photo" alt="Uniform Perspective" class="garment-mannequin-photo" width="400" height="400" loading="lazy" />
+            <div class="garment-pocket-marker" id="rtw-garment-marker">
+              <div style="font-family: 'Times New Roman', serif; font-size: 9px; font-weight: 700; color: #FFFFFF;" id="rtw-garment-sim-line">DR. AYESHA MALIK</div>
+            </div>
+          </div>
+
+          <!-- Studio Footer Strip -->
+          <div class="studio-footer-strip">
+            <div class="studio-footer-item">
+              <span>🔤</span>
+              <span>Times New Roman Serif</span>
+            </div>
+            <div class="studio-footer-item">
+              <span>🧵</span>
+              <span id="rtw-thread-spec-label">Madeira Silk White</span>
+            </div>
+            <div class="studio-footer-item">
+              <span>🛡️</span>
+              <span>Autoclave Resistant</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+        <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(5)">← Back to Sizing</button>
+        <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(7)" style="width: auto; padding: 12px 28px;">
+          Next: Review Configuration →
+        </button>
+      </div>
+    </div>
+
+    <!-- STEP 7: REVIEW AND ADD TO CART -->
+    <div class="rtw-step-pane" id="rtw-pane-7">
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 4px;">Step 7: Final Review & Cart Order</h3>
+        <p style="font-size: 12px; color: #64748b; margin: 0;">Review your custom-tailored medical garment specifications before adding to cart.</p>
+      </div>
+
+      <div class="pdp-step-box" style="background: #fafafa; border: 1px solid #cbd5e1; max-width: 650px; margin: 0 auto;">
+        <table class="order-summary-table">
+          <tbody>
+            <tr>
+              <td>Fabric Choice:</td>
+              <td class="text-right" id="rtw-rev-fabric">Sprinter Performance Twill</td>
+            </tr>
+            <tr>
+              <td>Selected Shade:</td>
+              <td class="text-right" id="rtw-rev-color">Deep Navy</td>
+            </tr>
+            <tr>
+              <td>Scrub Article & Cut:</td>
+              <td class="text-right" id="rtw-rev-article">Sprinter Raglan Athletic Set</td>
+            </tr>
+            <tr>
+              <td>Size / Measurements:</td>
+              <td class="text-right" id="rtw-rev-size">Standard M</td>
+            </tr>
+            <tr id="rtw-rev-emb-row" style="display: none;">
+              <td>Doctor Embroidery:</td>
+              <td class="text-right" id="rtw-rev-emb">+Rs. 450</td>
+            </tr>
+            <tr id="rtw-rev-logo-row" style="display: none;">
+              <td>Hospital Crest:</td>
+              <td class="text-right" id="rtw-rev-logo">+Rs. 650</td>
+            </tr>
+            <tr class="total-row">
+              <td>Total Amount:</td>
+              <td class="text-right" style="font-size: 20px;" id="rtw-rev-total">Rs. 5,150</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Advance Payment Notice -->
+        <div id="rtw-advance-alert" class="advance-payment-alert-box" style="display: none;">
+          <span class="advance-alert-icon">⚠️</span>
+          <div>
+            <div class="advance-alert-title">Advance Payment Required</div>
+            <p class="advance-alert-text">
+              Customized specifications require 100% advance payment via Bank Transfer. Bank details and receipt upload instructions will be provided.
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+          <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(6)">← Edit Options</button>
+          <button type="button" class="btn-proceed-checkout" onclick="window.addRtwToCart()" style="flex: 1;">
+            🛒 Add Tailored Uniform to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION 12: THIRD OPTION — SELF SERVICE ARCHITECTURE MODAL -->
+<div class="enamels-modal-backdrop" id="self-service-modal" onclick="window.closeSelfServiceModal()">
+  <div class="enamels-modal-card" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-trigger" onclick="window.closeSelfServiceModal()">✕</button>
+    <div style="font-size: 28px; margin-bottom: 8px;">🛠️</div>
+    <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 8px; text-transform: uppercase;">
+      Self-Service Custom Tailoring Portal
+    </h3>
+    <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 16px;">
+      This third path allows institutional hospital administrators, medical societies, and clinic staff to submit corporate bulk uniform specifications, customer-supplied fabric tailoring, or specialized custom badge requisitions.
+    </p>
+
+    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
+      <h4 style="font-size: 12px; font-weight: 700; color: #102a43; margin: 0 0 6px; text-transform: uppercase;">Integration Status:</h4>
+      <p style="font-size: 12px; color: #64748b; margin: 0;">
+        The system navigation and architecture are fully initialized. Custom business rules and self-service workflow parameters are pending final merchant authorization.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button type="button" class="gender-pill-btn" onclick="window.closeSelfServiceModal()">Return to Studio</button>
+      <a href="https://wa.me/923011331133?text=Inquiry%20regarding%20Self%20Service%20Tailoring%20and%20Institutional%20Orders" target="_blank" rel="noopener" class="btn-card-action" style="width: auto; padding: 10px 18px; background: #25d366; text-decoration: none;">
+        Contact Corporate Concierge
+      </a>
+    </div>
+  </div>
+</div>

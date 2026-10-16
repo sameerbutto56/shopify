@@ -772,3 +772,19 @@ window.EnamelsCatalogue = [
     companionIds: ['demo-cap-bunfit-teal', 'demo-srv-name-embroidery']
   }
 ];
+
+// Normalize product metadata and enforce business customization rules:
+// - Sprinter series: STRICTLY NO Make Your Own Color on standard PDP
+// - Crown & Velora series: Make Your Own Color enabled as configured
+window.EnamelsCatalogue.forEach(item => {
+  if (item.series === 'Sprinter') {
+    item.supportsMakeYourOwnColor = false;
+  } else if (item.series === 'Crown' || item.series === 'Velora') {
+    item.supportsMakeYourOwnColor = true;
+  } else {
+    item.supportsMakeYourOwnColor = false;
+  }
+  if (!item.designs) {
+    item.designs = [item.title.replace('DEMO — ', '')];
+  }
+});

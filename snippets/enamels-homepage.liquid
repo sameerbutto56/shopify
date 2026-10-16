@@ -1,0 +1,311 @@
+{% comment %}
+  ENAMELS ONLINE — HOMEPAGE PRESERVED ARCHITECTURE & SLIDESHOW
+  Preserves existing white visual identity, authentic 5-slide banner slideshow,
+  category navigation grid, series showcase, hospital shade matrix, trust badges, and reviews.
+{% endcomment %}
+
+<div class="chroma-view-panel active" id="view-home">
+
+  <!-- ============================================================ -->
+  <!-- 1. AUTHENTIC 5-SLIDE BANNER SLIDESHOW (SECTION 3)            -->
+  <!-- ============================================================ -->
+  <section class="enamels-slideshow-container" id="enamels-hero-slideshow" aria-label="Official Enamels Slideshow">
+    <div class="slideshow-track" id="enamels-slideshow-track">
+
+      <!-- Slide 1: Sprinter Autumn Edition -->
+      <a href="#collection-sprinter" class="slide-panel" onclick="window.navigateToCollection('Sprinter'); return false;">
+        <img
+          src="{{ 'banner-autumn.jpg' | asset_url }}"
+          alt="Enamels Sprinter Autumn Edition"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="eager"
+        />
+      </a>
+
+      <!-- Slide 2: Clinical Clogs & Footwear -->
+      <a href="#collection-clogs" class="slide-panel" onclick="window.navigateToCollection('clogs', 'category'); return false;">
+        <img
+          src="{{ 'banner-clogs.jpg' | asset_url }}"
+          alt="Enamels Clinical Clogs & Footwear"
+          class="slide-img-full"
+          width="1500"
+          height="625"
+          loading="lazy"
+        />
+      </a>
+
+      <!-- Slide 3: New Arrivals / Abbotabad Banner -->
+      <a href="#collection-new-arrivals" class="slide-panel" onclick="window.navigateToCollection('all', 'category'); return false;">
+        <img
+          src="{{ 'banner-abbotabad.jpg' | asset_url }}"
+          alt="Enamels New Arrivals 2026"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="lazy"
+        />
+      </a>
+
+      <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
+      <a href="#collection-caps" class="slide-panel" onclick="window.navigateToCollection('caps', 'category'); return false;">
+        <img
+          src="{{ 'banner-caps.jpg' | asset_url }}"
+          alt="Enamels BunFit Surgical Caps"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="lazy"
+        />
+      </a>
+
+      <!-- Slide 5: Velora By Enamels -->
+      <a href="#collection-velora" class="slide-panel" onclick="window.navigateToCollection('Velora'); return false;">
+        <img
+          src="{{ 'banner-velora.jpg' | asset_url }}"
+          alt="Velora Luxury Micro-Drape By Enamels"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="lazy"
+        />
+      </a>
+
+    </div>
+
+    <!-- Navigation Controls -->
+    <button type="button" class="slideshow-arrow prev" onclick="window.stepBannerSlide(-1)" aria-label="Previous Slide">‹</button>
+    <button type="button" class="slideshow-arrow next" onclick="window.stepBannerSlide(1)" aria-label="Next Slide">›</button>
+
+    <!-- Pagination Dots -->
+    <div class="slideshow-dots-bar" id="slideshow-dots-bar">
+      <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2. SHOP BY CATEGORY GRID (AUTHENTIC ENAMELS STYLE)           -->
+  <!-- ============================================================ -->
+  <section class="page-container">
+    <div class="section-header-wrap">
+      <span class="section-tag-sub">OFFICIAL TAXONOMY</span>
+      <h2 class="section-title-main">Shop by Category</h2>
+      <p class="section-title-desc">Explore Pakistan's most comprehensive medical uniform and clinical apparel catalogue.</p>
+    </div>
+
+    <div class="enamels-category-grid">
+      <!-- 1. Sprinter Series -->
+      <a href="#collection-sprinter" class="category-tile-card" onclick="window.navigateToCollection('Sprinter'); return false;">
+        <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Sprinter Series" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Sprinter Series</h3>
+          <p class="category-tile-sub">4-Way Mechanical Athletic Stretch</p>
+        </div>
+      </a>
+
+      <!-- 2. Men Scrubs -->
+      <a href="#category-scrubs" class="category-tile-card" onclick="window.navigateToGenderCollection('men'); return false;">
+        <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Men's Scrubs</h3>
+          <p class="category-tile-sub">Tailored Raglan & Cargo Jogger Sets</p>
+        </div>
+      </a>
+
+      <!-- 3. Women Scrubs -->
+      <a href="#category-scrubs" class="category-tile-card" onclick="window.navigateToGenderCollection('women'); return false;">
+        <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Women's Scrubs</h3>
+          <p class="category-tile-sub">Princess Contour & Fluid Drape Cuts</p>
+        </div>
+      </a>
+
+      <!-- 4. Crown Series -->
+      <a href="#collection-crown" class="category-tile-card" onclick="window.navigateToCollection('Crown'); return false;">
+        <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Crown Series" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Crown Series</h3>
+          <p class="category-tile-sub">Executive Mandarin Standing Collar</p>
+        </div>
+      </a>
+
+      <!-- 5. Lab Coats -->
+      <a href="#collection-lab-coats" class="category-tile-card" onclick="window.navigateToCollection('lab-coat', 'category'); return false;">
+        <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Lab Coats" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Lab Coats</h3>
+          <p class="category-tile-sub">Helium Notch Lapel & Consultant Cuts</p>
+        </div>
+      </a>
+
+      <!-- 6. Surgical Caps -->
+      <a href="#collection-caps" class="category-tile-card" onclick="window.navigateToCollection('caps', 'category'); return false;">
+        <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="Surgical Caps" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Surgical Caps</h3>
+          <p class="category-tile-sub">BunFit™ Volume Pleats & Printed Themes</p>
+        </div>
+      </a>
+
+      <!-- 7. Velora Series -->
+      <a href="#collection-velora" class="category-tile-card" onclick="window.navigateToCollection('Velora'); return false;">
+        <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Velora Series" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Velora Series</h3>
+          <p class="category-tile-sub">Silky Soft Luxury Micro-Drape</p>
+        </div>
+      </a>
+
+      <!-- 8. Clinical Clogs -->
+      <a href="#collection-clogs" class="category-tile-card" onclick="window.navigateToCollection('clogs', 'category'); return false;">
+        <img src="{{ 'cat-clogs.jpg' | asset_url }}" alt="Clinical Clogs" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">Clinical Clogs</h3>
+          <p class="category-tile-sub">Ergonomic Cushioning & Anti-Slip Soles</p>
+        </div>
+      </a>
+
+      <!-- 9. FlexFit Series -->
+      <a href="#collection-flexfit" class="category-tile-card" onclick="window.navigateToCollection('FlexFit'); return false;">
+        <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="FlexFit Series" class="category-tile-img" width="400" height="400" loading="lazy" />
+        <div class="category-tile-body">
+          <h3 class="category-tile-name">FlexFit Series</h3>
+          <p class="category-tile-sub">Laser-Cut Ventilation & Aerocool Weave</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. PROPRIETARY SERIES SPOTLIGHT                              -->
+  <!-- ============================================================ -->
+  <section style="background-color: #f8fafc; padding: 60px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+    <div class="page-container">
+      <div class="section-header-wrap" style="margin-top: 0;">
+        <span class="section-tag-sub">ENGINEERED FOR CLINICAL ROLES</span>
+        <h2 class="section-title-main">Signature Scrub Lines</h2>
+        <p class="section-title-desc">From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+        <!-- Sprinter Card -->
+        <div class="category-tile-card" style="padding: 24px; text-align: left;">
+          <span style="font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">4-Way Athletic Stretch</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Sprinter Series</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility.</p>
+          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,150</div>
+          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Sprinter')">Explore Sprinter →</button>
+        </div>
+
+        <!-- Velora Card -->
+        <div class="category-tile-card" style="padding: 24px; text-align: left;">
+          <span style="font-size: 10px; font-weight: 700; background: #fdf2f8; color: #be185d; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Luxury Micro-Drape</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Velora Series</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Liquid soft touch with fluid drape. Engineered with antimicrobial finishing and wrinkle-release properties that stay sharp through 24-hour shifts without ironing.</p>
+          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,500</div>
+          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Velora')">Explore Velora →</button>
+        </div>
+
+        <!-- Crown Card -->
+        <div class="category-tile-card" style="padding: 24px; text-align: left;">
+          <span style="font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Executive Mandarin</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Crown Series</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Structured standing mandarin collar with concealed front placket. Tailored for department heads, senior consultants, and leadership rounds.</p>
+          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 6,200</div>
+          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Crown')">Explore Crown →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. SHOP BY CLINICAL HOSPITAL SHADE                           -->
+  <!-- ============================================================ -->
+  <section class="page-container" style="padding: 50px 0;">
+    <div class="section-header-wrap" style="margin-top: 0;">
+      <span class="section-tag-sub">COLOR HARMONY</span>
+      <h2 class="section-title-main">Shop by Hospital & Clinical Shade</h2>
+      <p class="section-title-desc">Adhere to strict hospital ward color guidelines or express individual professional style.</p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; max-width: 900px; margin: 0 auto;">
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#102A43', 'Deep Navy')">
+        <span class="pdp-swatch-color-dot" style="background: #102A43;"></span>
+        <span>Deep Navy</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#1E40AF', 'Royal Blue')">
+        <span class="pdp-swatch-color-dot" style="background: #1E40AF;"></span>
+        <span>Royal Blue</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#6BA4B8', 'Ceil Blue')">
+        <span class="pdp-swatch-color-dot" style="background: #6BA4B8;"></span>
+        <span>Ceil Blue</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#581C87', 'Burgundy Maroon')">
+        <span class="pdp-swatch-color-dot" style="background: #581C87;"></span>
+        <span>Burgundy</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#3F4E3B', 'Olive Shine')">
+        <span class="pdp-swatch-color-dot" style="background: #3F4E3B;"></span>
+        <span>Olive Shine</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#14532D', 'Hunter Green')">
+        <span class="pdp-swatch-color-dot" style="background: #14532D;"></span>
+        <span>Hunter Green</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#18181B', 'Obsidian Black')">
+        <span class="pdp-swatch-color-dot" style="background: #18181B;"></span>
+        <span>Obsidian Black</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#64748B', 'Heather Grey')">
+        <span class="pdp-swatch-color-dot" style="background: #64748B;"></span>
+        <span>Heather Grey</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#00B8A9', 'Clinical Teal')">
+        <span class="pdp-swatch-color-dot" style="background: #00B8A9;"></span>
+        <span>Clinical Teal</span>
+      </button>
+      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#A855F7', 'Lilac Lavender')">
+        <span class="pdp-swatch-color-dot" style="background: #A855F7;"></span>
+        <span>Lilac Lavender</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 5. TRUST BADGES ARCHITECTURE                                 -->
+  <!-- ============================================================ -->
+  <section style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 40px 0;">
+    <div class="page-container">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        <div style="text-align: center; padding: 16px;">
+          <div style="font-size: 26px; margin-bottom: 8px;">🚚</div>
+          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Free Shipping</h4>
+          <p style="font-size: 11px; color: #64748b; margin: 0;">On all orders over Rs. 7,000 nationwide</p>
+        </div>
+        <div style="text-align: center; padding: 16px;">
+          <div style="font-size: 26px; margin-bottom: 8px;">💵</div>
+          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Cash on Delivery</h4>
+          <p style="font-size: 11px; color: #64748b; margin: 0;">Available across all cities in Pakistan</p>
+        </div>
+        <div style="text-align: center; padding: 16px;">
+          <div style="font-size: 26px; margin-bottom: 8px;">⚡</div>
+          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">7-Day Easy Exchange</h4>
+          <p style="font-size: 11px; color: #64748b; margin: 0;">Instant sizing support via WhatsApp</p>
+        </div>
+        <div style="text-align: center; padding: 16px;">
+          <div style="font-size: 26px; margin-bottom: 8px;">🪡</div>
+          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Custom Embroidery</h4>
+          <p style="font-size: 11px; color: #64748b; margin: 0;">Computerized name & hospital crests</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,544 @@
+{% comment %}
+  ENAMELS ONLINE — PRODUCT DETAIL PAGE & 8-STEP CUSTOMIZATION STUDIO
+  Sections 5, 6, 7, 8, 9, 10
+  Features:
+  - 8-Step Flow Stepper
+  - Interactive Colour Swatches beneath image
+  - Standard Sizes (XS-2XL) + Custom Measurements Studio
+  - "Make Your Own Color" strictly HIDDEN for Sprinter series!
+  - Alterations with Top/Trouser/Sleeve lengths & Advance Notice
+  - Direct Engraving & Stitched Patch with live Times New Roman chest pocket simulation
+  - Logo Gallery (AKUH, SKMCH, PIMS, DUHS, KEMU) with Left/Right placement
+  - Advance Payment Disclaimers & Itemized Order Summary
+  - Cross-Selling add-on products with variant selection
+{% endcomment %}
+
+<div class="chroma-view-panel" id="view-product-studio">
+  <div class="page-container">
+
+    <!-- Breadcrumb -->
+    <div style="font-size: 12px; color: #64748b; padding: 20px 0 10px;">
+      <a href="#" onclick="window.navigateToView('home'); return false;" style="color: #64748b; text-decoration: none;">Home</a>
+      <span style="margin: 0 6px;">/</span>
+      <a href="#category-scrubs" onclick="window.navigateToView('category-scrubs'); return false;" style="color: #64748b; text-decoration: none;">Scrubs</a>
+      <span style="margin: 0 6px;">/</span>
+      <strong style="color: #102a43;" id="pdp-breadcrumb-title">Sprinter Scrub Set</strong>
+    </div>
+
+    <!-- 8-Step Stepper Progress Bar -->
+    <div class="pdp-stepper-track">
+      <div class="pdp-step-indicator active" id="stepper-step-1">
+        <span class="pdp-step-circle">1</span>
+        <span>Design</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-2">
+        <span class="pdp-step-circle">2</span>
+        <span>Colour</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-3">
+        <span class="pdp-step-circle">3</span>
+        <span>Size</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-4">
+        <span class="pdp-step-circle">4</span>
+        <span>Alterations</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-5">
+        <span class="pdp-step-circle">5</span>
+        <span>Engraving</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-6">
+        <span class="pdp-step-circle">6</span>
+        <span>Logo</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-7">
+        <span class="pdp-step-circle">7</span>
+        <span>Review</span>
+      </div>
+      <div class="pdp-step-indicator" id="stepper-step-8">
+        <span class="pdp-step-circle">8</span>
+        <span>Cart</span>
+      </div>
+    </div>
+
+    <!-- Studio Layout -->
+    <div class="pdp-studio-layout">
+
+      <!-- LEFT COLUMN: Product Media & Live Pocket Simulation -->
+      <div class="pdp-visual-column">
+        <div class="pdp-main-image-frame" id="pdp-image-stage">
+          <img src="{{ 'demo-sprinter-navy.jpg' | asset_url }}" alt="Enamels Uniform Mockup" id="pdp-active-photo" class="pdp-main-photo" width="700" height="850" loading="eager" />
+
+          <!-- Live Left Chest Pocket Embroidery Overlay -->
+          <div class="pdp-pocket-sim-overlay" id="pocket-sim-overlay" style="display: none;">
+            <div id="sim-logo-preview-wrap" style="display: none; margin-bottom: 4px;">
+              <!-- Dynamic Logo Emblem Preview -->
+            </div>
+            <div class="embroidery-preview-text line-1" id="pocket-doctor-name">DR. AYESHA MALIK</div>
+            <div class="embroidery-preview-text line-2" id="pocket-doctor-dept">CARDIOLOGY</div>
+            <div class="embroidery-preview-text line-3" id="pocket-doctor-sub">AGA KHAN HOSPITAL</div>
+          </div>
+
+          <!-- Placement Disclaimer -->
+          <div class="embroidery-sim-disclaimer" id="embroidery-disclaimer-pill" style="display: none;">
+            🪡 Live Embroidery Simulation (Times New Roman)
+          </div>
+        </div>
+
+        <!-- Color Swatches Directly Beneath Product Image (Section 5 Requirement) -->
+        <div style="margin-top: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Available Colours:</span>
+            <span style="font-size: 12px; font-weight: 600; color: #102a43;" id="pdp-selected-color-title">Deep Navy</span>
+          </div>
+          <div class="pdp-swatches-grid" id="pdp-bottom-swatches-grid">
+            <!-- Dynamically populated from variant data -->
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: 8-Step Customization Wizard -->
+      <div class="pdp-config-column">
+
+        <!-- Title, Price, Description -->
+        <div style="margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 700; background: #102a43; color: #ffffff; padding: 3px 8px; border-radius: 4px;" id="pdp-series-badge">SPRINTER SERIES</span>
+            <span style="font-size: 11px; color: #64748b;" id="pdp-sku-display">SKU: ENM-SPRN-NVY</span>
+          </div>
+          <h1 style="font-size: 24px; font-weight: 700; color: #102a43; margin: 0 0 8px;" id="pdp-title-display">
+            Sprinter Men's Athletic Scrub Set
+          </h1>
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+            <span style="font-size: 22px; font-weight: 700; color: #102a43;" id="pdp-base-price-display">Rs. 5,150</span>
+            <span style="font-size: 14px; color: #94a3b8; text-decoration: line-through;" id="pdp-compare-price-display">Rs. 5,800</span>
+            <span style="font-size: 11px; font-weight: 600; color: #00b8a9; background: #e6fffa; padding: 2px 6px; border-radius: 4px;">In Stock • Nationwide Delivery</span>
+          </div>
+          <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5;" id="pdp-desc-display">
+            Engineered for high-tempo emergency shifts and clinical rounds. Tailored raglan sleeves for unrestricted arm mobility, deep chest pocket with pen slot, and 6-pocket functional cargo joggers with ribbed cuffs.
+          </p>
+        </div>
+
+        <!-- STEP 2: MAKE YOUR OWN COLOR (STRICT RULE: HIDDEN FOR SPRINTER!) -->
+        <div class="pdp-step-box" id="pdp-make-your-own-color-section" style="display: none;">
+          <div class="pdp-step-box-header">
+            <h3 class="pdp-step-title">
+              <span>🎨 Make Your Own Color</span>
+              <span style="font-size: 10px; background: #fdf2f8; color: #be185d; padding: 2px 6px; border-radius: 10px;">CUSTOM DYE</span>
+            </h3>
+          </div>
+          <p style="font-size: 12px; color: #64748b; margin: 0 0 12px;">
+            Select a custom hospital shade for this series. Your uniform will be dyed and batch-processed specifically for your department.
+          </p>
+          <div class="pdp-swatches-grid" id="pdp-custom-color-swatches">
+            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#3F4E3B', 'Olive Shine')">
+              <span class="pdp-swatch-color-dot" style="background: #3F4E3B;"></span>
+              <span>Olive Shine</span>
+            </button>
+            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#14532D', 'Hunter Green')">
+              <span class="pdp-swatch-color-dot" style="background: #14532D;"></span>
+              <span>Hunter Green</span>
+            </button>
+            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#581C87', 'Burgundy Maroon')">
+              <span class="pdp-swatch-color-dot" style="background: #581C87;"></span>
+              <span>Burgundy Maroon</span>
+            </button>
+            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#A855F7', 'Lilac Bloom')">
+              <span class="pdp-swatch-color-dot" style="background: #A855F7;"></span>
+              <span>Lilac Bloom</span>
+            </button>
+            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#64748B', 'Heather Grey')">
+              <span class="pdp-swatch-color-dot" style="background: #64748B;"></span>
+              <span>Heather Grey</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: SIZE SELECTION (STANDARD + CUSTOM MEASUREMENTS) -->
+        <div class="pdp-step-box">
+          <div class="pdp-step-box-header">
+            <h3 class="pdp-step-title">
+              <span>Step 3: Select Size</span>
+            </h3>
+            <button type="button" onclick="window.openSizeGuideModal()" style="background: none; border: none; font-size: 12px; font-weight: 600; color: #00b8a9; cursor: pointer; text-decoration: underline;">
+              📏 Size Guide (Inches & CM)
+            </button>
+          </div>
+
+          <!-- Standard Sizes Grid -->
+          <div class="pdp-sizes-grid" id="pdp-sizes-grid">
+            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('XS')">XS</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('S')">S</button>
+            <button type="button" class="pdp-size-chip active" onclick="window.selectStandardSize('M')">M</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('L')">L</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('XL')">XL</button>
+            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('2XL')">2XL</button>
+          </div>
+
+          <!-- Custom Tailored Sizing Option Toggle -->
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e2e8f0;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #102a43; cursor: pointer;">
+              <input type="checkbox" id="toggle-custom-measurements-check" onchange="window.toggleCustomMeasurementsForm(this.checked)" />
+              <span>Need Custom Tailored Measurements? (Enter Exact Sizing)</span>
+            </label>
+          </div>
+
+          <!-- Custom Measurements Drawer / Subpanel -->
+          <div id="pdp-custom-measurements-panel" style="display: none; margin-top: 12px; background: #f8fafc; padding: 16px; border-radius: 6px; border: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Body Measurements</span>
+              <div style="display: flex; gap: 4px;">
+                <button type="button" class="gender-pill-btn active" id="meas-unit-in" onclick="window.setMeasurementUnit('in')" style="padding: 3px 8px; font-size: 10px;">Inches</button>
+                <button type="button" class="gender-pill-btn" id="meas-unit-cm" onclick="window.setMeasurementUnit('cm')" style="padding: 3px 8px; font-size: 10px;">CM</button>
+              </div>
+            </div>
+
+            <div class="alteration-fields-grid">
+              <div class="form-field-group">
+                <label>Chest / Bust (<span class="unit-label">in</span>)</label>
+                <input type="number" class="form-field-input" id="meas-input-chest" placeholder="e.g. 38" />
+              </div>
+              <div class="form-field-group">
+                <label>Waist (<span class="unit-label">in</span>)</label>
+                <input type="number" class="form-field-input" id="meas-input-waist" placeholder="e.g. 32" />
+              </div>
+              <div class="form-field-group">
+                <label>Hips (<span class="unit-label">in</span>)</label>
+                <input type="number" class="form-field-input" id="meas-input-hips" placeholder="e.g. 40" />
+              </div>
+              <div class="form-field-group">
+                <label>Inseam / Trouser Length (<span class="unit-label">in</span>)</label>
+                <input type="number" class="form-field-input" id="meas-input-inseam" placeholder="e.g. 30" />
+              </div>
+            </div>
+            <button type="button" class="btn-card-action" onclick="window.saveCustomMeasurements()" style="margin-top: 12px; padding: 8px;">
+              Confirm Measurements
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 4: ALTERATION OPTIONS (SECTION 6) -->
+        <div class="pdp-step-box">
+          <div class="pdp-step-box-header">
+            <h3 class="pdp-step-title">
+              <span>Step 4: Optional Alterations</span>
+            </h3>
+            <span style="font-size: 12px; font-weight: 600; color: #102a43;">+Rs. 350</span>
+          </div>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #102a43; cursor: pointer;">
+            <input type="checkbox" id="pdp-enable-alterations" onchange="window.toggleAlterations(this.checked)" />
+            <span>Enable Tailoring Alterations (+Rs. 350)</span>
+          </label>
+
+          <div id="pdp-alterations-box" style="display: none; margin-top: 14px;">
+            <div class="alteration-fields-grid">
+              <div class="form-field-group">
+                <label>Shirt / Top Length</label>
+                <select class="form-field-select" id="alt-shirt-length" onchange="window.updateAlterationDetails()">
+                  <option value="Standard">Standard Factory Length</option>
+                  <option value="+1 Inch">+1 Inch Longer (+2.5 cm)</option>
+                  <option value="+2 Inches">+2 Inches Longer (+5.0 cm)</option>
+                  <option value="-1 Inch">-1 Inch Shorter (-2.5 cm)</option>
+                  <option value="-2 Inches">-2 Inches Shorter (-5.0 cm)</option>
+                </select>
+              </div>
+              <div class="form-field-group">
+                <label>Trouser Length</label>
+                <select class="form-field-select" id="alt-trouser-length" onchange="window.updateAlterationDetails()">
+                  <option value="Standard">Standard Factory Length</option>
+                  <option value="+1.5 Inches">+1.5 Inches Longer (+3.8 cm)</option>
+                  <option value="+2 Inches">+2 Inches Longer (+5.0 cm)</option>
+                  <option value="-1.5 Inches">-1.5 Inches Shorter (-3.8 cm)</option>
+                  <option value="-2 Inches">-2 Inches Shorter (-5.0 cm)</option>
+                </select>
+              </div>
+              <div class="form-field-group">
+                <label>Sleeve Length</label>
+                <select class="form-field-select" id="alt-sleeve-length" onchange="window.updateAlterationDetails()">
+                  <option value="Half Sleeve (Standard)">Half Sleeve (Clinical Standard)</option>
+                  <option value="Full Sleeve (+Rs. 250)">Full Sleeve with Ribbed Cuffs (+Rs. 250)</option>
+                  <option value="3/4 Modest Sleeve">3/4 Modest Sleeve</option>
+                </select>
+              </div>
+              <div class="form-field-group">
+                <label>Tailoring Notes & Instructions</label>
+                <input type="text" class="form-field-input" id="alt-notes" placeholder="e.g. Please taper waist by 1 inch" oninput="window.updateAlterationDetails()" />
+              </div>
+            </div>
+
+            <!-- Advance Payment Disclaimer for Alterations -->
+            <div class="advance-payment-alert-box">
+              <span class="advance-alert-icon">⚠️</span>
+              <div>
+                <div class="advance-alert-title">Advance Payment Required for Alterations</div>
+                <p class="advance-alert-text">
+                  Garment alterations are custom-tailored to your measurements. 100% advance payment via Bank Transfer is required prior to tailoring.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: ENGRAVING / EMBROIDERY CUSTOMIZATION (SECTION 7) -->
+        <div class="pdp-step-box">
+          <div class="pdp-step-box-header">
+            <h3 class="pdp-step-title">
+              <span>Step 5: Optional Engraving / Embroidery</span>
+            </h3>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="radio" name="pdp_engraving_type" value="none" checked onchange="window.setEngravingType('none')" />
+              <span>No Personalization (Plain Uniform)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="radio" name="pdp_engraving_type" value="direct" onchange="window.setEngravingType('direct')" />
+              <span><strong>Direct Engraving</strong> on Left Chest (+Rs. 450)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="radio" name="pdp_engraving_type" value="patch" onchange="window.setEngravingType('patch')" />
+              <span><strong>Stitched Patch Engraving</strong> (+Rs. 350)</span>
+            </label>
+          </div>
+
+          <!-- Direct / Patch Inputs -->
+          <div id="pdp-engraving-inputs-box" style="display: none; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+            <div class="form-field-group" style="margin-bottom: 10px;">
+              <label>Line 1: Full Name & Title (Times New Roman)</label>
+              <input type="text" class="form-field-input" id="engraving-line-1" placeholder="e.g. Dr. Ayesha Malik" oninput="window.updateLiveEngravingPreview()" maxlength="30" />
+            </div>
+            <div class="form-field-group" style="margin-bottom: 10px;">
+              <label>Line 2: Specialty / Designation</label>
+              <input type="text" class="form-field-input" id="engraving-line-2" placeholder="e.g. Consultant Cardiologist" oninput="window.updateLiveEngravingPreview()" maxlength="35" />
+            </div>
+            <div class="form-field-group" style="margin-bottom: 10px;">
+              <label>Line 3: Department / Hospital</label>
+              <input type="text" class="form-field-input" id="engraving-line-3" placeholder="e.g. Aga Khan University Hospital" oninput="window.updateLiveEngravingPreview()" maxlength="35" />
+            </div>
+
+            <!-- Thread Color Selection -->
+            <label style="font-size: 12px; font-weight: 600; color: #102a43; display: block; margin-top: 12px;">Thread Colour:</label>
+            <div class="thread-color-row">
+              <button type="button" class="thread-color-chip active" id="thread-btn-white" onclick="window.selectThreadColor('#FFFFFF', 'Silk White')">
+                <span class="pdp-swatch-color-dot" style="background: #FFFFFF; border: 1px solid #cbd5e1;"></span>
+                <span>White</span>
+              </button>
+              <button type="button" class="thread-color-chip" id="thread-btn-gold" onclick="window.selectThreadColor('#D4AF37', 'Medical Gold')">
+                <span class="pdp-swatch-color-dot" style="background: #D4AF37;"></span>
+                <span>Gold</span>
+              </button>
+              <button type="button" class="thread-color-chip" id="thread-btn-cyan" onclick="window.selectThreadColor('#00B8A9', 'Clinical Cyan')">
+                <span class="pdp-swatch-color-dot" style="background: #00B8A9;"></span>
+                <span>Cyan</span>
+              </button>
+              <button type="button" class="thread-color-chip" id="thread-btn-black" onclick="window.selectThreadColor('#18181B', 'Midnight Black')">
+                <span class="pdp-swatch-color-dot" style="background: #18181B;"></span>
+                <span>Black</span>
+              </button>
+              <button type="button" class="thread-color-chip" id="thread-btn-silver" onclick="window.selectThreadColor('#C0C0C0', 'Platinum Silver')">
+                <span class="pdp-swatch-color-dot" style="background: #C0C0C0;"></span>
+                <span>Silver</span>
+              </button>
+            </div>
+
+            <!-- Advance Payment Disclaimer for Engraving -->
+            <div class="advance-payment-alert-box">
+              <span class="advance-alert-icon">⚠️</span>
+              <div>
+                <div class="advance-alert-title">Advance Payment Required for Engraving</div>
+                <p class="advance-alert-text">
+                  Computerized chest embroidery cannot be resold or re-dispatched. 100% advance payment is required before machine digitizing and stitching.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6: LOGO SELECTION AND PLACEMENT (SECTION 8) -->
+        <div class="pdp-step-box">
+          <div class="pdp-step-box-header">
+            <h3 class="pdp-step-title">
+              <span>Step 6: Optional Organization Logo</span>
+            </h3>
+            <span style="font-size: 12px; font-weight: 600; color: #102a43;">+Rs. 650</span>
+          </div>
+
+          <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #102a43; cursor: pointer;">
+            <input type="checkbox" id="pdp-enable-logo" onchange="window.toggleLogoSelection(this.checked)" />
+            <span>Add Official Hospital / Institution Crest (+Rs. 650)</span>
+          </label>
+
+          <div id="pdp-logo-options-box" style="display: none; margin-top: 14px;">
+            <label style="font-size: 12px; font-weight: 600; color: #102a43; display: block; margin-bottom: 6px;">Select Approved Institution Crest:</label>
+            <div class="logo-selection-grid">
+              <!-- AKUH -->
+              <div class="logo-option-card active" onclick="window.selectLogoItem('akuh', 'Aga Khan University Hospital')">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏥</div>
+                <p class="logo-option-name">AKUH</p>
+                <span style="font-size: 9px; color: #64748b;">Aga Khan Univ</span>
+              </div>
+              <!-- SKMCH -->
+              <div class="logo-option-card" onclick="window.selectLogoItem('skmch', 'Shaukat Khanum Memorial Hospital')">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🎗️</div>
+                <p class="logo-option-name">SKMCH</p>
+                <span style="font-size: 9px; color: #64748b;">Shaukat Khanum</span>
+              </div>
+              <!-- PIMS -->
+              <div class="logo-option-card" onclick="window.selectLogoItem('pims', 'PIMS Islamabad')">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏛️</div>
+                <p class="logo-option-name">PIMS</p>
+                <span style="font-size: 9px; color: #64748b;">Islamabad</span>
+              </div>
+              <!-- DUHS -->
+              <div class="logo-option-card" onclick="window.selectLogoItem('duhs', 'Dow University of Health Sciences')">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">⚕️</div>
+                <p class="logo-option-name">DUHS</p>
+                <span style="font-size: 9px; color: #64748b;">Dow Medical</span>
+              </div>
+              <!-- KEMU -->
+              <div class="logo-option-card" onclick="window.selectLogoItem('kemu', 'King Edward Medical University')">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">👑</div>
+                <p class="logo-option-name">KEMU</p>
+                <span style="font-size: 9px; color: #64748b;">King Edward</span>
+              </div>
+              <!-- Custom Logo Upload -->
+              <div class="logo-option-card" onclick="window.selectLogoItem('custom', 'Custom Clinic Crest')">
+                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">📤</div>
+                <p class="logo-option-name">Custom Crest</p>
+                <span style="font-size: 9px; color: #64748b;">Send on WhatsApp</span>
+              </div>
+            </div>
+
+            <!-- Placement Choice -->
+            <div style="margin-top: 14px;">
+              <label style="font-size: 12px; font-weight: 600; color: #102a43; display: block; margin-bottom: 6px;">Logo Placement:</label>
+              <div style="display: flex; gap: 12px;">
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                  <input type="radio" name="pdp_logo_placement" value="Right Chest" checked onchange="window.setLogoPlacement('Right Chest')" />
+                  <span>Right Chest (Opposite Pocket)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                  <input type="radio" name="pdp_logo_placement" value="Left Chest" onchange="window.setLogoPlacement('Left Chest')" />
+                  <span>Left Chest Pocket</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Advance Payment Notice -->
+            <div class="advance-payment-alert-box">
+              <span class="advance-alert-icon">⚠️</span>
+              <div>
+                <div class="advance-alert-title">Advance Payment Required for Logo</div>
+                <p class="advance-alert-text">
+                  Hospital emblem digitizing and high-density crest embroidery requires 100% advance payment.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 7: ADVANCE-PAYMENT DISCLAIMER & ITEMIZED ORDER SUMMARY (SECTION 9) -->
+        <div class="pdp-step-box" style="background: #fafafa; border: 1px solid #cbd5e1;">
+          <h3 class="pdp-step-title" style="margin-bottom: 12px;">
+            <span>Step 7: Itemized Order Summary</span>
+          </h3>
+
+          <table class="order-summary-table">
+            <tbody>
+              <tr>
+                <td>Base Garment Price:</td>
+                <td class="text-right" id="summary-base-price">Rs. 5,150</td>
+              </tr>
+              <tr>
+                <td>Selected Colour & Size:</td>
+                <td class="text-right" id="summary-color-size">Deep Navy / M</td>
+              </tr>
+              <tr id="summary-row-alterations" style="display: none;">
+                <td>Tailoring Alterations:</td>
+                <td class="text-right">+Rs. 350</td>
+              </tr>
+              <tr id="summary-row-engraving" style="display: none;">
+                <td id="summary-engraving-label">Direct Embroidery:</td>
+                <td class="text-right" id="summary-engraving-price">+Rs. 450</td>
+              </tr>
+              <tr id="summary-row-logo" style="display: none;">
+                <td>Hospital Crest Application:</td>
+                <td class="text-right">+Rs. 650</td>
+              </tr>
+              <tr id="summary-row-addons" style="display: none;">
+                <td>Companion Add-Ons:</td>
+                <td class="text-right" id="summary-addons-price">+Rs. 0</td>
+              </tr>
+              <tr>
+                <td>Delivery / Courier:</td>
+                <td class="text-right" style="color: #00b8a9;" id="summary-shipping-price">FREE (Over Rs. 7,000)</td>
+              </tr>
+              <tr class="total-row">
+                <td>Final Order Total:</td>
+                <td class="text-right" style="font-size: 20px;" id="summary-grand-total">Rs. 5,150</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Visible Advance Payment Disclaimer Box -->
+          <div id="summary-advance-disclaimer" style="display: none; margin-top: 16px;" class="advance-payment-alert-box">
+            <span class="advance-alert-icon">⚠️</span>
+            <div>
+              <div class="advance-alert-title">Advance Payment Required Before Dispatch</div>
+              <p class="advance-alert-text">
+                Your order includes bespoke customization (alterations, direct embroidery, or hospital crest). An advance payment receipt must be confirmed via Bank Transfer or JazzCash before production. You will receive bank details at checkout.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 8: CROSS-SELLING & ADD-ON COMPANIONS (SECTION 10) -->
+        <div class="cross-sell-box">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Complementary Clinical Add-Ons:</span>
+            <span style="font-size: 11px; color: #64748b;">Bundle & Complete Your Look</span>
+          </div>
+
+          <div class="cross-sell-items-grid">
+            <!-- 1. BunFit Cap -->
+            <div class="cross-sell-item-card">
+              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Cap" class="cross-sell-thumb" width="60" height="60" loading="lazy" />
+              <div class="cross-sell-info">
+                <h4 class="cross-sell-title">BunFit™ Surgical Cap</h4>
+                <div class="cross-sell-price">Rs. 1,450</div>
+              </div>
+              <button type="button" class="btn-cross-add" onclick="window.addCompanionItem('cap')">+ Add</button>
+            </div>
+
+            <!-- 2. Med Sleeves -->
+            <div class="cross-sell-item-card">
+              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Med Sleeves" class="cross-sell-thumb" width="60" height="60" loading="lazy" />
+              <div class="cross-sell-info">
+                <h4 class="cross-sell-title">Med Arm Sleeves</h4>
+                <div class="cross-sell-price">Rs. 750</div>
+              </div>
+              <button type="button" class="btn-cross-add" onclick="window.addCompanionItem('sleeves')">+ Add</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADD TO CART & QUANTITY ACTION -->
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div style="display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; background: #ffffff;">
+            <button type="button" class="qty-btn" onclick="window.stepPdpQty(-1)">-</button>
+            <input type="text" id="pdp-qty-input" value="1" readonly style="width: 32px; text-align: center; border: none; font-weight: 700; font-size: 13px;" />
+            <button type="button" class="qty-btn" onclick="window.stepPdpQty(1)">+</button>
+          </div>
+
+          <button type="button" class="btn-proceed-checkout" onclick="window.addConfiguredScrubToCart()" style="flex: 1; padding: 16px; font-size: 14px;">
+            🛒 Add to Cart & Review
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

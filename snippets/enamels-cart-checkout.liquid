@@ -1,0 +1,336 @@
+{% comment %}
+  ENAMELS ONLINE — CART DRAWER & PAYMENT CHECKOUT WORKFLOWS
+  Sections 13, 14, 15
+  Features:
+  - Simple modal for Caps, Sleeves, Lab Coats (Section 13)
+  - Slide-out Cart Drawer with full line-item properties and refresh persistence (Section 14)
+  - Option A: Manual Bank Transfer with Meezan Bank details (Section 15)
+  - Option B: Customer Representative Request with #ENM-REQ-XXXXX (Section 15)
+{% endcomment %}
+
+<!-- 1. SLIDE-OUT CART DRAWER -->
+<div class="enamels-cart-drawer-overlay" id="cart-drawer-overlay" onclick="window.closeCartDrawer()"></div>
+
+<div class="enamels-cart-drawer" id="cart-drawer">
+  <!-- Drawer Top Header -->
+  <div class="drawer-top-header">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <h3 class="drawer-header-title">Shopping Cart</h3>
+      <span class="cart-bubble-badge" id="cart-drawer-count-badge">0</span>
+    </div>
+    <button type="button" class="btn-drawer-close" onclick="window.closeCartDrawer()" aria-label="Close Cart">✕</button>
+  </div>
+
+  <!-- Free Shipping Progress Bar (Rs. 7,000 threshold matching policy) -->
+  <div class="drawer-free-shipping-bar">
+    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 600;">
+      <span id="free-shipping-label" style="color: #102a43;">Free Shipping Target: Rs. 7,000</span>
+      <span id="free-shipping-status" style="color: #00b8a9;">Rs. 7,000 remaining</span>
+    </div>
+    <div class="progress-track-bar">
+      <div class="progress-fill" id="free-shipping-progress" style="width: 0%;"></div>
+    </div>
+  </div>
+
+  <!-- Items Scroll Area -->
+  <div class="drawer-items-scroll" id="cart-items-container">
+    <!-- Populated dynamically via JavaScript -->
+  </div>
+
+  <!-- Drawer Footer: Subtotal & Checkout -->
+  <div class="drawer-footer-checkout">
+    <!-- Advance Payment Alert in Cart -->
+    <div id="cart-advance-payment-warning" class="advance-payment-alert-box" style="display: none; margin-bottom: 14px; padding: 10px 14px;">
+      <span class="advance-alert-icon" style="font-size: 14px;">⚠️</span>
+      <p class="advance-alert-text" style="font-size: 11px;">
+        Customized items in cart require advance payment before tailoring.
+      </p>
+    </div>
+
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px;">
+      <span style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Subtotal:</span>
+      <span style="font-size: 20px; font-weight: 700; color: #102a43;" id="cart-drawer-subtotal">Rs. 0</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <button type="button" class="btn-proceed-checkout" onclick="window.openCheckoutModal('bank')">
+        Proceed to Checkout (Bank Transfer)
+      </button>
+      <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('rep')" style="width: 100%; text-align: center; border-radius: 4px; padding: 12px; font-weight: 700;">
+        💬 Order with Customer Representative
+      </button>
+    </div>
+
+    <div style="margin-top: 10px; text-align: center; font-size: 11px; color: #94a3b8;">
+      Cash on Delivery available for non-custom items • Nationwide Trax / TCS
+    </div>
+  </div>
+</div>
+
+<!-- 2. CHECKOUT OPTIONS MODAL (SECTION 15) -->
+<div class="enamels-modal-backdrop" id="checkout-options-modal" onclick="window.closeCheckoutModal()">
+  <div class="enamels-modal-card" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-trigger" onclick="window.closeCheckoutModal()">✕</button>
+
+    <!-- OPTION A: BANK TRANSFER WORKFLOW -->
+    <div id="checkout-view-bank">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="font-size: 22px;">🏦</span>
+        <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0; text-transform: uppercase;">
+          Direct Manual Bank Transfer
+        </h3>
+      </div>
+      <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 16px;">
+        For items requiring advance payment (embroidery, alterations, custom sizing), please transfer the total order amount to Enamels Official Account.
+      </p>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 16px; margin-bottom: 16px;">
+        <table style="width: 100%; font-size: 12px; line-height: 1.8;">
+          <tr>
+            <td style="color: #64748b; width: 120px;">Bank Name:</td>
+            <td><strong>Meezan Bank Limited (Premier)</strong></td>
+          </tr>
+          <tr>
+            <td style="color: #64748b;">Account Title:</td>
+            <td><strong>Enamels Medical Apparel (Pvt) Ltd</strong></td>
+          </tr>
+          <tr>
+            <td style="color: #64748b;">Account Number:</td>
+            <td><strong style="font-family: monospace; font-size: 13px;">01020104928172</strong></td>
+          </tr>
+          <tr>
+            <td style="color: #64748b;">IBAN:</td>
+            <td><strong style="font-family: monospace; font-size: 13px;">PK36MEZN0001020104928172</strong></td>
+          </tr>
+          <tr>
+            <td style="color: #64748b;">Branch:</td>
+            <td>DHA Phase 5 Branch, Lahore / Karachi</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Customer Details Form -->
+      <div style="margin-bottom: 16px;">
+        <div class="alteration-fields-grid">
+          <div class="form-field-group">
+            <label>Full Name *</label>
+            <input type="text" class="form-field-input" id="bank-order-name" placeholder="Dr. First Last" />
+          </div>
+          <div class="form-field-group">
+            <label>WhatsApp / Phone *</label>
+            <input type="tel" class="form-field-input" id="bank-order-phone" placeholder="0300 1234567" />
+          </div>
+          <div class="form-field-group">
+            <label>Hospital / Clinic Name</label>
+            <input type="text" class="form-field-input" id="bank-order-hospital" placeholder="e.g. Aga Khan Hospital" />
+          </div>
+          <div class="form-field-group">
+            <label>Delivery Address *</label>
+            <input type="text" class="form-field-input" id="bank-order-address" placeholder="Complete hospital / residence address" />
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="gender-pill-btn" onclick="window.closeCheckoutModal()">Cancel</button>
+        <button type="button" class="btn-proceed-checkout" onclick="window.submitBankOrder()" style="flex: 1;">
+          Confirm Order & Receive Reference
+        </button>
+      </div>
+    </div>
+
+    <!-- OPTION B: CUSTOMER REPRESENTATIVE ASSISTANCE WORKFLOW -->
+    <div id="checkout-view-rep" style="display: none;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="font-size: 22px;">💬</span>
+        <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0; text-transform: uppercase;">
+          Assisted Order with Customer Representative
+        </h3>
+      </div>
+      <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 16px;">
+        Prefer personal assistance? Submit your tailored uniform specifications. A dedicated Enamels sizing concierge will verify your details on WhatsApp and assist with confirmation.
+      </p>
+
+      <div style="margin-bottom: 16px;">
+        <div class="alteration-fields-grid">
+          <div class="form-field-group">
+            <label>Your Name *</label>
+            <input type="text" class="form-field-input" id="rep-order-name" placeholder="Dr. Full Name" />
+          </div>
+          <div class="form-field-group">
+            <label>WhatsApp Contact *</label>
+            <input type="tel" class="form-field-input" id="rep-order-phone" placeholder="0301 1331133" />
+          </div>
+          <div class="form-field-group">
+            <label>City & Hospital</label>
+            <input type="text" class="form-field-input" id="rep-order-city" placeholder="e.g. Lahore - Services Hospital" />
+          </div>
+          <div class="form-field-group">
+            <label>Special Sizing Instructions</label>
+            <input type="text" class="form-field-input" id="rep-order-notes" placeholder="e.g. Need assistance with sleeve measurements" />
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="gender-pill-btn" onclick="window.closeCheckoutModal()">Cancel</button>
+        <button type="button" class="btn-proceed-checkout" onclick="window.submitRepOrder()" style="flex: 1; background: #00b8a9;">
+          Submit Concierge Request
+        </button>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION VIEW (SUCCESS REFERENCE) -->
+    <div id="checkout-view-confirmation" style="display: none; text-align: center; padding: 20px 0;">
+      <div style="font-size: 42px; margin-bottom: 12px;" id="conf-icon">✅</div>
+      <h3 style="font-size: 20px; font-weight: 700; color: #102a43; margin: 0 0 6px;" id="conf-title">
+        Order Request Recorded
+      </h3>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;" id="conf-message">
+        Your customized order reference has been generated.
+      </p>
+
+      <div style="background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 14px; margin-bottom: 20px; display: inline-block;">
+        <span style="font-size: 11px; color: #64748b; display: block;">ORDER REFERENCE NUMBER:</span>
+        <strong style="font-size: 18px; color: #102a43; letter-spacing: 0.05em;" id="conf-reference-id">#ENM-2026-94812</strong>
+        <div style="font-size: 11px; font-weight: 600; margin-top: 4px;" id="conf-status-badge">
+          Status: Payment Pending Verification (Unpaid)
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px;">
+        <button type="button" class="gender-pill-btn" onclick="window.closeCheckoutModal(); window.navigateToView('home');">
+          Return to Homepage
+        </button>
+        <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="btn-card-action" style="width: auto; padding: 10px 20px; background: #25d366; text-decoration: none;">
+          Share Receipt on WhatsApp
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 3. SIMPLE PURCHASE MODAL FOR NON-CUSTOMIZED ITEMS (SECTION 13) -->
+<div class="enamels-modal-backdrop" id="simple-product-modal" onclick="window.closeSimpleProductModal()">
+  <div class="enamels-modal-card" style="max-width: 480px;" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-trigger" onclick="window.closeSimpleProductModal()">✕</button>
+
+    <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+      <img src="{{ 'cat-caps.jpg' | asset_url }}" id="simple-prod-img" alt="Product" width="100" height="120" style="width: 100px; height: 120px; object-fit: cover; border-radius: 6px; background: #f1f5f9;" loading="lazy" />
+      <div style="flex: 1;">
+        <span style="font-size: 10px; font-weight: 700; background: #f1f5f9; color: #102a43; padding: 2px 6px; border-radius: 4px;" id="simple-prod-category">CAPS & ACCESSORIES</span>
+        <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 6px 0 4px;" id="simple-prod-title">Product Title</h3>
+        <div style="font-size: 16px; font-weight: 700; color: #102a43;" id="simple-prod-price">Rs. 1,450</div>
+      </div>
+    </div>
+
+    <!-- Variant Selectors if any -->
+    <div id="simple-variant-selectors" style="margin-bottom: 16px;">
+      <div class="form-field-group" style="margin-bottom: 8px;">
+        <label>Selected Colour</label>
+        <select class="form-field-select" id="simple-select-color" onchange="window.updateSimpleProductColor(this.value)">
+          <option value="Navy">Deep Navy</option>
+          <option value="Teal">Clinical Teal</option>
+          <option value="Black">Obsidian Black</option>
+        </select>
+      </div>
+      <div class="form-field-group">
+        <label>Quantity</label>
+        <div style="display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 8px; width: fit-content; background: #ffffff;">
+          <button type="button" class="qty-btn" onclick="window.stepSimpleQty(-1)">-</button>
+          <input type="text" id="simple-qty-input" value="1" readonly style="width: 32px; text-align: center; border: none; font-weight: 700; font-size: 13px;" />
+          <button type="button" class="qty-btn" onclick="window.stepSimpleQty(1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="btn-proceed-checkout" onclick="window.addSimpleProductToCart()">
+      Add to Cart & Checkout
+    </button>
+  </div>
+</div>
+
+<!-- 4. REFERENCE SIZE GUIDE MODAL (INCHES & CM) -->
+<div class="enamels-modal-backdrop" id="size-guide-modal" onclick="window.closeSizeGuideModal()">
+  <div class="enamels-modal-card" style="max-width: 650px;" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-trigger" onclick="window.closeSizeGuideModal()">✕</button>
+    <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 4px; text-transform: uppercase;">
+      Enamels Master Clinical Sizing Chart
+    </h3>
+    <p style="font-size: 12px; color: #64748b; margin-bottom: 14px;">
+      Measurements below correspond to finished garment dimensions. We recommend choosing your normal clinical size.
+    </p>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: center;">
+        <thead>
+          <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+            <th style="padding: 10px; text-align: left;">Size</th>
+            <th>Chest (in / cm)</th>
+            <th>Waist (in / cm)</th>
+            <th>Hips (in / cm)</th>
+            <th>Top Length</th>
+            <th>Trouser Length</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 8px; text-align: left; font-weight: 700;">XS</td>
+            <td>34" / 86 cm</td>
+            <td>28" / 71 cm</td>
+            <td>36" / 91 cm</td>
+            <td>26" / 66 cm</td>
+            <td>38" / 96 cm</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 8px; text-align: left; font-weight: 700;">S</td>
+            <td>37" / 94 cm</td>
+            <td>30" / 76 cm</td>
+            <td>38" / 96 cm</td>
+            <td>27" / 68 cm</td>
+            <td>39" / 99 cm</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+            <td style="padding: 8px; text-align: left; font-weight: 700;">M</td>
+            <td>40" / 102 cm</td>
+            <td>33" / 84 cm</td>
+            <td>41" / 104 cm</td>
+            <td>28" / 71 cm</td>
+            <td>40" / 102 cm</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 8px; text-align: left; font-weight: 700;">L</td>
+            <td>43" / 109 cm</td>
+            <td>36" / 91 cm</td>
+            <td>44" / 112 cm</td>
+            <td>29" / 74 cm</td>
+            <td>41" / 104 cm</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 8px; text-align: left; font-weight: 700;">XL</td>
+            <td>46" / 117 cm</td>
+            <td>39" / 99 cm</td>
+            <td>47" / 119 cm</td>
+            <td>30" / 76 cm</td>
+            <td>42" / 107 cm</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td style="padding: 8px; text-align: left; font-weight: 700;">2XL</td>
+            <td>49" / 124 cm</td>
+            <td>42" / 107 cm</td>
+            <td>50" / 127 cm</td>
+            <td>31" / 79 cm</td>
+            <td>42.5" / 108 cm</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 16px; text-align: right;">
+      <button type="button" class="btn-card-action" onclick="window.closeSizeGuideModal()" style="width: auto; padding: 8px 18px;">
+        Got It
+      </button>
+    </div>
+  </div>
+</div>
