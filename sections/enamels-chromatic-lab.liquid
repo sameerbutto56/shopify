@@ -67,6 +67,9 @@
 
       // Product Detail Page (PDP) Customizer
       pdpProduct: null,
+      pdpCurrentStep: 'design',
+      pdpCompletedSteps: new Set(['design']),
+      pdpSkippedSteps: new Set(),
       pdpColor: { name: 'Deep Navy', hex: '#102A43', image: '' },
       pdpSize: 'M',
       pdpIsCustomSize: false,
@@ -373,20 +376,54 @@
     }
 
     // ------------------------------------------------------------
-    // 6. PRODUCT DETAIL PAGE (PDP) CUSTOMIZER (SECTIONS 5 - 10)
+    // 6. PRODUCT DETAIL PAGE (PDP) CUSTOMIZER & INTERACTIVE STEPPER
     // ------------------------------------------------------------
+
+    // Returns the dynamically applicable steps for a given product
+    function getPdpApplicableSteps(product) {
+      const p = product || STATE.pdpProduct;
+      if (!p) return [];
+
+      // If product does not support alterations/engraving/logo customization (e.g. basic pants/caps)
+      if (p.supportsCustomization === false) {
+        return [
+          { id: 'design', title: 'Design', short: 'Design', optional: false },
+          { id: 'colour', title: 'Colour', short: 'Colour', optional: false },
+          { id: 'size', title: 'Size & Fit', short: 'Size', optional: false },
+          { id: 'review', title: 'Review & Cart', short: 'Review', optional: false }
+        ];
+      }
+
+      // Standard 7-Step Full Customization Flow
+      return [
+        { id: 'design', title: 'Design', short: 'Design', optional: false },
+        { id: 'colour', title: 'Colour', short: 'Colour', optional: false },
+        { id: 'size', title: 'Size & Fit', short: 'Size', optional: false },
+        { id: 'alterations', title: 'Alterations', short: 'Alterations', optional: true },
+        { id: 'engraving', title: 'Engraving', short: 'Engraving', optional: true },
+        { id: 'logo', title: 'Logo', short: 'Logo', optional: true },
+        { id: 'review', title: 'Review & Cart', short: 'Review', optional: false }
+      ];
+    }
+
+    // Opens the PDP Customization Studio for a given product
     window.openProductStudio = function(productId) {
       const catalogue = window.EnamelsCatalogue || [];
       const item = catalogue.find(p => p.id === productId) || catalogue[0];
       if (!item) return;
 
-      // Simple products redirect to simple modal if needed
+      // Simple products (caps, accessories, sleeves) use simple modal
       if (item.category === 'caps' || item.category === 'accessories' || item.category === 'sleeves') {
         window.openSimpleProductModal(item.id);
         return;
       }
 
       STATE.pdpProduct = item;
+      STATE.pdpCurrentStep = 'design';
+      STATE.pdpCompletedSteps = new Set(['design', 'colour', 'size']);
+      STATE.pdpSkippedSteps = new Set();
+
+      // Default color & size
       STATE.pdpColor = item.colors?.[0] || { name: 'Deep Navy', hex: '#102A43', image: item.image };
       STATE.pdpSize = item.sizes?.[0] || 'M';
       STATE.pdpIsCustomSize = false;
@@ -437,8 +474,12 @@
         }
       }
 
-      // Render color swatches directly beneath image
+      // Render scrub model quick switcher
+      renderPdpDesignChips();
+
+      // Render color swatches beneath image & inside colour step pane
       renderPdpBottomSwatches(item.colors || []);
+      renderPdpPaneSwatches(item.colors || []);
 
       // Render available standard sizes
       renderPdpSizes(item.sizes || ['XS', 'S', 'M', 'L', 'XL', '2XL']);
@@ -471,10 +512,154 @@
       const qtyInput = document.getElementById('pdp-qty-input');
       if (qtyInput) qtyInput.value = '1';
 
+      // Clear any previous change notices or errors
+      const noticeEl = document.getElementById('pdp-design-change-notice');
+      if (noticeEl) noticeEl.style.display = 'none';
+      document.querySelectorAll('.pdp-step-error-banner').forEach(el => el.style.display = 'none');
+
+      // Activate step 1 (Design)
+      window.goToPdpStep('design', false);
+
       recalculatePdpSummary();
       window.navigateToView('product-studio');
     };
 
+    // Render design switch chips inside Step 1
+    function renderPdpDesignChips() {
+      const container = document.getElementById('pdp-design-chips-grid');
+      if (!container) return;
+      const catalogue = window.EnamelsCatalogue || [];
+      const scrubs = catalogue.filter(p => p.category === 'scrubs');
+      if (!scrubs.length) return;
+
+      container.innerHTML = scrubs.map(p => {
+        const isCurrent = (p.id === STATE.pdpProduct?.id);
+        const cleanTitle = p.title.replace('DEMO — ', '');
+        return `
+          <button type="button" class="gender-pill-btn ${isCurrent ? 'active' : ''}" 
+            onclick="window.changePdpProduct('${p.id}')"
+            style="padding: 5px 10px; font-size: 11px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
+            <strong>${cleanTitle}</strong>
+            <span style="opacity: 0.7; font-size: 10px;">(Rs. ${p.basePrice.toLocaleString()})</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // Switch scrub model/design while preserving compatible user selections (Requirement 7)
+    window.changePdpProduct = function(productId) {
+      const catalogue = window.EnamelsCatalogue || [];
+      const nextItem = catalogue.find(p => p.id === productId);
+      if (!nextItem || nextItem.id === STATE.pdpProduct?.id) return;
+
+      const prevProduct = STATE.pdpProduct;
+      const prevColor = STATE.pdpColor;
+      const prevSize = STATE.pdpSize;
+
+      let noticeMessages = [];
+
+      // Check color compatibility
+      const hasMatchingColor = nextItem.colors && nextItem.colors.some(c => c.name === prevColor?.name);
+      if (hasMatchingColor) {
+        // Keep selected color
+      } else {
+        STATE.pdpColor = nextItem.colors?.[0] || { name: 'Deep Navy', hex: '#102A43', image: nextItem.image };
+        noticeMessages.push(`Colour set to ${STATE.pdpColor.name} (previous colour was unavailable in this model).`);
+      }
+
+      // Sprinter check on custom dye
+      if (nextItem.series === 'Sprinter' && STATE.pdpCustomColor) {
+        STATE.pdpCustomColor = null;
+        STATE.pdpColor = nextItem.colors?.[0] || { name: 'Deep Navy', hex: '#102A43', image: nextItem.image };
+        noticeMessages.push(`Custom dye is restricted for Sprinter series; reverted to ${STATE.pdpColor.name}.`);
+      }
+
+      // Check size compatibility
+      if (STATE.pdpIsCustomSize) {
+        // Keep custom measurements intact
+      } else {
+        const hasMatchingSize = nextItem.sizes && nextItem.sizes.includes(prevSize);
+        if (!hasMatchingSize) {
+          STATE.pdpSize = nextItem.sizes?.[0] || 'M';
+          noticeMessages.push(`Size set to ${STATE.pdpSize} (previous size was unavailable in this model).`);
+        }
+      }
+
+      // Check customization support
+      if (nextItem.supportsCustomization === false) {
+        STATE.pdpAlterations = false;
+        STATE.pdpEngravingType = 'none';
+        STATE.pdpLogoEnabled = false;
+        noticeMessages.push(`This item does not support embroidery or bespoke alterations.`);
+      }
+
+      STATE.pdpProduct = nextItem;
+
+      // Update UI texts
+      const cleanTitle = nextItem.title.replace('DEMO — ', '');
+      const titleEl = document.getElementById('pdp-title-display');
+      const skuEl = document.getElementById('pdp-sku-display');
+      const priceEl = document.getElementById('pdp-base-price-display');
+      const compPriceEl = document.getElementById('pdp-compare-price-display');
+      const descEl = document.getElementById('pdp-desc-display');
+      const badgeEl = document.getElementById('pdp-series-badge');
+      const breadEl = document.getElementById('pdp-breadcrumb-title');
+      const photoEl = document.getElementById('pdp-active-photo');
+
+      if (titleEl) titleEl.textContent = cleanTitle;
+      if (skuEl) skuEl.textContent = `SKU: ${nextItem.sku}`;
+      if (priceEl) priceEl.textContent = `Rs. ${nextItem.basePrice.toLocaleString()}`;
+      if (compPriceEl) compPriceEl.textContent = nextItem.comparePrice ? `Rs. ${nextItem.comparePrice.toLocaleString()}` : '';
+      if (descEl) descEl.textContent = nextItem.description;
+      if (badgeEl) badgeEl.textContent = `${(nextItem.series || 'CLINICAL').toUpperCase()} SERIES`;
+      if (breadEl) breadEl.textContent = cleanTitle;
+
+      if (photoEl && nextItem.image) {
+        photoEl.src = window.ShopifyThemeAssets?.[nextItem.image] || nextItem.image;
+        photoEl.onerror = () => { photoEl.src = '{{ 'demo-sprinter-navy.jpg' | asset_url }}'; };
+      }
+
+      // Make your own color section visibility
+      const customColorSection = document.getElementById('pdp-make-your-own-color-section');
+      if (customColorSection) {
+        if (nextItem.series === 'Sprinter' || nextItem.supportsMakeYourOwnColor === false) {
+          customColorSection.style.display = 'none';
+        } else {
+          customColorSection.style.display = 'block';
+        }
+      }
+
+      // Re-render swatches, sizes and design switcher
+      renderPdpBottomSwatches(nextItem.colors || []);
+      renderPdpPaneSwatches(nextItem.colors || []);
+      renderPdpSizes(nextItem.sizes || ['XS', 'S', 'M', 'L', 'XL', '2XL']);
+      renderPdpDesignChips();
+
+      // Show notice if any changes occurred
+      const noticeEl = document.getElementById('pdp-design-change-notice');
+      if (noticeEl) {
+        if (noticeMessages.length > 0) {
+          noticeEl.innerHTML = `ℹ️ ${noticeMessages.join(' ')}`;
+          noticeEl.style.display = 'block';
+        } else {
+          noticeEl.innerHTML = `✓ Switched to ${cleanTitle}. All your selections were preserved!`;
+          noticeEl.style.display = 'block';
+        }
+      }
+
+      // Recheck applicable steps
+      const applicable = getPdpApplicableSteps(nextItem);
+      const isStillApplicable = applicable.some(s => s.id === STATE.pdpCurrentStep);
+      if (!isStillApplicable) {
+        window.goToPdpStep(applicable[0].id, false);
+      } else {
+        renderPdpStepper();
+      }
+
+      recalculatePdpSummary();
+    };
+
+    // Render color swatches directly beneath image
     function renderPdpBottomSwatches(colors) {
       const grid = document.getElementById('pdp-bottom-swatches-grid');
       const title = document.getElementById('pdp-selected-color-title');
@@ -487,31 +672,64 @@
 
       if (title && STATE.pdpColor) title.textContent = STATE.pdpColor.name;
 
-      grid.innerHTML = colors.map((c, i) => `
-        <button type="button" class="pdp-swatch-item ${i === 0 ? 'active' : ''}" onclick="window.selectPdpColor('${c.hex}', '${c.name}', '${c.image || ''}')" title="${c.name}">
-          <span class="pdp-swatch-color-dot" style="background: ${c.hex};"></span>
-          <span>${c.name}</span>
-        </button>
-      `).join('');
+      grid.innerHTML = colors.map((c, i) => {
+        const isActive = (STATE.pdpColor && STATE.pdpColor.name === c.name) || (!STATE.pdpColor && i === 0);
+        return `
+          <button type="button" class="pdp-swatch-item ${isActive ? 'active' : ''}" onclick="window.selectPdpColor('${c.hex}', '${c.name}', '${c.image || ''}')" title="${c.name}">
+            <span class="pdp-swatch-color-dot" style="background: ${c.hex};"></span>
+            <span>${c.name}</span>
+          </button>
+        `;
+      }).join('');
     }
 
+    // Render swatches in Step 2 Colour Pane
+    function renderPdpPaneSwatches(colors) {
+      const grid = document.getElementById('pdp-pane-swatches-grid');
+      const nameEl = document.getElementById('pdp-pane-colour-name');
+      if (!grid) return;
+
+      if (!colors || !colors.length) {
+        grid.innerHTML = '<span style="font-size: 12px; color: #64748b;">Standard Hospital Navy</span>';
+        return;
+      }
+
+      if (nameEl && STATE.pdpColor) nameEl.textContent = STATE.pdpColor.name;
+
+      grid.innerHTML = colors.map((c, i) => {
+        const isActive = (STATE.pdpColor && STATE.pdpColor.name === c.name) || (!STATE.pdpColor && i === 0);
+        return `
+          <button type="button" class="pdp-swatch-item ${isActive ? 'active' : ''}" onclick="window.selectPdpColor('${c.hex}', '${c.name}', '${c.image || ''}')" title="${c.name}">
+            <span class="pdp-swatch-color-dot" style="background: ${c.hex};"></span>
+            <span>${c.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    // Render size buttons in Step 3
     function renderPdpSizes(sizes) {
       const grid = document.getElementById('pdp-sizes-grid');
       if (!grid) return;
 
       grid.innerHTML = sizes.map((s, i) => `
-        <button type="button" class="pdp-size-chip ${s === STATE.pdpSize ? 'active' : ''}" onclick="window.selectStandardSize('${s}')">${s}</button>
+        <button type="button" class="pdp-size-chip ${s === STATE.pdpSize && !STATE.pdpIsCustomSize ? 'active' : ''}" onclick="window.selectStandardSize('${s}')">${s}</button>
       `).join('');
     }
 
+    // Color selection handler
     window.selectPdpColor = function(hex, name, img) {
       STATE.pdpColor = { name, hex, image: img };
       STATE.pdpCustomColor = null;
+      STATE.pdpCompletedSteps.add('colour');
 
       const title = document.getElementById('pdp-selected-color-title');
       if (title) title.textContent = name;
+      const paneName = document.getElementById('pdp-pane-colour-name');
+      if (paneName) paneName.textContent = name;
 
-      document.querySelectorAll('#pdp-bottom-swatches-grid .pdp-swatch-item').forEach(btn => {
+      // Sync active states on bottom swatches and pane swatches
+      document.querySelectorAll('#pdp-bottom-swatches-grid .pdp-swatch-item, #pdp-pane-swatches-grid .pdp-swatch-item').forEach(btn => {
         btn.classList.toggle('active', btn.textContent.trim() === name);
       });
       document.querySelectorAll('#pdp-custom-color-swatches .pdp-swatch-item').forEach(btn => btn.classList.remove('active'));
@@ -521,32 +739,39 @@
         if (img) {
           photoEl.src = window.ShopifyThemeAssets?.[img] || img;
         } else {
-          // Honest preview: subtle tint filter
           photoEl.style.filter = `drop-shadow(0 0 1px ${hex})`;
         }
       }
 
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Custom dye selection handler
     window.selectCustomColor = function(hex, name) {
       STATE.pdpCustomColor = { name, hex };
       STATE.pdpColor = { name: `Custom Dye: ${name}`, hex, image: '' };
+      STATE.pdpCompletedSteps.add('colour');
 
       const title = document.getElementById('pdp-selected-color-title');
       if (title) title.textContent = `Custom Dye: ${name}`;
+      const paneName = document.getElementById('pdp-pane-colour-name');
+      if (paneName) paneName.textContent = `Custom Dye: ${name}`;
 
-      document.querySelectorAll('#pdp-bottom-swatches-grid .pdp-swatch-item').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('#pdp-bottom-swatches-grid .pdp-swatch-item, #pdp-pane-swatches-grid .pdp-swatch-item').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('#pdp-custom-color-swatches .pdp-swatch-item').forEach(btn => {
         btn.classList.toggle('active', btn.textContent.trim() === name);
       });
 
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Standard size selection handler
     window.selectStandardSize = function(size) {
       STATE.pdpSize = size;
       STATE.pdpIsCustomSize = false;
+      STATE.pdpCompletedSteps.add('size');
 
       document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => {
         c.classList.toggle('active', c.textContent.trim() === size);
@@ -557,9 +782,12 @@
       const customPanel = document.getElementById('pdp-custom-measurements-panel');
       if (customPanel) customPanel.style.display = 'none';
 
+      clearStepError('size');
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Toggle custom tailored measurements
     window.toggleCustomMeasurementsForm = function(checked) {
       STATE.pdpIsCustomSize = checked;
       const panel = document.getElementById('pdp-custom-measurements-panel');
@@ -570,9 +798,11 @@
       } else {
         window.selectStandardSize('M');
       }
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Measurement unit toggle (inches / cm)
     window.setMeasurementUnit = function(unit) {
       STATE.pdpCustomMeasurements.unit = unit;
       const btnIn = document.getElementById('meas-unit-in');
@@ -582,29 +812,48 @@
       document.querySelectorAll('.unit-label').forEach(el => el.textContent = unit);
     };
 
+    // Save custom measurements
     window.saveCustomMeasurements = function() {
-      const chest = document.getElementById('meas-input-chest')?.value || '38';
-      const waist = document.getElementById('meas-input-waist')?.value || '32';
-      const hips = document.getElementById('meas-input-hips')?.value || '40';
-      const inseam = document.getElementById('meas-input-inseam')?.value || '30';
+      const chest = document.getElementById('meas-input-chest')?.value?.trim();
+      const waist = document.getElementById('meas-input-waist')?.value?.trim();
+      const hips = document.getElementById('meas-input-hips')?.value?.trim() || '40';
+      const inseam = document.getElementById('meas-input-inseam')?.value?.trim() || '30';
 
+      if (!chest || !waist || Number(chest) <= 0 || Number(waist) <= 0) {
+        showStepError('size', 'Please enter valid Chest and Waist measurements before confirming.');
+        return;
+      }
+
+      clearStepError('size');
       STATE.pdpCustomMeasurements = {
         chest, waist, hips, inseam,
         unit: STATE.pdpCustomMeasurements.unit || 'in'
       };
       STATE.pdpIsCustomSize = true;
+      STATE.pdpCompletedSteps.add('size');
 
-      alert(`Custom measurements saved: Chest ${chest}${STATE.pdpCustomMeasurements.unit}, Waist ${waist}${STATE.pdpCustomMeasurements.unit}, Hips ${hips}${STATE.pdpCustomMeasurements.unit}, Inseam ${inseam}${STATE.pdpCustomMeasurements.unit}`);
+      renderPdpStepper();
       recalculatePdpSummary();
+
+      const unit = STATE.pdpCustomMeasurements.unit;
+      alert(`Custom measurements confirmed: Chest ${chest}${unit}, Waist ${waist}${unit}, Hips ${hips}${unit}, Inseam ${inseam}${unit}`);
     };
 
+    // Toggle Alterations
     window.toggleAlterations = function(checked) {
       STATE.pdpAlterations = checked;
       const box = document.getElementById('pdp-alterations-box');
       if (box) box.style.display = checked ? 'block' : 'none';
+
+      if (checked) {
+        STATE.pdpCompletedSteps.add('alterations');
+        STATE.pdpSkippedSteps.delete('alterations');
+      }
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Update alteration selections
     window.updateAlterationDetails = function() {
       STATE.pdpAlterationDetails = {
         shirtLength: document.getElementById('alt-shirt-length')?.value || 'Standard',
@@ -612,9 +861,12 @@
         sleeveLength: document.getElementById('alt-sleeve-length')?.value || 'Half Sleeve (Standard)',
         notes: document.getElementById('alt-notes')?.value || ''
       };
+      STATE.pdpCompletedSteps.add('alterations');
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Engraving type selection
     window.setEngravingType = function(type) {
       STATE.pdpEngravingType = type;
       const inputsBox = document.getElementById('pdp-engraving-inputs-box');
@@ -634,10 +886,18 @@
         pocketOverlay.classList.toggle('stitched-patch-style', type === 'patch');
       }
 
+      if (type === 'none') {
+        clearStepError('engraving');
+        STATE.pdpCompletedSteps.add('engraving');
+        STATE.pdpSkippedSteps.delete('engraving');
+      }
+
       window.updateLiveEngravingPreview();
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Live pocket embroidery preview update
     window.updateLiveEngravingPreview = function() {
       const line1 = document.getElementById('engraving-line-1')?.value || '';
       const line2 = document.getElementById('engraving-line-2')?.value || '';
@@ -652,8 +912,15 @@
       if (p1) p1.textContent = line1.trim() || 'DR. YOUR NAME';
       if (p2) p2.textContent = line2.trim() || 'DEPARTMENT';
       if (p3) p3.textContent = line3.trim() || 'HOSPITAL / CLINIC';
+
+      if (line1.trim()) {
+        clearStepError('engraving');
+        STATE.pdpCompletedSteps.add('engraving');
+      }
+      renderPdpStepper();
     };
 
+    // Thread color picker
     window.selectThreadColor = function(hex, name) {
       STATE.pdpThreadColor = { name, hex };
       document.querySelectorAll('.thread-color-chip').forEach(c => c.classList.remove('active'));
@@ -666,13 +933,14 @@
         if (el) el.style.color = hex;
       });
 
-      // Highlight button
       document.querySelectorAll('.thread-color-chip').forEach(c => {
         c.classList.toggle('active', c.textContent.trim() === name);
       });
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Toggle Logo selection
     window.toggleLogoSelection = function(checked) {
       STATE.pdpLogoEnabled = checked;
       const box = document.getElementById('pdp-logo-options-box');
@@ -681,12 +949,19 @@
       if (box) box.style.display = checked ? 'block' : 'none';
       if (logoWrap) logoWrap.style.display = checked ? 'block' : 'none';
 
+      if (checked) {
+        STATE.pdpCompletedSteps.add('logo');
+        STATE.pdpSkippedSteps.delete('logo');
+      }
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Logo item selection
     window.selectLogoItem = function(id, name) {
       STATE.pdpLogo.id = id;
       STATE.pdpLogo.name = name;
+      STATE.pdpCompletedSteps.add('logo');
 
       document.querySelectorAll('.logo-option-card').forEach(c => {
         c.classList.toggle('active', c.textContent.includes(name));
@@ -696,14 +971,17 @@
       if (logoWrap) {
         logoWrap.innerHTML = `<span style="font-size: 14px; font-weight: 700; color: #102a43; border: 1px solid #cbd5e1; padding: 2px 4px; border-radius: 2px;">${id.toUpperCase()}</span>`;
       }
+      renderPdpStepper();
       recalculatePdpSummary();
     };
 
+    // Logo placement
     window.setLogoPlacement = function(placement) {
       STATE.pdpLogo.placement = placement;
       recalculatePdpSummary();
     };
 
+    // Add companion accessory
     window.addCompanionItem = function(type) {
       if (type === 'cap') {
         STATE.pdpCompanionAddons.push({ title: 'BunFit™ Surgical Cap', price: 1450 });
@@ -714,6 +992,7 @@
       recalculatePdpSummary();
     };
 
+    // Step quantity
     window.stepPdpQty = function(delta) {
       STATE.pdpQty = Math.max(1, STATE.pdpQty + delta);
       const input = document.getElementById('pdp-qty-input');
@@ -721,6 +1000,436 @@
       recalculatePdpSummary();
     };
 
+    // ------------------------------------------------------------
+    // INTERACTIVE STEPPER NAVIGATION & VALIDATION ENGINE
+    // ------------------------------------------------------------
+
+    function showStepError(stepId, message) {
+      const banner = document.getElementById(`pdp-error-pane-${stepId}`);
+      if (banner) {
+        banner.textContent = `⚠️ ${message}`;
+        banner.style.display = 'block';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        alert(message);
+      }
+    }
+
+    function clearStepError(stepId) {
+      const banner = document.getElementById(`pdp-error-pane-${stepId}`);
+      if (banner) {
+        banner.textContent = '';
+        banner.style.display = 'none';
+      }
+    }
+
+    // Validates the current step before advancing or adding to cart
+    function validateCurrentPdpStep() {
+      const current = STATE.pdpCurrentStep;
+      clearStepError(current);
+
+      if (current === 'size') {
+        if (STATE.pdpIsCustomSize) {
+          const chest = document.getElementById('meas-input-chest')?.value?.trim();
+          const waist = document.getElementById('meas-input-waist')?.value?.trim();
+          if (!chest || !waist || Number(chest) <= 0 || Number(waist) <= 0) {
+            showStepError('size', 'Please enter your Chest and Waist measurements before continuing, or uncheck "Need Custom Tailored Measurements" to select standard sizing.');
+            return false;
+          }
+          STATE.pdpCustomMeasurements = {
+            chest,
+            waist,
+            hips: document.getElementById('meas-input-hips')?.value?.trim() || '',
+            inseam: document.getElementById('meas-input-inseam')?.value?.trim() || '',
+            unit: STATE.pdpCustomMeasurements.unit || 'in'
+          };
+        }
+      }
+
+      if (current === 'engraving') {
+        if (STATE.pdpEngravingType !== 'none') {
+          const line1 = document.getElementById('engraving-line-1')?.value?.trim();
+          if (!line1) {
+            showStepError('engraving', 'Please enter your Full Name & Title for embroidery (Line 1 is required), or choose "No Personalization".');
+            return false;
+          }
+          STATE.pdpEngravingLines.line1 = line1;
+          STATE.pdpEngravingLines.line2 = document.getElementById('engraving-line-2')?.value?.trim() || '';
+          STATE.pdpEngravingLines.line3 = document.getElementById('engraving-line-3')?.value?.trim() || '';
+        }
+      }
+
+      return true;
+    }
+
+    // Renders the horizontal visual stepper track and header counter
+    function renderPdpStepper() {
+      const steps = getPdpApplicableSteps(STATE.pdpProduct);
+      const track = document.getElementById('pdp-dynamic-stepper-track');
+      const progressFill = document.getElementById('pdp-stepper-progress-fill');
+      const badgeText = document.getElementById('pdp-step-badge-text');
+      const remainingText = document.getElementById('pdp-step-remaining-text');
+      const statusMsg = document.getElementById('pdp-stepper-status-msg');
+
+      if (!steps.length || !track) return;
+
+      const total = steps.length;
+      let currentIndex = steps.findIndex(s => s.id === STATE.pdpCurrentStep);
+      if (currentIndex === -1) currentIndex = 0;
+      const currentStep = steps[currentIndex];
+
+      // Progress bar fill percentage
+      const progressPercent = total > 1 ? Math.round((currentIndex / (total - 1)) * 100) : 100;
+      if (progressFill) {
+        progressFill.style.width = `${Math.max(12, Math.min(100, progressPercent))}%`;
+      }
+
+      // Step Counter Badge
+      if (badgeText) {
+        badgeText.textContent = `Step ${currentIndex + 1} of ${total}: ${currentStep.title}`;
+      }
+
+      // Steps Remaining Counter
+      if (remainingText) {
+        const stepsLeft = total - 1 - currentIndex;
+        if (stepsLeft === 0) {
+          remainingText.textContent = 'Ready to review your order';
+        } else if (stepsLeft === 1) {
+          remainingText.textContent = 'Almost there — 1 step left';
+        } else {
+          remainingText.textContent = `${stepsLeft} steps remaining`;
+        }
+      }
+
+      // Contextual status hint
+      if (statusMsg) {
+        const hints = {
+          design: 'Review scrub series specifications & cut details',
+          colour: 'Select clinical uniform color or custom dye',
+          size: 'Select standard sizing or enter custom body measurements',
+          alterations: 'Optional garment tailoring for top, sleeves & inseam',
+          engraving: 'Optional doctor name & department chest embroidery',
+          logo: 'Optional official hospital emblem placement',
+          review: 'Confirm itemized details and proceed to checkout'
+        };
+        statusMsg.textContent = hints[currentStep.id] || 'Configure uniform customization';
+      }
+
+      // Render Step Buttons with Active / Completed / Upcoming states
+      track.innerHTML = steps.map((step, idx) => {
+        const isActive = (step.id === STATE.pdpCurrentStep);
+        const isCompleted = STATE.pdpCompletedSteps.has(step.id);
+        const isSkipped = STATE.pdpSkippedSteps.has(step.id);
+        const isAccessible = (idx <= currentIndex || isCompleted || idx === currentIndex + 1);
+
+        let stateClass = 'upcoming';
+        if (isActive) stateClass = 'active';
+        else if (isCompleted) stateClass = 'completed';
+        else if (!isAccessible) stateClass = 'upcoming disabled';
+
+        // Dynamic sub-text under circle
+        let valText = '';
+        if (step.id === 'design') {
+          valText = (STATE.pdpProduct?.series || 'Selected');
+        } else if (step.id === 'colour') {
+          valText = STATE.pdpColor ? STATE.pdpColor.name.replace('Custom Dye: ', '') : 'Navy';
+        } else if (step.id === 'size') {
+          valText = STATE.pdpIsCustomSize ? 'Custom' : (STATE.pdpSize || 'M');
+        } else if (step.id === 'alterations') {
+          if (isSkipped) valText = 'Skipped';
+          else if (STATE.pdpAlterations) valText = '+Rs. 350';
+          else if (isCompleted) valText = 'Standard';
+          else valText = 'Optional';
+        } else if (step.id === 'engraving') {
+          if (isSkipped) valText = 'Skipped';
+          else if (STATE.pdpEngravingType === 'direct') valText = 'Direct';
+          else if (STATE.pdpEngravingType === 'patch') valText = 'Patch';
+          else if (isCompleted) valText = 'None';
+          else valText = 'Optional';
+        } else if (step.id === 'logo') {
+          if (isSkipped) valText = 'Skipped';
+          else if (STATE.pdpLogoEnabled) valText = (STATE.pdpLogo?.id?.toUpperCase() || '+Rs. 650');
+          else if (isCompleted) valText = 'None';
+          else valText = 'Optional';
+        } else if (step.id === 'review') {
+          valText = isCompleted ? 'Ready' : 'Review';
+        }
+
+        return `
+          <button type="button" 
+            class="pdp-step-btn ${stateClass}" 
+            onclick="window.handleStepperClick('${step.id}')"
+            aria-label="Step ${idx + 1}: ${step.title} (${stateClass})"
+            id="pdp-step-nav-btn-${step.id}">
+            <div class="pdp-step-circle">
+              <span class="step-num">${idx + 1}</span>
+              <span class="step-check">✓</span>
+            </div>
+            <div class="pdp-step-text">
+              <span class="pdp-step-label">${step.short || step.title}</span>
+              <span class="pdp-step-state-text" title="${valText}">${valText}</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      // Auto scroll active button on mobile
+      const activeBtn = track.querySelector('.pdp-step-btn.active');
+      if (activeBtn && track.scrollWidth > track.clientWidth) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+
+      // Update button on size step pane if last step before review
+      const sizeNextBtn = document.getElementById('pdp-size-next-btn');
+      if (sizeNextBtn) {
+        const isCustomizable = (STATE.pdpProduct?.supportsCustomization !== false);
+        sizeNextBtn.textContent = isCustomizable ? 'Continue to Alterations →' : 'Continue to Review →';
+      }
+    }
+
+    // Direct navigation to a specific step pane
+    window.goToPdpStep = function(stepId, validateCurrent = true) {
+      const steps = getPdpApplicableSteps(STATE.pdpProduct);
+      const targetStep = steps.find(s => s.id === stepId);
+      if (!targetStep) return false;
+
+      // Validate current step before leaving (unless navigating backward or explicitly bypassing)
+      if (validateCurrent && STATE.pdpCurrentStep !== stepId) {
+        const isValid = validateCurrentPdpStep();
+        if (!isValid) return false;
+      }
+
+      // Mark current step completed if valid
+      if (STATE.pdpCurrentStep) {
+        STATE.pdpCompletedSteps.add(STATE.pdpCurrentStep);
+      }
+
+      STATE.pdpCurrentStep = stepId;
+
+      // Switch step panes
+      document.querySelectorAll('.pdp-step-pane').forEach(pane => {
+        pane.classList.remove('active');
+      });
+      const activePane = document.getElementById(`pdp-pane-${stepId}`);
+      if (activePane) {
+        activePane.classList.add('active');
+      }
+
+      // Specific pane updates
+      if (stepId === 'colour') {
+        renderPdpPaneSwatches(STATE.pdpProduct?.colors || []);
+      } else if (stepId === 'size') {
+        renderPdpSizes(STATE.pdpProduct?.sizes || ['XS', 'S', 'M', 'L', 'XL', '2XL']);
+      } else if (stepId === 'review') {
+        renderPdpReviewRecap();
+        recalculatePdpSummary();
+      }
+
+      renderPdpStepper();
+      return true;
+    };
+
+    // Continue / Next Button action
+    window.continuePdpStep = function() {
+      const isValid = validateCurrentPdpStep();
+      if (!isValid) return;
+
+      STATE.pdpCompletedSteps.add(STATE.pdpCurrentStep);
+
+      const steps = getPdpApplicableSteps(STATE.pdpProduct);
+      const currentIndex = steps.findIndex(s => s.id === STATE.pdpCurrentStep);
+
+      if (currentIndex === steps.length - 1) {
+        // Final step Continue triggers Add to Cart
+        window.addConfiguredScrubToCart();
+        return;
+      }
+
+      const nextStep = steps[currentIndex + 1];
+      if (nextStep) {
+        window.goToPdpStep(nextStep.id, false);
+      }
+    };
+
+    // Back Button action
+    window.previousPdpStep = function() {
+      const steps = getPdpApplicableSteps(STATE.pdpProduct);
+      const currentIndex = steps.findIndex(s => s.id === STATE.pdpCurrentStep);
+
+      if (currentIndex > 0) {
+        const prevStep = steps[currentIndex - 1];
+        window.goToPdpStep(prevStep.id, false);
+      } else {
+        window.navigateToView('category-scrubs');
+      }
+    };
+
+    // Skip optional step action
+    window.skipPdpStep = function(stepId) {
+      STATE.pdpSkippedSteps.add(stepId);
+      STATE.pdpCompletedSteps.add(stepId);
+
+      if (stepId === 'alterations') {
+        STATE.pdpAlterations = false;
+        const chk = document.getElementById('pdp-enable-alterations');
+        if (chk) chk.checked = false;
+        const box = document.getElementById('pdp-alterations-box');
+        if (box) box.style.display = 'none';
+      } else if (stepId === 'engraving') {
+        window.setEngravingType('none');
+      } else if (stepId === 'logo') {
+        STATE.pdpLogoEnabled = false;
+        const chk = document.getElementById('pdp-enable-logo');
+        if (chk) chk.checked = false;
+        const box = document.getElementById('pdp-logo-options-box');
+        if (box) box.style.display = 'none';
+        const logoWrap = document.getElementById('sim-logo-preview-wrap');
+        if (logoWrap) logoWrap.style.display = 'none';
+      }
+
+      recalculatePdpSummary();
+
+      // Advance to next step
+      const steps = getPdpApplicableSteps(STATE.pdpProduct);
+      const currentIndex = steps.findIndex(s => s.id === stepId);
+      if (currentIndex >= 0 && currentIndex < steps.length - 1) {
+        window.goToPdpStep(steps[currentIndex + 1].id, false);
+      }
+    };
+
+    // Click handler for horizontal stepper buttons
+    window.handleStepperClick = function(targetStepId) {
+      if (targetStepId === STATE.pdpCurrentStep) return;
+
+      const steps = getPdpApplicableSteps(STATE.pdpProduct);
+      const targetIndex = steps.findIndex(s => s.id === targetStepId);
+      const currentIndex = steps.findIndex(s => s.id === STATE.pdpCurrentStep);
+      if (targetIndex === -1) return;
+
+      // Navigating backwards or to any completed step is always permitted without losing data!
+      if (targetIndex < currentIndex || STATE.pdpCompletedSteps.has(targetStepId)) {
+        window.goToPdpStep(targetStepId, false);
+        return;
+      }
+
+      // If jumping forward, validate current step first
+      const isValid = validateCurrentPdpStep();
+      if (!isValid) return;
+
+      // If jumping ahead, verify intervening required steps are fulfilled
+      let canJump = true;
+      for (let i = currentIndex; i < targetIndex; i++) {
+        const s = steps[i];
+        if (!s.optional && !STATE.pdpCompletedSteps.has(s.id) && s.id !== STATE.pdpCurrentStep) {
+          canJump = false;
+          showStepError(STATE.pdpCurrentStep, `Please complete Step ${i + 1}: ${s.title} before navigating to ${steps[targetIndex].title}.`);
+          break;
+        }
+      }
+
+      if (canJump) {
+        window.goToPdpStep(targetStepId, false);
+      }
+    };
+
+    // Render configuration recap cards inside Step 7 Review
+    function renderPdpReviewRecap() {
+      const grid = document.getElementById('pdp-review-recap-grid');
+      if (!grid) return;
+
+      const item = STATE.pdpProduct;
+      if (!item) return;
+
+      const cleanTitle = item.title.replace('DEMO — ', '');
+      const colorName = STATE.pdpColor?.name || 'Deep Navy';
+      const colorHex = STATE.pdpColor?.hex || '#102a43';
+
+      let sizeText = STATE.pdpIsCustomSize 
+        ? `Custom Measurements (Chest: ${STATE.pdpCustomMeasurements.chest}${STATE.pdpCustomMeasurements.unit}, Waist: ${STATE.pdpCustomMeasurements.waist}${STATE.pdpCustomMeasurements.unit})`
+        : `Standard Size ${STATE.pdpSize || 'M'}`;
+
+      let altText = 'Standard Factory Cut (No Alterations)';
+      if (STATE.pdpAlterations) {
+        altText = `Top: ${STATE.pdpAlterationDetails.shirtLength}, Trouser: ${STATE.pdpAlterationDetails.trouserLength}, Sleeve: ${STATE.pdpAlterationDetails.sleeveLength} (+Rs. 350)`;
+      } else if (STATE.pdpSkippedSteps.has('alterations')) {
+        altText = 'Skipped (Standard Factory Cut)';
+      }
+
+      let engText = 'Plain Uniform (No Personalization)';
+      if (STATE.pdpEngravingType !== 'none') {
+        const typeLabel = STATE.pdpEngravingType === 'patch' ? 'Stitched Patch (+Rs. 350)' : 'Direct Embroidery (+Rs. 450)';
+        engText = `${typeLabel}: "${STATE.pdpEngravingLines.line1 || 'Name'}" in ${STATE.pdpThreadColor.name}`;
+      } else if (STATE.pdpSkippedSteps.has('engraving')) {
+        engText = 'Skipped (No Personalization)';
+      }
+
+      let logoText = 'No Hospital Crest';
+      if (STATE.pdpLogoEnabled) {
+        logoText = `${STATE.pdpLogo.name} (${STATE.pdpLogo.placement}) (+Rs. 650)`;
+      } else if (STATE.pdpSkippedSteps.has('logo')) {
+        logoText = 'Skipped (No Crest)';
+      }
+
+      const isCustomizable = (item.supportsCustomization !== false);
+
+      grid.innerHTML = `
+        <div class="pdp-review-card">
+          <div class="pdp-review-card-header">
+            <span class="pdp-review-card-title">1. Uniform Design</span>
+            <button type="button" class="pdp-step-edit-btn" onclick="window.goToPdpStep('design', false)">✏️ Edit</button>
+          </div>
+          <div class="pdp-review-card-val">${cleanTitle} (${item.series || 'Clinical'} Series)</div>
+          <div style="font-size: 11px; color: #64748b;">SKU: ${item.sku}</div>
+        </div>
+
+        <div class="pdp-review-card">
+          <div class="pdp-review-card-header">
+            <span class="pdp-review-card-title">2. Uniform Colour</span>
+            <button type="button" class="pdp-step-edit-btn" onclick="window.goToPdpStep('colour', false)">✏️ Edit</button>
+          </div>
+          <div class="pdp-review-card-val" style="display: flex; align-items: center; gap: 6px;">
+            <span class="pdp-swatch-color-dot" style="background: ${colorHex};"></span>
+            <span>${colorName}</span>
+          </div>
+        </div>
+
+        <div class="pdp-review-card">
+          <div class="pdp-review-card-header">
+            <span class="pdp-review-card-title">3. Size & Fit</span>
+            <button type="button" class="pdp-step-edit-btn" onclick="window.goToPdpStep('size', false)">✏️ Edit</button>
+          </div>
+          <div class="pdp-review-card-val">${sizeText}</div>
+        </div>
+
+        ${isCustomizable ? `
+        <div class="pdp-review-card">
+          <div class="pdp-review-card-header">
+            <span class="pdp-review-card-title">4. Alterations</span>
+            <button type="button" class="pdp-step-edit-btn" onclick="window.goToPdpStep('alterations', false)">✏️ Edit</button>
+          </div>
+          <div class="pdp-review-card-val">${altText}</div>
+        </div>
+
+        <div class="pdp-review-card">
+          <div class="pdp-review-card-header">
+            <span class="pdp-review-card-title">5. Embroidery / Engraving</span>
+            <button type="button" class="pdp-step-edit-btn" onclick="window.goToPdpStep('engraving', false)">✏️ Edit</button>
+          </div>
+          <div class="pdp-review-card-val">${engText}</div>
+        </div>
+
+        <div class="pdp-review-card">
+          <div class="pdp-review-card-header">
+            <span class="pdp-review-card-title">6. Hospital Crest</span>
+            <button type="button" class="pdp-step-edit-btn" onclick="window.goToPdpStep('logo', false)">✏️ Edit</button>
+          </div>
+          <div class="pdp-review-card-val">${logoText}</div>
+        </div>
+        ` : ''}
+      `;
+    }
+
+    // Recalculates order summary table and advance payment alert
     function recalculatePdpSummary() {
       const item = STATE.pdpProduct;
       if (!item) return;
@@ -754,7 +1463,7 @@
 
       if (sumBase) sumBase.textContent = `Rs. ${basePrice.toLocaleString()}`;
       if (sumColorSize) {
-        const sizeLabel = STATE.pdpIsCustomSize ? 'Custom Tailored Measurements' : STATE.pdpSize;
+        const sizeLabel = STATE.pdpIsCustomSize ? 'Custom Tailored' : STATE.pdpSize;
         sumColorSize.textContent = `${STATE.pdpColor.name} / ${sizeLabel}`;
       }
 
@@ -777,10 +1486,28 @@
       }
     }
 
+    // Add configured scrub to cart with strict validation
     window.addConfiguredScrubToCart = function() {
       withCartDebounce(() => {
         const item = STATE.pdpProduct;
         if (!item) return;
+
+        // Ensure all required steps are satisfied
+        if (STATE.pdpIsCustomSize) {
+          if (!STATE.pdpCustomMeasurements.chest || !STATE.pdpCustomMeasurements.waist) {
+            window.goToPdpStep('size', false);
+            showStepError('size', 'Please confirm your custom measurements before adding to cart.');
+            return;
+          }
+        }
+
+        if (STATE.pdpEngravingType !== 'none') {
+          if (!STATE.pdpEngravingLines.line1) {
+            window.goToPdpStep('engraving', false);
+            showStepError('engraving', 'Please enter your Full Name & Title for embroidery, or select "No Personalization".');
+            return;
+          }
+        }
 
         const basePrice = item.basePrice || 5150;
         let alterationsCharge = STATE.pdpAlterations ? 350 : 0;
@@ -817,7 +1544,7 @@
         const cart = getStoredCart();
         cart.push(cartItem);
 
-        // Add any companion add-ons
+        // Add companion add-ons
         STATE.pdpCompanionAddons.forEach((addon, idx) => {
           cart.push({
             id: `companion-${Date.now()}-${idx}`,

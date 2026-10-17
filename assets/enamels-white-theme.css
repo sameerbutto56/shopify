@@ -842,46 +842,431 @@ body:has(.enamels-theme-root) #header-group {
   pointer-events: none;
 }
 
-/* 8-Step Stepper Header */
-.pdp-stepper-track {
+/* ============================================================ */
+/* INTERACTIVE PRODUCT CUSTOMIZATION PROGRESS STEPPER (SECTIONS 1-8) */
+/* ============================================================ */
+.pdp-stepper-container {
+  background: #ffffff;
+  border: 1px solid var(--enamels-border);
+  border-radius: var(--enamels-radius-md);
+  padding: 16px 20px 14px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(16, 42, 67, 0.04);
+}
+
+.pdp-stepper-header-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 2px solid var(--enamels-border);
-  padding-bottom: 12px;
-  margin-bottom: 24px;
-  overflow-x: auto;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
-.pdp-step-indicator {
-  display: flex;
+.pdp-step-counter-badge {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: var(--enamels-radius-pill);
   font-size: 11px;
   font-weight: 600;
-  color: var(--enamels-text-muted);
-  white-space: nowrap;
-}
-
-.pdp-step-indicator.active {
   color: var(--enamels-navy);
 }
 
-.pdp-step-circle {
-  width: 22px;
-  height: 22px;
+.pdp-step-badge-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #f1f5f9;
+  background: var(--enamels-teal);
+  box-shadow: 0 0 0 2px rgba(0, 184, 169, 0.25);
+  animation: pdpPulseDot 2s infinite;
+}
+
+@keyframes pdpPulseDot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.pdp-step-badge-sep {
+  color: var(--enamels-text-muted);
+}
+
+.pdp-stepper-status-msg {
+  font-size: 12px;
   color: var(--enamels-text-secondary);
+  font-weight: 500;
+}
+
+.pdp-stepper-track-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.pdp-stepper-progress-bg {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background: #e2e8f0;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.pdp-stepper-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00b8a9, #102a43);
+  border-radius: 2px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pdp-stepper-track {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pdp-step-btn {
+  background: none;
+  border: none;
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  transition: all 0.2s ease;
+  min-width: 58px;
+}
+
+.pdp-step-btn:focus-visible .pdp-step-circle {
+  box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.5);
+}
+
+.pdp-step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-sizing: border-box;
 }
 
-.pdp-step-indicator.active .pdp-step-circle {
+.pdp-step-circle .step-num {
+  display: inline-block;
+}
+
+.pdp-step-circle .step-check {
+  display: none;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* Upcoming / Pending Step */
+.pdp-step-btn.upcoming .pdp-step-circle {
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  color: #94a3b8;
+}
+
+.pdp-step-btn.upcoming {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.pdp-step-btn.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Active Step */
+.pdp-step-btn.active .pdp-step-circle {
   background: var(--enamels-navy);
+  border: 2px solid var(--enamels-navy);
   color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 184, 169, 0.28);
+  transform: scale(1.1);
+}
+
+.pdp-step-btn.active .pdp-step-label {
+  color: var(--enamels-navy);
+  font-weight: 700;
+}
+
+/* Completed Step */
+.pdp-step-btn.completed .pdp-step-circle {
+  background: var(--enamels-teal);
+  border: 2px solid var(--enamels-teal);
+  color: #ffffff;
+}
+
+.pdp-step-btn.completed .step-num {
+  display: none;
+}
+
+.pdp-step-btn.completed .step-check {
+  display: inline-block;
+}
+
+.pdp-step-btn.completed .pdp-step-label {
+  color: #0f766e;
+}
+
+.pdp-step-btn.completed:hover .pdp-step-circle {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.2);
+}
+
+/* Step Text & Sub-label */
+.pdp-step-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.pdp-step-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--enamels-text-secondary);
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.pdp-step-state-text {
+  font-size: 9px;
+  color: var(--enamels-text-muted);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.pdp-step-btn.completed .pdp-step-state-text {
+  color: #008779;
+  font-weight: 600;
+}
+
+/* PDP Step Pane Transitions & Controls */
+.pdp-step-pane {
+  display: none;
+}
+
+.pdp-step-pane.active {
+  display: block;
+  animation: pdpPaneFadeIn 0.25s ease-out forwards;
+}
+
+@keyframes pdpPaneFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pdp-step-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--enamels-border);
+}
+
+.btn-step-prev {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: var(--enamels-navy);
+  padding: 10px 18px;
+  border-radius: var(--enamels-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-step-prev:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.btn-step-skip {
+  background: transparent;
+  border: 1px dashed #cbd5e1;
+  color: var(--enamels-text-secondary);
+  padding: 10px 16px;
+  border-radius: var(--enamels-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-step-skip:hover {
+  background: #f8fafc;
+  color: var(--enamels-navy);
+  border-color: #94a3b8;
+}
+
+.btn-step-next {
+  background: var(--enamels-teal);
+  color: #ffffff;
+  border: none;
+  padding: 11px 24px;
+  border-radius: var(--enamels-radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 4px rgba(0, 184, 169, 0.2);
+}
+
+.btn-step-next:hover {
+  background: #00a294;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 184, 169, 0.3);
+}
+
+.pdp-step-error-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 10px;
+  display: none;
+}
+
+.pdp-review-recap-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .pdp-review-recap-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pdp-review-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: border-color 0.2s ease;
+}
+
+.pdp-review-card:hover {
+  border-color: #cbd5e1;
+}
+
+.pdp-review-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.pdp-review-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--enamels-navy);
+  text-transform: uppercase;
+}
+
+.pdp-review-card-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: #102a43;
+}
+
+.pdp-step-edit-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.pdp-step-edit-btn:hover {
+  background: #bae6fd;
+}
+
+/* Mobile Responsiveness for Stepper */
+@media (max-width: 768px) {
+  .pdp-stepper-container {
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  .pdp-stepper-header-meta {
+    margin-bottom: 10px;
+  }
+  .pdp-stepper-track-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .pdp-stepper-track-wrap::-webkit-scrollbar {
+    display: none;
+  }
+  .pdp-stepper-progress-bg {
+    left: 24px;
+    right: 24px;
+    min-width: 480px;
+  }
+  .pdp-stepper-track {
+    min-width: 500px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+  .pdp-step-btn {
+    min-width: 60px;
+  }
+  .pdp-step-label {
+    font-size: 10px;
+  }
+  .pdp-step-state-text {
+    font-size: 8px;
+    max-width: 60px;
+  }
+  .pdp-step-nav-bar {
+    flex-wrap: wrap;
+  }
+  .btn-step-next {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Step Sections */
