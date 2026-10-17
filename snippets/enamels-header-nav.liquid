@@ -83,87 +83,7 @@
     </div>
   </div>
 
-  <!-- Primary 6-Category Navigation Bar -->
-  <nav class="enamels-nav-bar" aria-label="Main Category Navigation">
-    <div class="page-container">
-      <ul class="enamels-nav-list">
-        <!-- 1. Scrubs (with Dropdown) -->
-        <li class="enamels-nav-item" id="nav-item-scrubs">
-          <a href="#category-scrubs" class="enamels-nav-link" onclick="window.navigateToView('category-scrubs'); return false;">
-            <span>Scrubs</span>
-            <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </a>
-          <div class="enamels-nav-dropdown">
-            <a href="#collection-sprinter" class="dropdown-item-link" onclick="window.navigateToCollection('Sprinter'); return false;">
-              <strong>Sprinter Series</strong>
-              <span>4-Way Athletic Mechanical Stretch</span>
-            </a>
-            <a href="#collection-velora" class="dropdown-item-link" onclick="window.navigateToCollection('Velora'); return false;">
-              <strong>Velora Series</strong>
-              <span>Luxury Tailored Micro-Drape</span>
-            </a>
-            <a href="#collection-crown" class="dropdown-item-link" onclick="window.navigateToCollection('Crown'); return false;">
-              <strong>Crown Series</strong>
-              <span>Executive Structured Mandarin Collar</span>
-            </a>
-            <a href="#collection-flexfit" class="dropdown-item-link" onclick="window.navigateToCollection('FlexFit'); return false;">
-              <strong>FlexFit Series</strong>
-              <span>Antimicrobial Laser-Perforated Weave</span>
-            </a>
-            <div style="height: 1px; background: #e2e8f0; margin: 6px 0;"></div>
-            <a href="#category-scrubs" class="dropdown-item-link" onclick="window.navigateToView('category-scrubs'); return false;" style="color: #00b8a9; font-weight: 700;">
-              View All Scrubs Categories →
-            </a>
-          </div>
-        </li>
-
-        <!-- 2. Lab Coats -->
-        <li class="enamels-nav-item" id="nav-item-lab-coats">
-          <a href="#collection-lab-coats" class="enamels-nav-link" onclick="window.navigateToCollection('lab-coat', 'category'); return false;">
-            <span>Lab Coats</span>
-          </a>
-        </li>
-
-        <!-- 3. Caps -->
-        <li class="enamels-nav-item" id="nav-item-caps">
-          <a href="#collection-caps" class="enamels-nav-link" onclick="window.navigateToCollection('caps', 'category'); return false;">
-            <span>Caps</span>
-            <span class="nav-tag-badge">BunFit™</span>
-          </a>
-        </li>
-
-        <!-- 4. Sleeves -->
-        <li class="enamels-nav-item" id="nav-item-sleeves">
-          <a href="#collection-sleeves" class="enamels-nav-link" onclick="window.navigateToCollection('sleeves', 'feature'); return false;">
-            <span>Sleeves</span>
-          </a>
-        </li>
-
-        <!-- 5. Accessories -->
-        <li class="enamels-nav-item" id="nav-item-accessories">
-          <a href="#collection-accessories" class="enamels-nav-link" onclick="window.navigateToCollection('accessories', 'category'); return false;">
-            <span>Accessories</span>
-          </a>
-        </li>
-
-        <!-- 6. Ready to Wear / Make Your Own Scrub -->
-        <li class="enamels-nav-item" id="nav-item-ready-to-wear">
-          <a href="#ready-to-wear" class="enamels-nav-link" onclick="window.navigateToView('ready-to-wear'); return false;" style="color: #102a43; font-weight: 700;">
-            <span>Ready to Wear / Make Your Own Scrub</span>
-            <span class="nav-tag-highlight">STUDIO</span>
-          </a>
-        </li>
-
-        <!-- 7. Self-Service / Representative Visit -->
-        <li class="enamels-nav-item" id="nav-item-self-service">
-          <a href="#self-service" class="enamels-nav-link" onclick="window.navigateToView('self-service'); return false;" style="color: #00b8a9; font-weight: 700;">
-            <span>Self-Service</span>
-            <span class="nav-tag-badge" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">LAHORE VISIT</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <!-- Top category navigation removed per customer mandate: Homepage starts immediately with header & slideshow -->
 </header>
 
 <!-- Mobile Navigation Drawer -->
@@ -175,43 +95,33 @@
     </div>
     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
       <li>
-        <a href="#category-scrubs" onclick="window.navigateToView('category-scrubs'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          1. Scrubs Collection
-        </a>
-        <div style="padding-left: 14px; display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
-          <a href="#sprinter" onclick="window.navigateToCollection('Sprinter'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Sprinter Series</a>
-          <a href="#velora" onclick="window.navigateToCollection('Velora'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Velora Series</a>
-          <a href="#crown" onclick="window.navigateToCollection('Crown'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Crown Series</a>
-        </div>
-      </li>
-      <li>
-        <a href="#lab-coats" onclick="window.navigateToCollection('lab-coat', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          2. Lab Coats
+        <a href="#men" onclick="window.navigateToGender('men'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43;">
+          1. Men
         </a>
       </li>
       <li>
-        <a href="#caps" onclick="window.navigateToCollection('caps', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          3. Caps (BunFit™)
-        </a>
-      </li>
-      <li>
-        <a href="#sleeves" onclick="window.navigateToCollection('sleeves', 'feature'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          4. Sleeves
-        </a>
-      </li>
-      <li>
-        <a href="#accessories" onclick="window.navigateToCollection('accessories', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          5. Accessories
-        </a>
-      </li>
-      <li>
-        <a href="#ready-to-wear" onclick="window.navigateToView('ready-to-wear'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43; background: #f1f5f9;">
-          6. Ready to Wear / Make Your Own Scrub ✨
+        <a href="#women" onclick="window.navigateToGender('women'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43;">
+          2. Women
         </a>
       </li>
       <li>
         <a href="#self-service" onclick="window.navigateToView('self-service'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #008779; background: #f0fdfa;">
-          7. Self-Service (Representative Visit) 📍
+          3. Home Service (Lahore Visit) 📍
+        </a>
+      </li>
+      <li>
+        <a href="#ready-to-wear" onclick="window.navigateToView('ready-to-wear'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43; background: #f8fafc;">
+          4. Make Your Own Scrubs ✨
+        </a>
+      </li>
+      <li>
+        <a href="#summer-collection" onclick="window.navigateToSeasonalCollection('summer'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #0369a1;">
+          5. Summer Collection ☀️
+        </a>
+      </li>
+      <li>
+        <a href="#winter-collection" onclick="window.navigateToSeasonalCollection('winter'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #581c87;">
+          6. Winter Collection ❄️
         </a>
       </li>
     </ul>

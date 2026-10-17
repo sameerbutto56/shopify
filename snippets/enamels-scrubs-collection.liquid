@@ -1,81 +1,110 @@
 {% comment %}
-  ENAMELS ONLINE — SCRUBS GENDER FILTER & ARTICLE COLLECTIONS (SECTION 4)
-  Features:
-  - Gender Filter: All Scrubs (default), Male, Female
-  - Article Tabs: Sprinter, Crown, Velora, FlexFit
-  - Responsive cards with available colours, pricing, and 1-click Studio launch
+  ENAMELS ONLINE — MEN & WOMEN BROWSING HIERARCHY & COLLECTION VIEW
+  Architecture:
+  - Level 1: Gender Selection (Men / Women) or Seasonal (Summer / Winter)
+  - Level 2: Available Article/Brand Cards (Sprinter, Velora, Crown, Flexwell)
+  - Level 3: Filtered Product Listing for Selected Article
+  - Level 4: Seamless launch into Single-Page Customization Studio
 {% endcomment %}
 
-<!-- VIEW: SCRUBS CATEGORY & DYNAMIC COLLECTION -->
+<!-- VIEW: COLLECTION & BROWSING HIERARCHY -->
 <div class="chroma-view-panel" id="view-category-scrubs">
   <div class="page-container" style="padding-top: 30px; padding-bottom: 60px;">
 
-    <!-- Breadcrumb -->
-    <div style="font-size: 12px; color: #64748b; margin-bottom: 20px;">
+    <!-- Level 1 Breadcrumb -->
+    <nav aria-label="Breadcrumb" style="font-size: 12px; color: #64748b; margin-bottom: 20px;">
       <a href="#" onclick="window.navigateToView('home'); return false;" style="color: #64748b; text-decoration: none;">Home</a>
       <span style="margin: 0 6px;">/</span>
-      <strong style="color: #102a43;" id="collection-breadcrumb-title">Scrubs Collection</strong>
-    </div>
+      <span id="collection-breadcrumb-gender-wrap" style="display: inline;">
+        <a href="#" id="collection-breadcrumb-gender" onclick="window.navigateToGender(STATE.genderFilter || 'men'); return false;" style="color: #64748b; text-decoration: none;">Men</a>
+      </span>
+      <span id="collection-breadcrumb-separator" style="margin: 0 6px; display: none;">/</span>
+      <strong style="color: #102a43;" id="collection-breadcrumb-article">All Articles</strong>
+    </nav>
 
-    <!-- Category Header -->
+    <!-- Collection Header -->
     <div style="margin-bottom: 24px;">
-      <h1 style="font-size: 28px; font-weight: 700; color: #102a43; margin: 0 0 8px; text-transform: uppercase;">
-        Medical Scrubs Collection
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span class="nav-tag-highlight" id="collection-category-tag" style="background: #102a43; color: #ffffff;">CATALOGUE</span>
+        <span style="font-size: 11px; color: #00b8a9; font-weight: 600;" id="collection-level-tag">LEVEL 2: SELECT ARTICLE SERIES</span>
+      </div>
+      <h1 style="font-size: 28px; font-weight: 700; color: #102a43; margin: 0 0 8px; text-transform: uppercase;" id="collection-main-heading">
+        Men's Clinical Collection
       </h1>
-      <p style="font-size: 13px; color: #64748b; margin: 0; max-width: 700px;">
-        Explore Pakistan's highest-grade clinical scrub sets and tops. Precision-tailored with 4-way mechanical stretch, antimicrobial fluid resistance, and wrinkle-release technology.
+      <p style="font-size: 13px; color: #64748b; margin: 0; max-width: 750px;" id="collection-sub-desc">
+        Explore clinical scrubs engineered for male healthcare professionals. Featuring athletic 4-way stretch twill, executive mandarin collar gabardine, and aerocool performance weaves.
       </p>
     </div>
 
-    <!-- Filter Bar: Gender Filter + Series/Article Navigation -->
+    <!-- LEVEL 2: ARTICLE / BRAND CARDS SELECTOR -->
+    <div id="collection-article-cards-section" style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <span style="font-size: 12px; font-weight: 700; color: #102a43; text-transform: uppercase; letter-spacing: 0.5px;">
+          Select Article / Brand Series:
+        </span>
+        <button
+          type="button"
+          class="gender-pill-btn active"
+          id="btn-article-all"
+          onclick="window.navigateToArticle('all')"
+          style="padding: 4px 12px; font-size: 11px;"
+        >
+          View All Series
+        </button>
+      </div>
+
+      <div class="article-selector-grid" id="collection-article-cards-grid">
+        <!-- Dynamically populated based on active gender (Men vs Women) -->
+      </div>
+    </div>
+
+    <!-- Filter & Sort Bar -->
     <div class="scrubs-filter-bar">
-      <!-- Gender Filter (All Scrubs by default, Male, Female) -->
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Gender Filter:</span>
+      <!-- Gender Switcher Quick-Pills -->
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Gender:</span>
         <div class="gender-filter-pills">
-          <button type="button" class="gender-pill-btn active" id="gender-filter-all" onclick="window.setGenderFilter('all')">
-            All Scrubs
+          <button type="button" class="gender-pill-btn" id="gender-filter-men" onclick="window.navigateToGender('men')">
+            Men
           </button>
-          <button type="button" class="gender-pill-btn" id="gender-filter-men" onclick="window.setGenderFilter('men')">
-            Male
-          </button>
-          <button type="button" class="gender-pill-btn" id="gender-filter-women" onclick="window.setGenderFilter('women')">
-            Female
+          <button type="button" class="gender-pill-btn" id="gender-filter-women" onclick="window.navigateToGender('women')">
+            Women
           </button>
         </div>
       </div>
 
-      <!-- Article & Collection Tabs (Sprinter, Crown, Velora, FlexFit) -->
-      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-        <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Scrub Article:</span>
+      <!-- Article Series Quick-Pills -->
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Series Filter:</span>
         <div class="series-filter-tabs">
-          <button type="button" class="series-tab-btn active" id="series-tab-all" onclick="window.setArticleFilter('all')">
-            All Articles
+          <button type="button" class="series-tab-btn active" id="series-tab-all" onclick="window.navigateToArticle('all')">
+            All
           </button>
-          <button type="button" class="series-tab-btn" id="series-tab-sprinter" onclick="window.setArticleFilter('Sprinter')">
+          <button type="button" class="series-tab-btn" id="series-tab-sprinter" onclick="window.navigateToArticle('Sprinter')">
             Sprinter
           </button>
-          <button type="button" class="series-tab-btn" id="series-tab-crown" onclick="window.setArticleFilter('Crown')">
-            Crown
-          </button>
-          <button type="button" class="series-tab-btn" id="series-tab-velora" onclick="window.setArticleFilter('Velora')">
+          <button type="button" class="series-tab-btn" id="series-tab-velora" onclick="window.navigateToArticle('Velora')">
             Velora
           </button>
-          <button type="button" class="series-tab-btn" id="series-tab-flexfit" onclick="window.setArticleFilter('FlexFit')">
-            FlexFit
+          <button type="button" class="series-tab-btn" id="series-tab-crown" onclick="window.navigateToArticle('Crown')">
+            Crown
+          </button>
+          <button type="button" class="series-tab-btn" id="series-tab-flexwell" onclick="window.navigateToArticle('Flexwell')">
+            Flexwell
           </button>
         </div>
       </div>
     </div>
 
     <!-- Active Filter Counter & Sort -->
-    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 13px; color: #64748b;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; font-size: 13px; color: #64748b; flex-wrap: wrap; gap: 12px;">
       <div>
-        Showing <strong id="scrubs-visible-count" style="color: #102a43;">0</strong> medical scrub designs
+        Showing <strong id="scrubs-visible-count" style="color: #102a43;">0</strong> designs for
+        <span id="collection-filter-descriptor" style="font-weight: 600; color: #008779;">Men's Scrubs</span>
       </div>
       <div>
         <label for="scrubs-sort-select" style="font-size: 12px; margin-right: 6px;">Sort By:</label>
-        <select id="scrubs-sort-select" onchange="window.sortScrubsCatalogue(this.value)" style="padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none;">
+        <select id="scrubs-sort-select" onchange="window.sortScrubsCatalogue(this.value)" style="padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; background: #ffffff;">
           <option value="featured">Featured Best Sellers</option>
           <option value="price-low">Price: Low to High</option>
           <option value="price-high">Price: High to Low</option>
@@ -84,7 +113,7 @@
       </div>
     </div>
 
-    <!-- Dynamic Grid of Scrub Products -->
+    <!-- LEVEL 3: DYNAMIC GRID OF SCRUB PRODUCTS -->
     <div class="products-cards-grid" id="scrubs-products-grid">
       <!-- Injected dynamically via catalogue data -->
     </div>

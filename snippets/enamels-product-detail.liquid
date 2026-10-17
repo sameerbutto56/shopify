@@ -37,39 +37,35 @@
       </a>
     </div>
 
-    <!-- Informative 8-Step Overview Anchor Bar (Clicking scrolls directly to that box on the same page) -->
+    <!-- Informative 7-Step Overview Anchor Bar (Clicking scrolls directly to that box on the same page) -->
     <div class="pdp-stepper-track" style="margin-bottom: 24px;">
       <a href="#pdp-article-switcher-box" onclick="window.scrollToPdpBox('pdp-article-switcher-box'); return false;" class="pdp-step-indicator active" id="stepper-step-1" style="text-decoration: none; cursor: pointer;">
         <span class="pdp-step-circle">1</span>
         <span>Article</span>
       </a>
-      <a href="#pdp-swatches-box" onclick="window.scrollToPdpBox('pdp-swatches-box'); return false;" class="pdp-step-indicator" id="stepper-step-2" style="text-decoration: none; cursor: pointer;">
+      <a href="#pdp-size-box" onclick="window.scrollToPdpBox('pdp-size-box'); return false;" class="pdp-step-indicator" id="stepper-step-2" style="text-decoration: none; cursor: pointer;">
         <span class="pdp-step-circle">2</span>
-        <span>Colour</span>
+        <span>Size & Fit</span>
       </a>
-      <a href="#pdp-size-box" onclick="window.scrollToPdpBox('pdp-size-box'); return false;" class="pdp-step-indicator" id="stepper-step-3" style="text-decoration: none; cursor: pointer;">
+      <a href="#pdp-alterations-step-box" onclick="window.scrollToPdpBox('pdp-alterations-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-3" style="text-decoration: none; cursor: pointer;">
         <span class="pdp-step-circle">3</span>
-        <span>Size</span>
-      </a>
-      <a href="#pdp-alterations-step-box" onclick="window.scrollToPdpBox('pdp-alterations-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-4" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">4</span>
         <span>Alterations</span>
       </a>
-      <a href="#pdp-engraving-step-box" onclick="window.scrollToPdpBox('pdp-engraving-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-5" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">5</span>
+      <a href="#pdp-engraving-step-box" onclick="window.scrollToPdpBox('pdp-engraving-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-4" style="text-decoration: none; cursor: pointer;">
+        <span class="pdp-step-circle">4</span>
         <span>Engraving</span>
       </a>
-      <a href="#pdp-logo-step-box" onclick="window.scrollToPdpBox('pdp-logo-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-6" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">6</span>
+      <a href="#pdp-logo-step-box" onclick="window.scrollToPdpBox('pdp-logo-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-5" style="text-decoration: none; cursor: pointer;">
+        <span class="pdp-step-circle">5</span>
         <span>Logo</span>
       </a>
-      <a href="#pdp-summary-step-box" onclick="window.scrollToPdpBox('pdp-summary-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-7" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">7</span>
+      <a href="#pdp-summary-step-box" onclick="window.scrollToPdpBox('pdp-summary-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-6" style="text-decoration: none; cursor: pointer;">
+        <span class="pdp-step-circle">6</span>
         <span>Summary</span>
       </a>
-      <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" class="pdp-step-indicator" id="stepper-step-8" style="text-decoration: none; cursor: pointer; color: #008779;">
-        <span class="pdp-step-circle" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">8</span>
-        <span>Visit / Cart</span>
+      <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" class="pdp-step-indicator" id="stepper-step-7" style="text-decoration: none; cursor: pointer; color: #008779;">
+        <span class="pdp-step-circle" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">7</span>
+        <span>Lahore Visit</span>
       </a>
     </div>
 
@@ -197,10 +193,10 @@
               type="button"
               class="pdp-size-chip"
               id="chip-prod-flexfit"
-              onclick="window.changePdpProduct('demo-scrub-unisex-flex-ceil')"
+              onclick="window.changePdpProduct('demo-flexfit-mens-olive')"
               style="padding: 8px 14px; font-size: 12px; font-weight: 600; width: auto; height: auto;"
             >
-              FlexFit Set (Rs. 4,950)
+              Flexwell Set (Rs. 5,400)
             </button>
 
             <button
@@ -215,46 +211,11 @@
           </div>
         </div>
 
-        <!-- STEP 2: MAKE YOUR OWN COLOR (STRICT BUSINESS RULE: HIDDEN FOR SPRINTER!) -->
-        <div class="pdp-step-box" id="pdp-make-your-own-color-section" style="display: none;">
-          <div class="pdp-step-box-header">
-            <h3 class="pdp-step-title">
-              <span>🎨 Make Your Own Color</span>
-              <span style="font-size: 10px; background: #fdf2f8; color: #be185d; padding: 2px 6px; border-radius: 10px;">CUSTOM DYE (+Rs. 500)</span>
-            </h3>
-          </div>
-          <p style="font-size: 12px; color: #64748b; margin: 0 0 12px;">
-            Select a custom hospital shade for this series. Your uniform will be dyed and batch-processed specifically for your department.
-          </p>
-          <div class="pdp-swatches-grid" id="pdp-custom-color-swatches">
-            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#3F4E3B', 'Olive Shine')">
-              <span class="pdp-swatch-color-dot" style="background: #3F4E3B;"></span>
-              <span>Olive Shine</span>
-            </button>
-            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#14532D', 'Hunter Green')">
-              <span class="pdp-swatch-color-dot" style="background: #14532D;"></span>
-              <span>Hunter Green</span>
-            </button>
-            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#581C87', 'Burgundy Maroon')">
-              <span class="pdp-swatch-color-dot" style="background: #581C87;"></span>
-              <span>Burgundy Maroon</span>
-            </button>
-            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#A855F7', 'Lilac Bloom')">
-              <span class="pdp-swatch-color-dot" style="background: #A855F7;"></span>
-              <span>Lilac Bloom</span>
-            </button>
-            <button type="button" class="pdp-swatch-item" onclick="window.selectCustomColor('#64748B', 'Heather Grey')">
-              <span class="pdp-swatch-color-dot" style="background: #64748B;"></span>
-              <span>Heather Grey</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- STEP 3: SIZE SELECTION (STANDARD SIZES + CUSTOM MEASUREMENTS STUDIO) -->
+        <!-- STEP 2: SIZE SELECTION (STANDARD SIZES + CUSTOM MEASUREMENTS STUDIO) -->
         <div class="pdp-step-box" id="pdp-size-box">
           <div class="pdp-step-box-header">
             <h3 class="pdp-step-title">
-              <span>Step 3: Select Size & Fit</span>
+              <span>Step 2: Select Size & Fit</span>
             </h3>
             <button type="button" onclick="window.openSizeGuideModal()" style="background: none; border: none; font-size: 12px; font-weight: 600; color: #00b8a9; cursor: pointer; text-decoration: underline;">
               📏 Size Guide (Inches & CM)
@@ -313,11 +274,11 @@
           </div>
         </div>
 
-        <!-- STEP 4: ALTERATION OPTIONS -->
+        <!-- STEP 3: ALTERATION OPTIONS -->
         <div class="pdp-step-box" id="pdp-alterations-step-box">
           <div class="pdp-step-box-header">
             <h3 class="pdp-step-title">
-              <span>Step 4: Optional Alterations</span>
+              <span>Step 3: Optional Alterations</span>
             </h3>
             <span style="font-size: 12px; font-weight: 600; color: #102a43;">+Rs. 350</span>
           </div>
@@ -376,11 +337,11 @@
           </div>
         </div>
 
-        <!-- STEP 5: ENGRAVING / EMBROIDERY CUSTOMIZATION (WITH LIVE TIMES NEW ROMAN PREVIEW) -->
+        <!-- STEP 4: ENGRAVING / EMBROIDERY CUSTOMIZATION (WITH LIVE TIMES NEW ROMAN PREVIEW) -->
         <div class="pdp-step-box" id="pdp-engraving-step-box">
           <div class="pdp-step-box-header">
             <h3 class="pdp-step-title">
-              <span>Step 5: Optional Name Engraving / Embroidery</span>
+              <span>Step 4: Optional Name Engraving / Embroidery</span>
             </h3>
           </div>
 
@@ -451,11 +412,11 @@
           </div>
         </div>
 
-        <!-- STEP 6: LOGO SELECTION AND PLACEMENT -->
+        <!-- STEP 5: LOGO SELECTION AND PLACEMENT -->
         <div class="pdp-step-box" id="pdp-logo-step-box">
           <div class="pdp-step-box-header">
             <h3 class="pdp-step-title">
-              <span>Step 6: Optional Organization Logo Crest</span>
+              <span>Step 5: Optional Organization Logo Crest</span>
             </h3>
             <span style="font-size: 12px; font-weight: 600; color: #102a43;">+Rs. 650</span>
           </div>
@@ -534,10 +495,10 @@
           </div>
         </div>
 
-        <!-- STEP 7: ADVANCE-PAYMENT DISCLAIMER & ITEMIZED ORDER SUMMARY -->
+        <!-- STEP 6: ADVANCE-PAYMENT DISCLAIMER & ITEMIZED ORDER SUMMARY -->
         <div class="pdp-step-box" id="pdp-summary-step-box" style="background: #fafafa; border: 1px solid #cbd5e1;">
           <h3 class="pdp-step-title" style="margin-bottom: 12px;">
-            <span>Step 7: Itemized Order Summary</span>
+            <span>Step 6: Itemized Order Summary</span>
           </h3>
 
           <table class="order-summary-table">

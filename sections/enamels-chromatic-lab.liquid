@@ -60,9 +60,10 @@
       slideTimer: null,
       slidePaused: false,
 
-      // Scrubs Collection Filter
-      genderFilter: 'all', // 'all' | 'men' | 'women'
-      articleFilter: 'all', // 'all' | 'Sprinter' | 'Crown' | 'Velora' | 'FlexFit'
+      // Scrubs Collection Filter & Browsing Hierarchy
+      genderFilter: 'men', // 'all' | 'men' | 'women'
+      articleFilter: 'all', // 'all' | 'Sprinter' | 'Crown' | 'Velora' | 'Flexwell'
+      seasonFilter: null, // null | 'summer' | 'winter'
       sortOrder: 'featured',
 
       // Product Detail Page (PDP) Customizer
@@ -204,34 +205,51 @@
     };
 
     window.navigateToCollection = function(seriesOrCat, type = 'series') {
-      window.navigateToView('category-scrubs');
-      const breadTitle = document.getElementById('collection-breadcrumb-title');
-
       if (type === 'series') {
-        window.setArticleFilter(seriesOrCat);
-        window.setGenderFilter('all');
-        if (breadTitle) breadTitle.textContent = `${seriesOrCat} Series Scrubs`;
+        window.navigateToArticle(seriesOrCat);
       } else if (type === 'category') {
+        window.navigateToView('category-scrubs');
         const catMap = {
           'caps': 'Surgical Caps (BunFit™)',
           'lab-coat': 'Medical Lab Coats',
           'accessories': 'Clinical Accessories',
           'clogs': 'Clinical Clogs & Footwear'
         };
-        if (breadTitle) breadTitle.textContent = catMap[seriesOrCat] || seriesOrCat;
+        const mainHeading = document.getElementById('collection-main-heading');
+        if (mainHeading) mainHeading.textContent = catMap[seriesOrCat] || seriesOrCat;
         renderCategoryOnly(seriesOrCat);
       } else if (type === 'feature') {
-        if (breadTitle) breadTitle.textContent = 'Medical Compression Sleeves';
+        window.navigateToView('category-scrubs');
+        const mainHeading = document.getElementById('collection-main-heading');
+        if (mainHeading) mainHeading.textContent = 'Medical Compression Sleeves';
         renderCategoryOnly('sleeves');
       }
     };
 
     function handleHashRouting() {
-      const hash = window.location.hash;
+      const rawHash = window.location.hash || '';
+      const hash = rawHash.toLowerCase();
+
       if (!hash || hash === '#home') {
         window.navigateToView('home');
+      } else if (hash === '#men') {
+        window.navigateToGender('men', 'all');
+      } else if (hash === '#women') {
+        window.navigateToGender('women', 'all');
+      } else if (hash.startsWith('#men-')) {
+        const art = rawHash.replace(/#men-/i, '');
+        const cap = art.toLowerCase() === 'flexfit' ? 'Flexwell' : (art.charAt(0).toUpperCase() + art.slice(1));
+        window.navigateToGender('men', cap);
+      } else if (hash.startsWith('#women-')) {
+        const art = rawHash.replace(/#women-/i, '');
+        const cap = art.toLowerCase() === 'flexfit' ? 'Flexwell' : (art.charAt(0).toUpperCase() + art.slice(1));
+        window.navigateToGender('women', cap);
+      } else if (hash === '#summer-collection') {
+        window.navigateToSeasonalCollection('summer');
+      } else if (hash === '#winter-collection') {
+        window.navigateToSeasonalCollection('winter');
       } else if (hash === '#category-scrubs') {
-        window.navigateToView('category-scrubs');
+        window.navigateToGender(STATE.genderFilter || 'men', 'all');
       } else if (hash === '#ready-to-wear') {
         window.navigateToView('ready-to-wear');
       } else if (hash === '#self-service' || hash === '#self-service-booking' || hash === '#representative-visit-section') {
@@ -247,15 +265,15 @@
           window.openProductStudio('demo-sprinter-mens-navy');
         }
       } else if (hash.startsWith('#collection-')) {
-        const target = hash.replace('#collection-', '');
-        if (['sprinter', 'velora', 'crown', 'flexfit'].includes(target.toLowerCase())) {
-          const capSeries = target.charAt(0).toUpperCase() + target.slice(1);
-          window.navigateToCollection(capSeries, 'series');
+        const target = rawHash.replace(/#collection-/i, '');
+        if (['sprinter', 'velora', 'crown', 'flexwell', 'flexfit'].includes(target.toLowerCase())) {
+          const capSeries = target.toLowerCase() === 'flexfit' ? 'Flexwell' : (target.charAt(0).toUpperCase() + target.slice(1));
+          window.navigateToArticle(capSeries);
         } else {
           window.navigateToCollection(target, 'category');
         }
       } else if (hash.startsWith('#product-')) {
-        const prodId = hash.replace('#product-', '');
+        const prodId = rawHash.replace(/#product-/i, '');
         window.openProductStudio(prodId);
       }
     }
@@ -305,23 +323,288 @@
     }
 
     // ------------------------------------------------------------
-    // 5. SCRUBS COLLECTION & GENDER FILTER ENGINE (SECTION 4)
+    // 5. SCRUBS COLLECTION & MEN/WOMEN BROWSING HIERARCHY
     // ------------------------------------------------------------
-    window.setGenderFilter = function(gender) {
+    window.navigateToGender = function(gender, article = 'all') {
       STATE.genderFilter = gender;
-      document.querySelectorAll('.gender-pill-btn').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.getElementById(`gender-filter-${gender}`);
-      if (activeBtn) activeBtn.classList.add('active');
-      renderScrubsGrid();
-    };
-
-    window.setArticleFilter = function(article) {
       STATE.articleFilter = article;
+      STATE.seasonFilter = null;
+      window.navigateToView('category-scrubs');
+
+      // Update Breadcrumbs
+      const bGenderWrap = document.getElementById('collection-breadcrumb-gender-wrap');
+      const bGender = document.getElementById('collection-breadcrumb-gender');
+      const bSep = document.getElementById('collection-breadcrumb-separator');
+      const bArticle = document.getElementById('collection-breadcrumb-article');
+      if (bGenderWrap) bGenderWrap.style.display = 'inline';
+      if (bGender) bGender.textContent = gender === 'women' ? 'Women' : 'Men';
+      if (bSep) bSep.style.display = article !== 'all' ? 'inline' : 'none';
+      if (bArticle) bArticle.textContent = article !== 'all' ? `${article} Series` : 'All Articles';
+
+      // Update Header
+      const catTag = document.getElementById('collection-category-tag');
+      const levelTag = document.getElementById('collection-level-tag');
+      const mainHeading = document.getElementById('collection-main-heading');
+      const subDesc = document.getElementById('collection-sub-desc');
+      const filterDesc = document.getElementById('collection-filter-descriptor');
+
+      if (catTag) catTag.textContent = gender === 'women' ? "WOMEN'S COLLECTION" : "MEN'S COLLECTION";
+      if (levelTag) levelTag.textContent = article === 'all' ? 'LEVEL 2: SELECT ARTICLE SERIES' : `LEVEL 3: ${article.toUpperCase()} DESIGNS`;
+      if (mainHeading) {
+        mainHeading.textContent = article === 'all' 
+          ? `${gender === 'women' ? "Women's" : "Men's"} Clinical Collection`
+          : `${gender === 'women' ? "Women's" : "Men's"} ${article} Series`;
+      }
+      if (subDesc) {
+        if (gender === 'women') {
+          subDesc.textContent = "Explore precision-tailored clinical scrubs for female healthcare professionals. Featuring fluid drape antimicrobial fabric, tailored contour seams, and high-performance flex weaves.";
+        } else {
+          subDesc.textContent = "Explore clinical scrubs engineered for male healthcare professionals. Featuring athletic 4-way stretch twill, executive mandarin collar gabardine, and aerocool performance weaves.";
+        }
+      }
+      if (filterDesc) {
+        filterDesc.textContent = article === 'all'
+          ? `${gender === 'women' ? "Women's" : "Men's"} All Articles`
+          : `${gender === 'women' ? "Women's" : "Men's"} ${article} Series`;
+      }
+
+      // Update Gender Pill buttons
+      document.querySelectorAll('.gender-pill-btn').forEach(b => b.classList.remove('active'));
+      const activeGenderBtn = document.getElementById(`gender-filter-${gender}`);
+      if (activeGenderBtn) activeGenderBtn.classList.add('active');
+
+      // Update Series Tab pills
       document.querySelectorAll('.series-tab-btn').forEach(b => b.classList.remove('active'));
       const tabId = article === 'all' ? 'series-tab-all' : `series-tab-${article.toLowerCase()}`;
       const activeTab = document.getElementById(tabId);
       if (activeTab) activeTab.classList.add('active');
+
+      const btnAll = document.getElementById('btn-article-all');
+      if (btnAll) btnAll.classList.toggle('active', article === 'all');
+
+      // Show Level 2 Article Cards Section
+      const cardsSec = document.getElementById('collection-article-cards-section');
+      if (cardsSec) cardsSec.style.display = 'block';
+
+      // Render Level 2 Article Cards
+      renderArticleCardsForGender(gender, article);
+
+      // Render Level 3 Product Grid
       renderScrubsGrid();
+
+      // Update URL hash
+      const hash = article === 'all' ? `#${gender}` : `#${gender}-${article.toLowerCase()}`;
+      if (history.pushState) {
+        history.pushState(null, null, hash);
+      } else {
+        location.hash = hash;
+      }
+    };
+
+    window.navigateToArticle = function(article) {
+      STATE.articleFilter = article;
+      STATE.seasonFilter = null;
+
+      // Update Breadcrumb
+      const bSep = document.getElementById('collection-breadcrumb-separator');
+      const bArticle = document.getElementById('collection-breadcrumb-article');
+      if (bSep) bSep.style.display = article !== 'all' ? 'inline' : 'none';
+      if (bArticle) bArticle.textContent = article !== 'all' ? `${article} Series` : 'All Articles';
+
+      // Update Level tag
+      const levelTag = document.getElementById('collection-level-tag');
+      if (levelTag) {
+        levelTag.textContent = article === 'all' ? 'LEVEL 2: SELECT ARTICLE SERIES' : `LEVEL 3: ${article.toUpperCase()} DESIGNS`;
+      }
+
+      // Update Main Heading
+      const mainHeading = document.getElementById('collection-main-heading');
+      if (mainHeading) {
+        const genderTitle = STATE.genderFilter === 'women' ? "Women's" : (STATE.genderFilter === 'men' ? "Men's" : "Clinical");
+        mainHeading.textContent = article === 'all'
+          ? `${genderTitle} Clinical Collection`
+          : `${genderTitle} ${article} Series`;
+      }
+
+      // Update Filter Descriptor
+      const filterDesc = document.getElementById('collection-filter-descriptor');
+      if (filterDesc) {
+        const genderTitle = STATE.genderFilter === 'women' ? "Women's" : (STATE.genderFilter === 'men' ? "Men's" : "Clinical");
+        filterDesc.textContent = article === 'all' ? `${genderTitle} All Articles` : `${genderTitle} ${article} Series`;
+      }
+
+      // Update Series Tab pills
+      document.querySelectorAll('.series-tab-btn').forEach(b => b.classList.remove('active'));
+      const tabId = article === 'all' ? 'series-tab-all' : `series-tab-${article.toLowerCase()}`;
+      const activeTab = document.getElementById(tabId);
+      if (activeTab) activeTab.classList.add('active');
+
+      const btnAll = document.getElementById('btn-article-all');
+      if (btnAll) btnAll.classList.toggle('active', article === 'all');
+
+      // Highlight active article card
+      document.querySelectorAll('.article-selector-card').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-series') === article);
+      });
+
+      renderScrubsGrid();
+
+      // Update Hash
+      const hash = article === 'all' ? `#${STATE.genderFilter}` : `#${STATE.genderFilter}-${article.toLowerCase()}`;
+      if (history.pushState) {
+        history.pushState(null, null, hash);
+      } else {
+        location.hash = hash;
+      }
+    };
+
+    window.navigateToSeasonalCollection = function(season) {
+      STATE.seasonFilter = season; // 'summer' | 'winter'
+      STATE.genderFilter = 'all';
+      STATE.articleFilter = 'all';
+      window.navigateToView('category-scrubs');
+
+      // Update Breadcrumbs
+      const bGenderWrap = document.getElementById('collection-breadcrumb-gender-wrap');
+      const bSep = document.getElementById('collection-breadcrumb-separator');
+      const bArticle = document.getElementById('collection-breadcrumb-article');
+      if (bGenderWrap) bGenderWrap.style.display = 'none';
+      if (bSep) bSep.style.display = 'none';
+      if (bArticle) bArticle.textContent = season === 'summer' ? 'Summer Collection' : 'Winter Collection';
+
+      // Update Header
+      const catTag = document.getElementById('collection-category-tag');
+      const levelTag = document.getElementById('collection-level-tag');
+      const mainHeading = document.getElementById('collection-main-heading');
+      const subDesc = document.getElementById('collection-sub-desc');
+      const filterDesc = document.getElementById('collection-filter-descriptor');
+
+      if (catTag) catTag.textContent = season === 'summer' ? 'SUMMER EDIT' : 'WINTER EDIT';
+      if (levelTag) levelTag.textContent = 'CURATED SEASONAL WARDROBE';
+      if (mainHeading) {
+        mainHeading.textContent = season === 'summer' ? 'Summer Clinical Collection' : 'Winter Clinical Collection';
+      }
+      if (subDesc) {
+        subDesc.textContent = season === 'summer'
+          ? 'Ultra-breathable aerocool weaves, lightweight moisture-wicking fabrics, and temperature-regulating clinical scrubs tailored for warm hospital shifts.'
+          : 'Crisp structured gabardine, dense antimicrobial twills, and layered thermal warmth engineered for intensive ICU and clinical consultation rounds.';
+      }
+      if (filterDesc) {
+        filterDesc.textContent = season === 'summer' ? 'Summer Clinical Scrubs' : 'Winter Clinical Scrubs';
+      }
+
+      // Hide gender article cards for seasonal view
+      const cardsSec = document.getElementById('collection-article-cards-section');
+      if (cardsSec) cardsSec.style.display = 'none';
+
+      // Clear gender buttons active state
+      document.querySelectorAll('.gender-pill-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.series-tab-btn').forEach(b => b.classList.remove('active'));
+      const tabAll = document.getElementById('series-tab-all');
+      if (tabAll) tabAll.classList.add('active');
+
+      renderScrubsGrid();
+
+      const hash = `#${season}-collection`;
+      if (history.pushState) {
+        history.pushState(null, null, hash);
+      } else {
+        location.hash = hash;
+      }
+    };
+
+    function renderArticleCardsForGender(gender, activeArticle) {
+      const container = document.getElementById('collection-article-cards-grid');
+      if (!container) return;
+
+      // Exact supported article ordering:
+      // Women: Velora, Sprinter, Crown, Flexwell
+      // Men: Crown, Sprinter, Velora, Flexwell
+      const articlesOrder = gender === 'women'
+        ? ['Velora', 'Sprinter', 'Crown', 'Flexwell']
+        : ['Crown', 'Sprinter', 'Velora', 'Flexwell'];
+
+      const articleMeta = {
+        'Sprinter': {
+          image: 'cat-sprinter.jpg',
+          tagline: 'Athletic 4-Way Stretch Twill',
+          badge: 'TOP ACTIVE'
+        },
+        'Velora': {
+          image: 'cat-velora.jpg',
+          tagline: 'Silky Soft Micro-Drape Blend',
+          badge: 'POPULAR'
+        },
+        'Crown': {
+          image: 'cat-crown.jpg',
+          tagline: 'Structured Mandarin Gabardine',
+          badge: 'EXECUTIVE'
+        },
+        'Flexwell': {
+          image: 'cat-flexfit.jpg',
+          tagline: 'Aerocool Technical Hyper-Stretch',
+          badge: 'AEROCOOL'
+        }
+      };
+
+      const catalogue = window.EnamelsCatalogue || [];
+      const genderItems = catalogue.filter(item => {
+        return item.gender === gender || item.gender === 'unisex';
+      });
+
+      const cardsHtml = articlesOrder.map(seriesName => {
+        const meta = articleMeta[seriesName] || {
+          image: 'cat-sprinter.jpg',
+          tagline: 'Clinical Scrub Line',
+          badge: 'SERIES'
+        };
+
+        const count = genderItems.filter(p => p.series === seriesName).length;
+        if (count === 0) return ''; // Only show categories that actually exist
+
+        const isActive = activeArticle === seriesName;
+
+        return `
+          <div
+            class="article-selector-card ${isActive ? 'active' : ''}"
+            data-series="${seriesName}"
+            onclick="window.navigateToArticle('${seriesName}')"
+            style="cursor: pointer;"
+          >
+            <div class="article-card-thumb-wrap">
+              <img
+                src="${window.ShopifyThemeAssets?.[meta.image] || meta.image}"
+                alt="${seriesName} ${gender === 'women' ? "Women's" : "Men's"} Scrubs"
+                class="article-card-thumb-img"
+                onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'"
+                loading="lazy"
+              />
+              <span class="article-card-badge">${meta.badge}</span>
+            </div>
+            <div class="article-card-content">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
+                <h4 class="article-card-name">${seriesName}</h4>
+                <span class="article-card-count">${count} ${count === 1 ? 'Design' : 'Designs'}</span>
+              </div>
+              <p class="article-card-desc">${meta.tagline}</p>
+              <div class="article-card-action">
+                <span>View ${seriesName}</span>
+                <span class="article-card-arrow">→</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).filter(Boolean).join('');
+
+      container.innerHTML = cardsHtml;
+    }
+
+    window.setGenderFilter = function(gender) {
+      window.navigateToGender(gender, STATE.articleFilter || 'all');
+    };
+
+    window.setArticleFilter = function(article) {
+      window.navigateToArticle(article);
     };
 
     window.sortScrubsCatalogue = function(val) {
@@ -332,6 +615,12 @@
     function getFilteredCatalogue() {
       const catalogue = window.EnamelsCatalogue || [];
       return catalogue.filter(item => {
+        // Seasonal collection filter
+        if (STATE.seasonFilter) {
+          if (item.season !== STATE.seasonFilter && !item.season?.includes(STATE.seasonFilter)) {
+            return false;
+          }
+        }
         // Gender filter
         if (STATE.genderFilter !== 'all') {
           if (item.gender !== STATE.genderFilter && item.gender !== 'unisex') return false;
@@ -422,7 +711,10 @@
             </div>
           </div>
         `;
-      }).join('')    // ------------------------------------------------------------
+      }).join('');
+    }
+
+    // ------------------------------------------------------------
     // 6. SINGLE-PAGE PRODUCT STUDIO & CUSTOMIZATION ENGINE
     // ------------------------------------------------------------
 
@@ -479,15 +771,12 @@
         photoEl.onerror = () => { photoEl.src = '{{ 'demo-sprinter-navy.jpg' | asset_url }}'; };
       }
 
-      // MAKE YOUR OWN COLOR STRICT RULE (SECTION 5):
-      // Sprinter series strictly HIDDEN! Crown/Velora shown only if supportsMakeYourOwnColor === true.
+      // MAKE YOUR OWN COLOR STRICT RULE (REQUIREMENTS 4 & 5):
+      // Completely removed from all regular articles (Sprinter, Crown, Velora, Flexwell, etc.).
+      // Exclusively available inside "Make Your Own Scrubs" (Ready to Wear).
       const customColorSection = document.getElementById('pdp-make-your-own-color-section');
       if (customColorSection) {
-        if (item.series === 'Sprinter' || item.supportsMakeYourOwnColor === false) {
-          customColorSection.style.display = 'none';
-        } else {
-          customColorSection.style.display = 'block';
-        }
+        customColorSection.style.display = 'none';
       }
 
       // Highlight active article switcher chip
@@ -607,19 +896,10 @@
     };
 
     window.selectCustomColor = function(hex, name) {
-      STATE.pdpCustomColor = { name, hex };
-      STATE.pdpColor = { name: `Custom Dye: ${name}`, hex, image: '' };
-
-      const title = document.getElementById('pdp-selected-color-title');
-      if (title) title.textContent = `Custom Dye: ${name}`;
-
-      document.querySelectorAll('#pdp-bottom-swatches-grid .pdp-swatch-item').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('#pdp-custom-color-swatches .pdp-swatch-item').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.trim() === name);
-      });
-
-      recalculatePdpSummary();
-      updateRepCustomOptionsPreview();
+      // STRICT REQUIREMENT 4 & 5:
+      // Make Your Own Color is completely removed from all regular articles (Sprinter, Crown, Velora, Flexwell, etc.).
+      // Exclusively available inside "Make Your Own Scrubs" (Ready to Wear).
+      return;
     };
 
     window.selectStandardSize = function(size) {
@@ -808,11 +1088,33 @@
       const input = document.getElementById('pdp-qty-input');
       if (input) input.value = STATE.pdpQty;
       recalculatePdpSummary();
-    };-val">${logoText}</div>
-        </div>
-        ` : ''}
-      `;
-    }
+    };
+
+    window.updateRepCustomOptionsPreview = function() {
+      const previewEl = document.getElementById('rep-custom-options-preview');
+      const syncCheck = document.getElementById('rep-sync-custom-options');
+      if (!previewEl) return;
+      if (syncCheck && !syncCheck.checked) {
+        previewEl.textContent = 'Custom scrub options excluded from visit request.';
+        return;
+      }
+      const item = STATE.pdpProduct;
+      if (!item) {
+        previewEl.textContent = 'No product currently selected.';
+        return;
+      }
+      const parts = [item.title.replace('DEMO — ', '')];
+      if (STATE.pdpColor) parts.push(STATE.pdpColor.name);
+      if (STATE.pdpIsCustomSize) {
+        parts.push('Custom Sizing');
+      } else {
+        parts.push(`Size ${STATE.pdpSize}`);
+      }
+      if (STATE.pdpAlterations) parts.push('Alterations Requested');
+      if (STATE.pdpEngravingType !== 'none') parts.push(`Engraving (${STATE.pdpEngravingType})`);
+      if (STATE.pdpLogoEnabled) parts.push(`Logo (${STATE.pdpLogo.name})`);
+      previewEl.textContent = `Selected: ${parts.join(' • ')}`;
+    };
 
     // Recalculates order summary table and advance payment alert
     function recalculatePdpSummary() {
@@ -1043,16 +1345,40 @@
     }
 
     window.selectRtwColor = function(hex, name) {
-      STATE.rtwColor = { name, hex };
-      document.querySelectorAll('#rtw-color-swatches-grid .pdp-swatch-item, #rtw-colors-grid .pdp-swatch-item').forEach(c => {
-        c.classList.toggle('active', c.textContent.trim() === name);
+      STATE.rtwColor = { name, hex, isCustomDye: false };
+      document.querySelectorAll('#rtw-color-swatches-grid .pdp-swatch-item, #rtw-custom-color-swatches .pdp-swatch-item').forEach(c => {
+        c.classList.toggle('active', c.textContent.trim().includes(name));
       });
-      // Dynamically update macro pocket fabric canvas color to match selected clinical shade
       const stage = document.getElementById('rtw-macro-stage');
       if (stage) {
         stage.style.setProperty('--rtw-preview-fabric', hex);
       }
       window.jumpRtwStep(3);
+    };
+
+    window.selectRtwCustomColor = function(hex, name) {
+      STATE.rtwColor = { name: `Custom Dye: ${name}`, hex, isCustomDye: true };
+      document.querySelectorAll('#rtw-color-swatches-grid .pdp-swatch-item, #rtw-custom-color-swatches .pdp-swatch-item').forEach(c => {
+        c.classList.remove('active');
+      });
+      document.querySelectorAll('#rtw-custom-color-swatches .pdp-swatch-item').forEach(c => {
+        if (c.textContent.trim().includes(name)) c.classList.add('active');
+      });
+      const stage = document.getElementById('rtw-macro-stage');
+      if (stage) {
+        stage.style.setProperty('--rtw-preview-fabric', hex);
+      }
+      window.jumpRtwStep(3);
+    };
+
+    window.applyRtwCustomInputColor = function() {
+      const input = document.getElementById('rtw-custom-color-input');
+      const val = input ? input.value.trim() : '';
+      if (!val) {
+        alert('Please enter a custom shade name or Hex code (e.g. Hospital Lavender #8B5CF6).');
+        return;
+      }
+      window.selectRtwCustomColor('#00b8a9', val);
     };
 
     window.selectRtwArticle = function(id, name) {
@@ -1349,11 +1675,16 @@
       }
 
       const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
+      const customDyeFee = STATE.rtwColor?.isCustomDye ? 500 : 0;
       const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
       const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
       const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
-      const total = basePrice + customSizeFee + embFee + logoFee;
+      const total = basePrice + customDyeFee + customSizeFee + embFee + logoFee;
 
+      const dyeRow = document.getElementById('rtw-rev-custom-dye-row');
+      if (dyeRow) {
+        dyeRow.style.display = customDyeFee > 0 ? 'table-row' : 'none';
+      }
       if (embRow) {
         embRow.style.display = embFee > 0 ? 'table-row' : 'none';
         if (embEl) embEl.textContent = `+Rs. 450 (${STATE.rtwEngravingLines.line1 || 'Times New Roman'})`;
@@ -1366,7 +1697,7 @@
         totalEl.textContent = `Rs. ${total.toLocaleString()}`;
       }
 
-      const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0);
+      const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0) || (customDyeFee > 0);
       if (advAlert) {
         advAlert.style.display = requiresAdvance ? 'flex' : 'none';
       }
@@ -1375,12 +1706,13 @@
     window.addRtwToCart = function() {
       withCartDebounce(() => {
         const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
+        const customDyeFee = STATE.rtwColor?.isCustomDye ? 500 : 0;
         const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
         const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
         const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
-        const unitPrice = basePrice + customSizeFee + embFee + logoFee;
+        const unitPrice = basePrice + customDyeFee + customSizeFee + embFee + logoFee;
 
-        const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0);
+        const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0) || (customDyeFee > 0);
 
         const cartItem = {
           id: `rtw-${Date.now()}`,
@@ -1391,6 +1723,7 @@
           fabric: STATE.rtwFabric?.name || 'Sprinter Performance Twill',
           color: STATE.rtwColor?.name || 'Deep Navy',
           colorHex: STATE.rtwColor?.hex || '#102A43',
+          customDye: STATE.rtwColor?.isCustomDye ? 'Bespoke Laboratory Dye (+Rs. 500)' : 'Standard Shade',
           size: STATE.rtwSizeMode === 'standard' ? `Standard Size ${STATE.rtwStandardSize}` : 'Custom Tailored Measurements',
           customMeasurements: STATE.rtwSizeMode === 'custom' ? STATE.rtwCustomMeasurements : null,
           engraving: STATE.rtwEngravingType !== 'none' ? {

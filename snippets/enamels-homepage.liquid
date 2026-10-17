@@ -89,94 +89,89 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- 2. SHOP BY CATEGORY GRID (AUTHENTIC ENAMELS STYLE)           -->
+  <!-- 2. HOMEPAGE CATEGORIES THUMBNAILS (AUTOMATE-STYLE RESPONSIVE GRID) -->
   <!-- ============================================================ -->
-  <section class="page-container">
-    <div class="section-header-wrap">
-      <span class="section-tag-sub">OFFICIAL TAXONOMY</span>
-      <h2 class="section-title-main">Shop by Category</h2>
-      <p class="section-title-desc">Explore Pakistan's most comprehensive medical uniform and clinical apparel catalogue.</p>
+  <section class="page-container" style="padding-top: 40px; padding-bottom: 40px;">
+    <div class="section-header-wrap" style="margin-bottom: 24px; text-align: center;">
+      <span class="section-tag-sub">EXPLORE COLLECTIONS</span>
+      <h2 class="section-title-main" style="margin-bottom: 6px;">Categories</h2>
+      <p class="section-title-desc" style="max-width: 650px; margin: 0 auto;">Browse Pakistan's premier clinical apparel by gender, bespoke personalization, or seasonal collections.</p>
     </div>
 
-    <div class="enamels-category-grid">
-      <!-- 1. Sprinter Series -->
-      <a href="#collection-sprinter" class="category-tile-card" onclick="window.navigateToCollection('Sprinter'); return false;">
-        <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Sprinter Series" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Sprinter Series</h3>
-          <p class="category-tile-sub">4-Way Mechanical Athletic Stretch</p>
+    <div class="enamels-category-thumbnails-grid">
+      <!-- 1. Men -->
+      <a href="#men" class="category-thumb-card" onclick="window.navigateToGender('men'); return false;">
+        <div class="category-thumb-img-wrap">
+          <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs & Medical Apparel" class="category-thumb-img" width="400" height="400" loading="eager" />
+        </div>
+        <div class="category-thumb-info">
+          <h3 class="category-thumb-title">Men</h3>
+          <p class="category-thumb-desc">Athletic, Twill & Executive Scrubs</p>
+          <span class="category-thumb-action">Explore Collection →</span>
         </div>
       </a>
 
-      <!-- 2. Men Scrubs -->
-      <a href="#category-scrubs" class="category-tile-card" onclick="window.navigateToGenderCollection('men'); return false;">
-        <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Men's Scrubs</h3>
-          <p class="category-tile-sub">Tailored Raglan & Cargo Jogger Sets</p>
+      <!-- 2. Women -->
+      <a href="#women" class="category-thumb-card" onclick="window.navigateToGender('women'); return false;">
+        <div class="category-thumb-img-wrap">
+          <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs & Medical Apparel" class="category-thumb-img" width="400" height="400" loading="eager" />
+        </div>
+        <div class="category-thumb-info">
+          <h3 class="category-thumb-title">Women</h3>
+          <p class="category-thumb-desc">Contour Princess Fit & Fluid Drape</p>
+          <span class="category-thumb-action">Explore Collection →</span>
         </div>
       </a>
 
-      <!-- 3. Women Scrubs -->
-      <a href="#category-scrubs" class="category-tile-card" onclick="window.navigateToGenderCollection('women'); return false;">
-        <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Women's Scrubs</h3>
-          <p class="category-tile-sub">Princess Contour & Fluid Drape Cuts</p>
+      <!-- 3. Home Service -->
+      <a href="#self-service" class="category-thumb-card" onclick="window.navigateToView('self-service'); return false;">
+        <div class="category-thumb-img-wrap">
+          <span class="category-thumb-badge" style="background: #00b8a9; color: #ffffff;">LAHORE ONLY</span>
+          <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" class="category-thumb-img" width="400" height="400" loading="lazy" />
+        </div>
+        <div class="category-thumb-info">
+          <h3 class="category-thumb-title">Home Service</h3>
+          <p class="category-thumb-desc">Concierge Visit & In-Person Sizing</p>
+          <span class="category-thumb-action" style="color: #008779;">Book Visit (Rs. 500) →</span>
         </div>
       </a>
 
-      <!-- 4. Crown Series -->
-      <a href="#collection-crown" class="category-tile-card" onclick="window.navigateToCollection('Crown'); return false;">
-        <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Crown Series" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Crown Series</h3>
-          <p class="category-tile-sub">Executive Mandarin Standing Collar</p>
+      <!-- 4. Make Your Own Scrubs -->
+      <a href="#ready-to-wear" class="category-thumb-card" onclick="window.navigateToView('ready-to-wear'); return false;">
+        <div class="category-thumb-img-wrap">
+          <span class="category-thumb-badge" style="background: #102a43; color: #ffffff;">CUSTOM STUDIO</span>
+          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs Configurator" class="category-thumb-img" width="400" height="400" loading="lazy" />
+        </div>
+        <div class="category-thumb-info">
+          <h3 class="category-thumb-title">Make Your Own Scrubs</h3>
+          <p class="category-thumb-desc">Bespoke Fabrics, Custom Dye & Fit</p>
+          <span class="category-thumb-action">Launch Studio →</span>
         </div>
       </a>
 
-      <!-- 5. Lab Coats -->
-      <a href="#collection-lab-coats" class="category-tile-card" onclick="window.navigateToCollection('lab-coat', 'category'); return false;">
-        <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Lab Coats" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Lab Coats</h3>
-          <p class="category-tile-sub">Helium Notch Lapel & Consultant Cuts</p>
+      <!-- 5. Summer Collection -->
+      <a href="#summer-collection" class="category-thumb-card" onclick="window.navigateToSeasonalCollection('summer'); return false;">
+        <div class="category-thumb-img-wrap">
+          <span class="category-thumb-badge" style="background: #0284c7; color: #ffffff;">AEROCOOL</span>
+          <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Summer Medical Collection" class="category-thumb-img" width="400" height="400" loading="lazy" />
+        </div>
+        <div class="category-thumb-info">
+          <h3 class="category-thumb-title">Summer Collection</h3>
+          <p class="category-thumb-desc">Lightweight Aerocool & Breathable</p>
+          <span class="category-thumb-action">Shop Summer →</span>
         </div>
       </a>
 
-      <!-- 6. Surgical Caps -->
-      <a href="#collection-caps" class="category-tile-card" onclick="window.navigateToCollection('caps', 'category'); return false;">
-        <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="Surgical Caps" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Surgical Caps</h3>
-          <p class="category-tile-sub">BunFit™ Volume Pleats & Printed Themes</p>
+      <!-- 6. Winter Collection -->
+      <a href="#winter-collection" class="category-thumb-card" onclick="window.navigateToSeasonalCollection('winter'); return false;">
+        <div class="category-thumb-img-wrap">
+          <span class="category-thumb-badge" style="background: #581c87; color: #ffffff;">AUTUMN / WINTER</span>
+          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Winter Medical Collection" class="category-thumb-img" width="400" height="400" loading="lazy" />
         </div>
-      </a>
-
-      <!-- 7. Velora Series -->
-      <a href="#collection-velora" class="category-tile-card" onclick="window.navigateToCollection('Velora'); return false;">
-        <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Velora Series" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Velora Series</h3>
-          <p class="category-tile-sub">Silky Soft Luxury Micro-Drape</p>
-        </div>
-      </a>
-
-      <!-- 8. Clinical Clogs -->
-      <a href="#collection-clogs" class="category-tile-card" onclick="window.navigateToCollection('clogs', 'category'); return false;">
-        <img src="{{ 'cat-clogs.jpg' | asset_url }}" alt="Clinical Clogs" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">Clinical Clogs</h3>
-          <p class="category-tile-sub">Ergonomic Cushioning & Anti-Slip Soles</p>
-        </div>
-      </a>
-
-      <!-- 9. FlexFit Series -->
-      <a href="#collection-flexfit" class="category-tile-card" onclick="window.navigateToCollection('FlexFit'); return false;">
-        <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="FlexFit Series" class="category-tile-img" width="400" height="400" loading="lazy" />
-        <div class="category-tile-body">
-          <h3 class="category-tile-name">FlexFit Series</h3>
-          <p class="category-tile-sub">Laser-Cut Ventilation & Aerocool Weave</p>
+        <div class="category-thumb-info">
+          <h3 class="category-thumb-title">Winter Collection</h3>
+          <p class="category-thumb-desc">Structured Twill & Mandarin Collar</p>
+          <span class="category-thumb-action">Shop Winter →</span>
         </div>
       </a>
     </div>

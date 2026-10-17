@@ -2643,3 +2643,277 @@ body:has(.enamels-theme-root) #header-group {
     padding: 16px 12px;
   }
 }
+
+/* ============================================================ */
+/* 19. HOMEPAGE CATEGORY THUMBNAILS & LEVEL 2 ARTICLE BROWSING  */
+/* ============================================================ */
+
+/* 6-Column Category Thumbnail Grid */
+.enamels-category-thumbnails-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.category-thumb-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.category-thumb-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(16, 42, 67, 0.08);
+  border-color: #00b8a9;
+}
+
+.category-thumb-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.category-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  display: block;
+}
+
+.category-thumb-card:hover .category-thumb-img {
+  transform: scale(1.05);
+}
+
+.category-thumb-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(16, 42, 67, 0.88);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: 3px;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+}
+
+.category-thumb-body,
+.category-thumb-info {
+  padding: 12px 10px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.category-thumb-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #102a43;
+  margin: 0 0 3px;
+  line-height: 1.25;
+}
+
+.category-thumb-desc {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.category-thumb-action {
+  font-size: 11px;
+  font-weight: 600;
+  color: #008779;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: auto;
+}
+
+.category-thumb-arrow {
+  transition: transform 0.2s ease;
+}
+
+.category-thumb-card:hover .category-thumb-arrow {
+  transform: translateX(3px);
+}
+
+/* Level 2 Article Browsing Grid */
+.article-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.article-selector-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.article-selector-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 16px rgba(16, 42, 67, 0.06);
+}
+
+.article-selector-card.active {
+  border-color: #00b8a9;
+  box-shadow: 0 0 0 2px rgba(0, 184, 169, 0.25), 0 8px 20px rgba(0, 184, 169, 0.12);
+  background: #f0fdfa;
+}
+
+.article-card-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.article-card-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.article-selector-card:hover .article-card-thumb-img {
+  transform: scale(1.04);
+}
+
+.article-card-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(16, 42, 67, 0.9);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.article-card-content {
+  padding: 10px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.article-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #102a43;
+  margin: 0;
+}
+
+.article-card-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: #008779;
+  background: #e6fffa;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.article-card-desc {
+  font-size: 11px;
+  color: #64748b;
+  margin: 3px 0 8px;
+  line-height: 1.3;
+}
+
+.article-card-action {
+  font-size: 11px;
+  font-weight: 700;
+  color: #102a43;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 6px;
+}
+
+.article-card-arrow {
+  color: #00b8a9;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+}
+
+.article-selector-card:hover .article-card-arrow {
+  transform: translateX(3px);
+}
+
+/* Make Your Own Scrubs Bespoke Color Panel */
+.rtw-bespoke-color-card {
+  transition: all 0.2s ease;
+}
+
+.rtw-bespoke-color-card:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 184, 169, 0.08);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .enamels-category-thumbnails-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .article-selector-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .enamels-category-thumbnails-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .article-selector-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .article-card-thumb-wrap {
+    height: 90px;
+  }
+  .article-card-desc {
+    display: none;
+  }
+  .category-thumb-body {
+    padding: 8px 6px;
+  }
+  .category-thumb-title {
+    font-size: 12px;
+  }
+}
+

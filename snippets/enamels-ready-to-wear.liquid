@@ -141,6 +141,55 @@
         <!-- Injected via JS based on selected fabric -->
       </div>
 
+      <!-- EXCLUSIVE MAKE YOUR OWN COLOR / BESPOKE DYE (ONLY INSIDE MAKE YOUR OWN SCRUBS) -->
+      <div class="rtw-bespoke-color-card" style="margin-top: 24px; background: #f8fafc; border: 1.5px dashed #00b8a9; border-radius: 8px; padding: 18px;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 16px;">🎨</span>
+              <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0;">Make Your Own Color (Bespoke Laboratory Dye)</h4>
+              <span style="font-size: 10px; font-weight: 700; background: #00b8a9; color: #ffffff; padding: 2px 6px; border-radius: 3px;">CUSTOM SCRUBS EXCLUSIVE</span>
+            </div>
+            <p style="font-size: 12px; color: #64748b; margin: 4px 0 0;">
+              Need an exclusive clinical tint or clinic identity shade? Our dyeing laboratory formulates bespoke vat-dyed hospital hues (+Rs. 500).
+            </p>
+          </div>
+          <span style="font-size: 13px; font-weight: 700; color: #008779;">+Rs. 500</span>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;" id="rtw-custom-color-swatches">
+          <button type="button" class="pdp-swatch-item" onclick="window.selectRtwCustomColor('#4A0E4E', 'Royal Plum')" style="cursor: pointer;">
+            <span class="pdp-swatch-color-dot" style="background: #4A0E4E;"></span>
+            <span>Royal Plum</span>
+          </button>
+          <button type="button" class="pdp-swatch-item" onclick="window.selectRtwCustomColor('#1E3A8A', 'Oxford Navy')" style="cursor: pointer;">
+            <span class="pdp-swatch-color-dot" style="background: #1E3A8A;"></span>
+            <span>Oxford Navy</span>
+          </button>
+          <button type="button" class="pdp-swatch-item" onclick="window.selectRtwCustomColor('#065F46', 'Pine Forest')" style="cursor: pointer;">
+            <span class="pdp-swatch-color-dot" style="background: #065F46;"></span>
+            <span>Pine Forest</span>
+          </button>
+          <button type="button" class="pdp-swatch-item" onclick="window.selectRtwCustomColor('#831843', 'Cabernet Wine')" style="cursor: pointer;">
+            <span class="pdp-swatch-color-dot" style="background: #831843;"></span>
+            <span>Cabernet Wine</span>
+          </button>
+          <button type="button" class="pdp-swatch-item" onclick="window.selectRtwCustomColor('#B45309', 'Desert Clay')" style="cursor: pointer;">
+            <span class="pdp-swatch-color-dot" style="background: #B45309;"></span>
+            <span>Desert Clay</span>
+          </button>
+          <button type="button" class="pdp-swatch-item" onclick="window.selectRtwCustomColor('#374151', 'Slate Shadow')" style="cursor: pointer;">
+            <span class="pdp-swatch-color-dot" style="background: #374151;"></span>
+            <span>Slate Shadow</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <input type="text" id="rtw-custom-color-input" placeholder="Or enter custom shade name or Hex code (e.g. Hospital Lavender #8B5CF6)" style="flex: 1; min-width: 220px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px;" />
+          <button type="button" class="gender-pill-btn" onclick="window.applyRtwCustomInputColor()" style="padding: 8px 14px; font-size: 12px;">Apply Custom Shade</button>
+        </div>
+      </div>
+
       <div style="margin-top: 30px; display: flex; justify-content: space-between;">
         <button type="button" class="gender-pill-btn" onclick="window.jumpRtwStep(1)">← Back to Fabric</button>
         <button type="button" class="btn-card-action" onclick="window.jumpRtwStep(3)" style="width: auto; padding: 12px 28px;">
@@ -517,6 +566,10 @@
             <tr>
               <td>Size / Measurements:</td>
               <td class="text-right" id="rtw-rev-size">Standard M</td>
+            </tr>
+            <tr id="rtw-rev-custom-dye-row" style="display: none;">
+              <td>Bespoke Vat Dyeing:</td>
+              <td class="text-right" id="rtw-rev-custom-dye">+Rs. 500</td>
             </tr>
             <tr id="rtw-rev-emb-row" style="display: none;">
               <td>Doctor Embroidery:</td>

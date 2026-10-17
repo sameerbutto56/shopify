@@ -121,16 +121,17 @@ window.EnamelsCatalogue = [
   {
     id: 'demo-flexfit-mens-olive',
     sku: 'ENM-FLX-MEN-OLV',
-    title: "DEMO — FlexFit Performance Stretch Scrub Set",
+    title: "DEMO — Flexwell Men's Performance Stretch Scrub Set",
     category: 'scrub-set',
     gender: 'men',
-    series: 'Sprinter',
+    series: 'Flexwell',
+    season: 'summer',
     basePrice: 5400,
     comparePrice: 5950,
-    badge: 'NEW ARRIVAL',
+    badge: 'AEROCOOL WEAVE',
     fabric: 'Hyper-Stretch Breathable Technical Weave',
     description: "Military olive shade with subtle sheen. Engineered with laser-cut breathability perforations in the underarm panels and back yoke for superior thermal regulation in warm wards.",
-    image: 'demo-sprinter-navy.jpg',
+    image: 'cat-flexfit.jpg',
     colors: [
       { name: 'Olive Shine', hex: '#3f4e3b' },
       { name: 'Hunter Green', hex: '#14532d' },
@@ -274,6 +275,30 @@ window.EnamelsCatalogue = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     supportsCustomization: true,
     companionIds: ['demo-cap-printed-flora', 'demo-acc-sleeves-navy']
+  },
+  {
+    id: 'demo-flexwell-womens-ceil',
+    sku: 'ENM-FLX-WMN-CBL',
+    title: "DEMO — Flexwell Women's Aerocool Performance Scrub Set",
+    category: 'scrub-set',
+    gender: 'women',
+    series: 'Flexwell',
+    season: 'summer',
+    basePrice: 5400,
+    comparePrice: 5950,
+    badge: 'AEROCOOL WEAVE',
+    fabric: 'Hyper-Stretch Breathable Technical Aerocool Weave',
+    description: "Ultra-lightweight aerocool medical scrub set tailored for feminine mobility. Features laser-perforated back ventilation, moisture-wicking quick-dry yarn, and 6 clinical utility pockets.",
+    image: 'cat-flexfit.jpg',
+    colors: [
+      { name: 'Ceil Blue', hex: '#6ba4b8' },
+      { name: 'Clinical Teal', hex: '#00B8A9' },
+      { name: 'Deep Navy', hex: '#102A43' },
+      { name: 'Obsidian Black', hex: '#18181b' }
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    supportsCustomization: true,
+    companionIds: ['demo-cap-bunfit-teal', 'demo-acc-sleeves-navy']
   },
 
   // --- UNISEX SCRUBS ---
@@ -774,16 +799,24 @@ window.EnamelsCatalogue = [
 ];
 
 // Normalize product metadata and enforce business customization rules:
-// - Sprinter series: STRICTLY NO Make Your Own Color on standard PDP
-// - Crown & Velora series: Make Your Own Color enabled as configured
+// - MANDATE: Make Your Own Color is STRICTLY DISABLED across all regular articles
+//   (Sprinter, Velora, Crown, Flexwell, etc.). Custom color creation is EXCLUSIVELY
+//   reserved for the dedicated "Make Your Own Scrubs" experience.
 window.EnamelsCatalogue.forEach(item => {
-  if (item.series === 'Sprinter') {
-    item.supportsMakeYourOwnColor = false;
-  } else if (item.series === 'Crown' || item.series === 'Velora') {
-    item.supportsMakeYourOwnColor = true;
-  } else {
-    item.supportsMakeYourOwnColor = false;
+  item.supportsMakeYourOwnColor = false; // Never allowed on regular articles
+
+  // Enrich seasonal metadata if not explicitly set
+  if (!item.season) {
+    if (item.series === 'Velora' || item.series === 'Flexwell' || item.category === 'sleeves') {
+      item.season = 'summer'; // Lightweight, aerocool, micro-drape
+    } else if (item.series === 'Crown' || item.category === 'lab-coat') {
+      item.season = 'winter'; // Executive gabardine twill, structured layers
+    } else {
+      // Sprinter & others are all-season or winter twill
+      item.season = item.id.includes('navy') || item.id.includes('grey') ? 'winter' : 'summer';
+    }
   }
+
   if (!item.designs) {
     item.designs = [item.title.replace('DEMO — ', '')];
   }
