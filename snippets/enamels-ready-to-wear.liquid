@@ -560,26 +560,26 @@
 <div class="enamels-modal-backdrop" id="self-service-modal" onclick="window.closeSelfServiceModal()">
   <div class="enamels-modal-card" onclick="event.stopPropagation()">
     <button type="button" class="modal-close-trigger" onclick="window.closeSelfServiceModal()">✕</button>
-    <div style="font-size: 28px; margin-bottom: 8px;">🛠️</div>
+    <div style="font-size: 28px; margin-bottom: 8px;">📍</div>
     <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 8px; text-transform: uppercase;">
-      Self-Service Custom Tailoring Portal
+      Enamels Self-Service Concierge
     </h3>
     <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 16px;">
-      This third path allows institutional hospital administrators, medical societies, and clinic staff to submit corporate bulk uniform specifications, customer-supplied fabric tailoring, or specialized custom badge requisitions.
+      Need personal assistance with sizing, custom-dyed fabrics, or institutional clinic team orders? Request an in-person visit from an authorized Enamels representative in Lahore to take your measurements and place your order on-site.
     </p>
 
-    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
-      <h4 style="font-size: 12px; font-weight: 700; color: #102a43; margin: 0 0 6px; text-transform: uppercase;">Integration Status:</h4>
-      <p style="font-size: 12px; color: #64748b; margin: 0;">
-        The system navigation and architecture are fully initialized. Custom business rules and self-service workflow parameters are pending final merchant authorization.
+    <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 6px; padding: 14px; margin-bottom: 20px;">
+      <h4 style="font-size: 12px; font-weight: 700; color: #008779; margin: 0 0 4px; text-transform: uppercase;">In-Person Visit Available in Lahore:</h4>
+      <p style="font-size: 12px; color: #475569; margin: 0;">
+        Nominal Rs. 500 consultation fee — 100% adjustable against your qualifying order over Rs. 10,000.
       </p>
     </div>
 
-    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+    <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
       <button type="button" class="gender-pill-btn" onclick="window.closeSelfServiceModal()">Return to Studio</button>
-      <a href="https://wa.me/923011331133?text=Inquiry%20regarding%20Self%20Service%20Tailoring%20and%20Institutional%20Orders" target="_blank" rel="noopener" class="btn-card-action" style="width: auto; padding: 10px 18px; background: #25d366; text-decoration: none;">
-        Contact Corporate Concierge
-      </a>
+      <button type="button" class="btn-card-action" onclick="window.closeSelfServiceModal(); window.navigateToView('self-service');" style="width: auto; padding: 10px 18px; background: #102a43; color: #ffffff;">
+        Book Representative Visit →
+      </button>
     </div>
   </div>
 </div>

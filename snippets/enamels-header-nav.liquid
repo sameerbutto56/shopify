@@ -153,6 +153,14 @@
             <span class="nav-tag-highlight">STUDIO</span>
           </a>
         </li>
+
+        <!-- 7. Self-Service / Representative Visit -->
+        <li class="enamels-nav-item" id="nav-item-self-service">
+          <a href="#self-service" class="enamels-nav-link" onclick="window.navigateToView('self-service'); return false;" style="color: #00b8a9; font-weight: 700;">
+            <span>Self-Service</span>
+            <span class="nav-tag-badge" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">LAHORE VISIT</span>
+          </a>
+        </li>
       </ul>
     </div>
   </nav>
@@ -201,6 +209,11 @@
           6. Ready to Wear / Make Your Own Scrub ✨
         </a>
       </li>
+      <li>
+        <a href="#self-service" onclick="window.navigateToView('self-service'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #008779; background: #f0fdfa;">
+          7. Self-Service (Representative Visit) 📍
+        </a>
+      </li>
     </ul>
 
     <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
@@ -211,6 +224,9 @@
       <a href="https://wa.me/923011331133" target="_blank" rel="noopener" style="display: block; margin-top: 12px; background: #25d366; color: #ffffff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700;">
         Chat on WhatsApp
       </a>
+      <button type="button" onclick="window.openSelfServiceAdminModal(); window.toggleMobileNavDrawer();" style="width: 100%; margin-top: 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 12px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; text-align: center;">
+        🔒 Representative Management Portal
+      </button>
     </div>
   </div>
 </div>

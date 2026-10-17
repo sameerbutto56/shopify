@@ -1,0 +1,789 @@
+{% comment %}
+  ENAMELS ONLINE — DEDICATED SELF-SERVICE & REPRESENTATIVE VISIT BOOKING PORTAL
+  Features:
+  - First-class landing page for in-person representative visits
+  - Lahore-only service restriction enforcement & waitlist handling
+  - Transparent service fee & pricing policy breakdown
+  - 5-Step interactive booking wizard consistent with Enamels design system
+  - Persistent booking storage, status lifecycle management & administrative follow-up
+{% endcomment %}
+
+<div class="chroma-view-panel" id="view-self-service">
+  <div class="page-container" style="padding-top: 10px; padding-bottom: 60px;">
+
+    <!-- Breadcrumb -->
+    <div style="font-size: 12px; color: #64748b; padding: 16px 0 10px;">
+      <a href="#" onclick="window.navigateToView('home'); return false;" style="color: #64748b; text-decoration: none;">Home</a>
+      <span style="margin: 0 6px;">/</span>
+      <strong style="color: #102a43;">Self-Service Representative Visit</strong>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 1. HERO SECTION: SERVICE EXPLANATION & VALUE PROPOSITION      -->
+    <!-- ============================================================ -->
+    <div class="self-service-hero-card">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+        <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">CONCIERGE MEDICAL SERVICE</span>
+        <span class="self-service-location-pill">📍 Currently Available in Lahore Only</span>
+      </div>
+
+      <h1 class="self-service-main-heading">
+        Personalized Scrub Shopping — At Your Convenience
+      </h1>
+
+      <p class="self-service-main-desc">
+        Request an in-person visit from an Enamels representative who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order at your hospital, clinic, or residence.
+      </p>
+
+      <!-- Key Benefits Grid -->
+      <div class="self-service-benefits-grid">
+        <div class="self-service-benefit-item">
+          <div class="self-service-benefit-icon">📏</div>
+          <div>
+            <h4 class="self-service-benefit-title">Personal Sizing & Fitting</h4>
+            <p class="self-service-benefit-desc">Precision body measurements taken on-site to guarantee zero fit issues.</p>
+          </div>
+        </div>
+
+        <div class="self-service-benefit-item">
+          <div class="self-service-benefit-icon">🎨</div>
+          <div>
+            <h4 class="self-service-benefit-title">Fabric & Shade Consultation</h4>
+            <p class="self-service-benefit-desc">Touch physical fabric swatches and compare hospital shades in your clinic light.</p>
+          </div>
+        </div>
+
+        <div class="self-service-benefit-item">
+          <div class="self-service-benefit-icon">🪡</div>
+          <div>
+            <h4 class="self-service-benefit-title">Bespoke Customization Setup</h4>
+            <p class="self-service-benefit-desc">Select embroidery threads, font sizing, and approved hospital logo placements.</p>
+          </div>
+        </div>
+
+        <div class="self-service-benefit-item">
+          <div class="self-service-benefit-icon">📋</div>
+          <div>
+            <h4 class="self-service-benefit-title">Order Placement Support</h4>
+            <p class="self-service-benefit-desc">Direct assistance with order drafting, advance payment, and delivery logistics.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transparent Charges Alert Card -->
+      <div class="self-service-fee-card">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <div style="font-size: 24px; line-height: 1;">💵</div>
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <strong style="color: #102a43; font-size: 13px; text-transform: uppercase;">
+                Representative Visit Service Fee: <span style="color: #00b8a9; font-size: 15px;">Rs. 500</span>
+              </strong>
+              <span style="font-size: 11px; background: #e6fffa; color: #008779; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                100% ADJUSTABLE AGAINST ORDER
+              </span>
+            </div>
+            <p style="font-size: 12px; color: #475569; margin: 4px 0 0; line-height: 1.4;">
+              A nominal Rs. 500 consultation fee applies for in-person representative travel and sizing in Lahore. This fee is <strong>fully adjustable (deducted)</strong> from your uniform purchase when placing an order of Rs. 10,000 or more. Payable during the visit or via advance Bank Transfer. Garments and customizations are billed separately based on selected items.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 2. MULTI-STEP BOOKING FORM CONTAINER                         -->
+    <!-- ============================================================ -->
+    <div class="self-service-booking-container" id="self-service-booking-card">
+
+      <!-- Form Stepper Header -->
+      <div class="pdp-stepper-container" style="margin-bottom: 24px;">
+        <div class="pdp-stepper-header-meta">
+          <div class="pdp-step-counter-badge" id="ss-step-counter-badge">
+            <span class="pdp-step-badge-dot"></span>
+            <span id="ss-step-badge-text">Step 1 of 5: Customer Details</span>
+            <span class="pdp-step-badge-sep">•</span>
+            <span id="ss-step-remaining-text">4 steps remaining</span>
+          </div>
+          <div class="pdp-stepper-status-msg" id="ss-stepper-status-msg">
+            Enter your personal contact details
+          </div>
+        </div>
+
+        <div class="pdp-stepper-track-wrap">
+          <div class="pdp-stepper-progress-bg">
+            <div class="pdp-stepper-progress-fill" id="ss-progress-fill" style="width: 20%;"></div>
+          </div>
+          <div class="pdp-stepper-track" id="ss-stepper-track">
+            <!-- Step 1 -->
+            <button type="button" class="pdp-step-btn active" id="ss-nav-btn-contact" onclick="window.goToSelfServiceStep(1)">
+              <div class="pdp-step-circle">
+                <span class="step-num">1</span>
+                <span class="step-check">✓</span>
+              </div>
+              <div class="pdp-step-text">
+                <span class="pdp-step-label">Contact</span>
+                <span class="pdp-step-state-text" id="ss-sub-contact">Required</span>
+              </div>
+            </button>
+            <!-- Step 2 -->
+            <button type="button" class="pdp-step-btn upcoming" id="ss-nav-btn-address" onclick="window.goToSelfServiceStep(2)">
+              <div class="pdp-step-circle">
+                <span class="step-num">2</span>
+                <span class="step-check">✓</span>
+              </div>
+              <div class="pdp-step-text">
+                <span class="pdp-step-label">Lahore Address</span>
+                <span class="pdp-step-state-text" id="ss-sub-address">Required</span>
+              </div>
+            </button>
+            <!-- Step 3 -->
+            <button type="button" class="pdp-step-btn upcoming" id="ss-nav-btn-needs" onclick="window.goToSelfServiceStep(3)">
+              <div class="pdp-step-circle">
+                <span class="step-num">3</span>
+                <span class="step-check">✓</span>
+              </div>
+              <div class="pdp-step-text">
+                <span class="pdp-step-label">Requirements</span>
+                <span class="pdp-step-state-text" id="ss-sub-needs">Select Items</span>
+              </div>
+            </button>
+            <!-- Step 4 -->
+            <button type="button" class="pdp-step-btn upcoming" id="ss-nav-btn-time" onclick="window.goToSelfServiceStep(4)">
+              <div class="pdp-step-circle">
+                <span class="step-num">4</span>
+                <span class="step-check">✓</span>
+              </div>
+              <div class="pdp-step-text">
+                <span class="pdp-step-label">Visit Time</span>
+                <span class="pdp-step-state-text" id="ss-sub-time">Preference</span>
+              </div>
+            </button>
+            <!-- Step 5 -->
+            <button type="button" class="pdp-step-btn upcoming" id="ss-nav-btn-confirm" onclick="window.goToSelfServiceStep(5)">
+              <div class="pdp-step-circle">
+                <span class="step-num">5</span>
+                <span class="step-check">✓</span>
+              </div>
+              <div class="pdp-step-text">
+                <span class="pdp-step-label">Review & Submit</span>
+                <span class="pdp-step-state-text" id="ss-sub-confirm">Finalize</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM ERROR BANNER -->
+      <div class="pdp-step-error-banner" id="ss-form-error-banner" style="display: none; margin-bottom: 16px;"></div>
+
+      <!-- ==================================================== -->
+      <!-- STEP 1 PANE: CUSTOMER DETAILS                        -->
+      <!-- ==================================================== -->
+      <div class="self-service-pane active" id="ss-pane-1">
+        <div class="pdp-step-box-header">
+          <h3 class="pdp-step-title">
+            <span>👤 Step 1: Your Contact Information</span>
+          </h3>
+          <span style="font-size: 11px; color: #64748b;">All fields marked * are required</span>
+        </div>
+
+        <div class="alteration-fields-grid" style="margin-top: 14px;">
+          <div class="form-field-group">
+            <label>Full Name & Title (e.g. Dr. Ayesha Malik) *</label>
+            <input type="text" class="form-field-input" id="ss-input-name" placeholder="Full Name" />
+          </div>
+
+          <div class="form-field-group">
+            <label>Mobile Number (Pakistan format) *</label>
+            <input type="tel" class="form-field-input" id="ss-input-phone" placeholder="0300-1234567" />
+          </div>
+
+          <div class="form-field-group">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label>WhatsApp Number *</label>
+              <label style="font-size: 11px; color: #00b8a9; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                <input type="checkbox" id="ss-same-whatsapp" onchange="window.syncSelfServiceWhatsApp(this.checked)" />
+                <span>Same as Mobile</span>
+              </label>
+            </div>
+            <input type="tel" class="form-field-input" id="ss-input-whatsapp" placeholder="0300-1234567" />
+          </div>
+
+          <div class="form-field-group">
+            <label>Email Address (For booking confirmation)</label>
+            <input type="email" class="form-field-input" id="ss-input-email" placeholder="doctor@hospital.org" />
+          </div>
+
+          <div class="form-field-group" style="grid-column: 1 / -1;">
+            <label>Preferred Contact Channel *</label>
+            <div style="display: flex; gap: 16px; margin-top: 4px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;">
+                <input type="radio" name="ss_contact_method" value="WhatsApp" checked />
+                <span>WhatsApp Message (Recommended)</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;">
+                <input type="radio" name="ss_contact_method" value="Phone Call" />
+                <span>Direct Phone Call</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="pdp-step-nav-bar">
+          <button type="button" class="btn-step-prev" onclick="window.navigateToView('home')">
+            ← Return to Homepage
+          </button>
+          <button type="button" class="btn-step-next" onclick="window.nextSelfServiceStep(1)">
+            Continue to Service Address →
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- STEP 2 PANE: LAHORE SERVICE ADDRESS                  -->
+      <!-- ==================================================== -->
+      <div class="self-service-pane" id="ss-pane-2">
+        <div class="pdp-step-box-header">
+          <h3 class="pdp-step-title">
+            <span>📍 Step 2: Lahore Service Address</span>
+          </h3>
+          <span style="font-size: 11px; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-weight: 600;">
+            LAHORE ONLY
+          </span>
+        </div>
+
+        <div style="margin-top: 14px;">
+          <!-- City Selection -->
+          <div class="form-field-group" style="margin-bottom: 12px;">
+            <label>City *</label>
+            <select class="form-field-select" id="ss-input-city" onchange="window.handleSelfServiceCityChange(this.value)">
+              <option value="Lahore" selected>Lahore (Active Service Area)</option>
+              <option value="Karachi">Karachi (Join Expansion Waitlist)</option>
+              <option value="Islamabad">Islamabad / Rawalpindi (Join Expansion Waitlist)</option>
+              <option value="Peshawar">Peshawar (Join Expansion Waitlist)</option>
+              <option value="Faisalabad">Faisalabad (Join Expansion Waitlist)</option>
+              <option value="Multan">Multan (Join Expansion Waitlist)</option>
+              <option value="Other">Other City (Join Expansion Waitlist)</option>
+            </select>
+          </div>
+
+          <!-- Out of Area Alert Box -->
+          <div id="ss-out-of-area-alert" style="display: none; background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; padding: 12px; border-radius: 6px; font-size: 12px; margin-bottom: 14px;">
+            <strong>⚠️ Representative Visits are Currently Exclusive to Lahore:</strong>
+            <p style="margin: 4px 0 0;">
+              In-person sizing visits are operating in Lahore only at this time. If you continue with another city, your submission will be recorded as an <strong>Expansion Waitlist & Interest Request</strong>, and our team will notify you when representative services launch in your area. To purchase now nationwide, you can place standard orders directly through our website with Free Delivery over Rs. 7,000.
+            </p>
+          </div>
+
+          <div class="alteration-fields-grid">
+            <div class="form-field-group">
+              <label>Area / Sector / Neighbourhood in Lahore *</label>
+              <select class="form-field-select" id="ss-input-area">
+                <option value="">Select Lahore Area...</option>
+                <option value="DHA (Phase 1-9)">DHA (Phases 1 - 9)</option>
+                <option value="Gulberg (I - III)">Gulberg (I, II, III)</option>
+                <option value="Model Town">Model Town</option>
+                <option value="Johar Town">Johar Town</option>
+                <option value="Cantt / Sarwar Road">Cantt / Garrison</option>
+                <option value="Jail Road / Shadman">Jail Road / Shadman (Services / SIMS / PIC)</option>
+                <option value="Ferozepur Road / Garden Town">Ferozepur Road / Garden Town (Sheikh Zayed / Children's)</option>
+                <option value="Bahria Town">Bahria Town</option>
+                <option value="Faisal Town / Township">Faisal Town / Township</option>
+                <option value="Wapda Town / PCSIR">Wapda Town / PCSIR</option>
+                <option value="Allama Iqbal Town">Allama Iqbal Town</option>
+                <option value="Mall Road / Old City">Mall Road / Anarkali / Mayo Hospital</option>
+                <option value="Other Lahore Area">Other Lahore Area</option>
+              </select>
+            </div>
+
+            <div class="form-field-group">
+              <label>Complete Street Address & Ward / Suite Details *</label>
+              <input type="text" class="form-field-input" id="ss-input-street" placeholder="e.g. House 42, Street 8 or Doctors Hostel, Ward 5" />
+            </div>
+
+            <div class="form-field-group">
+              <label>Hospital, Medical College, or Clinic Name (If applicable)</label>
+              <input type="text" class="form-field-input" id="ss-input-building" placeholder="e.g. Services Hospital / Shaikh Zayed / Private Clinic" />
+            </div>
+
+            <div class="form-field-group">
+              <label>Special Landmark / Delivery & Parking Instructions</label>
+              <input type="text" class="form-field-input" id="ss-input-landmark" placeholder="e.g. Near Gate 2, call before entering" />
+            </div>
+          </div>
+
+          <!-- Mandatory Lahore Confirmation Checkbox -->
+          <div style="margin-top: 14px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; font-weight: 600; color: #102a43; cursor: pointer;">
+              <input type="checkbox" id="ss-confirm-lahore" checked style="margin-top: 2px;" />
+              <span>I confirm that the requested appointment location is located within Lahore district, and I acknowledge that additional travel charges may apply for visits outside Lahore.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pdp-step-nav-bar">
+          <button type="button" class="btn-step-prev" onclick="window.goToSelfServiceStep(1)">
+            ← Back to Contact
+          </button>
+          <button type="button" class="btn-step-next" onclick="window.nextSelfServiceStep(2)">
+            Continue to Shopping Needs →
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- STEP 3 PANE: SHOPPING REQUIREMENTS                   -->
+      <!-- ==================================================== -->
+      <div class="self-service-pane" id="ss-pane-3">
+        <div class="pdp-step-box-header">
+          <h3 class="pdp-step-title">
+            <span>👕 Step 3: What Do You Need Assistance With?</span>
+          </h3>
+          <span style="font-size: 11px; color: #64748b;">Select all that apply</span>
+        </div>
+
+        <p style="font-size: 12px; color: #64748b; margin: 0 0 12px;">
+          Our representative will bring relevant sample sizes, fabric swatches, and customization rings based on your selections:
+        </p>
+
+        <!-- Requirements Category Selection Pills Grid -->
+        <div class="self-service-categories-grid">
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Scrubs" checked />
+            <span class="ss-cat-icon">🩺</span>
+            <span class="ss-cat-label">Scrubs Collection</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Lab Coats" />
+            <span class="ss-cat-icon">🥼</span>
+            <span class="ss-cat-label">Lab Coats</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Caps" />
+            <span class="ss-cat-icon">🧢</span>
+            <span class="ss-cat-label">BunFit™ Caps</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Sleeves" />
+            <span class="ss-cat-icon">🧤</span>
+            <span class="ss-cat-label">Arm Sleeves</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Accessories" />
+            <span class="ss-cat-icon">🎒</span>
+            <span class="ss-cat-label">Accessories</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Make Your Own Scrub" />
+            <span class="ss-cat-icon">🧵</span>
+            <span class="ss-cat-label">Make Your Own Scrub</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Custom Measurements" checked />
+            <span class="ss-cat-icon">📐</span>
+            <span class="ss-cat-label">Custom Sizing / Fit</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Alterations" />
+            <span class="ss-cat-icon">✂️</span>
+            <span class="ss-cat-label">Tailoring Alterations</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Doctor Name Engraving" checked />
+            <span class="ss-cat-icon">🪡</span>
+            <span class="ss-cat-label">Chest Embroidery</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Hospital Crest" />
+            <span class="ss-cat-icon">🏥</span>
+            <span class="ss-cat-label">Hospital Crest</span>
+          </label>
+
+          <label class="self-service-cat-card">
+            <input type="checkbox" name="ss_need" value="Institutional / Bulk Order" />
+            <span class="ss-cat-icon">🏢</span>
+            <span class="ss-cat-label">Hospital / Bulk Team</span>
+          </label>
+        </div>
+
+        <div class="alteration-fields-grid" style="margin-top: 16px;">
+          <div class="form-field-group">
+            <label>Preferred Scrub Series (If known)</label>
+            <select class="form-field-select" id="ss-input-series">
+              <option value="Sprinter Series" selected>Sprinter Series (High-Mobility Athletic Twill)</option>
+              <option value="Velora Series">Velora Series (Luxury Micro-Drape)</option>
+              <option value="Crown Series">Crown Series (Executive Tailored)</option>
+              <option value="FlexFit Series">FlexFit Series (Multi-Flex Clinical)</option>
+              <option value="Representative Choice">Let Representative Recommend On-Site</option>
+            </select>
+          </div>
+
+          <div class="form-field-group">
+            <label>Estimated Uniform Quantity Required</label>
+            <select class="form-field-select" id="ss-input-qty">
+              <option value="1-2 Sets (Individual Doctor)" selected>1 – 2 Sets (Individual Doctor / Clinician)</option>
+              <option value="3-5 Sets (Ward Rotation)">3 – 5 Sets (Full Weekly Rotation)</option>
+              <option value="6-10 Sets (Small Clinic Team)">6 – 10 Sets (Clinic Team / Department)</option>
+              <option value="10+ Sets (Institutional Hospital Order)">10+ Sets (Institutional / Hospital Ward)</option>
+            </select>
+          </div>
+
+          <div class="form-field-group" style="grid-column: 1 / -1;">
+            <label>Specific Notes, Style Preferences or Questions for Representative</label>
+            <textarea class="form-field-input" id="ss-input-notes" rows="3" placeholder="e.g. Need tall trouser length, interested in navy and olive green, need name embroidery for 3 doctors in Cardiology."></textarea>
+          </div>
+        </div>
+
+        <div class="pdp-step-nav-bar">
+          <button type="button" class="btn-step-prev" onclick="window.goToSelfServiceStep(2)">
+            ← Back to Address
+          </button>
+          <button type="button" class="btn-step-next" onclick="window.nextSelfServiceStep(3)">
+            Continue to Schedule Preference →
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- STEP 4 PANE: VISIT PREFERENCES                       -->
+      <!-- ==================================================== -->
+      <div class="self-service-pane" id="ss-pane-4">
+        <div class="pdp-step-box-header">
+          <h3 class="pdp-step-title">
+            <span>📅 Step 4: Preferred Visit Date & Time</span>
+          </h3>
+          <span style="font-size: 11px; color: #64748b;">Subject to representative confirmation</span>
+        </div>
+
+        <div class="alteration-fields-grid" style="margin-top: 14px;">
+          <div class="form-field-group">
+            <label>Preferred Visit Date *</label>
+            <input type="date" class="form-field-input" id="ss-input-date" />
+          </div>
+
+          <div class="form-field-group">
+            <label>Preferred Time Window *</label>
+            <select class="form-field-select" id="ss-input-timeslot">
+              <option value="Morning (10:00 AM – 1:00 PM)">Morning (10:00 AM – 1:00 PM)</option>
+              <option value="Afternoon (2:00 PM – 5:00 PM)" selected>Afternoon (2:00 PM – 5:00 PM)</option>
+              <option value="Evening (5:00 PM – 8:00 PM)">Evening (5:00 PM – 8:00 PM)</option>
+            </select>
+          </div>
+
+          <div class="form-field-group" style="grid-column: 1 / -1;">
+            <label>Visit Setting / Location Type *</label>
+            <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px;">
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                <input type="radio" name="ss_setting" value="Hospital Ward / Duty Room" checked />
+                <span>Hospital Ward / On-Duty Room</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                <input type="radio" name="ss_setting" value="Private Clinic / Office" />
+                <span>Private Clinic / Doctor's Office</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                <input type="radio" name="ss_setting" value="Medical College / Campus" />
+                <span>Medical College / University</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer;">
+                <input type="radio" name="ss_setting" value="Doctor's Residence" />
+                <span>Doctor's Residence</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Scheduling Disclaimer -->
+        <div class="advance-payment-alert-box" style="margin-top: 16px;">
+          <span class="advance-alert-icon">⚠️</span>
+          <div>
+            <div class="advance-alert-title">Important: Requested Slot is a Customer Preference</div>
+            <p class="advance-alert-text">
+              To ensure high service quality and avoid interruptions during clinical procedures, an Enamels concierge will contact you via WhatsApp / phone to confirm representative availability before dispatch. <strong>Visits are not guaranteed or confirmed until verified by our staff.</strong>
+            </p>
+          </div>
+        </div>
+
+        <div class="pdp-step-nav-bar">
+          <button type="button" class="btn-step-prev" onclick="window.goToSelfServiceStep(3)">
+            ← Back to Requirements
+          </button>
+          <button type="button" class="btn-step-next" onclick="window.nextSelfServiceStep(4)">
+            Review Charges & Confirm →
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- STEP 5 PANE: CHARGES & FINAL CONFIRMATION            -->
+      <!-- ==================================================== -->
+      <div class="self-service-pane" id="ss-pane-5">
+        <div class="pdp-step-box-header">
+          <h3 class="pdp-step-title">
+            <span>✅ Step 5: Review Booking Details & Applicable Charges</span>
+          </h3>
+          <span style="font-size: 11px; color: #64748b;">Step 5 of 5</span>
+        </div>
+
+        <!-- Comprehensive Booking Summary Recap Grid -->
+        <div class="self-service-recap-grid" id="ss-review-recap-grid" style="margin-top: 14px;">
+          <!-- Dynamically populated by renderSelfServiceRecap() -->
+        </div>
+
+        <!-- Transparent Charges Table -->
+        <div class="pdp-step-box" style="margin-top: 16px; background: #fafafa; border: 1px solid #cbd5e1;">
+          <h4 style="font-size: 13px; font-weight: 700; color: #102a43; margin: 0 0 10px; text-transform: uppercase;">
+            💰 Applicable Service Charges & Terms:
+          </h4>
+
+          <table class="order-summary-table">
+            <tbody>
+              <tr>
+                <td>Representative In-Person Sizing Fee (Lahore):</td>
+                <td class="text-right" style="font-weight: 700; color: #102a43;">Rs. 500</td>
+              </tr>
+              <tr>
+                <td>Fee Adjustment Policy:</td>
+                <td class="text-right" style="color: #00b8a9; font-weight: 600;">100% Deducted on orders &gt; Rs. 10,000</td>
+              </tr>
+              <tr>
+                <td>Payment Mode:</td>
+                <td class="text-right">Cash during visit or Bank Transfer / JazzCash</td>
+              </tr>
+              <tr>
+                <td>Garments & Embroidery:</td>
+                <td class="text-right" style="color: #64748b;">Billed separately as per final items selected</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Terms Acknowledgement Checkbox -->
+        <div style="margin-top: 16px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+          <label style="display: flex; align-items: flex-start; gap: 8px; font-size: 12px; font-weight: 600; color: #102a43; cursor: pointer;">
+            <input type="checkbox" id="ss-confirm-terms" checked style="margin-top: 2px;" />
+            <span>I acknowledge that this request is currently for Lahore only, and that the requested visit time is a preference subject to review and confirmation by an authorized Enamels representative before dispatch.</span>
+          </label>
+        </div>
+
+        <div class="pdp-step-nav-bar">
+          <button type="button" class="btn-step-prev" onclick="window.goToSelfServiceStep(4)">
+            ← Back to Preferences
+          </button>
+          <button type="button" class="btn-step-next" id="ss-submit-booking-btn" onclick="window.submitSelfServiceBooking()" style="background: #102a43; padding: 14px 28px; font-size: 14px;">
+            📩 Submit Visit Request
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 3. SUCCESS / CONFIRMATION DISPLAY (AFTER SUBMISSION)         -->
+    <!-- ============================================================ -->
+    <div class="self-service-success-card" id="self-service-success-view" style="display: none;">
+      <div style="font-size: 48px; margin-bottom: 12px;">🎉</div>
+      <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff; margin-bottom: 10px;">REQUEST SUBMITTED FOR REVIEW</span>
+      
+      <h2 style="font-size: 24px; font-weight: 700; color: #102a43; margin: 8px 0 4px;">
+        Representative Visit Request Received!
+      </h2>
+      
+      <div style="font-size: 14px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px dashed #00b8a9; padding: 8px 16px; border-radius: 6px; display: inline-block; margin: 12px 0;">
+        Request Reference: <span id="ss-success-ref-id">ENM-VISIT-2026-0000</span>
+      </div>
+
+      <p style="font-size: 14px; color: #475569; max-width: 600px; margin: 0 auto 20px; line-height: 1.5;">
+        Thank you for choosing Enamels Concierge. Your visit request for <strong id="ss-success-city-area">Lahore</strong> has been placed in our review queue under status <strong>"New Request"</strong>.
+      </p>
+
+      <!-- Next Steps Callout -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; max-width: 640px; margin: 0 auto 24px; text-align: left;">
+        <h4 style="font-size: 13px; font-weight: 700; color: #102a43; margin: 0 0 10px; text-transform: uppercase;">
+          📌 What Happens Next?
+        </h4>
+        <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #475569; line-height: 1.6;">
+          <li><strong>Concierge Verification:</strong> Our Lahore representative will inspect your requested date and area availability within 24 business hours.</li>
+          <li><strong>WhatsApp / Phone Confirmation:</strong> You will receive a direct message on <span id="ss-success-contact-phone" style="font-weight: 700; color: #102a43;">your phone</span> to confirm the exact meeting time and representative name.</li>
+          <li><strong>In-Person Fitting:</strong> The representative will arrive with sample garments, measuring tape, and fabric swatch books.</li>
+        </ol>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a id="ss-whatsapp-direct-link" href="https://wa.me/923011331133" target="_blank" rel="noopener" class="btn-card-action" style="width: auto; padding: 12px 24px; background: #25d366; text-decoration: none; font-size: 13px;">
+          💬 Message Concierge on WhatsApp
+        </a>
+        <button type="button" class="btn-step-prev" onclick="window.navigateToView('category-scrubs')" style="width: auto;">
+          Browse Scrubs Online
+        </button>
+        <button type="button" class="gender-pill-btn" onclick="window.resetSelfServiceForm()" style="width: auto;">
+          Book Another Visit
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4. ADMINISTRATIVE & REPRESENTATIVE BOOKING MANAGEMENT MODAL  -->
+<!-- ============================================================ -->
+<div class="enamels-modal-backdrop" id="self-service-admin-modal" onclick="window.closeSelfServiceAdminModal()">
+  <div class="enamels-modal-card" style="max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto; text-align: left;" onclick="event.stopPropagation()">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
+      <div>
+        <span class="nav-tag-highlight" style="background: #102a43; color: #ffffff;">AUTHORIZED STAFF PORTAL</span>
+        <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 4px 0 0;">
+          Enamels Representative Visit Management
+        </h3>
+      </div>
+      <button type="button" class="modal-close-trigger" onclick="window.closeSelfServiceAdminModal()" style="position: static;">✕</button>
+    </div>
+
+    <!-- Admin Filter & Search Bar -->
+    <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+      <input type="text" id="ss-admin-search-input" placeholder="Search by ID, Doctor Name, or Phone..." class="form-field-input" style="flex: 1; min-width: 200px;" oninput="window.renderAdminBookingList()" />
+      <select id="ss-admin-status-filter" class="form-field-select" style="width: auto; min-width: 170px;" onchange="window.renderAdminBookingList()">
+        <option value="ALL">All Statuses</option>
+        <option value="New Request">New Request</option>
+        <option value="Under Review">Under Review</option>
+        <option value="Contact Required">Contact Required</option>
+        <option value="Visit Proposed">Visit Proposed</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Representative Assigned">Representative Assigned</option>
+        <option value="Visit Completed">Visit Completed</option>
+        <option value="Order Created">Order Created</option>
+        <option value="Cancelled">Cancelled</option>
+        <option value="Unable to Fulfil">Unable to Fulfil</option>
+      </select>
+      <button type="button" class="gender-pill-btn" onclick="window.seedSampleBookingsIfEmpty()" title="Add sample requests for testing">
+        🔄 Seed Test Records
+      </button>
+    </div>
+
+    <!-- Booking Requests Table -->
+    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 16px;">
+      <table class="order-summary-table" style="font-size: 12px; margin: 0;">
+        <thead style="background: #f8fafc; font-weight: 700; color: #102a43;">
+          <tr>
+            <th style="padding: 10px 12px; text-align: left;">Request ID</th>
+            <th style="padding: 10px 12px; text-align: left;">Customer</th>
+            <th style="padding: 10px 12px; text-align: left;">Area (Lahore)</th>
+            <th style="padding: 10px 12px; text-align: left;">Preferred Slot</th>
+            <th style="padding: 10px 12px; text-align: left;">Status</th>
+            <th style="padding: 10px 12px; text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ss-admin-table-body">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Detailed Request Editor Drawer (Within Admin Modal) -->
+    <div id="ss-admin-detail-pane" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 12px;">
+        <h4 style="margin: 0; font-size: 14px; font-weight: 700; color: #102a43;" id="ss-admin-detail-title">
+          Request Detail: ENM-VISIT-2026-XXXX
+        </h4>
+        <button type="button" onclick="document.getElementById('ss-admin-detail-pane').style.display='none'" style="background: none; border: none; font-size: 12px; color: #64748b; cursor: pointer;">
+          ✕ Close Detail
+        </button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; font-size: 12px; margin-bottom: 16px;">
+        <div>
+          <strong style="color: #102a43; display: block;">Customer Info:</strong>
+          <div id="ss-admin-detail-customer">-</div>
+        </div>
+        <div>
+          <strong style="color: #102a43; display: block;">Service Address:</strong>
+          <div id="ss-admin-detail-address">-</div>
+        </div>
+        <div>
+          <strong style="color: #102a43; display: block;">Requirements & Notes:</strong>
+          <div id="ss-admin-detail-needs">-</div>
+        </div>
+        <div>
+          <strong style="color: #102a43; display: block;">Service Fee & Terms:</strong>
+          <div id="ss-admin-detail-fee">-</div>
+        </div>
+      </div>
+
+      <!-- Admin Actions Grid -->
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px;">
+        <h5 style="margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #102a43; text-transform: uppercase;">
+          ⚙️ Update Request Status & Assignment:
+        </h5>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">Lifecycle Status:</label>
+            <select id="ss-admin-detail-status-select" class="form-field-select" style="font-size: 12px;">
+              <option value="New Request">New Request</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Contact Required">Contact Required</option>
+              <option value="Visit Proposed">Visit Proposed</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Representative Assigned">Representative Assigned</option>
+              <option value="Visit Completed">Visit Completed</option>
+              <option value="Order Created">Order Created</option>
+              <option value="Cancelled">Cancelled</option>
+              <option value="Unable to Fulfil">Unable to Fulfil</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">Assign Representative:</label>
+            <select id="ss-admin-detail-rep-select" class="form-field-select" style="font-size: 12px;">
+              <option value="">Unassigned</option>
+              <option value="Usman Tariq (Senior Fitter - Lahore)">Usman Tariq (Senior Fitter)</option>
+              <option value="Fatima Ali (Clinical Consultant)">Fatima Ali (Clinical Consultant)</option>
+              <option value="Zainab Raza (Uniform Specialist)">Zainab Raza (Uniform Specialist)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 11px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">Resulting Shopify Order ID:</label>
+            <input type="text" id="ss-admin-detail-order-id" class="form-field-input" placeholder="e.g. #ENM-1042" style="font-size: 12px;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 600; color: #64748b; display: block; margin-bottom: 4px;">Internal Administrative Note:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="ss-admin-new-note" class="form-field-input" placeholder="e.g. Doctor requested visit after 4:00 PM due to round" style="font-size: 12px;" />
+            <button type="button" class="btn-card-action" onclick="window.addAdminBookingNote()" style="width: auto; padding: 6px 14px; font-size: 12px;">
+              Add Note
+            </button>
+          </div>
+        </div>
+
+        <!-- Notes and History Log -->
+        <div id="ss-admin-notes-history-log" style="font-size: 11px; color: #475569; max-height: 120px; overflow-y: auto; background: #f8fafc; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0;">
+          <!-- Notes rendered dynamically -->
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+          <button type="button" class="btn-card-action" onclick="window.createOrderFromBooking()" style="background: #00b8a9; width: auto; padding: 8px 16px; font-size: 12px;">
+            🛒 Open Product Studio to Create Order
+          </button>
+          <button type="button" class="btn-proceed-checkout" onclick="window.saveAdminBookingChanges()" style="width: auto; padding: 8px 20px; font-size: 12px;">
+            💾 Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
