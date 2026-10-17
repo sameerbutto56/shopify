@@ -1063,14 +1063,9 @@ body:has(.enamels-theme-root) #header-group {
   font-weight: 600;
 }
 
-/* PDP Step Pane Transitions & Controls */
+/* PDP Step Boxes & Sections (All simultaneously visible on one page) */
 .pdp-step-pane {
-  display: none;
-}
-
-.pdp-step-pane.active {
   display: block;
-  animation: pdpPaneFadeIn 0.25s ease-out forwards;
 }
 
 @keyframes pdpPaneFadeIn {
@@ -2526,9 +2521,6 @@ body:has(.enamels-theme-root) #header-group {
 }
 
 .self-service-pane {
-  display: none;
-}
-.self-service-pane.active {
   display: block;
 }
 
