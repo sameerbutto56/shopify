@@ -89,91 +89,203 @@
   </section>
 
   <!-- ============================================================ -->
-  <!-- 2. HOMEPAGE CATEGORIES THUMBNAILS (AUTOMATE-STYLE RESPONSIVE GRID) -->
+  <!-- 2. HOMEPAGE CATEGORIES (PREMIUM 3D REDESIGN)                 -->
   <!-- ============================================================ -->
-  <section class="page-container" style="padding-top: 40px; padding-bottom: 40px;">
-    <div class="section-header-wrap" style="margin-bottom: 24px; text-align: center;">
-      <span class="section-tag-sub">EXPLORE COLLECTIONS</span>
-      <h2 class="section-title-main" style="margin-bottom: 6px;">Categories</h2>
-      <p class="section-title-desc" style="max-width: 650px; margin: 0 auto;">Browse Pakistan's premier clinical apparel by gender, bespoke personalization, or seasonal collections.</p>
+  <section class="enamels-categories-section-3d page-container" id="homepage-categories-section">
+    <div class="categories-section-header">
+      <span class="categories-section-tag">CLINICAL APPAREL & SERVICES</span>
+      <h2 class="categories-section-title">Categories</h2>
+      <p class="categories-section-subtitle">
+        Explore purpose-built medical uniforms, personalized studio customization, and concierge in-person sizing.
+      </p>
     </div>
 
-    <div class="enamels-category-thumbnails-grid">
+    <div class="enamels-categories-3d-grid" id="enamels-3d-cards-grid">
       <!-- 1. Men -->
-      <a href="#men" class="category-thumb-card" onclick="window.navigateToGender('men'); return false;">
-        <div class="category-thumb-img-wrap">
-          <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs & Medical Apparel" class="category-thumb-img" width="400" height="400" loading="eager" />
-        </div>
-        <div class="category-thumb-info">
-          <h3 class="category-thumb-title">Men</h3>
-          <p class="category-thumb-desc">Athletic, Twill & Executive Scrubs</p>
-          <span class="category-thumb-action">Explore Collection →</span>
-        </div>
-      </a>
+      <div class="category-card-3d-wrap" data-card-index="1">
+        <a href="#men" class="category-card-3d" onclick="window.navigateToGender('men'); return false;" aria-label="Explore Men's Scrubs Collection">
+          <div class="category-card-glare"></div>
+          <div class="category-card-media-wrap">
+            <span class="category-card-badge badge-men">MEN'S APPAREL</span>
+            <img
+              src="{{ 'cat-men-scrubs.jpg' | asset_url }}"
+              alt="Men's Scrubs & Medical Apparel"
+              class="category-card-media-img"
+              width="600"
+              height="450"
+              loading="eager"
+            />
+          </div>
+          <div class="category-card-body">
+            <div class="category-card-header-row">
+              <h3 class="category-card-title">Men</h3>
+              <span class="category-card-count">12 Styles</span>
+            </div>
+            <p class="category-card-desc">Athletic mechanical stretch, twill scrubs, and structured executive cuts tailored for male medical professionals.</p>
+            <div class="category-card-footer">
+              <span class="category-card-cta">
+                Explore Collection
+                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
 
       <!-- 2. Women -->
-      <a href="#women" class="category-thumb-card" onclick="window.navigateToGender('women'); return false;">
-        <div class="category-thumb-img-wrap">
-          <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs & Medical Apparel" class="category-thumb-img" width="400" height="400" loading="eager" />
-        </div>
-        <div class="category-thumb-info">
-          <h3 class="category-thumb-title">Women</h3>
-          <p class="category-thumb-desc">Contour Princess Fit & Fluid Drape</p>
-          <span class="category-thumb-action">Explore Collection →</span>
-        </div>
-      </a>
+      <div class="category-card-3d-wrap" data-card-index="2">
+        <a href="#women" class="category-card-3d" onclick="window.navigateToGender('women'); return false;" aria-label="Explore Women's Scrubs Collection">
+          <div class="category-card-glare"></div>
+          <div class="category-card-media-wrap">
+            <span class="category-card-badge badge-women">WOMEN'S APPAREL</span>
+            <img
+              src="{{ 'cat-women-scrubs.jpg' | asset_url }}"
+              alt="Women's Scrubs & Medical Apparel"
+              class="category-card-media-img"
+              width="600"
+              height="450"
+              loading="eager"
+            />
+          </div>
+          <div class="category-card-body">
+            <div class="category-card-header-row">
+              <h3 class="category-card-title">Women</h3>
+              <span class="category-card-count">14 Styles</span>
+            </div>
+            <p class="category-card-desc">Contour princess seams, elegant fluid drape, and ergonomic silhouettes designed for female clinicians.</p>
+            <div class="category-card-footer">
+              <span class="category-card-cta">
+                Explore Collection
+                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
 
       <!-- 3. Home Service -->
-      <a href="#self-service" class="category-thumb-card" onclick="window.navigateToView('self-service'); return false;">
-        <div class="category-thumb-img-wrap">
-          <span class="category-thumb-badge" style="background: #00b8a9; color: #ffffff;">LAHORE ONLY</span>
-          <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" class="category-thumb-img" width="400" height="400" loading="lazy" />
-        </div>
-        <div class="category-thumb-info">
-          <h3 class="category-thumb-title">Home Service</h3>
-          <p class="category-thumb-desc">Concierge Visit & In-Person Sizing</p>
-          <span class="category-thumb-action" style="color: #008779;">Book Visit (Rs. 500) →</span>
-        </div>
-      </a>
+      <div class="category-card-3d-wrap" data-card-index="3">
+        <a href="#self-service" class="category-card-3d" onclick="window.navigateToView('self-service'); return false;" aria-label="Book Enamels Home Service Representative Visit">
+          <div class="category-card-glare"></div>
+          <div class="category-card-media-wrap">
+            <span class="category-card-badge badge-concierge">LAHORE CONCIERGE</span>
+            <img
+              src="{{ 'cat-labcoat.jpg' | asset_url }}"
+              alt="Enamels Home Service Representative Visit"
+              class="category-card-media-img"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="category-card-body">
+            <div class="category-card-header-row">
+              <h3 class="category-card-title">Home Service</h3>
+              <span class="category-card-fee">Rs. 500 Visit</span>
+            </div>
+            <p class="category-card-desc">Request an in-person representative visit in Lahore for precision measurement, fabric swatch inspection, and guided order placement.</p>
+            <div class="category-card-footer">
+              <span class="category-card-cta cta-teal">
+                Book Representative Visit
+                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
 
       <!-- 4. Make Your Own Scrubs -->
-      <a href="#ready-to-wear" class="category-thumb-card" onclick="window.navigateToView('ready-to-wear'); return false;">
-        <div class="category-thumb-img-wrap">
-          <span class="category-thumb-badge" style="background: #102a43; color: #ffffff;">CUSTOM STUDIO</span>
-          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs Configurator" class="category-thumb-img" width="400" height="400" loading="lazy" />
-        </div>
-        <div class="category-thumb-info">
-          <h3 class="category-thumb-title">Make Your Own Scrubs</h3>
-          <p class="category-thumb-desc">Bespoke Fabrics, Custom Dye & Fit</p>
-          <span class="category-thumb-action">Launch Studio →</span>
-        </div>
-      </a>
+      <div class="category-card-3d-wrap" data-card-index="4">
+        <a href="#ready-to-wear" class="category-card-3d" onclick="window.navigateToView('ready-to-wear'); return false;" aria-label="Launch Make Your Own Scrubs Customizer Studio">
+          <div class="category-card-glare"></div>
+          <div class="category-card-media-wrap">
+            <span class="category-card-badge badge-studio">CUSTOM STUDIO</span>
+            <img
+              src="{{ 'cat-sprinter.jpg' | asset_url }}"
+              alt="Make Your Own Scrubs 3D Configurator"
+              class="category-card-media-img"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="category-card-body">
+            <div class="category-card-header-row">
+              <h3 class="category-card-title">Make Your Own Scrubs</h3>
+              <span class="category-card-badge-pill">Bespoke</span>
+            </div>
+            <p class="category-card-desc">Interactive all-in-one customizer. Select proprietary fabrics, hospital shades, bespoke sizing, custom alterations, and doctor name embroidery.</p>
+            <div class="category-card-footer">
+              <span class="category-card-cta">
+                Launch Customizer Studio
+                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
 
       <!-- 5. Summer Collection -->
-      <a href="#summer-collection" class="category-thumb-card" onclick="window.navigateToSeasonalCollection('summer'); return false;">
-        <div class="category-thumb-img-wrap">
-          <span class="category-thumb-badge" style="background: #0284c7; color: #ffffff;">AEROCOOL</span>
-          <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Summer Medical Collection" class="category-thumb-img" width="400" height="400" loading="lazy" />
-        </div>
-        <div class="category-thumb-info">
-          <h3 class="category-thumb-title">Summer Collection</h3>
-          <p class="category-thumb-desc">Lightweight Aerocool & Breathable</p>
-          <span class="category-thumb-action">Shop Summer →</span>
-        </div>
-      </a>
+      <div class="category-card-3d-wrap" data-card-index="5">
+        <a href="#summer-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('summer'); return false;" aria-label="Shop Summer Medical Collection">
+          <div class="category-card-glare"></div>
+          <div class="category-card-media-wrap">
+            <span class="category-card-badge badge-summer">AEROCOOL™ EDITION</span>
+            <img
+              src="{{ 'cat-velora.jpg' | asset_url }}"
+              alt="Summer Medical Apparel Collection"
+              class="category-card-media-img"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="category-card-body">
+            <div class="category-card-header-row">
+              <h3 class="category-card-title">Summer Collection</h3>
+              <span class="category-card-count">Aerocool Fit</span>
+            </div>
+            <p class="category-card-desc">Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and effortless cooling through high-demand summer rotations.</p>
+            <div class="category-card-footer">
+              <span class="category-card-cta">
+                Shop Summer Edition
+                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
 
       <!-- 6. Winter Collection -->
-      <a href="#winter-collection" class="category-thumb-card" onclick="window.navigateToSeasonalCollection('winter'); return false;">
-        <div class="category-thumb-img-wrap">
-          <span class="category-thumb-badge" style="background: #581c87; color: #ffffff;">AUTUMN / WINTER</span>
-          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Winter Medical Collection" class="category-thumb-img" width="400" height="400" loading="lazy" />
-        </div>
-        <div class="category-thumb-info">
-          <h3 class="category-thumb-title">Winter Collection</h3>
-          <p class="category-thumb-desc">Structured Twill & Mandarin Collar</p>
-          <span class="category-thumb-action">Shop Winter →</span>
-        </div>
-      </a>
+      <div class="category-card-3d-wrap" data-card-index="6">
+        <a href="#winter-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('winter'); return false;" aria-label="Shop Winter Medical Collection">
+          <div class="category-card-glare"></div>
+          <div class="category-card-media-wrap">
+            <span class="category-card-badge badge-winter">AUTUMN / WINTER</span>
+            <img
+              src="{{ 'cat-crown.jpg' | asset_url }}"
+              alt="Winter Medical Apparel Collection"
+              class="category-card-media-img"
+              width="600"
+              height="450"
+              loading="lazy"
+            />
+          </div>
+          <div class="category-card-body">
+            <div class="category-card-header-row">
+              <h3 class="category-card-title">Winter Collection</h3>
+              <span class="category-card-count">Warm Twill</span>
+            </div>
+            <p class="category-card-desc">Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.</p>
+            <div class="category-card-footer">
+              <span class="category-card-cta">
+                Shop Winter Edition
+                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 
