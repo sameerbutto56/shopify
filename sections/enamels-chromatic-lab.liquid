@@ -534,6 +534,9 @@
     }
 
     // LEVEL 1 -> 6 MAIN NAVIGATION HIERARCHY CONTROLLER
+    // Strict Separation:
+    // Page 1: Men/Women Category Landing (catKey === 'all') -> Category Cards ONLY
+    // Page 2: Selected Category Listing (catKey !== 'all') -> Working All & Article Filter Bar + Products Grid
     window.navigateToGender = function(gender, catKey = 'all', article = 'all') {
       STATE.genderFilter = gender;
       STATE.productCategoryFilter = catKey;
@@ -545,134 +548,150 @@
       const catMeta = CATEGORY_META[catKey];
       const catTitle = catMeta ? catMeta.name : 'Clinical Uniforms';
 
-      // 1. Update Breadcrumbs (Levels 1, 2, 4)
-      const crumbGender = document.getElementById('crumb-gender');
-      const crumbCategorySep = document.getElementById('crumb-category-sep');
-      const crumbCategoryWrap = document.getElementById('crumb-category-wrap');
-      const crumbCategory = document.getElementById('crumb-category');
-      const crumbArticleSep = document.getElementById('crumb-article-sep');
-      const crumbArticleCurrent = document.getElementById('crumb-article-current');
-
-      if (crumbGender) {
-        crumbGender.textContent = gender === 'women' ? 'Women' : 'Men';
-        crumbGender.onclick = function() {
-          window.navigateToGender(gender, 'all', 'all');
-          return false;
-        };
-      }
+      const landingView = document.getElementById('subview-category-landing');
+      const listingView = document.getElementById('subview-product-listing');
+      const filterBar = document.getElementById('product-listing-filter-bar');
 
       if (catKey === 'all') {
-        if (crumbCategorySep) crumbCategorySep.style.display = 'none';
-        if (crumbCategoryWrap) crumbCategoryWrap.style.display = 'none';
-        if (crumbArticleSep) crumbArticleSep.style.display = 'none';
-        if (crumbArticleCurrent) crumbArticleCurrent.textContent = 'All Categories';
+        // ============================================================
+        // PAGE 1: MEN/WOMEN CATEGORY LANDING (CARDS ONLY, NO PRODUCTS)
+        // ============================================================
+        if (landingView) landingView.style.display = 'block';
+        if (listingView) listingView.style.display = 'none';
+
+        // 1. Breadcrumbs
+        const landingCrumbGender = document.getElementById('landing-crumb-gender');
+        if (landingCrumbGender) landingCrumbGender.textContent = `${genderTitle} Categories`;
+
+        // 2. Header
+        const landingCatTag = document.getElementById('landing-category-tag');
+        const landingLevelTag = document.getElementById('landing-level-tag');
+        const landingMainHeading = document.getElementById('landing-main-heading');
+        const landingSubDesc = document.getElementById('landing-sub-desc');
+
+        if (landingCatTag) landingCatTag.textContent = `${genderTitle.toUpperCase()} COLLECTION`;
+        if (landingLevelTag) landingLevelTag.textContent = 'STEP 1 OF 2: CHOOSE PRODUCT CATEGORY';
+        if (landingMainHeading) landingMainHeading.textContent = `${genderTitle} Medical & Clinical Collection`;
+        if (landingSubDesc) {
+          landingSubDesc.textContent = gender === 'women'
+            ? "Explore precision-tailored clinical apparel for female healthcare professionals. Fluid drape antimicrobial fabrics, contour seams, and performance weaves. Select a product category below to view designs."
+            : "Explore clinical scrubs and uniforms engineered for male healthcare professionals. Athletic 4-way stretch twill, executive mandarin collars, and aerocool weaves. Select a product category below to view designs.";
+        }
+
+        // 3. Gender buttons on Landing Page
+        const landingBtnMen = document.getElementById('landing-gender-btn-men');
+        const landingBtnWomen = document.getElementById('landing-gender-btn-women');
+        if (landingBtnMen) landingBtnMen.classList.toggle('active', gender === 'men');
+        if (landingBtnWomen) landingBtnWomen.classList.toggle('active', gender === 'women');
+
+        // 4. Render category cards only (with 3D animations)
+        renderCategoryCardsForGender(gender, 'all');
+
+        // STRICT REQUIREMENT: DO NOT call renderScrubsGrid() on Page 1!
       } else {
-        if (crumbCategorySep) crumbCategorySep.style.display = 'inline';
-        if (crumbCategoryWrap) crumbCategoryWrap.style.display = 'inline';
-        if (crumbCategory) {
-          crumbCategory.textContent = catMeta ? catMeta.name : catKey;
-          crumbCategory.onclick = function() {
-            window.selectProductCategory(catKey);
+        // ============================================================
+        // PAGE 2: SELECTED PRODUCT CATEGORY & LISTING
+        // ============================================================
+        if (landingView) landingView.style.display = 'none';
+        if (listingView) listingView.style.display = 'block';
+        if (filterBar) filterBar.style.display = 'block';
+
+        // 1. Breadcrumbs & Back Button
+        const listingCrumbGender = document.getElementById('listing-crumb-gender');
+        const listingCrumbCategory = document.getElementById('listing-crumb-category');
+        const listingCrumbArticleSep = document.getElementById('listing-crumb-article-sep');
+        const listingCrumbArticleCurrent = document.getElementById('listing-crumb-article-current');
+        const backBtnLabel = document.getElementById('back-to-categories-label');
+
+        if (listingCrumbGender) {
+          listingCrumbGender.textContent = gender === 'women' ? 'Women' : 'Men';
+          listingCrumbGender.onclick = function() {
+            window.navigateToGender(gender, 'all', 'all');
+            return false;
+          };
+        }
+
+        if (listingCrumbCategory) {
+          listingCrumbCategory.textContent = catMeta ? catMeta.name : catKey;
+          listingCrumbCategory.onclick = function() {
+            window.setArticleFilter('all');
             return false;
           };
         }
 
         if (article === 'all') {
-          if (crumbArticleSep) crumbArticleSep.style.display = 'none';
-          if (crumbArticleCurrent) crumbArticleCurrent.textContent = `All ${catTitle} Designs`;
+          if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'none';
+          if (listingCrumbArticleCurrent) {
+            listingCrumbArticleCurrent.style.display = 'none';
+            listingCrumbArticleCurrent.textContent = '';
+          }
         } else {
-          if (crumbArticleSep) crumbArticleSep.style.display = 'inline';
-          if (crumbArticleCurrent) crumbArticleCurrent.textContent = `${article} Series`;
+          if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'inline';
+          if (listingCrumbArticleCurrent) {
+            listingCrumbArticleCurrent.style.display = 'inline';
+            listingCrumbArticleCurrent.textContent = `${article} Series`;
+          }
         }
+
+        if (backBtnLabel) {
+          backBtnLabel.textContent = `Back to ${genderTitle} Categories`;
+        }
+
+        // 2. Header
+        const listingCatTag = document.getElementById('listing-category-tag');
+        const listingLevelTag = document.getElementById('listing-level-tag');
+        const listingMainHeading = document.getElementById('listing-main-heading');
+        const listingSubDesc = document.getElementById('listing-sub-desc');
+        const filterDesc = document.getElementById('collection-filter-descriptor');
+
+        if (listingCatTag) listingCatTag.textContent = `${genderTitle.toUpperCase()} ${catTitle.toUpperCase()}`;
+
+        if (listingLevelTag) {
+          listingLevelTag.textContent = article === 'all'
+            ? 'STEP 2 OF 2: SELECT ARTICLE & PRODUCT'
+            : `FILTERED: ${article.toUpperCase()} SERIES`;
+        }
+
+        if (listingMainHeading) {
+          listingMainHeading.textContent = article === 'all'
+            ? `${genderTitle} ${catTitle}`
+            : `${genderTitle} ${article} Series ${catTitle}`;
+        }
+
+        if (listingSubDesc) {
+          if (catKey === 'scrubs') {
+            listingSubDesc.textContent = gender === 'women'
+              ? "Precision-tailored medical scrubs featuring moisture-wicking stretch, functional deep pockets, and wrinkle-resistant fabric engineered for intense hospital shifts."
+              : "Athletic raglan cuts, reinforced double-needle stitching, and executive mandarin collar scrubs engineered for peak hospital rounds.";
+          } else if (catKey === 'lab-coat') {
+            listingSubDesc.textContent = "Executive consultant lab coats with stain-repellent finish, tablet-sized pockets, and refined lapels tailored for ward rounds.";
+          } else if (catKey === 'caps') {
+            listingSubDesc.textContent = "High-performance BunFit™ surgical caps featuring built-in sweatbands, ponytail chambers, and secure tie-backs.";
+          } else {
+            listingSubDesc.textContent = "Clinical compression sleeves, hospital department patches, and medical accessories.";
+          }
+        }
+
+        if (filterDesc) {
+          filterDesc.textContent = article === 'all'
+            ? `${genderTitle} ${catTitle} — All Articles`
+            : `${genderTitle} ${catTitle} — ${article} Series`;
+        }
+
+        // 3. Gender buttons on Listing
+        const listingGenderMen = document.getElementById('listing-gender-men');
+        const listingGenderWomen = document.getElementById('listing-gender-women');
+        if (listingGenderMen) listingGenderMen.classList.toggle('active', gender === 'men');
+        if (listingGenderWomen) listingGenderWomen.classList.toggle('active', gender === 'women');
+
+        // 4. Render Article Filter Bar with "All" option
+        renderArticleFilterPills(gender, catKey, article);
+
+        // 5. Render Products Grid
+        renderScrubsGrid();
       }
 
-      // 2. Update Header Titles & Step Indicators
-      const catTag = document.getElementById('collection-category-tag');
-      const levelTag = document.getElementById('collection-level-tag');
-      const mainHeading = document.getElementById('collection-main-heading');
-      const subDesc = document.getElementById('collection-sub-desc');
-      const filterDesc = document.getElementById('collection-filter-descriptor');
-
-      if (catTag) catTag.textContent = `${genderTitle.toUpperCase()} ${catKey !== 'all' ? catTitle.toUpperCase() : 'COLLECTION'}`;
-
-      if (levelTag) {
-        if (catKey === 'all') {
-          levelTag.textContent = 'STEP 1 OF 3: SELECT PRODUCT CATEGORY';
-        } else if (article === 'all') {
-          levelTag.textContent = 'STEP 2 OF 3: SELECT BRAND / ARTICLE';
-        } else {
-          levelTag.textContent = `STEP 3 OF 3: SELECT DESIGN & COLOR (${article.toUpperCase()})`;
-        }
-      }
-
-      if (mainHeading) {
-        if (catKey === 'all') {
-          mainHeading.textContent = `${genderTitle} Medical & Clinical Collection`;
-        } else if (article === 'all') {
-          mainHeading.textContent = `${genderTitle} ${catTitle}`;
-        } else {
-          mainHeading.textContent = `${genderTitle} ${article} Series ${catTitle}`;
-        }
-      }
-
-      if (subDesc) {
-        if (catKey === 'all') {
-          subDesc.textContent = gender === 'women'
-            ? "Explore precision-tailored clinical apparel for female healthcare professionals. Fluid drape antimicrobial fabrics, contour seams, and performance weaves. Select a product category below to begin."
-            : "Explore clinical scrubs and uniforms engineered for male healthcare professionals. Athletic 4-way stretch twill, executive mandarin collars, and aerocool weaves. Select a product category below to begin.";
-        } else if (catKey === 'scrubs') {
-          subDesc.textContent = gender === 'women'
-            ? "Precision-tailored medical scrubs featuring moisture-wicking stretch, functional deep pockets, and wrinkle-resistant fabric engineered for intense shifts."
-            : "Athletic raglan cuts, reinforced double-needle stitching, and executive mandarin collar scrubs engineered for peak hospital rounds.";
-        } else if (catKey === 'lab-coat') {
-          subDesc.textContent = "Executive consultant lab coats with stain-repellent finish, tablet-sized pockets, and refined lapels tailored for ward rounds.";
-        } else if (catKey === 'caps') {
-          subDesc.textContent = "High-performance BunFit™ surgical caps featuring built-in sweatbands, ponytail chambers, and secure tie-backs.";
-        } else {
-          subDesc.textContent = "Clinical compression sleeves, hospital department patches, and medical accessories.";
-        }
-      }
-
-      if (filterDesc) {
-        if (catKey === 'all') {
-          filterDesc.textContent = `${genderTitle} All Categories`;
-        } else if (article === 'all') {
-          filterDesc.textContent = `${genderTitle} ${catTitle}`;
-        } else {
-          filterDesc.textContent = `${genderTitle} ${article} Series`;
-        }
-      }
-
-      // 3. Update Gender Switcher Pills
-      document.querySelectorAll('.gender-pill-btn').forEach(b => b.classList.remove('active'));
-      const activeGenderBtn = document.getElementById(`gender-filter-${gender}`);
-      if (activeGenderBtn) activeGenderBtn.classList.add('active');
-
-      // 4. Update Category Tabs in Filter Bar
-      document.querySelectorAll('#category-filter-pills-bar .series-tab-btn').forEach(b => b.classList.remove('active'));
-      const activeCatPill = document.getElementById(`cat-pill-${catKey}`);
-      if (activeCatPill) activeCatPill.classList.add('active');
-
-      const btnCatAll = document.getElementById('btn-cat-all');
-      if (btnCatAll) btnCatAll.classList.toggle('active', catKey === 'all');
-
-      const btnArtAll = document.getElementById('btn-article-all');
-      if (btnArtAll) btnArtAll.classList.toggle('active', article === 'all');
-
-      // Make sure category cards section is visible
-      const catSec = document.getElementById('collection-category-selector-section');
-      if (catSec) catSec.style.display = 'block';
-
-      // 5. Render Level 2 Category Cards
-      renderCategoryCardsForGender(gender, catKey);
-
-      // 6. Render Level 4 Article Series Cards
-      renderArticleCardsForCategory(gender, catKey, article);
-
-      // 7. Render Level 5 Product Grid with Interactive Swatches
-      renderScrubsGrid();
-
-      // 8. Update URL hash
+      // Update URL hash
       let hash = `#${gender}`;
       if (catKey !== 'all') {
         hash += `-${catKey}`;
@@ -690,23 +709,97 @@
     // LEVEL 2 -> LEVEL 3 TRANSITION: Select Product Category
     window.selectProductCategory = function(catKey) {
       window.navigateToGender(STATE.genderFilter || 'men', catKey, 'all');
-      const target = document.getElementById(catKey === 'all' ? 'collection-category-selector-section' : 'collection-article-cards-section') || document.getElementById('scrubs-products-grid');
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const listing = document.getElementById('subview-product-listing');
+      if (listing) {
+        listing.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
-    // LEVEL 4 -> LEVEL 5 TRANSITION: Select Brand / Article Series
-    window.selectArticle = function(article) {
-      window.navigateToGender(STATE.genderFilter || 'men', STATE.productCategoryFilter || 'scrubs', article);
-      const grid = document.getElementById('scrubs-products-grid');
-      if (grid) {
-        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Switch gender within product listing without losing category
+    window.switchListingGender = function(newGender) {
+      window.navigateToGender(newGender, STATE.productCategoryFilter || 'scrubs', 'all');
+    };
+
+    // Filter by Brand / Article Series with working "All" option
+    window.setArticleFilter = function(article) {
+      STATE.articleFilter = article;
+
+      // Update filter pills active state
+      const container = document.getElementById('article-filter-pills-container');
+      if (container) {
+        container.querySelectorAll('.filter-pill-btn').forEach(btn => {
+          const isAll = btn.id === 'filter-pill-all';
+          if (article === 'all') {
+            btn.classList.toggle('active', isAll);
+          } else {
+            btn.classList.toggle('active', btn.id === `filter-pill-${article.toLowerCase()}`);
+          }
+        });
       }
+
+      const genderTitle = (STATE.genderFilter === 'women') ? "Women's" : "Men's";
+      const catMeta = CATEGORY_META[STATE.productCategoryFilter] || { name: 'Products' };
+      const catTitle = catMeta.name;
+
+      // Update breadcrumbs
+      const crumbArticleSep = document.getElementById('listing-crumb-article-sep');
+      const crumbArticleCurrent = document.getElementById('listing-crumb-article-current');
+      if (article === 'all') {
+        if (crumbArticleSep) crumbArticleSep.style.display = 'none';
+        if (crumbArticleCurrent) {
+          crumbArticleCurrent.style.display = 'none';
+          crumbArticleCurrent.textContent = '';
+        }
+      } else {
+        if (crumbArticleSep) crumbArticleSep.style.display = 'inline';
+        if (crumbArticleCurrent) {
+          crumbArticleCurrent.style.display = 'inline';
+          crumbArticleCurrent.textContent = `${article} Series`;
+        }
+      }
+
+      // Update header titles
+      const levelTag = document.getElementById('listing-level-tag');
+      const mainHeading = document.getElementById('listing-main-heading');
+      const filterDesc = document.getElementById('collection-filter-descriptor');
+
+      if (levelTag) {
+        levelTag.textContent = article === 'all'
+          ? 'STEP 2 OF 2: SELECT ARTICLE & PRODUCT'
+          : `FILTERED: ${article.toUpperCase()} SERIES`;
+      }
+      if (mainHeading) {
+        mainHeading.textContent = article === 'all'
+          ? `${genderTitle} ${catTitle}`
+          : `${genderTitle} ${article} Series ${catTitle}`;
+      }
+      if (filterDesc) {
+        filterDesc.textContent = article === 'all'
+          ? `${genderTitle} ${catTitle} — All Articles`
+          : `${genderTitle} ${catTitle} — ${article} Series`;
+      }
+
+      // Re-render product grid immediately
+      renderScrubsGrid();
+
+      // Update URL hash
+      let hash = `#${STATE.genderFilter || 'men'}-${STATE.productCategoryFilter || 'scrubs'}`;
+      if (article !== 'all') {
+        hash += `-${article.toLowerCase()}`;
+      }
+      if (history.pushState) {
+        history.pushState(null, null, hash);
+      } else {
+        location.hash = hash;
+      }
+    };
+
+    window.selectArticle = function(article) {
+      window.setArticleFilter(article);
     };
 
     window.navigateToArticle = function(article) {
-      window.selectArticle(article);
+      window.setArticleFilter(article);
     };
 
     window.navigateToSeasonalCollection = function(season) {
@@ -716,24 +809,33 @@
       STATE.articleFilter = 'all';
       window.navigateToView('category-scrubs');
 
-      // Update Breadcrumbs
-      const crumbGender = document.getElementById('crumb-gender');
-      const crumbCategorySep = document.getElementById('crumb-category-sep');
-      const crumbCategoryWrap = document.getElementById('crumb-category-wrap');
-      const crumbArticleSep = document.getElementById('crumb-article-sep');
-      const crumbArticleCurrent = document.getElementById('crumb-article-current');
+      const landingView = document.getElementById('subview-category-landing');
+      const listingView = document.getElementById('subview-product-listing');
+      if (landingView) landingView.style.display = 'none';
+      if (listingView) listingView.style.display = 'block';
 
-      if (crumbGender) crumbGender.textContent = 'Curated';
-      if (crumbCategorySep) crumbCategorySep.style.display = 'none';
-      if (crumbCategoryWrap) crumbCategoryWrap.style.display = 'none';
+      // Update Breadcrumbs
+      const crumbGender = document.getElementById('listing-crumb-gender');
+      const crumbCategory = document.getElementById('listing-crumb-category');
+      const crumbArticleSep = document.getElementById('listing-crumb-article-sep');
+      const crumbArticleCurrent = document.getElementById('listing-crumb-article-current');
+
+      if (crumbGender) {
+        crumbGender.textContent = 'Curated';
+        crumbGender.onclick = function() {
+          window.navigateToGender('men', 'all', 'all');
+          return false;
+        };
+      }
+      if (crumbCategory) crumbCategory.textContent = season === 'summer' ? 'Summer Collection' : 'Winter Collection';
       if (crumbArticleSep) crumbArticleSep.style.display = 'none';
-      if (crumbArticleCurrent) crumbArticleCurrent.textContent = season === 'summer' ? 'Summer Collection' : 'Winter Collection';
+      if (crumbArticleCurrent) crumbArticleCurrent.style.display = 'none';
 
       // Update Header
-      const catTag = document.getElementById('collection-category-tag');
-      const levelTag = document.getElementById('collection-level-tag');
-      const mainHeading = document.getElementById('collection-main-heading');
-      const subDesc = document.getElementById('collection-sub-desc');
+      const catTag = document.getElementById('listing-category-tag');
+      const levelTag = document.getElementById('listing-level-tag');
+      const mainHeading = document.getElementById('listing-main-heading');
+      const subDesc = document.getElementById('listing-sub-desc');
       const filterDesc = document.getElementById('collection-filter-descriptor');
 
       if (catTag) catTag.textContent = season === 'summer' ? 'SUMMER EDIT' : 'WINTER EDIT';
@@ -750,17 +852,9 @@
         filterDesc.textContent = season === 'summer' ? 'Summer Clinical Scrubs' : 'Winter Clinical Scrubs';
       }
 
-      // Hide category & article selector sections for seasonal view
-      const catSec = document.getElementById('collection-category-selector-section');
-      if (catSec) catSec.style.display = 'none';
-      const cardsSec = document.getElementById('collection-article-cards-section');
-      if (cardsSec) cardsSec.style.display = 'none';
-
-      // Clear gender buttons active state
-      document.querySelectorAll('.gender-pill-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('#category-filter-pills-bar .series-tab-btn').forEach(b => b.classList.remove('active'));
-      const tabAll = document.getElementById('cat-pill-all');
-      if (tabAll) tabAll.classList.add('active');
+      // Hide article filter bar for seasonal collection
+      const filterBar = document.getElementById('product-listing-filter-bar');
+      if (filterBar) filterBar.style.display = 'none';
 
       renderScrubsGrid();
 
@@ -778,41 +872,45 @@
 
       const categoriesOrder = ['scrubs', 'lab-coat', 'caps', 'accessories'];
 
-      const cardsHtml = categoriesOrder.map(catKey => {
+      const cardsHtml = categoriesOrder.map((catKey, index) => {
         const count = getCategoryCount(gender, catKey);
         if (count === 0) return '';
         const meta = CATEGORY_META[catKey];
         const isActive = activeCat === catKey;
         const imgUrl = window.ShopifyThemeAssets?.[meta.image] || meta.image;
+        const animDelay = index * 70;
 
         return `
-          <div
-            class="collection-category-card ${isActive ? 'active' : ''}"
-            data-cat="${catKey}"
-            onclick="window.selectProductCategory('${catKey}')"
-            role="button"
-            tabindex="0"
-            aria-label="${gender === 'women' ? "Women's" : "Men's"} ${meta.name} (${count} Designs)"
-          >
-            <div class="collection-category-thumb-wrap">
-              <img
-                src="${imgUrl}"
-                alt="${meta.name}"
-                class="collection-category-thumb-img"
-                onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'"
-                loading="lazy"
-              />
-              <span class="article-card-badge" style="position: absolute; top: 10px; left: 10px; background: rgba(16, 42, 67, 0.85); color: #ffffff; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase;">${meta.badge}</span>
-            </div>
-            <div class="collection-category-info">
-              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
-                <h3 class="collection-category-title">${meta.name}</h3>
-                <span class="article-card-count" style="font-size: 11px; font-weight: 700; color: #008779;">${count} ${count === 1 ? 'Design' : 'Designs'}</span>
+          <div class="collection-category-card-3d-wrap" style="animation-delay: ${animDelay}ms;">
+            <div
+              class="collection-category-card ${isActive ? 'active' : ''}"
+              data-cat="${catKey}"
+              onclick="window.selectProductCategory('${catKey}')"
+              role="button"
+              tabindex="0"
+              aria-label="${gender === 'women' ? "Women's" : "Men's"} ${meta.name} (${count} Designs)"
+            >
+              <div class="category-card-glare"></div>
+              <div class="collection-category-thumb-wrap">
+                <img
+                  src="${imgUrl}"
+                  alt="${meta.name}"
+                  class="collection-category-thumb-img"
+                  onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'"
+                  loading="lazy"
+                />
+                <span class="article-card-badge" style="position: absolute; top: 10px; left: 10px; background: rgba(16, 42, 67, 0.85); color: #ffffff; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase;">${meta.badge}</span>
               </div>
-              <p class="collection-category-desc">${meta.tagline}</p>
-              <div class="collection-category-action">
-                <span>${isActive ? 'Active Category ✓' : 'Select Category'}</span>
-                <span style="transition: transform 0.2s ease;">→</span>
+              <div class="collection-category-info">
+                <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
+                  <h3 class="collection-category-title">${meta.name}</h3>
+                  <span class="article-card-count" style="font-size: 11px; font-weight: 700; color: #008779;">${count} ${count === 1 ? 'Design' : 'Designs'}</span>
+                </div>
+                <p class="collection-category-desc">${meta.tagline}</p>
+                <div class="collection-category-action">
+                  <span>Explore ${meta.name}</span>
+                  <span class="category-arrow-icon">→</span>
+                </div>
               </div>
             </div>
           </div>
@@ -820,19 +918,69 @@
       }).filter(Boolean).join('');
 
       container.innerHTML = cardsHtml;
+      initCategoryCards3DTilt(container);
     }
 
-    function renderArticleCardsForCategory(gender, catKey, activeArticle = 'all') {
-      const container = document.getElementById('collection-article-cards-grid');
-      const section = document.getElementById('collection-article-cards-section');
-      if (!container || !section) return;
+    function initCategoryCards3DTilt(container) {
+      if (!container) return;
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      if (prefersReducedMotion || isTouch) return;
 
-      if (catKey === 'all') {
-        section.style.display = 'none';
-        return;
-      }
+      const wraps = container.querySelectorAll('.collection-category-card-3d-wrap');
+      wraps.forEach(wrap => {
+        const card = wrap.querySelector('.collection-category-card');
+        const glare = wrap.querySelector('.category-card-glare');
+        if (!card) return;
 
-      section.style.display = 'block';
+        let rect = null;
+        let rafId = null;
+
+        function onMouseEnter() {
+          rect = wrap.getBoundingClientRect();
+          card.style.transition = 'transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease';
+          if (glare) glare.style.opacity = '1';
+        }
+
+        function onMouseMove(e) {
+          if (!rect) rect = wrap.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+
+          const rotateX = ((centerY - y) / centerY) * 5;
+          const rotateY = ((x - centerX) / centerX) * 5;
+
+          if (glare) {
+            const glareX = (x / rect.width) * 100;
+            const glareY = (y / rect.height) * 100;
+            glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 65%)`;
+          }
+
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(6px)`;
+          });
+        }
+
+        function onMouseLeave() {
+          if (rafId) cancelAnimationFrame(rafId);
+          rect = null;
+          card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease, border-color 0.3s ease';
+          card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+          if (glare) glare.style.opacity = '0';
+        }
+
+        wrap.addEventListener('mouseenter', onMouseEnter, { passive: true });
+        wrap.addEventListener('mousemove', onMouseMove, { passive: true });
+        wrap.addEventListener('mouseleave', onMouseLeave, { passive: true });
+      });
+    }
+
+    function renderArticleFilterPills(gender, catKey, activeArticle = 'all') {
+      const container = document.getElementById('article-filter-pills-container');
+      if (!container) return;
 
       const catalogue = window.EnamelsCatalogue || [];
       const matchingItems = catalogue.filter(item => {
@@ -840,8 +988,10 @@
         return matchesGender && getTopCategory(item) === catKey;
       });
 
+      const totalCount = matchingItems.length;
+
       const seriesOrderMap = {
-        'scrubs': gender === 'women' ? ['Velora', 'Sprinter', 'Crown', 'Flexwell'] : ['Crown', 'Sprinter', 'Velora', 'Flexwell'],
+        'scrubs': gender === 'women' ? ['Velora', 'Sprinter', 'Crown', 'Flexwell'] : ['Sprinter', 'Velora', 'Crown', 'Flexwell'],
         'lab-coat': ['Helium'],
         'caps': ['BunFit'],
         'accessories': ['Accessories', 'Sprinter', 'Crown', 'Velora']
@@ -854,68 +1004,47 @@
         }
       });
 
-      const seriesMeta = {
-        'Sprinter': { image: 'cat-sprinter.jpg', tagline: 'Athletic 4-Way Stretch Twill', badge: 'TOP ACTIVE' },
-        'Velora': { image: 'cat-velora.jpg', tagline: 'Silky Soft Micro-Drape Blend', badge: 'POPULAR' },
-        'Crown': { image: 'cat-crown.jpg', tagline: 'Structured Mandarin Gabardine', badge: 'EXECUTIVE' },
-        'Flexwell': { image: 'cat-flexfit.jpg', tagline: 'Aerocool Technical Hyper-Stretch', badge: 'AEROCOOL' },
-        'Helium': { image: 'cat-labcoat.jpg', tagline: 'Executive Antimicrobial Lab Coats', badge: 'CONSULTANT' },
-        'BunFit': { image: 'cat-caps.jpg', tagline: 'Ponytail & Tie-Back Scrub Caps', badge: 'THEATRE' },
-        'Accessories': { image: 'cat-clogs.jpg', tagline: 'Compression & Clinical Essentials', badge: 'GEAR' }
-      };
+      const availableSeries = baseList.filter(sName => {
+        return matchingItems.some(item => item.series === sName);
+      });
 
-      const cardsHtml = baseList.map(seriesName => {
-        const seriesItems = matchingItems.filter(p => p.series === seriesName);
-        const count = seriesItems.length;
-        if (count === 0) return ''; // Only show brands/articles with matching products
+      const isAllActive = (activeArticle === 'all' || !activeArticle);
 
-        const meta = seriesMeta[seriesName] || { image: 'cat-sprinter.jpg', tagline: `${seriesName} Series`, badge: 'SERIES' };
-        const isActive = activeArticle === seriesName;
-        const imgUrl = window.ShopifyThemeAssets?.[meta.image] || meta.image;
+      let pillsHtml = `
+        <button
+          type="button"
+          class="filter-pill-btn ${isAllActive ? 'active' : ''}"
+          id="filter-pill-all"
+          onclick="window.setArticleFilter('all')"
+          aria-label="All ${catKey} (${totalCount})"
+        >
+          <span class="filter-pill-text">All</span>
+          <span class="filter-pill-count">${totalCount}</span>
+        </button>
+      `;
 
-        return `
-          <div
-            class="article-selector-card ${isActive ? 'active' : ''}"
-            data-series="${seriesName}"
-            onclick="window.selectArticle('${seriesName}')"
-            role="button"
-            tabindex="0"
-            aria-label="${seriesName} Series (${count} Designs)"
+      availableSeries.forEach(sName => {
+        const seriesCount = matchingItems.filter(item => item.series === sName).length;
+        const isActive = activeArticle === sName;
+        pillsHtml += `
+          <button
+            type="button"
+            class="filter-pill-btn ${isActive ? 'active' : ''}"
+            id="filter-pill-${sName.toLowerCase()}"
+            onclick="window.setArticleFilter('${sName}')"
+            aria-label="${sName} series (${seriesCount})"
           >
-            <div class="article-card-thumb-wrap">
-              <img
-                src="${imgUrl}"
-                alt="${seriesName} ${catKey}"
-                class="article-card-thumb-img"
-                onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'"
-                loading="lazy"
-              />
-              <span class="article-card-badge">${meta.badge}</span>
-            </div>
-            <div class="article-card-content">
-              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
-                <h4 class="article-card-name">${seriesName}</h4>
-                <span class="article-card-count">${count} ${count === 1 ? 'Design' : 'Designs'}</span>
-              </div>
-              <p class="article-card-desc">${meta.tagline}</p>
-              <div class="article-card-action">
-                <span>${isActive ? 'Active Series ✓' : `View ${seriesName}`}</span>
-                <span class="article-card-arrow">→</span>
-              </div>
-            </div>
-          </div>
+            <span class="filter-pill-text">${sName}</span>
+            <span class="filter-pill-count">${seriesCount}</span>
+          </button>
         `;
-      }).filter(Boolean).join('');
+      });
 
-      container.innerHTML = cardsHtml;
+      container.innerHTML = pillsHtml;
     }
 
     window.setGenderFilter = function(gender) {
       window.navigateToGender(gender, STATE.productCategoryFilter || 'all', STATE.articleFilter || 'all');
-    };
-
-    window.setArticleFilter = function(article) {
-      window.selectArticle(article);
     };
 
     window.sortScrubsCatalogue = function(val) {
@@ -1009,23 +1138,24 @@
 
       if (!sorted.length) {
         grid.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 8px;">
-            <div style="font-size: 32px; margin-bottom: 8px;">🩺</div>
-            <h3 style="font-size: 16px; font-weight: 700; color: #102a43;">No Products Found</h3>
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">Try adjusting your gender, category, or scrub article filters.</p>
-            <button type="button" class="gender-pill-btn active" onclick="window.navigateToGender('${STATE.genderFilter || 'men'}', 'all', 'all');">Reset Filters</button>
+          <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 12px; border: 1.5px dashed #cbd5e1;">
+            <div style="font-size: 36px; margin-bottom: 10px;">🩺</div>
+            <h3 style="font-size: 17px; font-weight: 700; color: #102a43; margin-bottom: 6px;">No Products Found</h3>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 18px;">No designs match the selected article filter in this category.</p>
+            <button type="button" class="filter-pill-btn active" onclick="window.setArticleFilter('all');">View All ${STATE.productCategoryFilter ? (CATEGORY_META[STATE.productCategoryFilter]?.name || 'Category') : ''} Designs</button>
           </div>
         `;
         return;
       }
 
-      grid.innerHTML = sorted.map(item => {
+      grid.innerHTML = sorted.map((item, idx) => {
         const cleanTitle = item.title.replace('DEMO — ', '');
         const colors = item.colors || [];
         const activeColorName = STATE.activeCardColors[item.id] || (colors[0] ? colors[0].name : 'Deep Navy');
         const activeColorObj = colors.find(c => c.name === activeColorName) || colors[0];
         const activeImg = (activeColorObj && activeColorObj.image) ? activeColorObj.image : item.image;
         const displayImg = window.ShopifyThemeAssets?.[activeImg] || activeImg;
+        const animDelay = Math.min(idx * 35, 280);
 
         // Level 5 Interactive Colour Swatches
         const colorsHtml = colors.map(c => {
@@ -1049,7 +1179,7 @@
           : `<button type="button" class="btn-card-action" onclick="window.openProductStudio('${item.id}', window.getProductCardColor('${item.id}'))">Customize & Select</button>`;
 
         return `
-          <div class="product-preview-card" data-product-id="${item.id}">
+          <div class="product-preview-card" data-product-id="${item.id}" style="animation-delay: ${animDelay}ms;">
             <div class="card-thumb-wrap" onclick="window.openProductStudio('${item.id}', window.getProductCardColor('${item.id}'))">
               <img
                 src="${displayImg}"
