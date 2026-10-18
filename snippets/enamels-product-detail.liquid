@@ -21,53 +21,65 @@
 <div class="chroma-view-panel" id="view-product-studio">
   <div class="page-container">
 
-    <!-- Breadcrumb Navigation -->
-    <div style="font-size: 12px; color: #64748b; padding: 20px 0 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-      <div>
-        <a href="#" onclick="window.navigateToView('home'); return false;" style="color: #64748b; text-decoration: none;">Home</a>
-        <span style="margin: 0 6px;">/</span>
-        <a href="#category-scrubs" onclick="window.navigateToView('category-scrubs'); return false;" style="color: #64748b; text-decoration: none;">Scrubs</a>
-        <span style="margin: 0 6px;">/</span>
-        <strong style="color: #102a43;" id="pdp-breadcrumb-title">Sprinter Men's Athletic Scrub Set</strong>
+    <!-- VALID PRODUCT STUDIO CONTENT WRAPPER -->
+    <div id="pdp-valid-studio-view">
+
+      <!-- Breadcrumb Navigation -->
+      <div style="font-size: 12px; color: #64748b; padding: 20px 0 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <a href="#" onclick="window.navigateToView('home'); return false;" style="color: #64748b; text-decoration: none;">Home</a>
+          <span>/</span>
+          <a href="#gender" onclick="window.navigateToGenderCrumb(); return false;" id="pdp-breadcrumb-gender" style="color: #64748b; text-decoration: none;">Men</a>
+          <span>/</span>
+          <a href="#category" onclick="window.returnToArticleListing(); return false;" id="pdp-breadcrumb-cat" style="color: #64748b; text-decoration: none;">Scrubs</a>
+          <span id="pdp-breadcrumb-series-sep" style="display: none;">/</span>
+          <a href="#series" onclick="window.returnToArticleListing(); return false;" id="pdp-breadcrumb-series" style="color: #64748b; text-decoration: none; display: none;">Series</a>
+          <span>/</span>
+          <strong style="color: #102a43;" id="pdp-breadcrumb-title">Sprinter Men's Athletic Scrub Set</strong>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <a href="#category-scrubs" onclick="window.returnToArticleListing(); return false;" class="pdp-back-btn-pill" style="font-size: 11px; font-weight: 700; color: #102a43; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+            ← Back to Articles
+          </a>
+          <!-- Quick Anchor to Representative Visit -->
+          <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 4px 10px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+            📍 Prefer Sizing at Your Clinic? Request Lahore Visit ↓
+          </a>
+        </div>
       </div>
 
-      <!-- Quick Anchor to Representative Visit -->
-      <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 4px 10px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-        📍 Prefer Sizing at Your Clinic? Request Lahore Visit ↓
-      </a>
-    </div>
-
-    <!-- Informative 7-Step Overview Anchor Bar (Clicking scrolls directly to that box on the same page) -->
-    <div class="pdp-stepper-track" style="margin-bottom: 24px;">
-      <a href="#pdp-article-switcher-box" onclick="window.scrollToPdpBox('pdp-article-switcher-box'); return false;" class="pdp-step-indicator active" id="stepper-step-1" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">1</span>
-        <span>Article</span>
-      </a>
-      <a href="#pdp-size-box" onclick="window.scrollToPdpBox('pdp-size-box'); return false;" class="pdp-step-indicator" id="stepper-step-2" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">2</span>
-        <span>Size & Fit</span>
-      </a>
-      <a href="#pdp-alterations-step-box" onclick="window.scrollToPdpBox('pdp-alterations-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-3" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">3</span>
-        <span>Alterations</span>
-      </a>
-      <a href="#pdp-engraving-step-box" onclick="window.scrollToPdpBox('pdp-engraving-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-4" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">4</span>
-        <span>Engraving</span>
-      </a>
-      <a href="#pdp-logo-step-box" onclick="window.scrollToPdpBox('pdp-logo-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-5" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">5</span>
-        <span>Logo</span>
-      </a>
-      <a href="#pdp-summary-step-box" onclick="window.scrollToPdpBox('pdp-summary-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-6" style="text-decoration: none; cursor: pointer;">
-        <span class="pdp-step-circle">6</span>
-        <span>Summary</span>
-      </a>
-      <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" class="pdp-step-indicator" id="stepper-step-7" style="text-decoration: none; cursor: pointer; color: #008779;">
-        <span class="pdp-step-circle" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">7</span>
-        <span>Lahore Visit</span>
-      </a>
-    </div>
+      <!-- Informative 7-Step Overview Anchor Bar (Clicking scrolls directly to that box on the same page) -->
+      <div class="pdp-stepper-track" style="margin-bottom: 24px;">
+        <a href="#pdp-color-selection-step-box" onclick="window.scrollToPdpBox('pdp-color-selection-step-box'); return false;" class="pdp-step-indicator active" id="stepper-step-1" style="text-decoration: none; cursor: pointer;">
+          <span class="pdp-step-circle">1</span>
+          <span>Colours</span>
+        </a>
+        <a href="#pdp-size-box" onclick="window.scrollToPdpBox('pdp-size-box'); return false;" class="pdp-step-indicator" id="stepper-step-2" style="text-decoration: none; cursor: pointer;">
+          <span class="pdp-step-circle">2</span>
+          <span>Size & Fit</span>
+        </a>
+        <a href="#pdp-alterations-step-box" onclick="window.scrollToPdpBox('pdp-alterations-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-3" style="text-decoration: none; cursor: pointer;">
+          <span class="pdp-step-circle">3</span>
+          <span>Alterations</span>
+        </a>
+        <a href="#pdp-engraving-step-box" onclick="window.scrollToPdpBox('pdp-engraving-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-4" style="text-decoration: none; cursor: pointer;">
+          <span class="pdp-step-circle">4</span>
+          <span>Engraving</span>
+        </a>
+        <a href="#pdp-logo-step-box" onclick="window.scrollToPdpBox('pdp-logo-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-5" style="text-decoration: none; cursor: pointer;">
+          <span class="pdp-step-circle">5</span>
+          <span>Logo</span>
+        </a>
+        <a href="#pdp-summary-step-box" onclick="window.scrollToPdpBox('pdp-summary-step-box'); return false;" class="pdp-step-indicator" id="stepper-step-6" style="text-decoration: none; cursor: pointer;">
+          <span class="pdp-step-circle">6</span>
+          <span>Summary</span>
+        </a>
+        <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" class="pdp-step-indicator" id="stepper-step-7" style="text-decoration: none; cursor: pointer; color: #008779;">
+          <span class="pdp-step-circle" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">7</span>
+          <span>Lahore Visit</span>
+        </a>
+      </div>
 
     <!-- Studio Two-Column Layout (Left Visual + Right Customization Column) -->
     <div class="pdp-studio-layout">
@@ -131,84 +143,59 @@
       <div class="pdp-config-column">
 
         <!-- Product Series, Title, Price, Description -->
-        <div style="margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-            <span style="font-size: 11px; font-weight: 700; background: #102a43; color: #ffffff; padding: 3px 8px; border-radius: 4px;" id="pdp-series-badge">SPRINTER SERIES</span>
-            <span style="font-size: 11px; color: #64748b;" id="pdp-sku-display">SKU: ENM-SPRN-NVY</span>
+        <div class="pdp-header-card" style="margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-weight: 700; background: #102a43; color: #ffffff; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.04em;" id="pdp-series-badge">SPRINTER SERIES</span>
+              <span style="font-size: 11px; font-weight: 600; background: #f1f5f9; color: #475569; padding: 3px 8px; border-radius: 4px;" id="pdp-gender-badge">MEN'S COLLECTION</span>
+              <span style="font-size: 11px; color: #64748b;" id="pdp-sku-display">SKU: ENM-SPRN-NVY</span>
+            </div>
+            <a href="#category-scrubs" onclick="window.returnToArticleListing(); return false;" class="pdp-back-listing-link">
+              ← Back to Article Listing
+            </a>
           </div>
-          <h1 style="font-size: 24px; font-weight: 700; color: #102a43; margin: 0 0 8px;" id="pdp-title-display">
+          <h1 style="font-size: 26px; font-weight: 800; color: #102a43; margin: 0 0 8px; line-height: 1.25;" id="pdp-title-display">
             Sprinter Men's Athletic Scrub Set
           </h1>
-          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
-            <span style="font-size: 22px; font-weight: 700; color: #102a43;" id="pdp-base-price-display">Rs. 5,150</span>
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+            <span style="font-size: 24px; font-weight: 800; color: #102a43;" id="pdp-base-price-display">Rs. 5,150</span>
             <span style="font-size: 14px; color: #94a3b8; text-decoration: line-through;" id="pdp-compare-price-display">Rs. 5,800</span>
-            <span style="font-size: 11px; font-weight: 600; color: #00b8a9; background: #e6fffa; padding: 2px 6px; border-radius: 4px;">In Stock • Nationwide Delivery</span>
+            <span style="font-size: 11px; font-weight: 600; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 3px 8px; border-radius: 4px;">In Stock • Nationwide Delivery</span>
           </div>
-          <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5;" id="pdp-desc-display">
+          <p style="font-size: 13px; color: #475569; margin: 0; line-height: 1.55;" id="pdp-desc-display">
             Engineered for high-tempo emergency shifts and clinical rounds. Tailored raglan sleeves for unrestricted arm mobility, deep chest pocket with pen slot, and 6-pocket functional cargo joggers with ribbed cuffs.
           </p>
         </div>
 
-        <!-- STEP 1: ARTICLE & SERIES QUICK-SWITCHER -->
-        <div class="pdp-step-box" id="pdp-article-switcher-box">
+        <!-- STEP 1: AVAILABLE COLOURS & FABRIC SHADES (DIRECT SELECTION - NO DUPLICATE ARTICLE PROMPT) -->
+        <div class="pdp-step-box" id="pdp-color-selection-step-box">
           <div class="pdp-step-box-header">
             <h3 class="pdp-step-title">
-              <span>Step 1: Choose Series & Article</span>
+              <span>Step 1: Select Available Colour</span>
             </h3>
-            <span style="font-size: 11px; color: #64748b;" id="pdp-active-fabric-tag">4-Way Mechanical Stretch</span>
+            <span style="font-size: 11px; color: #64748b; font-weight: 600;" id="pdp-active-fabric-tag">4-Way Mechanical Stretch</span>
           </div>
 
-          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            <button
-              type="button"
-              class="pdp-size-chip active"
-              id="chip-prod-sprinter"
-              onclick="window.changePdpProduct('demo-sprinter-mens-navy')"
-              style="padding: 8px 14px; font-size: 12px; font-weight: 600; width: auto; height: auto;"
-            >
-              Sprinter Set (Rs. 5,150)
-            </button>
-
-            <button
-              type="button"
-              class="pdp-size-chip"
-              id="chip-prod-velora"
-              onclick="window.changePdpProduct('demo-velora-womens-teal')"
-              style="padding: 8px 14px; font-size: 12px; font-weight: 600; width: auto; height: auto;"
-            >
-              Velora Set (Rs. 5,450)
-            </button>
-
-            <button
-              type="button"
-              class="pdp-size-chip"
-              id="chip-prod-crown"
-              onclick="window.changePdpProduct('demo-crown-mandarin-charcoal')"
-              style="padding: 8px 14px; font-size: 12px; font-weight: 600; width: auto; height: auto;"
-            >
-              Crown Mandarin (Rs. 5,650)
-            </button>
-
-            <button
-              type="button"
-              class="pdp-size-chip"
-              id="chip-prod-flexfit"
-              onclick="window.changePdpProduct('demo-flexfit-mens-olive')"
-              style="padding: 8px 14px; font-size: 12px; font-weight: 600; width: auto; height: auto;"
-            >
-              Flexwell Set (Rs. 5,400)
-            </button>
-
-            <button
-              type="button"
-              class="pdp-size-chip"
-              id="chip-prod-labcoat"
-              onclick="window.changePdpProduct('demo-labcoat-mens-white')"
-              style="padding: 8px 14px; font-size: 12px; font-weight: 600; width: auto; height: auto;"
-            >
-              Executive Lab Coat (Rs. 3,850)
-            </button>
+          <!-- Selected Colour Status Strip -->
+          <div class="pdp-active-color-status-bar">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 12px; color: #64748b;">Selected Shade:</span>
+              <span class="pdp-selected-color-pill-dot" id="pdp-color-indicator-dot" style="width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); background: #102a43; display: inline-block;"></span>
+              <strong style="font-size: 13px; color: #102a43;" id="pdp-config-selected-color-name">Deep Navy</strong>
+            </div>
+            <span style="font-size: 11px; color: #008779; font-weight: 700; background: #e6fffa; padding: 2px 8px; border-radius: 4px;" id="pdp-color-count-tag">
+              Available Colours
+            </span>
           </div>
+
+          <!-- Swatches Grid for this Product -->
+          <div class="pdp-color-picker-grid" id="pdp-config-color-cards-grid">
+            <!-- Dynamically populated with colors offered for this product -->
+          </div>
+
+          <p style="font-size: 11px; color: #64748b; margin: 12px 0 0; line-height: 1.4;">
+            💡 <em>Colours shown are certified for this article. Selecting a colour updates the preview photo and live chest pocket embroidery simulation.</em>
+          </p>
         </div>
 
         <!-- STEP 2: SIZE SELECTION (STANDARD SIZES + CUSTOM MEASUREMENTS STUDIO) -->
@@ -991,6 +978,27 @@
       </div>
 
     </section>
+
+    </div><!-- /#pdp-valid-studio-view -->
+
+    <!-- INVALID / MISSING ARTICLE RECOVERY VIEW -->
+    <div id="pdp-invalid-article-view" class="pdp-invalid-article-view" style="display: none;">
+      <div style="font-size: 48px; margin-bottom: 16px;">🔍</div>
+      <h2 style="font-size: 22px; font-weight: 800; color: #102a43; margin: 0 0 10px;">
+        Article Not Found or Inactive
+      </h2>
+      <p style="font-size: 14px; color: #64748b; line-height: 1.6; margin: 0 0 24px;">
+        The requested medical apparel article could not be loaded or may have been updated. Please choose a valid scrub set or lab coat from our collection catalogue to begin customization.
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" class="btn-proceed-checkout" onclick="window.returnToArticleListing()" style="padding: 12px 24px; font-size: 13px;">
+          ← Return to Article Listing
+        </button>
+        <button type="button" class="btn-step-prev" onclick="window.navigateToView('home')" style="padding: 12px 20px; font-size: 13px;">
+          Go to Homepage
+        </button>
+      </div>
+    </div>
 
   </div>
 </div>

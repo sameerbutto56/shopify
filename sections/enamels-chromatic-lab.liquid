@@ -336,9 +336,10 @@
           setTimeout(() => window.openSelfServiceAdminModal(), 200);
         }
       } else if (hash === '#product-studio') {
-        window.navigateToView('product-studio');
-        if (!STATE.pdpProduct) {
-          window.openProductStudio('demo-sprinter-mens-navy');
+        if (STATE.pdpProduct) {
+          window.openProductStudio(STATE.pdpProduct.id);
+        } else {
+          window.openProductStudio(null);
         }
       } else if (hash.startsWith('#collection-')) {
         const target = rawHash.replace(/#collection-/i, '');
@@ -1216,8 +1217,21 @@
     // ------------------------------------------------------------
     window.openProductStudio = function(productId, initialColorName = null) {
       const catalogue = window.EnamelsCatalogue || [];
-      const item = catalogue.find(p => p.id === productId) || catalogue[0];
-      if (!item) return;
+      const item = productId ? catalogue.find(p => p.id === productId) : STATE.pdpProduct;
+
+      const validView = document.getElementById('pdp-valid-studio-view');
+      const invalidView = document.getElementById('pdp-invalid-article-view');
+
+      // Requirement 2: Handle missing or invalid article safely
+      if (!item) {
+        if (validView) validView.style.display = 'none';
+        if (invalidView) invalidView.style.display = 'block';
+        window.navigateToView('product-studio');
+        return;
+      }
+
+      if (validView) validView.style.display = 'block';
+      if (invalidView) invalidView.style.display = 'none';
 
       // Simple products (caps, accessories, sleeves) use simple modal
       if (item.category === 'caps' || item.category === 'accessories' || item.category === 'sleeves') {
@@ -1225,8 +1239,10 @@
         return;
       }
 
+      // Selected article is the single source of truth
       STATE.pdpProduct = item;
 
+      // Select initial color: from card swatch if passed, else first available color for this specific article
       let chosenColor = item.colors?.[0] || { name: 'Deep Navy', hex: '#102A43', image: item.image };
       if (initialColorName) {
         const found = (item.colors || []).find(c => c.name.toLowerCase() === initialColorName.toLowerCase());
@@ -1256,7 +1272,7 @@
       const compPriceEl = document.getElementById('pdp-compare-price-display');
       const descEl = document.getElementById('pdp-desc-display');
       const badgeEl = document.getElementById('pdp-series-badge');
-      const breadEl = document.getElementById('pdp-breadcrumb-title');
+      const genderBadgeEl = document.getElementById('pdp-gender-badge');
       const photoEl = document.getElementById('pdp-active-photo');
       const fabricTag = document.getElementById('pdp-active-fabric-tag');
 
@@ -1266,8 +1282,44 @@
       if (compPriceEl) compPriceEl.textContent = item.comparePrice ? `Rs. ${item.comparePrice.toLocaleString()}` : '';
       if (descEl) descEl.textContent = item.description;
       if (badgeEl) badgeEl.textContent = `${(item.series || 'CLINICAL').toUpperCase()} SERIES`;
-      if (breadEl) breadEl.textContent = cleanTitle;
+      if (genderBadgeEl) {
+        const gName = item.gender === 'women' ? "WOMEN'S" : item.gender === 'unisex' ? "UNISEX" : "MEN'S";
+        genderBadgeEl.textContent = `${gName} COLLECTION`;
+      }
       if (fabricTag && item.fabric) fabricTag.textContent = item.fabric;
+
+      // Dynamic Breadcrumbs
+      const breadGender = document.getElementById('pdp-breadcrumb-gender');
+      const breadCat = document.getElementById('pdp-breadcrumb-cat');
+      const breadSeries = document.getElementById('pdp-breadcrumb-series');
+      const breadSeriesSep = document.getElementById('pdp-breadcrumb-series-sep');
+      const breadTitle = document.getElementById('pdp-breadcrumb-title');
+
+      if (breadGender) breadGender.textContent = item.gender === 'women' ? "Women's" : "Men's";
+      if (breadCat) {
+        const catMap = {
+          'scrubs': 'Scrubs',
+          'scrub-set': 'Scrubs',
+          'scrub-top': 'Scrubs',
+          'scrub-pants': 'Scrubs',
+          'lab-coat': 'Lab Coats',
+          'caps': 'Caps',
+          'sleeves': 'Sleeves',
+          'accessories': 'Accessories'
+        };
+        breadCat.textContent = catMap[item.category] || 'Scrubs';
+      }
+      if (breadSeries && breadSeriesSep) {
+        if (item.series) {
+          breadSeries.textContent = item.series;
+          breadSeries.style.display = 'inline';
+          breadSeriesSep.style.display = 'inline';
+        } else {
+          breadSeries.style.display = 'none';
+          breadSeriesSep.style.display = 'none';
+        }
+      }
+      if (breadTitle) breadTitle.textContent = cleanTitle;
 
       const activeImg = (STATE.pdpColor && STATE.pdpColor.image) ? STATE.pdpColor.image : item.image;
       if (photoEl && activeImg) {
@@ -1275,19 +1327,14 @@
         photoEl.onerror = () => { photoEl.src = '{{ 'demo-sprinter-navy.jpg' | asset_url }}'; };
       }
 
-      // MAKE YOUR OWN COLOR STRICT RULE (REQUIREMENTS 4 & 5):
-      // Completely removed from all regular articles (Sprinter, Crown, Velora, Flexwell, etc.).
-      // Exclusively available inside "Make Your Own Scrubs" (Ready to Wear).
+      // MAKE YOUR OWN COLOR STRICT RULE: Exclusively for Ready to Wear
       const customColorSection = document.getElementById('pdp-make-your-own-color-section');
       if (customColorSection) {
         customColorSection.style.display = 'none';
       }
 
-      // Highlight active article switcher chip
-      highlightPdpArticleChip(item.series || item.category);
-
-      // Render color swatches directly beneath image
-      renderPdpBottomSwatches(item.colors || []);
+      // Render colors directly for this article into Step 1 cards and left bottom swatches
+      renderPdpColors(item.colors || []);
 
       // Render available standard sizes
       renderPdpSizes(item.sizes || ['XS', 'S', 'M', 'L', 'XL', '2XL']);
@@ -1322,50 +1369,111 @@
 
       recalculatePdpSummary();
       updateRepCustomOptionsPreview();
+
+      const newHash = `#product-${item.id}`;
+      if (location.hash !== newHash) {
+        if (history.replaceState) {
+          history.replaceState(null, null, newHash);
+        } else {
+          location.hash = newHash;
+        }
+      }
+
       window.navigateToView('product-studio');
     };
 
-    function highlightPdpArticleChip(series) {
-      const s = (series || '').toLowerCase();
-      document.querySelectorAll('#pdp-article-switcher-box .pdp-size-chip').forEach(btn => btn.classList.remove('active'));
-      if (s.includes('sprinter')) {
-        document.getElementById('chip-prod-sprinter')?.classList.add('active');
-      } else if (s.includes('velora')) {
-        document.getElementById('chip-prod-velora')?.classList.add('active');
-      } else if (s.includes('crown')) {
-        document.getElementById('chip-prod-crown')?.classList.add('active');
-      } else if (s.includes('flex')) {
-        document.getElementById('chip-prod-flexfit')?.classList.add('active');
-      } else if (s.includes('lab') || s.includes('coat')) {
-        document.getElementById('chip-prod-labcoat')?.classList.add('active');
-      }
-    }
+    window.returnToArticleListing = function() {
+      const gender = STATE.genderFilter || 'men';
+      const cat = STATE.productCategoryFilter || 'scrubs';
+      const article = STATE.articleFilter || 'all';
+      window.navigateToGender(gender, cat, article);
+    };
+
+    window.navigateToGenderCrumb = function() {
+      const gender = STATE.genderFilter || 'men';
+      window.navigateToGender(gender, 'all', 'all');
+    };
 
     window.changePdpProduct = function(productId) {
       window.openProductStudio(productId);
     };
 
-    function renderPdpBottomSwatches(colors) {
-      const grid = document.getElementById('pdp-bottom-swatches-grid');
-      const title = document.getElementById('pdp-selected-color-title');
-      if (!grid) return;
+    function isColorLight(hex) {
+      if (!hex || !hex.startsWith('#')) return false;
+      const c = hex.substring(1);
+      const rgb = parseInt(c.length === 3 ? c.split('').map(x => x + x).join('') : c, 16);
+      const r = (rgb >> 16) & 0xff;
+      const g = (rgb >> 8) & 0xff;
+      const b = rgb & 0xff;
+      const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      return luma > 185;
+    }
 
-      if (!colors.length) {
-        grid.innerHTML = '<span style="font-size: 12px; color: #64748b;">Standard Hospital Navy</span>';
-        return;
+    function renderPdpColors(colors) {
+      const configGrid = document.getElementById('pdp-config-color-cards-grid');
+      const bottomGrid = document.getElementById('pdp-bottom-swatches-grid');
+      const nameEl = document.getElementById('pdp-config-selected-color-name');
+      const bottomTitle = document.getElementById('pdp-selected-color-title');
+      const dotEl = document.getElementById('pdp-color-indicator-dot');
+      const countTag = document.getElementById('pdp-color-count-tag');
+
+      if (!colors || !colors.length) {
+        colors = [{ name: 'Standard Clinical Tone', hex: '#102A43' }];
       }
 
-      if (title && STATE.pdpColor) title.textContent = STATE.pdpColor.name;
+      const activeColor = STATE.pdpColor || colors[0];
+      if (nameEl) nameEl.textContent = activeColor.name;
+      if (bottomTitle) bottomTitle.textContent = activeColor.name;
+      if (dotEl) dotEl.style.background = activeColor.hex;
+      if (countTag) {
+        countTag.textContent = `${colors.length} ${colors.length === 1 ? 'Colour' : 'Colours'} Available`;
+      }
 
-      grid.innerHTML = colors.map((c, i) => {
-        const isActive = STATE.pdpColor ? (c.name === STATE.pdpColor.name) : (i === 0);
-        return `
-          <button type="button" class="pdp-swatch-item ${isActive ? 'active' : ''}" onclick="window.selectPdpColor('${c.hex}', '${c.name}', '${c.image || ''}')" title="${c.name}">
-            <span class="pdp-swatch-color-dot" style="background: ${c.hex};"></span>
-            <span>${c.name}</span>
-          </button>
-        `;
-      }).join('');
+      // Step 1: Tactile cards in right column
+      if (configGrid) {
+        configGrid.innerHTML = colors.map((c, i) => {
+          const isActive = activeColor.name.toLowerCase() === c.name.toLowerCase();
+          const light = isColorLight(c.hex);
+          const checkColor = light ? '#102a43' : '#ffffff';
+          const escapedName = c.name.replace(/'/g, "\\'");
+          return `
+            <button
+              type="button"
+              class="pdp-color-card-chip ${isActive ? 'active' : ''}"
+              onclick="window.selectPdpColor('${c.hex}', '${escapedName}', '${c.image || ''}')"
+              title="${c.name}"
+              aria-label="${c.name} colour swatch"
+            >
+              <span class="pdp-color-circle-preview" style="background: ${c.hex};">
+                ${isActive ? `<span class="pdp-color-check-icon" style="color: ${checkColor};">✓</span>` : ''}
+              </span>
+              <div class="pdp-color-chip-meta">
+                <span class="pdp-color-chip-title">${c.name}</span>
+                <span class="pdp-color-chip-status">${isActive ? 'Selected' : 'Available'}</span>
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      // Swatches beneath main photo in left column
+      if (bottomGrid) {
+        bottomGrid.innerHTML = colors.map((c, i) => {
+          const isActive = activeColor.name.toLowerCase() === c.name.toLowerCase();
+          const escapedName = c.name.replace(/'/g, "\\'");
+          return `
+            <button
+              type="button"
+              class="pdp-swatch-item ${isActive ? 'active' : ''}"
+              onclick="window.selectPdpColor('${c.hex}', '${escapedName}', '${c.image || ''}')"
+              title="${c.name}"
+            >
+              <span class="pdp-swatch-color-dot" style="background: ${c.hex};"></span>
+              <span>${c.name}</span>
+            </button>
+          `;
+        }).join('');
+      }
     }
 
     function renderPdpSizes(sizes) {
@@ -1381,25 +1489,46 @@
       STATE.pdpColor = { name, hex, image: img };
       STATE.pdpCustomColor = null;
 
-      const title = document.getElementById('pdp-selected-color-title');
-      if (title) title.textContent = name;
+      const nameEl = document.getElementById('pdp-config-selected-color-name');
+      const bottomTitle = document.getElementById('pdp-selected-color-title');
+      const dotEl = document.getElementById('pdp-color-indicator-dot');
 
-      document.querySelectorAll('#pdp-bottom-swatches-grid .pdp-swatch-item').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.trim() === name);
-      });
-      document.querySelectorAll('#pdp-custom-color-swatches .pdp-swatch-item').forEach(btn => btn.classList.remove('active'));
+      if (nameEl) nameEl.textContent = name;
+      if (bottomTitle) bottomTitle.textContent = name;
+      if (dotEl) dotEl.style.background = hex;
+
+      if (STATE.pdpProduct && STATE.pdpProduct.colors) {
+        renderPdpColors(STATE.pdpProduct.colors);
+      }
 
       const photoEl = document.getElementById('pdp-active-photo');
       if (photoEl) {
         if (img) {
           photoEl.src = window.ShopifyThemeAssets?.[img] || img;
-        } else {
-          photoEl.style.filter = `drop-shadow(0 0 1px ${hex})`;
+        } else if (STATE.pdpProduct && STATE.pdpProduct.image) {
+          photoEl.src = window.ShopifyThemeAssets?.[STATE.pdpProduct.image] || STATE.pdpProduct.image;
         }
       }
 
       recalculatePdpSummary();
       updateRepCustomOptionsPreview();
+    };
+
+    window.goToPdpStep = function(stepName) {
+      const map = {
+        'color': 'pdp-color-selection-step-box',
+        'size': 'pdp-size-box',
+        'alterations': 'pdp-alterations-step-box',
+        'engraving': 'pdp-engraving-step-box',
+        'logo': 'pdp-logo-step-box',
+        'summary': 'pdp-summary-step-box'
+      };
+      const id = map[stepName] || stepName;
+      window.scrollToPdpBox(id);
+    };
+
+    window.showStepError = function(step, message) {
+      alert(message);
     };
 
     window.selectCustomColor = function(hex, name) {
@@ -1716,7 +1845,7 @@
           productId: item.id,
           title: item.title.replace('DEMO — ', ''),
           series: item.series || 'Clinical',
-          image: item.image,
+          image: (STATE.pdpColor && STATE.pdpColor.image) ? STATE.pdpColor.image : item.image,
           color: STATE.pdpColor.name,
           colorHex: STATE.pdpColor.hex,
           size: STATE.pdpIsCustomSize ? 'Custom Tailored' : STATE.pdpSize,
