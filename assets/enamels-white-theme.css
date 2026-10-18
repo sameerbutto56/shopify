@@ -3861,4 +3861,40 @@ body:has(.enamels-theme-root) #header-group {
   box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
 
+/* ============================================================ */
+/* MAKE YOUR OWN SCRUBS — SIZING AUTO-POPULATE & CUSTOM C STYLES */
+/* ============================================================ */
+.rtw-size-chip-c {
+  font-weight: 700 !important;
+  border-color: #00b8a9 !important;
+  color: #00b8a9 !important;
+}
+
+.rtw-size-chip-c.active {
+  background: #00b8a9 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(0, 184, 169, 0.25) !important;
+}
+
+.form-field-input.field-edited {
+  border-color: #f59e0b !important;
+  background-color: #fffbeb !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15) !important;
+}
+
+.rtw-field-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #b45309;
+  background: #fef3c7;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  display: none;
+}
+
+.rtw-field-tag.active {
+  display: inline-block;
+}
+
 

@@ -116,6 +116,282 @@
     window.STATE = STATE;
 
     // ------------------------------------------------------------
+    // ENAMELS MASTER SIZING PRESETS (FINISHED GARMENT DIMENSIONS)
+    // ------------------------------------------------------------
+    const ENAMELS_RTW_SIZE_PRESETS = {
+      in: {
+        'XS':  { chest: 34, waist: 28, hips: 36, shoulder: 16, shirt: 26, inseam: 38 },
+        'S':   { chest: 37, waist: 30, hips: 38, shoulder: 17, shirt: 27, inseam: 39 },
+        'M':   { chest: 40, waist: 33, hips: 41, shoulder: 18, shirt: 28, inseam: 40 },
+        'L':   { chest: 43, waist: 36, hips: 44, shoulder: 19, shirt: 29, inseam: 41 },
+        'XL':  { chest: 46, waist: 39, hips: 47, shoulder: 20, shirt: 30, inseam: 42 },
+        '2XL': { chest: 49, waist: 42, hips: 50, shoulder: 21, shirt: 31, inseam: 42.5 }
+      },
+      cm: {
+        'XS':  { chest: 86,  waist: 71,  hips: 91,  shoulder: 41, shirt: 66, inseam: 96 },
+        'S':   { chest: 94,  waist: 76,  hips: 96,  shoulder: 43, shirt: 68, inseam: 99 },
+        'M':   { chest: 102, waist: 84,  hips: 104, shoulder: 46, shirt: 71, inseam: 102 },
+        'L':   { chest: 109, waist: 91,  hips: 112, shoulder: 48, shirt: 74, inseam: 104 },
+        'XL':  { chest: 117, waist: 99,  hips: 119, shoulder: 51, shirt: 76, inseam: 107 },
+        '2XL': { chest: 124, waist: 107, hips: 127, shoulder: 53, shirt: 79, inseam: 108 }
+      }
+    };
+    window.ENAMELS_RTW_SIZE_PRESETS = ENAMELS_RTW_SIZE_PRESETS;
+
+    function selectRtwStdSize(size) {
+      STATE.rtwSizeMode = 'standard';
+      STATE.rtwStandardSize = size;
+      STATE.rtwSelectedPresetSize = size;
+      STATE.rtwIsExplicitCustom = false;
+
+      const unit = STATE.rtwUnit || 'in';
+      const presets = ENAMELS_RTW_SIZE_PRESETS[unit] || ENAMELS_RTW_SIZE_PRESETS['in'];
+      const preset = presets[size] || presets['M'];
+
+      // Populate every measurement field with the saved preset
+      const fields = ['chest', 'waist', 'hips', 'shoulder', 'shirt', 'inseam'];
+      fields.forEach(f => {
+        const input = document.getElementById(`rtw-meas-${f}`);
+        if (input) {
+          input.value = preset[f];
+          input.classList.remove('field-edited');
+        }
+        const tag = document.getElementById(`tag-rtw-meas-${f}`);
+        if (tag) {
+          tag.textContent = '';
+          tag.classList.remove('active');
+        }
+      });
+
+      // Synchronize in STATE
+      STATE.rtwCustomMeasurements = {
+        chest: preset.chest,
+        waist: preset.waist,
+        hips: preset.hips,
+        shoulder: preset.shoulder,
+        shirt: preset.shirt,
+        inseam: preset.inseam,
+        unit: unit
+      };
+
+      // Update size chips
+      document.querySelectorAll('#rtw-sizes-chips-grid .pdp-size-chip').forEach(c => {
+        const s = c.getAttribute('data-size') || c.textContent.trim();
+        c.classList.toggle('active', s === size);
+      });
+      const cChip = document.getElementById('rtw-chip-custom');
+      if (cChip) cChip.classList.remove('active');
+
+      // Update dynamic status banner
+      const statusWrap = document.getElementById('rtw-size-status-indicator');
+      const statusIcon = document.getElementById('rtw-size-status-icon');
+      const statusText = document.getElementById('rtw-size-status-text');
+      if (statusWrap) {
+        statusWrap.style.background = '#f0fdfa';
+        statusWrap.style.color = '#008779';
+        statusWrap.style.borderColor = '#99f6e4';
+      }
+      if (statusIcon) statusIcon.textContent = '📐';
+      if (statusText) statusText.textContent = `Standard Preset Active: Size ${size} — All measurements auto-filled (${unit.toUpperCase()})`;
+
+      const stdBox = document.getElementById('rtw-box-std-size');
+      const cstBox = document.getElementById('rtw-box-custom-size');
+      if (stdBox) { stdBox.style.borderColor = '#00b8a9'; stdBox.style.background = '#ffffff'; }
+      if (cstBox) { cstBox.style.borderColor = '#e2e8f0'; cstBox.style.background = '#ffffff'; }
+    }
+    window.selectRtwStdSize = selectRtwStdSize;
+    window.selectRtwStandardSize = selectRtwStdSize;
+
+    function handleRtwMeasurementChange(inputEl) {
+      const unit = STATE.rtwUnit || 'in';
+      const baseSize = STATE.rtwSelectedPresetSize || 'M';
+      const presets = ENAMELS_RTW_SIZE_PRESETS[unit] || ENAMELS_RTW_SIZE_PRESETS['in'];
+      const preset = presets[baseSize] || presets['M'];
+
+      const fields = ['chest', 'waist', 'hips', 'shoulder', 'shirt', 'inseam'];
+      let anyDeviated = false;
+      const currentValues = {};
+
+      fields.forEach(f => {
+        const input = document.getElementById(`rtw-meas-${f}`);
+        const tag = document.getElementById(`tag-rtw-meas-${f}`);
+        const rawVal = input ? String(input.value !== undefined && input.value !== null ? input.value : '').trim() : '';
+        const val = parseFloat(rawVal);
+        const presetVal = parseFloat(preset[f]);
+
+        currentValues[f] = isNaN(val) ? '' : val;
+
+        const isDeviated = rawVal === '' || isNaN(val) || Math.abs(val - presetVal) > 0.001;
+
+        if (isDeviated) {
+          anyDeviated = true;
+          if (input) input.classList.add('field-edited');
+          if (tag) {
+            tag.textContent = 'Edited';
+            tag.classList.add('active');
+          }
+        } else {
+          if (input) input.classList.remove('field-edited');
+          if (tag) {
+            tag.textContent = '';
+            tag.classList.remove('active');
+          }
+        }
+      });
+
+      currentValues.unit = unit;
+      STATE.rtwCustomMeasurements = currentValues;
+
+      const statusWrap = document.getElementById('rtw-size-status-indicator');
+      const statusIcon = document.getElementById('rtw-size-status-icon');
+      const statusText = document.getElementById('rtw-size-status-text');
+
+      if (anyDeviated) {
+        // AUTOMATIC CONVERSION TO C
+        STATE.rtwSizeMode = 'custom';
+        STATE.rtwStandardSize = 'C';
+
+        document.querySelectorAll('#rtw-sizes-chips-grid .pdp-size-chip').forEach(c => {
+          const s = c.getAttribute('data-size') || c.textContent.trim();
+          c.classList.toggle('active', s === 'C');
+        });
+
+        if (statusWrap) {
+          statusWrap.style.background = '#fffbeb';
+          statusWrap.style.color = '#b45309';
+          statusWrap.style.borderColor = '#fde68a';
+        }
+        if (statusIcon) statusIcon.textContent = '✏️';
+        if (statusText) statusText.innerHTML = `<strong>Custom Size (C) Active</strong> — Sizing deviation detected (+Rs. 750 custom pattern cutting fee)`;
+
+        const cstBox = document.getElementById('rtw-box-custom-size');
+        if (cstBox) cstBox.style.borderColor = '#f59e0b';
+      } else {
+        // All measurements match original preset
+        if (!STATE.rtwIsExplicitCustom) {
+          STATE.rtwSizeMode = 'standard';
+          STATE.rtwStandardSize = baseSize;
+
+          document.querySelectorAll('#rtw-sizes-chips-grid .pdp-size-chip').forEach(c => {
+            const s = c.getAttribute('data-size') || c.textContent.trim();
+            c.classList.toggle('active', s === baseSize);
+          });
+
+          if (statusWrap) {
+            statusWrap.style.background = '#f0fdfa';
+            statusWrap.style.color = '#008779';
+            statusWrap.style.borderColor = '#99f6e4';
+          }
+          if (statusIcon) statusIcon.textContent = '📐';
+          if (statusText) statusText.textContent = `Standard Preset Active: Size ${baseSize} — All measurements match preset (${unit.toUpperCase()})`;
+
+          const cstBox = document.getElementById('rtw-box-custom-size');
+          if (cstBox) cstBox.style.borderColor = '#e2e8f0';
+        }
+      }
+    }
+    window.handleRtwMeasurementChange = handleRtwMeasurementChange;
+
+    function selectRtwCustomExplicit() {
+      STATE.rtwSizeMode = 'custom';
+      STATE.rtwStandardSize = 'C';
+      STATE.rtwIsExplicitCustom = true;
+
+      document.querySelectorAll('#rtw-sizes-chips-grid .pdp-size-chip').forEach(c => {
+        const s = c.getAttribute('data-size') || c.textContent.trim();
+        c.classList.toggle('active', s === 'C');
+      });
+
+      const statusWrap = document.getElementById('rtw-size-status-indicator');
+      const statusIcon = document.getElementById('rtw-size-status-icon');
+      const statusText = document.getElementById('rtw-size-status-text');
+      if (statusWrap) {
+        statusWrap.style.background = '#fffbeb';
+        statusWrap.style.color = '#b45309';
+        statusWrap.style.borderColor = '#fde68a';
+      }
+      if (statusIcon) statusIcon.textContent = '✏️';
+      if (statusText) statusText.innerHTML = `<strong>Custom Size (C) Active</strong> — Enter your bespoke tailoring measurements (+Rs. 750 pattern cutting fee)`;
+
+      const cstBox = document.getElementById('rtw-box-custom-size');
+      if (cstBox) cstBox.style.borderColor = '#00b8a9';
+    }
+    window.selectRtwCustomExplicit = selectRtwCustomExplicit;
+
+    function setRtwMeasurementUnit(newUnit) {
+      if (STATE.rtwUnit === newUnit) return;
+      const oldUnit = STATE.rtwUnit || 'in';
+      STATE.rtwUnit = newUnit;
+
+      const bIn = document.getElementById('rtw-meas-unit-in');
+      const bCm = document.getElementById('rtw-meas-unit-cm');
+      if (bIn) bIn.classList.toggle('active', newUnit === 'in');
+      if (bCm) bCm.classList.toggle('active', newUnit === 'cm');
+      document.querySelectorAll('.rtw-unit-label').forEach(el => el.textContent = newUnit);
+
+      if (STATE.rtwSizeMode === 'standard' && STATE.rtwStandardSize !== 'C') {
+        selectRtwStdSize(STATE.rtwStandardSize);
+      } else {
+        const fields = ['chest', 'waist', 'hips', 'shoulder', 'shirt', 'inseam'];
+        fields.forEach(f => {
+          const input = document.getElementById(`rtw-meas-${f}`);
+          if (input && input.value) {
+            const num = parseFloat(input.value);
+            if (!isNaN(num)) {
+              if (newUnit === 'cm' && oldUnit === 'in') {
+                input.value = Math.round(num * 2.54);
+              } else if (newUnit === 'in' && oldUnit === 'cm') {
+                input.value = Math.round((num / 2.54) * 2) / 2;
+              }
+            }
+          }
+        });
+        handleRtwMeasurementChange();
+      }
+    }
+    window.setRtwMeasurementUnit = setRtwMeasurementUnit;
+    window.setRtwUnit = setRtwMeasurementUnit;
+
+    function saveRtwCustomMeasurements() {
+      const fields = ['chest', 'waist', 'hips', 'shoulder', 'shirt', 'inseam'];
+      const values = {};
+      fields.forEach(f => {
+        const input = document.getElementById(`rtw-meas-${f}`);
+        values[f] = input ? (parseFloat(input.value) || input.value) : '';
+      });
+      values.unit = STATE.rtwUnit || 'in';
+      STATE.rtwCustomMeasurements = values;
+
+      const btn = document.querySelector('#rtw-box-custom-size .btn-card-action');
+      if (btn) {
+        const origText = btn.textContent;
+        btn.textContent = '✓ Measurements Confirmed & Locked';
+        btn.style.background = '#008779';
+        setTimeout(() => {
+          btn.textContent = origText;
+          btn.style.background = '';
+        }, 2000);
+      }
+    }
+    window.saveRtwCustomMeasurements = saveRtwCustomMeasurements;
+
+    function syncRtwSizeInputsFromState() {
+      const m = STATE.rtwCustomMeasurements;
+      if (!m) return;
+      const fields = ['chest', 'waist', 'hips', 'shoulder', 'shirt', 'inseam'];
+      fields.forEach(f => {
+        const input = document.getElementById(`rtw-meas-${f}`);
+        if (input && m[f] !== undefined && m[f] !== '') {
+          input.value = m[f];
+        }
+      });
+      if (STATE.rtwStandardSize === 'C' || STATE.rtwSizeMode === 'custom') {
+        handleRtwMeasurementChange();
+      }
+    }
+    window.syncRtwSizeInputsFromState = syncRtwSizeInputsFromState;
+
+    // ------------------------------------------------------------
     // 2. INITIALIZATION (PROTECTED AGAINST DUPLICATE EXECUTION)
     // ------------------------------------------------------------
     let isEnamelsAppInitialized = false;
@@ -133,6 +409,7 @@
       updateCartBadge();
       renderRtwColorsForFabric('sprinter-twill');
       renderRtwDesignsForArticle('Sprinter');
+      selectRtwStdSize('M');
       handleHashRouting();
       window.addEventListener('hashchange', handleHashRouting);
     }
@@ -1338,6 +1615,7 @@
 
       // Render available standard sizes
       renderPdpSizes(item.sizes || ['XS', 'S', 'M', 'L', 'XL', '2XL']);
+      window.selectStandardSize(STATE.pdpSize || 'M');
 
       // Reset controls in DOM
       const altCheck = document.getElementById('pdp-enable-alterations');
@@ -1481,8 +1759,10 @@
       if (!grid) return;
 
       grid.innerHTML = sizes.map((s, i) => `
-        <button type="button" class="pdp-size-chip ${s === STATE.pdpSize && !STATE.pdpIsCustomSize ? 'active' : ''}" onclick="window.selectStandardSize('${s}')">${s}</button>
-      `).join('');
+        <button type="button" class="pdp-size-chip ${s === STATE.pdpSize && !STATE.pdpIsCustomSize ? 'active' : ''}" data-size="${s}" onclick="window.selectStandardSize('${s}')">${s}</button>
+      `).join('') + `
+        <button type="button" class="pdp-size-chip rtw-size-chip-c ${STATE.pdpIsCustomSize ? 'active' : ''}" id="pdp-chip-custom" data-size="C" onclick="window.selectPdpCustomExplicit()">C (Custom)</button>
+      `;
     }
 
     window.selectPdpColor = function(hex, name, img) {
@@ -1541,58 +1821,246 @@
     window.selectStandardSize = function(size) {
       STATE.pdpSize = size;
       STATE.pdpIsCustomSize = false;
+      STATE.pdpSelectedPresetSize = size;
 
-      document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => {
-        c.classList.toggle('active', c.textContent.trim() === size);
+      const unit = STATE.pdpCustomMeasurements?.unit || 'in';
+      const presets = (window.ENAMELS_RTW_SIZE_PRESETS && window.ENAMELS_RTW_SIZE_PRESETS[unit]) || {
+        'XS':  { chest: 34, waist: 28, hips: 36, shoulder: 16, shirt: 26, inseam: 38 },
+        'S':   { chest: 37, waist: 30, hips: 38, shoulder: 17, shirt: 27, inseam: 39 },
+        'M':   { chest: 40, waist: 33, hips: 41, shoulder: 18, shirt: 28, inseam: 40 },
+        'L':   { chest: 43, waist: 36, hips: 44, shoulder: 19, shirt: 29, inseam: 41 },
+        'XL':  { chest: 46, waist: 39, hips: 47, shoulder: 20, shirt: 30, inseam: 42 },
+        '2XL': { chest: 49, waist: 42, hips: 50, shoulder: 21, shirt: 31, inseam: 42.5 }
+      };
+      const preset = presets[size] || presets['M'];
+
+      const fields = [
+        { id: 'meas-input-chest', tag: 'tag-pdp-chest', val: preset.chest },
+        { id: 'meas-input-waist', tag: 'tag-pdp-waist', val: preset.waist },
+        { id: 'meas-input-hips', tag: 'tag-pdp-hips', val: preset.hips },
+        { id: 'meas-input-top', tag: 'tag-pdp-top', val: preset.shirt },
+        { id: 'meas-input-inseam', tag: 'tag-pdp-inseam', val: preset.inseam }
+      ];
+
+      fields.forEach(f => {
+        const input = document.getElementById(f.id);
+        if (input) {
+          input.value = f.val;
+          input.classList.remove('field-edited');
+        }
+        const tag = document.getElementById(f.tag);
+        if (tag) {
+          tag.textContent = '';
+          tag.classList.remove('active');
+        }
       });
 
-      const customCheck = document.getElementById('toggle-custom-measurements-check');
-      if (customCheck) customCheck.checked = false;
+      STATE.pdpCustomMeasurements = {
+        chest: preset.chest,
+        waist: preset.waist,
+        hips: preset.hips,
+        top: preset.shirt,
+        inseam: preset.inseam,
+        unit: unit
+      };
+
+      document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => {
+        const s = c.getAttribute('data-size') || c.textContent.trim();
+        c.classList.toggle('active', s === size);
+      });
+      const cChip = document.getElementById('pdp-chip-custom');
+      if (cChip) cChip.classList.remove('active');
+
+      const statusWrap = document.getElementById('pdp-size-status-indicator');
+      const statusIcon = document.getElementById('pdp-size-status-icon');
+      const statusText = document.getElementById('pdp-size-status-text');
+      if (statusWrap) {
+        statusWrap.style.background = '#f0fdfa';
+        statusWrap.style.color = '#008779';
+        statusWrap.style.borderColor = '#99f6e4';
+      }
+      if (statusIcon) statusIcon.textContent = '📐';
+      if (statusText) statusText.textContent = `Standard Preset Active: Size ${size} — All measurements auto-populated (${unit.toUpperCase()})`;
+
+      recalculatePdpSummary();
+      updateRepCustomOptionsPreview();
+    };
+
+    window.handlePdpMeasurementChange = function(inputEl) {
+      const unit = STATE.pdpCustomMeasurements?.unit || 'in';
+      const baseSize = STATE.pdpSelectedPresetSize || 'M';
+      const presets = (window.ENAMELS_RTW_SIZE_PRESETS && window.ENAMELS_RTW_SIZE_PRESETS[unit]) || {
+        'XS':  { chest: 34, waist: 28, hips: 36, shoulder: 16, shirt: 26, inseam: 38 },
+        'S':   { chest: 37, waist: 30, hips: 38, shoulder: 17, shirt: 27, inseam: 39 },
+        'M':   { chest: 40, waist: 33, hips: 41, shoulder: 18, shirt: 28, inseam: 40 },
+        'L':   { chest: 43, waist: 36, hips: 44, shoulder: 19, shirt: 29, inseam: 41 },
+        'XL':  { chest: 46, waist: 39, hips: 47, shoulder: 20, shirt: 30, inseam: 42 },
+        '2XL': { chest: 49, waist: 42, hips: 50, shoulder: 21, shirt: 31, inseam: 42.5 }
+      };
+      const preset = presets[baseSize] || presets['M'];
+
+      const fieldMap = [
+        { id: 'meas-input-chest', tag: 'tag-pdp-chest', key: 'chest', presetVal: preset.chest },
+        { id: 'meas-input-waist', tag: 'tag-pdp-waist', key: 'waist', presetVal: preset.waist },
+        { id: 'meas-input-hips', tag: 'tag-pdp-hips', key: 'hips', presetVal: preset.hips },
+        { id: 'meas-input-top', tag: 'tag-pdp-top', key: 'top', presetVal: preset.shirt },
+        { id: 'meas-input-inseam', tag: 'tag-pdp-inseam', key: 'inseam', presetVal: preset.inseam }
+      ];
+
+      let anyDeviated = false;
+      const currentValues = {};
+
+      fieldMap.forEach(f => {
+        const input = document.getElementById(f.id);
+        const tag = document.getElementById(f.tag);
+        const val = input ? parseFloat(input.value) : NaN;
+        currentValues[f.key] = isNaN(val) ? '' : val;
+
+        if (!isNaN(val) && Math.abs(val - f.presetVal) > 0.001) {
+          anyDeviated = true;
+          if (input) input.classList.add('field-edited');
+          if (tag) {
+            tag.textContent = 'Edited';
+            tag.classList.add('active');
+          }
+        } else {
+          if (input) input.classList.remove('field-edited');
+          if (tag) {
+            tag.textContent = '';
+            tag.classList.remove('active');
+          }
+        }
+      });
+
+      currentValues.unit = unit;
+      STATE.pdpCustomMeasurements = currentValues;
+
+      const statusWrap = document.getElementById('pdp-size-status-indicator');
+      const statusIcon = document.getElementById('pdp-size-status-icon');
+      const statusText = document.getElementById('pdp-size-status-text');
+
+      if (anyDeviated) {
+        STATE.pdpSize = 'C';
+        STATE.pdpIsCustomSize = true;
+
+        document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => {
+          const s = c.getAttribute('data-size') || c.textContent.trim();
+          c.classList.toggle('active', s === 'C');
+        });
+
+        if (statusWrap) {
+          statusWrap.style.background = '#fffbeb';
+          statusWrap.style.color = '#b45309';
+          statusWrap.style.borderColor = '#fde68a';
+        }
+        if (statusIcon) statusIcon.textContent = '✏️';
+        if (statusText) statusText.innerHTML = `<strong>Custom Size (C) Active</strong> — Sizing deviation detected`;
+      } else {
+        STATE.pdpSize = baseSize;
+        STATE.pdpIsCustomSize = false;
+
+        document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => {
+          const s = c.getAttribute('data-size') || c.textContent.trim();
+          c.classList.toggle('active', s === baseSize);
+        });
+
+        if (statusWrap) {
+          statusWrap.style.background = '#f0fdfa';
+          statusWrap.style.color = '#008779';
+          statusWrap.style.borderColor = '#99f6e4';
+        }
+        if (statusIcon) statusIcon.textContent = '📐';
+        if (statusText) statusText.textContent = `Standard Preset Active: Size ${baseSize} — All measurements match preset (${unit.toUpperCase()})`;
+      }
+
+      recalculatePdpSummary();
+      updateRepCustomOptionsPreview();
+    };
+
+    window.selectPdpCustomExplicit = function() {
+      STATE.pdpSize = 'C';
+      STATE.pdpIsCustomSize = true;
+
+      document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => {
+        const s = c.getAttribute('data-size') || c.textContent.trim();
+        c.classList.toggle('active', s === 'C');
+      });
+
       const customPanel = document.getElementById('pdp-custom-measurements-panel');
-      if (customPanel) customPanel.style.display = 'none';
+      if (customPanel) customPanel.style.display = 'block';
+      const customCheck = document.getElementById('toggle-custom-measurements-check');
+      if (customCheck) customCheck.checked = true;
+
+      const statusWrap = document.getElementById('pdp-size-status-indicator');
+      const statusIcon = document.getElementById('pdp-size-status-icon');
+      const statusText = document.getElementById('pdp-size-status-text');
+      if (statusWrap) {
+        statusWrap.style.background = '#fffbeb';
+        statusWrap.style.color = '#b45309';
+        statusWrap.style.borderColor = '#fde68a';
+      }
+      if (statusIcon) statusIcon.textContent = '✏️';
+      if (statusText) statusText.innerHTML = `<strong>Custom Size (C) Active</strong> — Enter your bespoke measurements`;
 
       recalculatePdpSummary();
       updateRepCustomOptionsPreview();
     };
 
     window.toggleCustomMeasurementsForm = function(checked) {
-      STATE.pdpIsCustomSize = checked;
       const panel = document.getElementById('pdp-custom-measurements-panel');
       if (panel) panel.style.display = checked ? 'block' : 'none';
 
       if (checked) {
-        document.querySelectorAll('#pdp-sizes-grid .pdp-size-chip').forEach(c => c.classList.remove('active'));
+        window.handlePdpMeasurementChange();
       } else {
-        window.selectStandardSize('M');
+        window.selectStandardSize(STATE.pdpSelectedPresetSize || 'M');
       }
       recalculatePdpSummary();
       updateRepCustomOptionsPreview();
     };
 
     window.setMeasurementUnit = function(unit) {
+      const oldUnit = STATE.pdpCustomMeasurements?.unit || 'in';
       STATE.pdpCustomMeasurements.unit = unit;
       const btnIn = document.getElementById('meas-unit-in');
       const btnCm = document.getElementById('meas-unit-cm');
       if (btnIn) btnIn.classList.toggle('active', unit === 'in');
       if (btnCm) btnCm.classList.toggle('active', unit === 'cm');
       document.querySelectorAll('.unit-label').forEach(el => el.textContent = unit);
+
+      if (!STATE.pdpIsCustomSize) {
+        window.selectStandardSize(STATE.pdpSize);
+      } else {
+        const fields = ['meas-input-chest', 'meas-input-waist', 'meas-input-hips', 'meas-input-top', 'meas-input-inseam'];
+        fields.forEach(id => {
+          const input = document.getElementById(id);
+          if (input && input.value) {
+            const num = parseFloat(input.value);
+            if (!isNaN(num)) {
+              if (unit === 'cm' && oldUnit === 'in') {
+                input.value = Math.round(num * 2.54);
+              } else if (unit === 'in' && oldUnit === 'cm') {
+                input.value = Math.round((num / 2.54) * 2) / 2;
+              }
+            }
+          }
+        });
+        window.handlePdpMeasurementChange();
+      }
     };
 
     window.saveCustomMeasurements = function() {
-      const chest = document.getElementById('meas-input-chest')?.value || '38';
-      const waist = document.getElementById('meas-input-waist')?.value || '32';
-      const hips = document.getElementById('meas-input-hips')?.value || '40';
-      const inseam = document.getElementById('meas-input-inseam')?.value || '30';
-
-      STATE.pdpCustomMeasurements = {
-        chest, waist, hips, inseam,
-        unit: STATE.pdpCustomMeasurements.unit || 'in'
-      };
-      STATE.pdpIsCustomSize = true;
-
-      alert(`Custom measurements saved: Chest ${chest}${STATE.pdpCustomMeasurements.unit}, Waist ${waist}${STATE.pdpCustomMeasurements.unit}, Hips ${hips}${STATE.pdpCustomMeasurements.unit}, Inseam ${inseam}${STATE.pdpCustomMeasurements.unit}`);
-      recalculatePdpSummary();
-      updateRepCustomOptionsPreview();
+      window.handlePdpMeasurementChange();
+      const btn = document.querySelector('#pdp-custom-measurements-panel .btn-card-action');
+      if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Measurements Confirmed & Locked';
+        btn.style.background = '#008779';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.background = '';
+        }, 2000);
+      }
     };
 
     window.toggleAlterations = function(checked) {
@@ -1840,6 +2308,31 @@
 
         const requiresAdvance = STATE.pdpAlterations || STATE.pdpEngravingType !== 'none' || STATE.pdpLogoEnabled || STATE.pdpIsCustomSize;
 
+        const m = STATE.pdpCustomMeasurements || {};
+        const isCustom = STATE.pdpIsCustomSize || STATE.pdpSize === 'C';
+        const sizeTitle = isCustom ? 'C (Custom)' : STATE.pdpSize;
+        const properties = {
+          'Size': sizeTitle,
+          'Chest': `${m.chest || 'Standard'} ${m.unit || 'in'}`,
+          'Waist': `${m.waist || 'Standard'} ${m.unit || 'in'}`,
+          'Hips': `${m.hips || 'Standard'} ${m.unit || 'in'}`,
+          'Top Length': `${m.top || 'Standard'} ${m.unit || 'in'}`,
+          'Trouser Length': `${m.inseam || 'Standard'} ${m.unit || 'in'}`,
+          'Tailoring Specification': isCustom ? 'Custom Tailored Specification (C)' : 'Standard Hospital Sizing'
+        };
+        if (STATE.pdpColor?.name) properties['Colour'] = STATE.pdpColor.name;
+        if (STATE.pdpAlterations && STATE.pdpAlterationDetails) {
+          properties['Alterations'] = `Top: ${STATE.pdpAlterationDetails.shirtLength}, Trouser: ${STATE.pdpAlterationDetails.trouserLength}, Sleeves: ${STATE.pdpAlterationDetails.sleeveLength}`;
+        }
+        if (STATE.pdpEngravingType !== 'none' && STATE.pdpEngravingLines?.line1) {
+          properties['Embroidery Line 1'] = STATE.pdpEngravingLines.line1;
+          if (STATE.pdpEngravingLines.line2) properties['Embroidery Line 2'] = STATE.pdpEngravingLines.line2;
+          properties['Thread Color'] = STATE.pdpThreadColor?.name || 'Silk White';
+        }
+        if (STATE.pdpLogoEnabled && STATE.pdpLogo?.name) {
+          properties['Hospital Crest'] = STATE.pdpLogo.name;
+        }
+
         const cartItem = {
           id: `${item.id}-${Date.now()}`,
           productId: item.id,
@@ -1848,8 +2341,11 @@
           image: (STATE.pdpColor && STATE.pdpColor.image) ? STATE.pdpColor.image : item.image,
           color: STATE.pdpColor.name,
           colorHex: STATE.pdpColor.hex,
-          size: STATE.pdpIsCustomSize ? 'Custom Tailored' : STATE.pdpSize,
-          customMeasurements: STATE.pdpIsCustomSize ? STATE.pdpCustomMeasurements : null,
+          size: sizeTitle,
+          standardSize: isCustom ? 'C' : STATE.pdpSize,
+          isCustomSize: isCustom,
+          customMeasurements: isCustom ? STATE.pdpCustomMeasurements : null,
+          properties: properties,
           alterations: STATE.pdpAlterations ? STATE.pdpAlterationDetails : null,
           engraving: STATE.pdpEngravingType !== 'none' ? {
             type: STATE.pdpEngravingType,
@@ -1910,6 +2406,13 @@
         renderRtwColorsForFabric(STATE.rtwFabric?.id || 'sprinter-twill');
       } else if (stepNum === 4) {
         renderRtwDesignsForArticle(STATE.rtwArticle?.id || 'Sprinter');
+      } else if (stepNum === 5) {
+        // Step 5: Sizing & Fit — immediately ensure chart is populated from selected size
+        if (STATE.rtwSizeMode === 'custom' || STATE.rtwStandardSize === 'C') {
+          syncRtwSizeInputsFromState();
+        } else {
+          selectRtwStdSize(STATE.rtwStandardSize || 'M');
+        }
       } else if (stepNum === 7) {
         renderRtwReview();
       }
@@ -2077,68 +2580,6 @@
       window.jumpRtwStep(5);
     };
 
-    window.selectRtwSizeMode = function(mode) {
-      STATE.rtwSizeMode = mode;
-      const stdBox = document.getElementById('rtw-box-std-size');
-      const cstBox = document.getElementById('rtw-box-custom-size');
-
-      if (mode === 'standard') {
-        if (stdBox) { stdBox.style.borderColor = '#00b8a9'; stdBox.style.background = '#f0fdfa'; }
-        if (cstBox) { cstBox.style.borderColor = '#e2e8f0'; cstBox.style.background = '#ffffff'; }
-      } else {
-        if (cstBox) { cstBox.style.borderColor = '#00b8a9'; cstBox.style.background = '#f0fdfa'; }
-        if (stdBox) { stdBox.style.borderColor = '#e2e8f0'; stdBox.style.background = '#ffffff'; }
-      }
-    };
-
-    window.selectRtwStdSize = function(size) {
-      STATE.rtwSizeMode = 'standard';
-      STATE.rtwStandardSize = size;
-      document.querySelectorAll('#rtw-box-std-size .pdp-size-chip').forEach(c => {
-        c.classList.toggle('active', c.textContent.trim() === size);
-      });
-      const stdBox = document.getElementById('rtw-box-std-size');
-      const cstBox = document.getElementById('rtw-box-custom-size');
-      if (stdBox) { stdBox.style.borderColor = '#00b8a9'; stdBox.style.background = '#f0fdfa'; }
-      if (cstBox) { cstBox.style.borderColor = '#e2e8f0'; cstBox.style.background = '#ffffff'; }
-    };
-    window.selectRtwStandardSize = window.selectRtwStdSize;
-
-    window.setRtwMeasurementUnit = function(unit) {
-      STATE.rtwUnit = unit;
-      const bIn = document.getElementById('rtw-meas-unit-in');
-      const bCm = document.getElementById('rtw-meas-unit-cm');
-      if (bIn) bIn.classList.toggle('active', unit === 'in');
-      if (bCm) bCm.classList.toggle('active', unit === 'cm');
-      document.querySelectorAll('.rtw-unit-label').forEach(el => el.textContent = unit);
-    };
-    window.setRtwUnit = window.setRtwMeasurementUnit;
-
-    window.saveRtwCustomMeasurements = function() {
-      const chest = document.getElementById('rtw-meas-chest')?.value || '';
-      const waist = document.getElementById('rtw-meas-waist')?.value || '';
-      const hips = document.getElementById('rtw-meas-hips')?.value || '';
-      const shoulder = document.getElementById('rtw-meas-shoulder')?.value || '';
-      const shirt = document.getElementById('rtw-meas-shirt')?.value || '';
-      const inseam = document.getElementById('rtw-meas-inseam')?.value || '';
-
-      STATE.rtwSizeMode = 'custom';
-      STATE.rtwCustomMeasurements = { chest, waist, hips, shoulder, shirt, inseam, unit: STATE.rtwUnit };
-
-      const stdBox = document.getElementById('rtw-box-std-size');
-      const cstBox = document.getElementById('rtw-box-custom-size');
-      if (cstBox) { cstBox.style.borderColor = '#00b8a9'; cstBox.style.background = '#f0fdfa'; }
-      if (stdBox) { stdBox.style.borderColor = '#e2e8f0'; stdBox.style.background = '#ffffff'; }
-
-      document.querySelectorAll('#rtw-box-std-size .pdp-size-chip').forEach(c => c.classList.remove('active'));
-
-      const btn = document.querySelector('#rtw-box-custom-size .btn-card-action');
-      if (btn) {
-        const origText = btn.textContent;
-        btn.textContent = '✓ Tailored Measurements Saved';
-        setTimeout(() => { btn.textContent = origText; }, 2000);
-      }
-    };
 
     window.setRtwEmbroideryType = function(type) {
       STATE.rtwEngravingType = type;
@@ -2296,23 +2737,31 @@
       if (articleEl) {
         articleEl.textContent = `${STATE.rtwArticle?.name || 'Sprinter Series'} — ${STATE.rtwDesign?.name || 'Scrub Set'}`;
       }
+      const isCustomSize = (STATE.rtwSizeMode === 'custom' || STATE.rtwStandardSize === 'C');
       if (sizeEl) {
-        if (STATE.rtwSizeMode === 'custom') {
-          const m = STATE.rtwCustomMeasurements;
-          const details = [
-            m.chest ? `Chest: ${m.chest}${m.unit}` : '',
-            m.waist ? `Waist: ${m.waist}${m.unit}` : '',
-            m.hips ? `Hips: ${m.hips}${m.unit}` : ''
-          ].filter(Boolean).join(', ');
-          sizeEl.textContent = `Custom Tailored (${details || STATE.rtwUnit})`;
+        const m = STATE.rtwCustomMeasurements || {};
+        if (isCustomSize) {
+          sizeEl.innerHTML = `
+            <div style="font-size: 13px; font-weight: 700; color: #b45309;">Size: C (Custom Tailored Fit)</div>
+            <div style="font-size: 11px; color: #475569; margin-top: 4px; line-height: 1.5; background: #fffbeb; padding: 6px 10px; border-radius: 4px; border: 1px dashed #fde68a;">
+              Chest: <strong>${m.chest}${m.unit}</strong> | Waist: <strong>${m.waist}${m.unit}</strong> | Hips: <strong>${m.hips}${m.unit}</strong><br>
+              Shoulder: <strong>${m.shoulder}${m.unit}</strong> | Shirt Length: <strong>${m.shirt}${m.unit}</strong> | Inseam: <strong>${m.inseam}${m.unit}</strong>
+            </div>
+          `;
         } else {
-          sizeEl.textContent = `Standard Size ${STATE.rtwStandardSize}`;
+          sizeEl.innerHTML = `
+            <div style="font-size: 13px; font-weight: 700; color: #102a43;">Standard Size ${STATE.rtwStandardSize}</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.5; background: #f8fafc; padding: 6px 10px; border-radius: 4px; border: 1px solid #e2e8f0;">
+              Chest: ${m.chest}${m.unit} | Waist: ${m.waist}${m.unit} | Hips: ${m.hips}${m.unit}<br>
+              Shoulder: ${m.shoulder}${m.unit} | Shirt Length: ${m.shirt}${m.unit} | Inseam: ${m.inseam}${m.unit}
+            </div>
+          `;
         }
       }
 
       const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
       const customDyeFee = STATE.rtwColor?.isCustomDye ? 500 : 0;
-      const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
+      const customSizeFee = isCustomSize ? 750 : 0;
       const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
       const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
       const total = basePrice + customDyeFee + customSizeFee + embFee + logoFee;
@@ -2333,7 +2782,7 @@
         totalEl.textContent = `Rs. ${total.toLocaleString()}`;
       }
 
-      const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0) || (customDyeFee > 0);
+      const requiresAdvance = isCustomSize || (embFee > 0) || (logoFee > 0) || (customDyeFee > 0);
       if (advAlert) {
         advAlert.style.display = requiresAdvance ? 'flex' : 'none';
       }
@@ -2341,27 +2790,64 @@
 
     window.addRtwToCart = function() {
       withCartDebounce(() => {
+        const isCustomSize = (STATE.rtwSizeMode === 'custom' || STATE.rtwStandardSize === 'C');
         const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
         const customDyeFee = STATE.rtwColor?.isCustomDye ? 500 : 0;
-        const customSizeFee = STATE.rtwSizeMode === 'custom' ? 750 : 0;
+        const customSizeFee = isCustomSize ? 750 : 0;
         const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
         const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
         const unitPrice = basePrice + customDyeFee + customSizeFee + embFee + logoFee;
 
-        const requiresAdvance = (STATE.rtwSizeMode === 'custom') || (embFee > 0) || (logoFee > 0) || (customDyeFee > 0);
+        const requiresAdvance = isCustomSize || (embFee > 0) || (logoFee > 0) || (customDyeFee > 0);
+
+        const m = STATE.rtwCustomMeasurements || {};
+        const sizeTitle = isCustomSize ? 'C (Custom)' : `Standard Size ${STATE.rtwStandardSize}`;
+        const properties = {
+          'Size': sizeTitle,
+          'Chest': `${m.chest} ${m.unit}`,
+          'Waist': `${m.waist} ${m.unit}`,
+          'Hips': `${m.hips} ${m.unit}`,
+          'Shoulder Width': `${m.shoulder} ${m.unit}`,
+          'Top / Shirt Length': `${m.shirt} ${m.unit}`,
+          'Trouser / Inseam Length': `${m.inseam} ${m.unit}`,
+          'Tailoring Specification': isCustomSize ? 'Custom Tailored Specification (C)' : 'Standard Hospital Fit'
+        };
+
+        if (STATE.rtwFabric?.name) properties['Fabric'] = STATE.rtwFabric.name;
+        if (STATE.rtwColor?.name) properties['Colour'] = STATE.rtwColor.name;
+        if (STATE.rtwColor?.isCustomDye) properties['Dye Formula'] = 'Bespoke Laboratory Dye';
+        if (STATE.rtwEngravingType !== 'none' && STATE.rtwEngravingLines?.line1) {
+          properties['Embroidery Line 1'] = STATE.rtwEngravingLines.line1;
+          if (STATE.rtwEngravingLines.line2) properties['Embroidery Line 2'] = STATE.rtwEngravingLines.line2;
+          properties['Thread Color'] = STATE.rtwThreadColor?.name || 'Silk White';
+        }
+        if (STATE.rtwLogoEnabled && STATE.rtwLogo?.name) {
+          properties['Hospital Crest'] = STATE.rtwLogo.name;
+        }
 
         const cartItem = {
           id: `rtw-${Date.now()}`,
           productId: STATE.rtwDesign?.id || 'rtw-custom',
-          title: `RTW Bespoke — ${STATE.rtwDesign?.name || 'Medical Scrub'}`,
-          series: STATE.rtwArticle?.name || 'Sprinter Series',
+          title: `Make Your Own Scrubs — ${STATE.rtwDesign?.name || 'Custom Medical Scrub'}`,
+          series: STATE.rtwArticle?.name || 'Bespoke Series',
           image: STATE.rtwDesign?.image || 'cat-sprinter.jpg',
           fabric: STATE.rtwFabric?.name || 'Sprinter Performance Twill',
           color: STATE.rtwColor?.name || 'Deep Navy',
           colorHex: STATE.rtwColor?.hex || '#102A43',
           customDye: STATE.rtwColor?.isCustomDye ? 'Bespoke Laboratory Dye (+Rs. 500)' : 'Standard Shade',
-          size: STATE.rtwSizeMode === 'standard' ? `Standard Size ${STATE.rtwStandardSize}` : 'Custom Tailored Measurements',
-          customMeasurements: STATE.rtwSizeMode === 'custom' ? STATE.rtwCustomMeasurements : null,
+          size: sizeTitle,
+          standardSize: isCustomSize ? 'C' : STATE.rtwStandardSize,
+          isCustomSize: isCustomSize,
+          customMeasurements: {
+            chest: `${m.chest} ${m.unit}`,
+            waist: `${m.waist} ${m.unit}`,
+            hips: `${m.hips} ${m.unit}`,
+            shoulder: `${m.shoulder} ${m.unit}`,
+            shirt: `${m.shirt} ${m.unit}`,
+            inseam: `${m.inseam} ${m.unit}`,
+            unit: m.unit
+          },
+          properties: properties,
           engraving: STATE.rtwEngravingType !== 'none' ? {
             type: 'direct',
             lines: STATE.rtwEngravingLines,

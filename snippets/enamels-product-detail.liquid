@@ -211,26 +211,33 @@
 
           <!-- Standard Sizes Grid -->
           <div class="pdp-sizes-grid" id="pdp-sizes-grid">
-            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('XS')">XS</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('S')">S</button>
-            <button type="button" class="pdp-size-chip active" onclick="window.selectStandardSize('M')">M</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('L')">L</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('XL')">XL</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectStandardSize('2XL')">2XL</button>
+            <button type="button" class="pdp-size-chip" data-size="XS" onclick="window.selectStandardSize('XS')">XS</button>
+            <button type="button" class="pdp-size-chip" data-size="S" onclick="window.selectStandardSize('S')">S</button>
+            <button type="button" class="pdp-size-chip active" data-size="M" onclick="window.selectStandardSize('M')">M</button>
+            <button type="button" class="pdp-size-chip" data-size="L" onclick="window.selectStandardSize('L')">L</button>
+            <button type="button" class="pdp-size-chip" data-size="XL" onclick="window.selectStandardSize('XL')">XL</button>
+            <button type="button" class="pdp-size-chip" data-size="2XL" onclick="window.selectStandardSize('2XL')">2XL</button>
+            <button type="button" class="pdp-size-chip rtw-size-chip-c" id="pdp-chip-custom" data-size="C" onclick="window.selectPdpCustomExplicit()">C (Custom)</button>
+          </div>
+
+          <!-- Dynamic Sizing State Banner -->
+          <div id="pdp-size-status-indicator" style="margin-top: 12px; font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 6px; display: flex; align-items: center; gap: 8px; background: #f0fdfa; color: #008779; border: 1px solid #99f6e4; transition: all 0.2s ease;">
+            <span id="pdp-size-status-icon">📐</span>
+            <span id="pdp-size-status-text">Standard Preset Active: Medium (M) — Sizing chart auto-populated</span>
           </div>
 
           <!-- Custom Tailored Sizing Option Toggle -->
           <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e2e8f0;">
             <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #102a43; cursor: pointer;">
               <input type="checkbox" id="toggle-custom-measurements-check" onchange="window.toggleCustomMeasurementsForm(this.checked)" />
-              <span>Need Custom Tailored Measurements? (Enter Exact Sizing)</span>
+              <span>Inspect or Edit Exact Body Measurements (Auto-Converts to Custom C)</span>
             </label>
           </div>
 
           <!-- Custom Measurements Drawer / Subpanel -->
           <div id="pdp-custom-measurements-panel" style="display: none; margin-top: 12px; background: #f8fafc; padding: 16px; border-radius: 6px; border: 1px solid #e2e8f0;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-              <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Body Measurements</span>
+              <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Finished Garment Dimensions</span>
               <div style="display: flex; gap: 4px;">
                 <button type="button" class="gender-pill-btn active" id="meas-unit-in" onclick="window.setMeasurementUnit('in')" style="padding: 3px 8px; font-size: 10px;">Inches</button>
                 <button type="button" class="gender-pill-btn" id="meas-unit-cm" onclick="window.setMeasurementUnit('cm')" style="padding: 3px 8px; font-size: 10px;">CM</button>
@@ -239,24 +246,28 @@
 
             <div class="alteration-fields-grid">
               <div class="form-field-group">
-                <label>Chest / Bust (<span class="unit-label">in</span>)</label>
-                <input type="number" class="form-field-input" id="meas-input-chest" placeholder="e.g. 38" />
+                <label>Chest / Bust (<span class="unit-label">in</span>) <span class="rtw-field-tag" id="tag-pdp-chest"></span></label>
+                <input type="number" step="0.5" class="form-field-input" id="meas-input-chest" placeholder="e.g. 40" oninput="window.handlePdpMeasurementChange(this)" />
               </div>
               <div class="form-field-group">
-                <label>Waist (<span class="unit-label">in</span>)</label>
-                <input type="number" class="form-field-input" id="meas-input-waist" placeholder="e.g. 32" />
+                <label>Waist (<span class="unit-label">in</span>) <span class="rtw-field-tag" id="tag-pdp-waist"></span></label>
+                <input type="number" step="0.5" class="form-field-input" id="meas-input-waist" placeholder="e.g. 33" oninput="window.handlePdpMeasurementChange(this)" />
               </div>
               <div class="form-field-group">
-                <label>Hips (<span class="unit-label">in</span>)</label>
-                <input type="number" class="form-field-input" id="meas-input-hips" placeholder="e.g. 40" />
+                <label>Hips (<span class="unit-label">in</span>) <span class="rtw-field-tag" id="tag-pdp-hips"></span></label>
+                <input type="number" step="0.5" class="form-field-input" id="meas-input-hips" placeholder="e.g. 41" oninput="window.handlePdpMeasurementChange(this)" />
               </div>
               <div class="form-field-group">
-                <label>Inseam / Trouser Length (<span class="unit-label">in</span>)</label>
-                <input type="number" class="form-field-input" id="meas-input-inseam" placeholder="e.g. 30" />
+                <label>Top / Shirt Length (<span class="unit-label">in</span>) <span class="rtw-field-tag" id="tag-pdp-top"></span></label>
+                <input type="number" step="0.5" class="form-field-input" id="meas-input-top" placeholder="e.g. 28" oninput="window.handlePdpMeasurementChange(this)" />
+              </div>
+              <div class="form-field-group">
+                <label>Inseam / Trouser Length (<span class="unit-label">in</span>) <span class="rtw-field-tag" id="tag-pdp-inseam"></span></label>
+                <input type="number" step="0.5" class="form-field-input" id="meas-input-inseam" placeholder="e.g. 40" oninput="window.handlePdpMeasurementChange(this)" />
               </div>
             </div>
-            <button type="button" class="btn-card-action" onclick="window.saveCustomMeasurements()" style="margin-top: 12px; padding: 8px;">
-              Confirm Measurements
+            <button type="button" class="btn-card-action" onclick="window.saveCustomMeasurements()" style="margin-top: 12px; padding: 10px;">
+              ✓ Confirm Measurements & Fit
             </button>
           </div>
         </div>

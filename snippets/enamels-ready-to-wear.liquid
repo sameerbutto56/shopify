@@ -265,60 +265,71 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
         <!-- Option A: Standard Sizing -->
         <div class="pdp-step-box" id="rtw-box-std-size">
-          <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0 0 10px;">Option A: Standard Clinical Sizing</h4>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Available in XS through 2XL according to standard hospital dimensions.</p>
-          <div class="pdp-sizes-grid">
-            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('XS')">XS</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('S')">S</button>
-            <button type="button" class="pdp-size-chip active" onclick="window.selectRtwStdSize('M')">M</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('L')">L</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('XL')">XL</button>
-            <button type="button" class="pdp-size-chip" onclick="window.selectRtwStdSize('2XL')">2XL</button>
+          <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0 0 10px;">Select Standard Size or Custom (C)</h4>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Selecting a size automatically populates the master measurement chart below. Changing any measurement automatically converts your order to <strong>Custom (C)</strong>.</p>
+          <div class="pdp-sizes-grid" id="rtw-sizes-chips-grid">
+            <button type="button" class="pdp-size-chip" data-size="XS" onclick="window.selectRtwStdSize('XS')">XS</button>
+            <button type="button" class="pdp-size-chip" data-size="S" onclick="window.selectRtwStdSize('S')">S</button>
+            <button type="button" class="pdp-size-chip active" data-size="M" onclick="window.selectRtwStdSize('M')">M</button>
+            <button type="button" class="pdp-size-chip" data-size="L" onclick="window.selectRtwStdSize('L')">L</button>
+            <button type="button" class="pdp-size-chip" data-size="XL" onclick="window.selectRtwStdSize('XL')">XL</button>
+            <button type="button" class="pdp-size-chip" data-size="2XL" onclick="window.selectRtwStdSize('2XL')">2XL</button>
+            <button type="button" class="pdp-size-chip rtw-size-chip-c" id="rtw-chip-custom" data-size="C" onclick="window.selectRtwCustomExplicit()">C (Custom)</button>
           </div>
-          <button type="button" onclick="window.openSizeGuideModal()" style="margin-top: 14px; background: none; border: none; font-size: 12px; font-weight: 600; color: #00b8a9; cursor: pointer; text-decoration: underline;">
-            📏 View Reference Chart
-          </button>
+
+          <!-- Dynamic Sizing State Banner -->
+          <div id="rtw-size-status-indicator" style="margin-top: 14px; font-size: 12px; font-weight: 600; padding: 10px 14px; border-radius: 6px; display: flex; align-items: center; gap: 8px; background: #f0fdfa; color: #008779; border: 1px solid #99f6e4; transition: all 0.2s ease;">
+            <span id="rtw-size-status-icon" style="font-size: 16px;">📐</span>
+            <span id="rtw-size-status-text">Standard Preset Active: Medium (M) — Sizing chart auto-populated</span>
+          </div>
+
+          <div style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <button type="button" onclick="window.openSizeGuideModal()" style="background: none; border: none; font-size: 12px; font-weight: 600; color: #00b8a9; cursor: pointer; text-decoration: underline;">
+              📏 View Master Reference Chart
+            </button>
+            <span style="font-size: 11px; color: #64748b;">Finished Garment Dimensions</span>
+          </div>
         </div>
 
-        <!-- Option B: Make My Measurements -->
+        <!-- Option B: Body & Garment Measurement Chart -->
         <div class="pdp-step-box" id="rtw-box-custom-size">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-            <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0;">Option B: Make My Measurements</h4>
+            <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 0;">Garment Measurement Chart</h4>
             <div style="display: flex; gap: 4px;">
-              <button type="button" class="gender-pill-btn active" id="rtw-meas-unit-in" onclick="window.setRtwMeasurementUnit('in')" style="padding: 2px 6px; font-size: 10px;">Inches</button>
-              <button type="button" class="gender-pill-btn" id="rtw-meas-unit-cm" onclick="window.setRtwMeasurementUnit('cm')" style="padding: 2px 6px; font-size: 10px;">CM</button>
+              <button type="button" class="gender-pill-btn active" id="rtw-meas-unit-in" onclick="window.setRtwMeasurementUnit('in')" style="padding: 2px 8px; font-size: 11px;">Inches</button>
+              <button type="button" class="gender-pill-btn" id="rtw-meas-unit-cm" onclick="window.setRtwMeasurementUnit('cm')" style="padding: 2px 8px; font-size: 11px;">CM</button>
             </div>
           </div>
-          <p style="font-size: 11px; color: #64748b; margin-bottom: 12px;">Tailored to your body measurements (+Rs. 750 custom pattern cutting fee).</p>
+          <p style="font-size: 11px; color: #64748b; margin-bottom: 12px;">All measurements auto-fill when selecting XS–2XL. Editing any value switches to <strong>C (Custom)</strong> (+Rs. 750 custom pattern cutting fee).</p>
 
           <div class="alteration-fields-grid">
             <div class="form-field-group">
-              <label>Chest / Bust (<span class="rtw-unit-label">in</span>)</label>
-              <input type="number" class="form-field-input" id="rtw-meas-chest" placeholder="e.g. 38" />
+              <label>Chest / Bust (<span class="rtw-unit-label">in</span>) <span class="rtw-field-tag" id="tag-rtw-meas-chest"></span></label>
+              <input type="number" step="0.5" class="form-field-input" id="rtw-meas-chest" placeholder="e.g. 40" oninput="window.handleRtwMeasurementChange(this)" />
             </div>
             <div class="form-field-group">
-              <label>Waist (<span class="rtw-unit-label">in</span>)</label>
-              <input type="number" class="form-field-input" id="rtw-meas-waist" placeholder="e.g. 32" />
+              <label>Waist (<span class="rtw-unit-label">in</span>) <span class="rtw-field-tag" id="tag-rtw-meas-waist"></span></label>
+              <input type="number" step="0.5" class="form-field-input" id="rtw-meas-waist" placeholder="e.g. 33" oninput="window.handleRtwMeasurementChange(this)" />
             </div>
             <div class="form-field-group">
-              <label>Hips (<span class="rtw-unit-label">in</span>)</label>
-              <input type="number" class="form-field-input" id="rtw-meas-hips" placeholder="e.g. 40" />
+              <label>Hips (<span class="rtw-unit-label">in</span>) <span class="rtw-field-tag" id="tag-rtw-meas-hips"></span></label>
+              <input type="number" step="0.5" class="form-field-input" id="rtw-meas-hips" placeholder="e.g. 41" oninput="window.handleRtwMeasurementChange(this)" />
             </div>
             <div class="form-field-group">
-              <label>Shoulder Width (<span class="rtw-unit-label">in</span>)</label>
-              <input type="number" class="form-field-input" id="rtw-meas-shoulder" placeholder="e.g. 17" />
+              <label>Shoulder Width (<span class="rtw-unit-label">in</span>) <span class="rtw-field-tag" id="tag-rtw-meas-shoulder"></span></label>
+              <input type="number" step="0.5" class="form-field-input" id="rtw-meas-shoulder" placeholder="e.g. 18" oninput="window.handleRtwMeasurementChange(this)" />
             </div>
             <div class="form-field-group">
-              <label>Shirt / Top Length (<span class="rtw-unit-label">in</span>)</label>
-              <input type="number" class="form-field-input" id="rtw-meas-shirt" placeholder="e.g. 28" />
+              <label>Shirt / Top Length (<span class="rtw-unit-label">in</span>) <span class="rtw-field-tag" id="tag-rtw-meas-shirt"></span></label>
+              <input type="number" step="0.5" class="form-field-input" id="rtw-meas-shirt" placeholder="e.g. 28" oninput="window.handleRtwMeasurementChange(this)" />
             </div>
             <div class="form-field-group">
-              <label>Trouser Length / Inseam (<span class="rtw-unit-label">in</span>)</label>
-              <input type="number" class="form-field-input" id="rtw-meas-inseam" placeholder="e.g. 30" />
+              <label>Trouser Length / Inseam (<span class="rtw-unit-label">in</span>) <span class="rtw-field-tag" id="tag-rtw-meas-inseam"></span></label>
+              <input type="number" step="0.5" class="form-field-input" id="rtw-meas-inseam" placeholder="e.g. 40" oninput="window.handleRtwMeasurementChange(this)" />
             </div>
           </div>
-          <button type="button" class="btn-card-action" onclick="window.saveRtwCustomMeasurements()" style="margin-top: 12px; padding: 8px;">
-            Apply Tailored Measurements
+          <button type="button" class="btn-card-action" onclick="window.saveRtwCustomMeasurements()" style="margin-top: 12px; padding: 10px;">
+            ✓ Confirm Measurements & Fit
           </button>
         </div>
       </div>
