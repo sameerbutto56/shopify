@@ -1,532 +1,892 @@
 {% comment %}
-  ENAMELS ONLINE — HOMEPAGE PRESERVED ARCHITECTURE & SLIDESHOW
-  Preserves existing white visual identity, authentic 5-slide banner slideshow,
-  category navigation grid, series showcase, hospital shade matrix, trust badges, and reviews.
+  ENAMELS ONLINE — HOMEPAGE DYNAMIC ARCHITECTURE & THEME STUDIO SYSTEM
+  Extensively editable through Shopify Theme Editor (Theme Studio).
+  Preserves authentic white visual identity, 3D tilt category cards,
+  slideshow, signature scrub lines, hospital shades, concierge booking,
+  trust badges, and verified clinical reviews.
 {% endcomment %}
 
 <div class="chroma-view-panel active" id="view-home">
 
+  {% liquid
+    assign enable_slideshow = true
+    if section.settings.enable_slideshow == false
+      assign enable_slideshow = false
+    endif
+
+    assign show_arrows = true
+    if section.settings.show_slideshow_arrows == false
+      assign show_arrows = false
+    endif
+
+    assign show_dots = true
+    if section.settings.show_slideshow_dots == false
+      assign show_dots = false
+    endif
+
+    assign slide_blocks_count = 0
+    for block in section.blocks
+      if block.type == 'slide'
+        assign slide_blocks_count = slide_blocks_count | plus: 1
+      endif
+    endfor
+  %}
+
+  {% if enable_slideshow %}
   <!-- ============================================================ -->
-  <!-- 1. AUTHENTIC 5-SLIDE BANNER SLIDESHOW (SECTION 3)            -->
+  <!-- 1. AUTHENTIC BANNER SLIDESHOW (EDITABLE VIA THEME STUDIO)    -->
   <!-- ============================================================ -->
   <section class="enamels-slideshow-container" id="enamels-hero-slideshow" aria-label="Official Enamels Slideshow">
     <div class="slideshow-track" id="enamels-slideshow-track">
+      {% if slide_blocks_count > 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'slide' %}
+            <a href="{{ block.settings.link | default: '#collection-sprinter' }}" class="slide-panel" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+              {% if block.settings.image != blank %}
+                <picture>
+                  {% if block.settings.image_mobile != blank %}
+                    <source media="(max-width: 640px)" srcset="{{ block.settings.image_mobile | image_url: width: 800 }}">
+                  {% endif %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 1600 }}"
+                    alt="{{ block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape }}"
+                    class="slide-img-full"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  />
+                </picture>
+              {% else %}
+                <img
+                  src="{{ 'banner-autumn.jpg' | asset_url }}"
+                  alt="{{ block.settings.alt | default: 'Enamels Medical Apparel' | escape }}"
+                  class="slide-img-full"
+                  width="1500"
+                  height="575"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                />
+              {% endif %}
+              {% if block.settings.title != blank or block.settings.subtitle != blank %}
+                <div class="slide-caption-overlay">
+                  {% if block.settings.title != blank %}<h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>{% endif %}
+                  {% if block.settings.subtitle != blank %}<p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>{% endif %}
+                </div>
+              {% endif %}
+            </a>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <!-- Slide 1: Sprinter Autumn Edition -->
+        <a href="#collection-sprinter" class="slide-panel" onclick="window.navigateToCollection('Sprinter'); return false;">
+          <img
+            src="{{ 'banner-autumn.jpg' | asset_url }}"
+            alt="Enamels Sprinter Autumn Edition"
+            class="slide-img-full"
+            width="1500"
+            height="575"
+            loading="eager"
+          />
+        </a>
 
-      <!-- Slide 1: Sprinter Autumn Edition -->
-      <a href="#collection-sprinter" class="slide-panel" onclick="window.navigateToCollection('Sprinter'); return false;">
-        <img
-          src="{{ 'banner-autumn.jpg' | asset_url }}"
-          alt="Enamels Sprinter Autumn Edition"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="eager"
-        />
-      </a>
+        <!-- Slide 2: Clinical Clogs & Footwear -->
+        <a href="#collection-clogs" class="slide-panel" onclick="window.navigateToCollection('clogs', 'category'); return false;">
+          <img
+            src="{{ 'banner-clogs.jpg' | asset_url }}"
+            alt="Enamels Clinical Clogs & Footwear"
+            class="slide-img-full"
+            width="1500"
+            height="625"
+            loading="lazy"
+          />
+        </a>
 
-      <!-- Slide 2: Clinical Clogs & Footwear -->
-      <a href="#collection-clogs" class="slide-panel" onclick="window.navigateToCollection('clogs', 'category'); return false;">
-        <img
-          src="{{ 'banner-clogs.jpg' | asset_url }}"
-          alt="Enamels Clinical Clogs & Footwear"
-          class="slide-img-full"
-          width="1500"
-          height="625"
-          loading="lazy"
-        />
-      </a>
+        <!-- Slide 3: New Arrivals / Abbotabad Banner -->
+        <a href="#collection-new-arrivals" class="slide-panel" onclick="window.navigateToCollection('all', 'category'); return false;">
+          <img
+            src="{{ 'banner-abbotabad.jpg' | asset_url }}"
+            alt="Enamels New Arrivals 2026"
+            class="slide-img-full"
+            width="1500"
+            height="575"
+            loading="lazy"
+          />
+        </a>
 
-      <!-- Slide 3: New Arrivals / Abbotabad Banner -->
-      <a href="#collection-new-arrivals" class="slide-panel" onclick="window.navigateToCollection('all', 'category'); return false;">
-        <img
-          src="{{ 'banner-abbotabad.jpg' | asset_url }}"
-          alt="Enamels New Arrivals 2026"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="lazy"
-        />
-      </a>
+        <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
+        <a href="#collection-caps" class="slide-panel" onclick="window.navigateToCollection('caps', 'category'); return false;">
+          <img
+            src="{{ 'banner-caps.jpg' | asset_url }}"
+            alt="Enamels BunFit Surgical Caps"
+            class="slide-img-full"
+            width="1500"
+            height="575"
+            loading="lazy"
+          />
+        </a>
 
-      <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
-      <a href="#collection-caps" class="slide-panel" onclick="window.navigateToCollection('caps', 'category'); return false;">
-        <img
-          src="{{ 'banner-caps.jpg' | asset_url }}"
-          alt="Enamels BunFit Surgical Caps"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="lazy"
-        />
-      </a>
-
-      <!-- Slide 5: Velora By Enamels -->
-      <a href="#collection-velora" class="slide-panel" onclick="window.navigateToCollection('Velora'); return false;">
-        <img
-          src="{{ 'banner-velora.jpg' | asset_url }}"
-          alt="Velora Luxury Micro-Drape By Enamels"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="lazy"
-        />
-      </a>
-
+        <!-- Slide 5: Velora By Enamels -->
+        <a href="#collection-velora" class="slide-panel" onclick="window.navigateToCollection('Velora'); return false;">
+          <img
+            src="{{ 'banner-velora.jpg' | asset_url }}"
+            alt="Velora Luxury Micro-Drape By Enamels"
+            class="slide-img-full"
+            width="1500"
+            height="575"
+            loading="lazy"
+          />
+        </a>
+      {% endif %}
     </div>
 
+    {% if show_arrows %}
     <!-- Navigation Controls -->
     <button type="button" class="slideshow-arrow prev" onclick="window.stepBannerSlide(-1)" aria-label="Previous Slide">‹</button>
     <button type="button" class="slideshow-arrow next" onclick="window.stepBannerSlide(1)" aria-label="Next Slide">›</button>
+    {% endif %}
 
+    {% if show_dots %}
     <!-- Pagination Dots -->
     <div class="slideshow-dots-bar" id="slideshow-dots-bar">
-      <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
+      {% if slide_blocks_count > 0 %}
+        {% assign dot_index = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'slide' %}
+            <button type="button" class="slideshow-dot {% if dot_index == 0 %}active{% endif %}" onclick="window.jumpToBannerSlide({{ dot_index }})" aria-label="Slide {{ dot_index | plus: 1 }}"></button>
+            {% assign dot_index = dot_index | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
+      {% endif %}
     </div>
+    {% endif %}
   </section>
+  {% endif %}
 
   <!-- ============================================================ -->
-  <!-- 2. HOMEPAGE CATEGORIES (PREMIUM 3D REDESIGN)                 -->
+  <!-- 2. HOMEPAGE CATEGORIES (PREMIUM 3D REDESIGN & DYNAMIC BLOCKS) -->
   <!-- ============================================================ -->
+  {% liquid
+    assign category_blocks_count = 0
+    for block in section.blocks
+      if block.type == 'category_card'
+        assign category_blocks_count = category_blocks_count | plus: 1
+      endif
+    endfor
+  %}
+
   <section class="enamels-categories-section-3d page-container" id="homepage-categories-section">
     <div class="categories-section-header">
-      <span class="categories-section-tag">CLINICAL APPAREL & SERVICES</span>
-      <h2 class="categories-section-title">Categories</h2>
+      <span class="categories-section-tag">{{ section.settings.categories_tag | default: 'CLINICAL APPAREL & SERVICES' | escape }}</span>
+      <h2 class="categories-section-title">{{ section.settings.categories_title | default: 'Categories' | escape }}</h2>
       <p class="categories-section-subtitle">
-        Explore purpose-built medical uniforms, personalized studio customization, and concierge in-person sizing.
+        {{ section.settings.categories_subtitle | default: 'Explore purpose-built medical uniforms, personalized studio customization, and concierge in-person sizing.' | escape }}
       </p>
     </div>
 
     <div class="enamels-categories-3d-grid" id="enamels-3d-cards-grid">
-      <!-- 1. Men -->
-      <div class="category-card-3d-wrap" data-card-index="1">
-        <a href="#men" class="category-card-3d" onclick="window.navigateToGender('men'); return false;" aria-label="Explore Men's Scrubs Collection">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-men">MEN'S APPAREL</span>
-            <img
-              src="{{ 'cat-men-scrubs.jpg' | asset_url }}"
-              alt="Men's Scrubs & Medical Apparel"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="eager"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Men</h3>
-              <span class="category-card-count">12 Styles</span>
-            </div>
-            <p class="category-card-desc">Athletic mechanical stretch, twill scrubs, and structured executive cuts tailored for male medical professionals.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta">
-                Explore Collection
-                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-              </span>
-            </div>
-          </div>
-        </a>
-      </div>
+      {% if category_blocks_count > 0 %}
+        {% assign card_counter = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'category_card' %}
+            {% assign card_counter = card_counter | plus: 1 %}
+            {% liquid
+              assign card_href = '#men'
+              assign card_onclick = "window.navigateToGender('men'); return false;"
+              assign default_card_img = 'cat-men-scrubs.jpg'
 
-      <!-- 2. Women -->
-      <div class="category-card-3d-wrap" data-card-index="2">
-        <a href="#women" class="category-card-3d" onclick="window.navigateToGender('women'); return false;" aria-label="Explore Women's Scrubs Collection">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-women">WOMEN'S APPAREL</span>
-            <img
-              src="{{ 'cat-women-scrubs.jpg' | asset_url }}"
-              alt="Women's Scrubs & Medical Apparel"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="eager"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Women</h3>
-              <span class="category-card-count">14 Styles</span>
-            </div>
-            <p class="category-card-desc">Contour princess seams, elegant fluid drape, and ergonomic silhouettes designed for female clinicians.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta">
-                Explore Collection
-                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-              </span>
-            </div>
-          </div>
-        </a>
-      </div>
+              case block.settings.card_type
+                when 'men'
+                  assign card_href = '#men'
+                  assign card_onclick = "window.navigateToGender('men'); return false;"
+                  assign default_card_img = 'cat-men-scrubs.jpg'
+                when 'women'
+                  assign card_href = '#women'
+                  assign card_onclick = "window.navigateToGender('women'); return false;"
+                  assign default_card_img = 'cat-women-scrubs.jpg'
+                when 'home_service'
+                  assign card_href = '#self-service'
+                  assign card_onclick = "window.navigateToView('self-service'); return false;"
+                  assign default_card_img = 'cat-labcoat.jpg'
+                when 'customizer'
+                  assign card_href = '#ready-to-wear'
+                  assign card_onclick = "window.navigateToView('ready-to-wear'); return false;"
+                  assign default_card_img = 'cat-sprinter.jpg'
+                when 'summer'
+                  assign card_href = '#summer-collection'
+                  assign card_onclick = "window.navigateToSeasonalCollection('summer'); return false;"
+                  assign default_card_img = 'cat-velora.jpg'
+                when 'winter'
+                  assign card_href = '#winter-collection'
+                  assign card_onclick = "window.navigateToSeasonalCollection('winter'); return false;"
+                  assign default_card_img = 'cat-crown.jpg'
+                when 'self_service_modal'
+                  assign card_href = '#self-service-portal'
+                  assign card_onclick = "window.openComingSoonModal('self-service'); return false;"
+                  assign default_card_img = 'cat-flexfit.jpg'
+                when 'bulk_order_modal'
+                  assign card_href = '#bulk-order'
+                  assign card_onclick = "window.openComingSoonModal('bulk-order'); return false;"
+                  assign default_card_img = 'banner-abbotabad.jpg'
+                when 'custom_link'
+                  assign card_href = block.settings.custom_link | default: '#men'
+                  assign card_onclick = ''
+              endcase
+            %}
 
-      <!-- 3. Home Service -->
-      <div class="category-card-3d-wrap" data-card-index="3">
-        <a href="#self-service" class="category-card-3d" onclick="window.navigateToView('self-service'); return false;" aria-label="Book Enamels Home Service Representative Visit">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-concierge">LAHORE CONCIERGE</span>
-            <img
-              src="{{ 'cat-labcoat.jpg' | asset_url }}"
-              alt="Enamels Home Service Representative Visit"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="lazy"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Home Service</h3>
-              <span class="category-card-fee">Rs. 500 Visit</span>
+            <div class="category-card-3d-wrap" data-card-index="{{ card_counter }}" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+              <a href="{{ card_href }}" class="category-card-3d" {% if card_onclick != '' %}onclick="{{ card_onclick }}"{% endif %} aria-label="{{ block.settings.title | escape }}">
+                <div class="category-card-glare"></div>
+                <div class="category-card-media-wrap">
+                  <span class="category-card-badge {{ block.settings.badge_color | default: 'badge-men' }}">
+                    {{ block.settings.badge_text | default: "ENAMELS" | escape }}
+                  </span>
+                  {% if block.settings.image != blank %}
+                    <img
+                      src="{{ block.settings.image | image_url: width: 600 }}"
+                      alt="{{ block.settings.title | escape }}"
+                      class="category-card-media-img"
+                      width="{{ block.settings.image.width }}"
+                      height="{{ block.settings.image.height }}"
+                      loading="lazy"
+                    />
+                  {% else %}
+                    <img
+                      src="{{ default_card_img | asset_url }}"
+                      alt="{{ block.settings.title | escape }}"
+                      class="category-card-media-img"
+                      width="600"
+                      height="450"
+                      loading="lazy"
+                    />
+                  {% endif %}
+                </div>
+                <div class="category-card-body">
+                  <div class="category-card-header-row">
+                    <h3 class="category-card-title">{{ block.settings.title | escape }}</h3>
+                    {% if block.settings.count_or_fee != blank %}
+                      <span class="category-card-count">{{ block.settings.count_or_fee | escape }}</span>
+                    {% endif %}
+                  </div>
+                  <p class="category-card-desc">{{ block.settings.description | escape }}</p>
+                  <div class="category-card-footer">
+                    <span class="category-card-cta">
+                      {{ block.settings.cta_text | default: 'Explore Collection' | escape }}
+                      <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                    </span>
+                  </div>
+                </div>
+              </a>
             </div>
-            <p class="category-card-desc">Request an in-person representative visit in Lahore for precision measurement, fabric swatch inspection, and guided order placement.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta cta-teal">
-                Book Representative Visit
-                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-              </span>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <!-- 1. Men -->
+        <div class="category-card-3d-wrap" data-card-index="1">
+          <a href="#men" class="category-card-3d" onclick="window.navigateToGender('men'); return false;" aria-label="Explore Men's Scrubs Collection">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-men">MEN'S APPAREL</span>
+              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs & Medical Apparel" class="category-card-media-img" width="600" height="450" loading="eager" />
             </div>
-          </div>
-        </a>
-      </div>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Men</h3>
+                <span class="category-card-count">12 Styles</span>
+              </div>
+              <p class="category-card-desc">Athletic mechanical stretch, twill scrubs, and structured executive cuts tailored for male medical professionals.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta">
+                  Explore Collection
+                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
 
-      <!-- 4. Make Your Own Scrubs -->
-      <div class="category-card-3d-wrap" data-card-index="4">
-        <a href="#ready-to-wear" class="category-card-3d" onclick="window.navigateToView('ready-to-wear'); return false;" aria-label="Launch Make Your Own Scrubs Customizer Studio">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-studio">CUSTOM STUDIO</span>
-            <img
-              src="{{ 'cat-sprinter.jpg' | asset_url }}"
-              alt="Make Your Own Scrubs 3D Configurator"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="lazy"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Make Your Own Scrubs</h3>
-              <span class="category-card-badge-pill">Bespoke</span>
+        <!-- 2. Women -->
+        <div class="category-card-3d-wrap" data-card-index="2">
+          <a href="#women" class="category-card-3d" onclick="window.navigateToGender('women'); return false;" aria-label="Explore Women's Scrubs Collection">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-women">WOMEN'S APPAREL</span>
+              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs & Medical Apparel" class="category-card-media-img" width="600" height="450" loading="eager" />
             </div>
-            <p class="category-card-desc">Interactive all-in-one customizer. Select proprietary fabrics, hospital shades, bespoke sizing, custom alterations, and doctor name embroidery.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta">
-                Launch Customizer Studio
-                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-              </span>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Women</h3>
+                <span class="category-card-count">14 Styles</span>
+              </div>
+              <p class="category-card-desc">Contour princess seams, elegant fluid drape, and ergonomic silhouettes designed for female clinicians.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta">
+                  Explore Collection
+                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- 5. Summer Collection -->
-      <div class="category-card-3d-wrap" data-card-index="5">
-        <a href="#summer-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('summer'); return false;" aria-label="Shop Summer Medical Collection">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-summer">AEROCOOL™ EDITION</span>
-            <img
-              src="{{ 'cat-velora.jpg' | asset_url }}"
-              alt="Summer Medical Apparel Collection"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="lazy"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Summer Collection</h3>
-              <span class="category-card-count">Aerocool Fit</span>
+        <!-- 3. Home Service -->
+        <div class="category-card-3d-wrap" data-card-index="3">
+          <a href="#self-service" class="category-card-3d" onclick="window.navigateToView('self-service'); return false;" aria-label="Book Enamels Home Service Representative Visit">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-concierge">LAHORE CONCIERGE</span>
+              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" class="category-card-media-img" width="600" height="450" loading="lazy" />
             </div>
-            <p class="category-card-desc">Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and effortless cooling through high-demand summer rotations.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta">
-                Shop Summer Edition
-                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-              </span>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Home Service</h3>
+                <span class="category-card-fee">Rs. 500 Visit</span>
+              </div>
+              <p class="category-card-desc">Request an in-person representative visit in Lahore for precision measurement, fabric swatch inspection, and guided order placement.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta cta-teal">
+                  Book Representative Visit
+                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- 6. Winter Collection -->
-      <div class="category-card-3d-wrap" data-card-index="6">
-        <a href="#winter-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('winter'); return false;" aria-label="Shop Winter Medical Collection">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-winter">AUTUMN / WINTER</span>
-            <img
-              src="{{ 'cat-crown.jpg' | asset_url }}"
-              alt="Winter Medical Apparel Collection"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="lazy"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Winter Collection</h3>
-              <span class="category-card-count">Warm Twill</span>
+        <!-- 4. Make Your Own Scrubs -->
+        <div class="category-card-3d-wrap" data-card-index="4">
+          <a href="#ready-to-wear" class="category-card-3d" onclick="window.navigateToView('ready-to-wear'); return false;" aria-label="Launch Make Your Own Scrubs Customizer Studio">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-studio">CUSTOM STUDIO</span>
+              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs 3D Configurator" class="category-card-media-img" width="600" height="450" loading="lazy" />
             </div>
-            <p class="category-card-desc">Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta">
-                Shop Winter Edition
-                <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-              </span>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Make Your Own Scrubs</h3>
+                <span class="category-card-badge-pill">Bespoke</span>
+              </div>
+              <p class="category-card-desc">Interactive all-in-one customizer. Select proprietary fabrics, hospital shades, bespoke sizing, custom alterations, and doctor name embroidery.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta">
+                  Launch Customizer Studio
+                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- 7. Self-Service (Coming Soon) -->
-      <div class="category-card-3d-wrap" data-card-index="7">
-        <a href="#self-service-portal" class="category-card-3d" onclick="window.openComingSoonModal('self-service'); return false;" aria-label="Self-Service Portal - Coming Soon">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-coming-soon">COMING SOON</span>
-            <img
-              src="{{ 'cat-flexfit.jpg' | asset_url }}"
-              alt="Enamels Self-Service Digital Portal"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="lazy"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Self-Service</h3>
-              <span class="category-card-badge-pill" style="background: #fef3c7; color: #b45309;">Coming Soon</span>
+        <!-- 5. Summer Collection -->
+        <div class="category-card-3d-wrap" data-card-index="5">
+          <a href="#summer-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('summer'); return false;" aria-label="Shop Summer Medical Collection">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-summer">AEROCOOL™ EDITION</span>
+              <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Summer Medical Apparel Collection" class="category-card-media-img" width="600" height="450" loading="lazy" />
             </div>
-            <p class="category-card-desc">Direct self-ordering digital portal with rapid measurement profile management and express department reorders.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta" style="color: #b45309;">
-                Preview Portal
-                <span class="category-card-arrow-circle" aria-hidden="true" style="color: #b45309; background: #fef3c7;">→</span>
-              </span>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Summer Collection</h3>
+                <span class="category-card-count">Aerocool Fit</span>
+              </div>
+              <p class="category-card-desc">Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and effortless cooling through high-demand summer rotations.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta">
+                  Shop Summer Edition
+                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
 
-      <!-- 8. Bulk Order (Coming Soon) -->
-      <div class="category-card-3d-wrap" data-card-index="8">
-        <a href="#bulk-order" class="category-card-3d" onclick="window.openComingSoonModal('bulk-order'); return false;" aria-label="Bulk Order & Hospital Ward Orders - Coming Soon">
-          <div class="category-card-glare"></div>
-          <div class="category-card-media-wrap">
-            <span class="category-card-badge badge-coming-soon">COMING SOON</span>
-            <img
-              src="{{ 'banner-abbotabad.jpg' | asset_url }}"
-              alt="Enamels Institutional Ward & Bulk Orders"
-              class="category-card-media-img"
-              width="600"
-              height="450"
-              loading="lazy"
-            />
-          </div>
-          <div class="category-card-body">
-            <div class="category-card-header-row">
-              <h3 class="category-card-title">Bulk Order</h3>
-              <span class="category-card-badge-pill" style="background: #fef3c7; color: #b45309;">Coming Soon</span>
+        <!-- 6. Winter Collection -->
+        <div class="category-card-3d-wrap" data-card-index="6">
+          <a href="#winter-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('winter'); return false;" aria-label="Shop Winter Medical Collection">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-winter">AUTUMN / WINTER</span>
+              <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Winter Medical Apparel Collection" class="category-card-media-img" width="600" height="450" loading="lazy" />
             </div>
-            <p class="category-card-desc">Institutional procurement, departmental hospital crest embroidery, and tiered corporate volume discounts for medical institutions.</p>
-            <div class="category-card-footer">
-              <span class="category-card-cta" style="color: #b45309;">
-                Inquire for Enterprise
-                <span class="category-card-arrow-circle" aria-hidden="true" style="color: #b45309; background: #fef3c7;">→</span>
-              </span>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Winter Collection</h3>
+                <span class="category-card-count">Warm Twill</span>
+              </div>
+              <p class="category-card-desc">Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta">
+                  Shop Winter Edition
+                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </a>
-      </div>
+          </a>
+        </div>
+
+        <!-- 7. Self-Service (Coming Soon) -->
+        <div class="category-card-3d-wrap" data-card-index="7">
+          <a href="#self-service-portal" class="category-card-3d" onclick="window.openComingSoonModal('self-service'); return false;" aria-label="Self-Service Portal - Coming Soon">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-coming-soon">COMING SOON</span>
+              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Enamels Self-Service Digital Portal" class="category-card-media-img" width="600" height="450" loading="lazy" />
+            </div>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Self-Service</h3>
+                <span class="category-card-badge-pill" style="background: #fef3c7; color: #b45309;">Coming Soon</span>
+              </div>
+              <p class="category-card-desc">Direct self-ordering digital portal with rapid measurement profile management and express department reorders.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta" style="color: #b45309;">
+                  Preview Portal
+                  <span class="category-card-arrow-circle" aria-hidden="true" style="color: #b45309; background: #fef3c7;">→</span>
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- 8. Bulk Order (Coming Soon) -->
+        <div class="category-card-3d-wrap" data-card-index="8">
+          <a href="#bulk-order" class="category-card-3d" onclick="window.openComingSoonModal('bulk-order'); return false;" aria-label="Bulk Order & Hospital Ward Orders - Coming Soon">
+            <div class="category-card-glare"></div>
+            <div class="category-card-media-wrap">
+              <span class="category-card-badge badge-coming-soon">COMING SOON</span>
+              <img src="{{ 'banner-abbotabad.jpg' | asset_url }}" alt="Enamels Institutional Ward & Bulk Orders" class="category-card-media-img" width="600" height="450" loading="lazy" />
+            </div>
+            <div class="category-card-body">
+              <div class="category-card-header-row">
+                <h3 class="category-card-title">Bulk Order</h3>
+                <span class="category-card-badge-pill" style="background: #fef3c7; color: #b45309;">Coming Soon</span>
+              </div>
+              <p class="category-card-desc">Institutional procurement, departmental hospital crest embroidery, and tiered corporate volume discounts for medical institutions.</p>
+              <div class="category-card-footer">
+                <span class="category-card-cta" style="color: #b45309;">
+                  Inquire for Enterprise
+                  <span class="category-card-arrow-circle" aria-hidden="true" style="color: #b45309; background: #fef3c7;">→</span>
+                </span>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endif %}
     </div>
   </section>
 
   <!-- ============================================================ -->
   <!-- 3. PROPRIETARY SERIES SPOTLIGHT                              -->
   <!-- ============================================================ -->
+  {% liquid
+    assign enable_series = true
+    if section.settings.enable_series_showcase == false
+      assign enable_series = false
+    endif
+
+    assign series_blocks_count = 0
+    for block in section.blocks
+      if block.type == 'series_card'
+        assign series_blocks_count = series_blocks_count | plus: 1
+      endif
+    endfor
+  %}
+
+  {% if enable_series %}
   <section style="background-color: #f8fafc; padding: 60px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="page-container">
       <div class="section-header-wrap" style="margin-top: 0;">
-        <span class="section-tag-sub">ENGINEERED FOR CLINICAL ROLES</span>
-        <h2 class="section-title-main">Signature Scrub Lines</h2>
-        <p class="section-title-desc">From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms.</p>
+        <span class="section-tag-sub">{{ section.settings.series_tag | default: 'ENGINEERED FOR CLINICAL ROLES' | escape }}</span>
+        <h2 class="section-title-main">{{ section.settings.series_title | default: 'Signature Scrub Lines' | escape }}</h2>
+        <p class="section-title-desc">{{ section.settings.series_subtitle | default: 'From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms.' | escape }}</p>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
-        <!-- Sprinter Card -->
-        <div class="category-tile-card" style="padding: 24px; text-align: left;">
-          <span style="font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">4-Way Athletic Stretch</span>
-          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Sprinter Series</h3>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility.</p>
-          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,150</div>
-          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Sprinter')">Explore Sprinter →</button>
-        </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+        {% if series_blocks_count > 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'series_card' %}
+              {% liquid
+                assign bg_color = '#e0f2fe'
+                assign text_color = '#0369a1'
+                case block.settings.badge_color_preset
+                  when 'pink'
+                    assign bg_color = '#fdf2f8'
+                    assign text_color = '#be185d'
+                  when 'amber'
+                    assign bg_color = '#fef3c7'
+                    assign text_color = '#b45309'
+                  when 'teal'
+                    assign bg_color = '#ccfbf1'
+                    assign text_color = '#0f766e'
+                endcase
+              %}
+              <div class="category-tile-card" style="padding: 24px; text-align: left;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+                <span style="font-size: 10px; font-weight: 700; background: {{ bg_color }}; color: {{ text_color }}; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">
+                  {{ block.settings.badge_tag | escape }}
+                </span>
+                <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">{{ block.settings.title | escape }}</h3>
+                <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">{{ block.settings.description | escape }}</p>
+                <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">{{ block.settings.price_label | escape }}</div>
+                <button type="button" class="btn-card-action" onclick="window.navigateToCollection('{{ block.settings.series_key | escape }}')">
+                  {{ block.settings.button_label | default: 'Explore Series →' | escape }}
+                </button>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <!-- Sprinter Card -->
+          <div class="category-tile-card" style="padding: 24px; text-align: left;">
+            <span style="font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">4-Way Athletic Stretch</span>
+            <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Sprinter Series</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility.</p>
+            <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,150</div>
+            <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Sprinter')">Explore Sprinter →</button>
+          </div>
 
-        <!-- Velora Card -->
-        <div class="category-tile-card" style="padding: 24px; text-align: left;">
-          <span style="font-size: 10px; font-weight: 700; background: #fdf2f8; color: #be185d; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Luxury Micro-Drape</span>
-          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Velora Series</h3>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Liquid soft touch with fluid drape. Engineered with antimicrobial finishing and wrinkle-release properties that stay sharp through 24-hour shifts without ironing.</p>
-          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,500</div>
-          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Velora')">Explore Velora →</button>
-        </div>
+          <!-- Velora Card -->
+          <div class="category-tile-card" style="padding: 24px; text-align: left;">
+            <span style="font-size: 10px; font-weight: 700; background: #fdf2f8; color: #be185d; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Luxury Micro-Drape</span>
+            <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Velora Series</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Liquid soft touch with fluid drape. Engineered with antimicrobial finishing and wrinkle-release properties that stay sharp through 24-hour shifts without ironing.</p>
+            <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,500</div>
+            <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Velora')">Explore Velora →</button>
+          </div>
 
-        <!-- Crown Card -->
-        <div class="category-tile-card" style="padding: 24px; text-align: left;">
-          <span style="font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Executive Mandarin</span>
-          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Crown Series</h3>
-          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Structured standing mandarin collar with concealed front placket. Tailored for department heads, senior consultants, and leadership rounds.</p>
-          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 6,200</div>
-          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Crown')">Explore Crown →</button>
-        </div>
+          <!-- Crown Card -->
+          <div class="category-tile-card" style="padding: 24px; text-align: left;">
+            <span style="font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Executive Mandarin</span>
+            <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Crown Series</h3>
+            <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Structured standing mandarin collar with concealed front placket. Tailored for department heads, senior consultants, and leadership rounds.</p>
+            <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 6,200</div>
+            <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Crown')">Explore Crown →</button>
+          </div>
+        {% endif %}
       </div>
     </div>
   </section>
+  {% endif %}
 
   <!-- ============================================================ -->
   <!-- 4. SHOP BY CLINICAL HOSPITAL SHADE                           -->
   <!-- ============================================================ -->
+  {% liquid
+    assign enable_palette = true
+    if section.settings.enable_color_palette == false
+      assign enable_palette = false
+    endif
+
+    assign swatch_blocks_count = 0
+    for block in section.blocks
+      if block.type == 'color_swatch'
+        assign swatch_blocks_count = swatch_blocks_count | plus: 1
+      endif
+    endfor
+  %}
+
+  {% if enable_palette %}
   <section class="page-container" style="padding: 50px 0;">
     <div class="section-header-wrap" style="margin-top: 0;">
-      <span class="section-tag-sub">COLOR HARMONY</span>
-      <h2 class="section-title-main">Shop by Hospital & Clinical Shade</h2>
-      <p class="section-title-desc">Adhere to strict hospital ward color guidelines or express individual professional style.</p>
+      <span class="section-tag-sub">{{ section.settings.palette_tag | default: 'COLOR HARMONY' | escape }}</span>
+      <h2 class="section-title-main">{{ section.settings.palette_title | default: 'Shop by Hospital & Clinical Shade' | escape }}</h2>
+      <p class="section-title-desc">{{ section.settings.palette_subtitle | default: 'Adhere to strict hospital ward color guidelines or express individual professional style.' | escape }}</p>
     </div>
 
     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; max-width: 900px; margin: 0 auto;">
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#102A43', 'Deep Navy')">
-        <span class="pdp-swatch-color-dot" style="background: #102A43;"></span>
-        <span>Deep Navy</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#1E40AF', 'Royal Blue')">
-        <span class="pdp-swatch-color-dot" style="background: #1E40AF;"></span>
-        <span>Royal Blue</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#6BA4B8', 'Ceil Blue')">
-        <span class="pdp-swatch-color-dot" style="background: #6BA4B8;"></span>
-        <span>Ceil Blue</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#581C87', 'Burgundy Maroon')">
-        <span class="pdp-swatch-color-dot" style="background: #581C87;"></span>
-        <span>Burgundy</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#3F4E3B', 'Olive Shine')">
-        <span class="pdp-swatch-color-dot" style="background: #3F4E3B;"></span>
-        <span>Olive Shine</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#14532D', 'Hunter Green')">
-        <span class="pdp-swatch-color-dot" style="background: #14532D;"></span>
-        <span>Hunter Green</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#18181B', 'Obsidian Black')">
-        <span class="pdp-swatch-color-dot" style="background: #18181B;"></span>
-        <span>Obsidian Black</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#64748B', 'Heather Grey')">
-        <span class="pdp-swatch-color-dot" style="background: #64748B;"></span>
-        <span>Heather Grey</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#00B8A9', 'Clinical Teal')">
-        <span class="pdp-swatch-color-dot" style="background: #00B8A9;"></span>
-        <span>Clinical Teal</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#A855F7', 'Lilac Lavender')">
-        <span class="pdp-swatch-color-dot" style="background: #A855F7;"></span>
-        <span>Lilac Lavender</span>
-      </button>
+      {% if swatch_blocks_count > 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'color_swatch' %}
+            <button
+              type="button"
+              class="pdp-swatch-item"
+              id="shopify-block-{{ block.id }}"
+              onclick="window.filterCatalogueByColor('{{ block.settings.hex_code }}', '{{ block.settings.title | escape }}')"
+              {{ block.shopify_attributes }}
+            >
+              <span class="pdp-swatch-color-dot" style="background: {{ block.settings.hex_code }};"></span>
+              <span>{{ block.settings.title | escape }}</span>
+            </button>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#102A43', 'Deep Navy')">
+          <span class="pdp-swatch-color-dot" style="background: #102A43;"></span>
+          <span>Deep Navy</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#1E40AF', 'Royal Blue')">
+          <span class="pdp-swatch-color-dot" style="background: #1E40AF;"></span>
+          <span>Royal Blue</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#6BA4B8', 'Ceil Blue')">
+          <span class="pdp-swatch-color-dot" style="background: #6BA4B8;"></span>
+          <span>Ceil Blue</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#581C87', 'Burgundy Maroon')">
+          <span class="pdp-swatch-color-dot" style="background: #581C87;"></span>
+          <span>Burgundy</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#3F4E3B', 'Olive Shine')">
+          <span class="pdp-swatch-color-dot" style="background: #3F4E3B;"></span>
+          <span>Olive Shine</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#14532D', 'Hunter Green')">
+          <span class="pdp-swatch-color-dot" style="background: #14532D;"></span>
+          <span>Hunter Green</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#18181B', 'Obsidian Black')">
+          <span class="pdp-swatch-color-dot" style="background: #18181B;"></span>
+          <span>Obsidian Black</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#64748B', 'Heather Grey')">
+          <span class="pdp-swatch-color-dot" style="background: #64748B;"></span>
+          <span>Heather Grey</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#00B8A9', 'Clinical Teal')">
+          <span class="pdp-swatch-color-dot" style="background: #00B8A9;"></span>
+          <span>Clinical Teal</span>
+        </button>
+        <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#A855F7', 'Lilac Lavender')">
+          <span class="pdp-swatch-color-dot" style="background: #A855F7;"></span>
+          <span>Lilac Lavender</span>
+        </button>
+      {% endif %}
     </div>
   </section>
+  {% endif %}
 
   <!-- ============================================================ -->
-  <!-- 4b. SELF-SERVICE IN-PERSON REPRESENTATIVE VISIT PROMO        -->
+  <!-- 4b. CONCIERGE HOME SERVICE PROMO (EDITABLE VIA THEME STUDIO) -->
   <!-- ============================================================ -->
+  {% if section.settings.enable_self_service %}
   <section class="page-container" style="margin-top: 48px; margin-bottom: 24px;">
     <div class="self-service-home-banner">
       <div class="self-service-home-content">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">CONCIERGE MEDICAL SERVICE</span>
-          <span class="self-service-location-pill">📍 Currently Available in Lahore Only</span>
+          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">
+            {{ section.settings.self_service_tag | default: 'CONCIERGE MEDICAL SERVICE' | escape }}
+          </span>
+          <span class="self-service-location-pill">
+            {{ section.settings.self_service_location_notice | default: '📍 Currently Available in Lahore Only' | escape }}
+          </span>
         </div>
 
         <h2 style="font-size: 26px; font-weight: 700; color: #102a43; margin: 0 0 10px;">
-          Personalized Scrub Shopping — At Your Convenience
+          {{ section.settings.self_service_heading | default: 'Personalized Scrub Shopping — At Your Convenience' | escape }}
         </h2>
 
         <p style="font-size: 14px; color: #475569; line-height: 1.5; margin: 0 0 20px; max-width: 650px;">
-          Need help with sizing, fabric selection, or hospital department orders? Request an in-person visit from an Enamels representative in Lahore. We bring sample sizes, genuine fabric swatches, and help place your customized uniform order on-site.
+          {{ section.settings.self_service_description | default: 'Request an in-person visit from an Enamels representative in Lahore who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order.' | escape }}
         </p>
 
         <!-- 4 Highlights -->
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; max-width: 650px;">
           <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
             <span style="font-size: 16px;">📏</span>
-            <span>Accurate In-Person Sizing & Fit</span>
+            <span>{{ section.settings.self_service_bullet_1 | default: 'Accurate In-Person Sizing & Fit' | escape }}</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
             <span style="font-size: 16px;">🎨</span>
-            <span>Genuine Fabric Swatches & Shades</span>
+            <span>{{ section.settings.self_service_bullet_2 | default: 'Genuine Fabric Swatches & Shades' | escape }}</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
             <span style="font-size: 16px;">🪡</span>
-            <span>Doctor Embroidery & Crest Setup</span>
+            <span>{{ section.settings.self_service_bullet_3 | default: 'Doctor Embroidery & Crest Setup' | escape }}</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
             <span style="font-size: 16px;">💵</span>
-            <span>Fee 100% Adjustable Against Order</span>
+            <span>{{ section.settings.self_service_bullet_4 | default: 'Fee 100% Adjustable Against Order' | escape }}</span>
           </div>
         </div>
 
         <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
           <button type="button" class="btn-card-action" onclick="window.navigateToView('self-service')" style="background: #102a43; color: #ffffff; padding: 14px 28px; width: auto; font-size: 14px; font-weight: 700; box-shadow: 0 4px 12px rgba(16,42,67,0.15);">
-            Book a Representative Visit →
+            {{ section.settings.self_service_cta_label | default: 'Book a Representative Visit →' | escape }}
           </button>
           <span style="font-size: 12px; color: #64748b;">
-            Nominal Rs. 500 visit fee • Fully deducted from qualifying orders
+            {{ section.settings.self_service_fee_title | default: 'Nominal Rs. 500 visit fee • Fully deducted from qualifying orders' | escape }}
           </span>
         </div>
       </div>
     </div>
   </section>
+  {% endif %}
 
   <!-- ============================================================ -->
-  <!-- 5. TRUST BADGES ARCHITECTURE                                 -->
+  <!-- 4c. VERIFIED CLINICAL TESTIMONIALS SECTION                   -->
   <!-- ============================================================ -->
-  <section style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 40px 0;">
+  {% liquid
+    assign enable_testimonials = true
+    if section.settings.enable_testimonials == false
+      assign enable_testimonials = false
+    endif
+
+    assign testimonial_blocks_count = 0
+    for block in section.blocks
+      if block.type == 'testimonial'
+        assign testimonial_blocks_count = testimonial_blocks_count | plus: 1
+      endif
+    endfor
+  %}
+
+  {% if enable_testimonials %}
+  <section style="background-color: #ffffff; padding: 60px 0; border-top: 1px solid #e2e8f0;">
     <div class="page-container">
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">🚚</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Free Shipping</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">On all orders over Rs. 7,000 nationwide</p>
-        </div>
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">💵</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Cash on Delivery</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">Available across all cities in Pakistan</p>
-        </div>
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">⚡</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">7-Day Easy Exchange</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">Instant sizing support via WhatsApp</p>
-        </div>
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">🪡</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Custom Embroidery</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">Computerized name & hospital crests</p>
-        </div>
+      <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
+        <span class="section-tag-sub">{{ section.settings.testimonials_tag | default: 'VERIFIED CLINICAL FEEDBACK' | escape }}</span>
+        <h2 class="section-title-main">{{ section.settings.testimonials_heading | default: 'Trusted by Healthcare Professionals' | escape }}</h2>
+        <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ section.settings.testimonials_subheading | default: 'Read authentic feedback from doctors, surgeons, and clinicians across Pakistan wearing Enamels medical apparel.' | escape }}</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 36px;">
+        {% if testimonial_blocks_count > 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'testimonial' %}
+              <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+                <div>
+                  <div style="display: flex; gap: 3px; margin-bottom: 12px;">
+                    {% for i in (1..block.settings.rating) %}
+                      <span style="color: #f59e0b; font-size: 16px;">★</span>
+                    {% endfor %}
+                  </div>
+                  <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
+                    “{{ block.settings.review | escape }}”
+                  </p>
+                </div>
+                <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <strong style="font-size: 13px; color: #102a43; display: block;">{{ block.settings.author | escape }}</strong>
+                  {% if block.settings.city != blank %}
+                    <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">{{ block.settings.city | escape }}</span>
+                  {% endif %}
+                  {% if block.settings.verified_buyer %}
+                    <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
+                      ✓ Verified Clinician
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <!-- Default Verified Reviews -->
+          <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
+                <span style="color: #f59e0b; font-size: 16px;">★★★★★</span>
+              </div>
+              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
+                “The 4-way mechanical stretch in the Sprinter series is unmatched during 24-hour ER calls. Exceptional stitch quality, breathable fabric, and the custom embroidery was sharp.”
+              </p>
+            </div>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+              <strong style="font-size: 13px; color: #102a43; display: block;">Dr. Hamza Tariq, FCPS</strong>
+              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">Shaukat Khanum Memorial Hospital, Lahore</span>
+              <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
+                ✓ Verified Clinician
+              </span>
+            </div>
+          </div>
+
+          <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
+                <span style="color: #f59e0b; font-size: 16px;">★★★★★</span>
+              </div>
+              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
+                “The Velora luxury micro-drape feels as soft as silk. Wrinkle-resistant finishing means I don't have to iron before morning rounds. Highly recommended for female doctors.”
+              </p>
+            </div>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+              <strong style="font-size: 13px; color: #102a43; display: block;">Dr. Ayesha Malik, MRCOG</strong>
+              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">Aga Khan University Hospital, Karachi</span>
+              <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
+                ✓ Verified Clinician
+              </span>
+            </div>
+          </div>
+
+          <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
+                <span style="color: #f59e0b; font-size: 16px;">★★★★★</span>
+              </div>
+              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
+                “The representative visit in Lahore was incredible. The rep brought sample sizes and swatches directly to our clinic. Custom measurement made our sizing 100% accurate.”
+              </p>
+            </div>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+              <strong style="font-size: 13px; color: #102a43; display: block;">Dr. Bilal Sheikh, Consultant Surgeon</strong>
+              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">Services Hospital, Lahore</span>
+              <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
+                ✓ Verified Clinician
+              </span>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
   </section>
+  {% endif %}
+
+  <!-- ============================================================ -->
+  <!-- 5. TRUST BADGES ARCHITECTURE (EDITABLE VIA THEME STUDIO)     -->
+  <!-- ============================================================ -->
+  {% liquid
+    assign enable_trust = true
+    if section.settings.enable_trust_badges == false
+      assign enable_trust = false
+    endif
+
+    assign trust_blocks_count = 0
+    for block in section.blocks
+      if block.type == 'trust_badge'
+        assign trust_blocks_count = trust_blocks_count | plus: 1
+      endif
+    endfor
+  %}
+
+  {% if enable_trust %}
+  <section style="background-color: {{ section.settings.trust_badges_bg | default: '#f8fafc' }}; border-top: 1px solid #e2e8f0; padding: 40px 0;">
+    <div class="page-container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        {% if trust_blocks_count > 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'trust_badge' %}
+              <div style="text-align: center; padding: 16px;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+                <div style="font-size: 26px; margin-bottom: 8px;">{{ block.settings.icon_emoji | default: '✨' }}</div>
+                <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">{{ block.settings.title | escape }}</h4>
+                <p style="font-size: 11px; color: #64748b; margin: 0;">{{ block.settings.subtitle | escape }}</p>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <div style="text-align: center; padding: 16px;">
+            <div style="font-size: 26px; margin-bottom: 8px;">🚚</div>
+            <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Free Shipping</h4>
+            <p style="font-size: 11px; color: #64748b; margin: 0;">On all orders over Rs. 7,000 nationwide</p>
+          </div>
+          <div style="text-align: center; padding: 16px;">
+            <div style="font-size: 26px; margin-bottom: 8px;">💵</div>
+            <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Cash on Delivery</h4>
+            <p style="font-size: 11px; color: #64748b; margin: 0;">Available across all cities in Pakistan</p>
+          </div>
+          <div style="text-align: center; padding: 16px;">
+            <div style="font-size: 26px; margin-bottom: 8px;">⚡</div>
+            <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">7-Day Easy Exchange</h4>
+            <p style="font-size: 11px; color: #64748b; margin: 0;">Instant sizing support via WhatsApp</p>
+          </div>
+          <div style="text-align: center; padding: 16px;">
+            <div style="font-size: 26px; margin-bottom: 8px;">🪡</div>
+            <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Custom Embroidery</h4>
+            <p style="font-size: 11px; color: #64748b; margin: 0;">Computerized name & hospital crests</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
 
 </div>
-

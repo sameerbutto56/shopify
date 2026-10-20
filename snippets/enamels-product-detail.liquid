@@ -427,42 +427,70 @@
           <div id="pdp-logo-options-box" style="display: none; margin-top: 14px;">
             <label style="font-size: 12px; font-weight: 600; color: #102a43; display: block; margin-bottom: 6px;">Select Approved Institution Crest:</label>
             <div class="logo-selection-grid">
-              <!-- AKUH -->
-              <div class="logo-option-card active" onclick="window.selectLogoItem('akuh', 'Aga Khan University Hospital')">
-                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏥</div>
-                <p class="logo-option-name">AKUH</p>
-                <span style="font-size: 9px; color: #64748b;">Aga Khan Univ</span>
-              </div>
-              <!-- SKMCH -->
-              <div class="logo-option-card" onclick="window.selectLogoItem('skmch', 'Shaukat Khanum Memorial Hospital')">
-                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🎗️</div>
-                <p class="logo-option-name">SKMCH</p>
-                <span style="font-size: 9px; color: #64748b;">Shaukat Khanum</span>
-              </div>
-              <!-- PIMS -->
-              <div class="logo-option-card" onclick="window.selectLogoItem('pims', 'PIMS Islamabad')">
-                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏛️</div>
-                <p class="logo-option-name">PIMS</p>
-                <span style="font-size: 9px; color: #64748b;">Islamabad</span>
-              </div>
-              <!-- DUHS -->
-              <div class="logo-option-card" onclick="window.selectLogoItem('duhs', 'Dow University of Health Sciences')">
-                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">⚕️</div>
-                <p class="logo-option-name">DUHS</p>
-                <span style="font-size: 9px; color: #64748b;">Dow Medical</span>
-              </div>
-              <!-- KEMU -->
-              <div class="logo-option-card" onclick="window.selectLogoItem('kemu', 'King Edward Medical University')">
-                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">👑</div>
-                <p class="logo-option-name">KEMU</p>
-                <span style="font-size: 9px; color: #64748b;">King Edward</span>
-              </div>
-              <!-- Custom Logo Upload -->
-              <div class="logo-option-card" onclick="window.selectLogoItem('custom', 'Custom Clinic Crest')">
-                <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">📤</div>
-                <p class="logo-option-name">Custom Crest</p>
-                <span style="font-size: 9px; color: #64748b;">Send on WhatsApp</span>
-              </div>
+              {% assign logo_blocks_count = 0 %}
+              {% for block in section.blocks %}
+                {% if block.type == 'hospital_logo' %}
+                  {% assign logo_blocks_count = logo_blocks_count | plus: 1 %}
+                {% endif %}
+              {% endfor %}
+
+              {% if logo_blocks_count > 0 %}
+                {% for block in section.blocks %}
+                  {% if block.type == 'hospital_logo' %}
+                    <div class="logo-option-card {% if forloop.first %}active{% endif %}" onclick="window.selectLogoItem('{{ block.settings.logo_id | default: block.id }}', '{{ block.settings.title | escape }}')" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+                      {% if block.settings.image != blank %}
+                        <img src="{{ block.settings.image | image_url: width: 64 }}" alt="{{ block.settings.title | escape }}" width="24" height="24" style="width: 24px; height: 24px; object-fit: contain; margin-bottom: 4px;" loading="lazy" />
+                      {% else %}
+                        <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏥</div>
+                      {% endif %}
+                      <p class="logo-option-name">{{ block.settings.title | escape }}</p>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+                <!-- Custom Logo Upload -->
+                <div class="logo-option-card" onclick="window.selectLogoItem('custom', 'Custom Clinic Crest')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">📤</div>
+                  <p class="logo-option-name">Custom Crest</p>
+                  <span style="font-size: 9px; color: #64748b;">Send on WhatsApp</span>
+                </div>
+              {% else %}
+                <!-- AKUH -->
+                <div class="logo-option-card active" onclick="window.selectLogoItem('akuh', 'Aga Khan University Hospital')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏥</div>
+                  <p class="logo-option-name">AKUH</p>
+                  <span style="font-size: 9px; color: #64748b;">Aga Khan Univ</span>
+                </div>
+                <!-- SKMCH -->
+                <div class="logo-option-card" onclick="window.selectLogoItem('skmch', 'Shaukat Khanum Memorial Hospital')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🎗️</div>
+                  <p class="logo-option-name">SKMCH</p>
+                  <span style="font-size: 9px; color: #64748b;">Shaukat Khanum</span>
+                </div>
+                <!-- PIMS -->
+                <div class="logo-option-card" onclick="window.selectLogoItem('pims', 'PIMS Islamabad')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">🏛️</div>
+                  <p class="logo-option-name">PIMS</p>
+                  <span style="font-size: 9px; color: #64748b;">Islamabad</span>
+                </div>
+                <!-- DUHS -->
+                <div class="logo-option-card" onclick="window.selectLogoItem('duhs', 'Dow University of Health Sciences')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">⚕️</div>
+                  <p class="logo-option-name">DUHS</p>
+                  <span style="font-size: 9px; color: #64748b;">Dow Medical</span>
+                </div>
+                <!-- KEMU -->
+                <div class="logo-option-card" onclick="window.selectLogoItem('kemu', 'King Edward Medical University')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">👑</div>
+                  <p class="logo-option-name">KEMU</p>
+                  <span style="font-size: 9px; color: #64748b;">King Edward</span>
+                </div>
+                <!-- Custom Logo Upload -->
+                <div class="logo-option-card" onclick="window.selectLogoItem('custom', 'Custom Clinic Crest')">
+                  <div style="font-size: 24px; line-height: 1; margin-bottom: 4px;">📤</div>
+                  <p class="logo-option-name">Custom Crest</p>
+                  <span style="font-size: 9px; color: #64748b;">Send on WhatsApp</span>
+                </div>
+              {% endif %}
             </div>
 
             <!-- Placement Choice -->
@@ -598,21 +626,26 @@
     <!-- INTEGRATED REPRESENTATIVE VISIT REQUEST SECTION (LAHORE ONLY) -->
     <!-- Integrated directly on the SAME page below customization      -->
     <!-- ============================================================ -->
+    {% if section.settings.enable_self_service != false %}
     <section id="representative-visit-section" class="representative-visit-card" style="margin-top: 50px; border-top: 2px solid #e2e8f0; padding-top: 36px; scroll-margin-top: 90px;">
 
       <!-- Section Header -->
       <div class="self-service-hero-card" style="margin-bottom: 24px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">CONCIERGE MEDICAL SERVICE</span>
-          <span class="self-service-location-pill">📍 Currently Available in Lahore Only</span>
+          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">
+            {{ section.settings.self_service_tag | default: 'CONCIERGE MEDICAL SERVICE' | escape }}
+          </span>
+          <span class="self-service-location-pill">
+            {{ section.settings.self_service_location_notice | default: '📍 Currently Available in Lahore Only' | escape }}
+          </span>
         </div>
 
         <h2 style="font-size: 24px; font-weight: 700; color: #102a43; margin: 0 0 8px;">
-          Prefer an In-Person Fitting? Request an Enamels Representative Visit
+          {{ section.settings.self_service_heading | default: 'Prefer an In-Person Fitting? Request an Enamels Representative Visit' | escape }}
         </h2>
 
         <p style="font-size: 14px; color: #475569; line-height: 1.6; max-width: 860px; margin: 0 0 20px;">
-          If you are in Lahore and would prefer an Enamels representative to visit your clinic, hospital department, or residence with physical sizing samples and genuine fabric swatches, submit your visit request below. We help you finalize your sizes, verify embroidery, and place your order on-site.
+          {{ section.settings.self_service_description | default: 'If you are in Lahore and would prefer an Enamels representative to visit your clinic, hospital department, or residence with physical sizing samples and genuine fabric swatches, submit your visit request below. We help you finalize your sizes, verify embroidery, and place your order on-site.' | escape }}
         </p>
 
         <!-- 4 Key Benefits Grid -->
@@ -989,6 +1022,7 @@
       </div>
 
     </section>
+    {% endif %}
 
     </div><!-- /#pdp-valid-studio-view -->
 

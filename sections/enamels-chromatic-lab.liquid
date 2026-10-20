@@ -5,27 +5,42 @@
   original 5-slide banner slideshow, and exact 6-category navigation.
 {% endcomment %}
 
+{% liquid
+  assign dynamic_slide_count = 0
+  for block in section.blocks
+    if block.type == 'slide'
+      assign dynamic_slide_count = dynamic_slide_count | plus: 1
+    endif
+  endfor
+  if dynamic_slide_count == 0
+    assign dynamic_slide_count = 5
+  endif
+%}
+
 <div class="enamels-theme-root" id="enamels-app-root">
   <!-- Top Announcement Bar, Header & Exact 6-Category Navigation -->
-  {% render 'enamels-header-nav' %}
+  {% render 'enamels-header-nav', section: section %}
 
   <!-- Main Storefront Views Container -->
   <main id="enamels-main-content">
     <!-- View 1: Homepage & 5-Slide Banner Slideshow -->
-    {% render 'enamels-homepage' %}
+    {% render 'enamels-homepage', section: section %}
 
     <!-- View 2: Scrubs Collection with Gender Filter & Article Tabs -->
-    {% render 'enamels-scrubs-collection' %}
+    {% render 'enamels-scrubs-collection', section: section %}
 
     <!-- View 3: Single-Page Customization Studio & Self-Service Representative Visit -->
-    {% render 'enamels-product-detail' %}
+    {% render 'enamels-product-detail', section: section %}
 
     <!-- View 4: Ready to Wear / Make Your Own Scrub Configurator -->
-    {% render 'enamels-ready-to-wear' %}
+    {% render 'enamels-ready-to-wear', section: section %}
+
+    <!-- View 5: Dedicated Home Service Representative Visit Booking Portal -->
+    {% render 'enamels-self-service', section: section %}
   </main>
 
   <!-- Slide-out Cart Drawer, Checkout Modals, Simple Product Modal & Size Guide -->
-  {% render 'enamels-cart-checkout' %}
+  {% render 'enamels-cart-checkout', section: section %}
 </div>
 
 <!-- ============================================================ -->
@@ -57,7 +72,7 @@
     const STATE = {
       // Slideshow
       slideIndex: 0,
-      slideCount: 5,
+      slideCount: {{ dynamic_slide_count }},
       slideTimer: null,
       slidePaused: false,
 
@@ -433,18 +448,24 @@
       document.querySelectorAll('.chroma-view-panel').forEach(p => p.classList.remove('active'));
 
       if (viewId === 'self-service') {
-        const studio = document.getElementById('view-product-studio');
-        if (studio) {
-          studio.classList.add('active');
-          if (!STATE.pdpProduct) {
-            window.openProductStudio('demo-sprinter-mens-navy');
-          }
-          setTimeout(() => {
-            window.scrollToRepVisitSection();
-            if (typeof window.updateRepCustomOptionsPreview === 'function') {
-              window.updateRepCustomOptionsPreview();
+        const dedicatedPortal = document.getElementById('view-self-service');
+        if (dedicatedPortal) {
+          dedicatedPortal.classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          const studio = document.getElementById('view-product-studio');
+          if (studio) {
+            studio.classList.add('active');
+            if (!STATE.pdpProduct) {
+              window.openProductStudio('demo-sprinter-mens-navy');
             }
-          }, 100);
+            setTimeout(() => {
+              window.scrollToRepVisitSection();
+              if (typeof window.updateRepCustomOptionsPreview === 'function') {
+                window.updateRepCustomOptionsPreview();
+              }
+            }, 100);
+          }
         }
       } else {
         const target = document.getElementById(`view-${viewId}`);
@@ -554,8 +575,17 @@
     function handleHashRouting() {
       const rawHash = window.location.hash || '';
       const hash = rawHash.toLowerCase();
+      const path = (window.location.pathname || '').toLowerCase();
 
-      if (!hash || hash === '#home') {
+      if (path.includes('/pages/home-service') || path.includes('/pages/representative-visit')) {
+        window.navigateToView('self-service');
+      } else if (path.includes('/pages/customizer') || path.includes('/pages/make-your-own-scrubs')) {
+        window.navigateToView('ready-to-wear');
+      } else if (path.includes('/pages/men')) {
+        window.navigateToGender('men', 'all', 'all');
+      } else if (path.includes('/pages/women')) {
+        window.navigateToGender('women', 'all', 'all');
+      } else if (!hash || hash === '#home') {
         window.navigateToView('home');
       } else if (hash === '#self-service-portal') {
         window.openComingSoonModal('self-service');
@@ -650,12 +680,16 @@
     }
 
     function startSlideAutoplay() {
+      const isAutoplay = {{ section.settings.slideshow_autoplay | default: true | json }};
+      if (isAutoplay === false) return;
       if (STATE.slideTimer) clearInterval(STATE.slideTimer);
+      const speedSetting = Number({{ section.settings.slideshow_speed | default: 5 | json }});
+      const slideDelayMs = (isNaN(speedSetting) || speedSetting <= 0 ? 5 : speedSetting) * 1000;
       STATE.slideTimer = setInterval(() => {
         if (!STATE.slidePaused) {
           window.stepBannerSlide(1);
         }
-      }, 5500);
+      }, slideDelayMs);
     }
 
     window.stepBannerSlide = function(direction) {
@@ -3944,25 +3978,246 @@
 
 {% schema %}
 {
-  "name": "Enamels Chromatic Lab",
+  "name": "Enamels Experience Studio",
   "tag": "section",
   "class": "section",
   "settings": [
     {
       "type": "header",
-      "content": "Self-Service & Representative Visit Booking"
+      "content": "Top Announcement Ticker"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_announcement_bar",
+      "label": "Show Announcement Bar",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "announcement_bg",
+      "label": "Announcement Background Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "announcement_color",
+      "label": "Announcement Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "announcement_speed",
+      "label": "Ticker Scroll Speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "Header & Brand Identity"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Custom Store Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "label": "Logo Max Width",
+      "min": 60,
+      "max": 240,
+      "step": 10,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Customer Support Phone",
+      "default": "+92 301 13 31 133"
+    },
+    {
+      "type": "text",
+      "id": "phone_tel",
+      "label": "Dial Link (tel:)",
+      "default": "+923011331133"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_url",
+      "label": "WhatsApp Concierge URL",
+      "default": "https://wa.me/923011331133"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Bar Placeholder",
+      "default": "Search scrubs, lab coats, surgical caps, sleeves..."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show Wishlist Icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Hero Banner Slideshow"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_slideshow",
+      "label": "Enable Slideshow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "slideshow_autoplay",
+      "label": "Autoplay Slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "slideshow_speed",
+      "label": "Slide Change Interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slideshow_arrows",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slideshow_dots",
+      "label": "Show Pagination Dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "3D Category Cards Grid"
+    },
+    {
+      "type": "text",
+      "id": "categories_tag",
+      "label": "Section Badge Tag",
+      "default": "CLINICAL APPAREL & SERVICES"
+    },
+    {
+      "type": "text",
+      "id": "categories_title",
+      "label": "Section Heading",
+      "default": "Categories"
+    },
+    {
+      "type": "textarea",
+      "id": "categories_subtitle",
+      "label": "Section Subtitle",
+      "default": "Explore purpose-built medical uniforms, personalized studio customization, and concierge in-person sizing."
+    },
+    {
+      "type": "header",
+      "content": "Signature Scrub Lines Showcase"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_series_showcase",
+      "label": "Show Signature Lines",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "series_tag",
+      "label": "Series Section Badge",
+      "default": "ENGINEERED FOR CLINICAL ROLES"
+    },
+    {
+      "type": "text",
+      "id": "series_title",
+      "label": "Series Section Heading",
+      "default": "Signature Scrub Lines"
+    },
+    {
+      "type": "textarea",
+      "id": "series_subtitle",
+      "label": "Series Section Subtitle",
+      "default": "From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms."
+    },
+    {
+      "type": "header",
+      "content": "Hospital & Clinical Shade Swatches"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_color_palette",
+      "label": "Show Hospital Shades Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "palette_tag",
+      "label": "Palette Section Badge",
+      "default": "COLOR HARMONY"
+    },
+    {
+      "type": "text",
+      "id": "palette_title",
+      "label": "Palette Section Heading",
+      "default": "Shop by Hospital & Clinical Shade"
+    },
+    {
+      "type": "textarea",
+      "id": "palette_subtitle",
+      "label": "Palette Section Subtitle",
+      "default": "Adhere to strict hospital ward color guidelines or express individual professional style."
+    },
+    {
+      "type": "header",
+      "content": "Concierge Home Service (Representative Visit)"
     },
     {
       "type": "checkbox",
       "id": "enable_self_service",
-      "label": "Enable Self-Service Navigation & Booking",
+      "label": "Enable Home Service Booking",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "self_service_tag",
+      "label": "Service Badge Tag",
+      "default": "CONCIERGE MEDICAL SERVICE"
     },
     {
       "type": "text",
       "id": "self_service_service_area",
       "label": "Active Service City",
       "default": "Lahore"
+    },
+    {
+      "type": "text",
+      "id": "self_service_location_notice",
+      "label": "Location Notice Pill",
+      "default": "📍 Currently Available in Lahore Only"
+    },
+    {
+      "type": "text",
+      "id": "self_service_heading",
+      "label": "Landing Page Heading",
+      "default": "Personalized Scrub Shopping — At Your Convenience"
+    },
+    {
+      "type": "textarea",
+      "id": "self_service_description",
+      "label": "Landing Page Description",
+      "default": "Request an in-person visit from an Enamels representative in Lahore who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order."
     },
     {
       "type": "text",
@@ -3978,21 +4233,450 @@
     },
     {
       "type": "text",
-      "id": "self_service_heading",
-      "label": "Landing Page Heading",
-      "default": "Personalized Scrub Shopping — At Your Convenience"
+      "id": "self_service_bullet_1",
+      "label": "Benefit Bullet 1",
+      "default": "Accurate In-Person Sizing & Fit"
+    },
+    {
+      "type": "text",
+      "id": "self_service_bullet_2",
+      "label": "Benefit Bullet 2",
+      "default": "Genuine Fabric Swatches & Shades"
+    },
+    {
+      "type": "text",
+      "id": "self_service_bullet_3",
+      "label": "Benefit Bullet 3",
+      "default": "Doctor Embroidery & Crest Setup"
+    },
+    {
+      "type": "text",
+      "id": "self_service_bullet_4",
+      "label": "Benefit Bullet 4",
+      "default": "Fee 100% Adjustable Against Order"
+    },
+    {
+      "type": "text",
+      "id": "self_service_cta_label",
+      "label": "Booking Button Label",
+      "default": "Book a Representative Visit →"
+    },
+    {
+      "type": "header",
+      "content": "Trust Badges & Value Propositions"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_trust_badges",
+      "label": "Show Trust Badges",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "trust_badges_bg",
+      "label": "Trust Badges Background",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "header",
+      "content": "Customer Reviews & Testimonials"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_testimonials",
+      "label": "Show Testimonials Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "testimonials_tag",
+      "label": "Testimonials Badge Tag",
+      "default": "VERIFIED CLINICAL FEEDBACK"
+    },
+    {
+      "type": "text",
+      "id": "testimonials_heading",
+      "label": "Testimonials Heading",
+      "default": "Trusted by Healthcare Professionals"
     },
     {
       "type": "textarea",
-      "id": "self_service_description",
-      "label": "Landing Page Description",
-      "default": "Request an in-person visit from an Enamels representative who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order."
+      "id": "testimonials_subheading",
+      "label": "Testimonials Subtitle",
+      "default": "Read authentic feedback from doctors, surgeons, and clinicians across Pakistan wearing Enamels medical apparel."
+    },
+    {
+      "type": "header",
+      "content": "Product Customizer & Sizing Studio"
+    },
+    {
+      "type": "text",
+      "id": "custom_dye_surcharge",
+      "label": "Custom Dye Surcharge (Rs.)",
+      "default": "1000"
+    },
+    {
+      "type": "checkbox",
+      "id": "require_advance_payment",
+      "label": "Require Advance Payment for Bespoke Customization",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "advance_payment_notice",
+      "label": "Advance Payment Warning Notice",
+      "default": "Customized items in cart require advance payment before tailoring commences."
+    },
+    {
+      "type": "select",
+      "id": "default_measurement_unit",
+      "label": "Default Sizing Unit",
+      "options": [
+        { "value": "in", "label": "Inches" },
+        { "value": "cm", "label": "Centimeters" }
+      ],
+      "default": "in"
+    },
+    {
+      "type": "header",
+      "content": "Cart & Bank Transfer Details"
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free Shipping Threshold (Rs.)",
+      "default": 7000
+    },
+    {
+      "type": "text",
+      "id": "bank_name",
+      "label": "Bank Name",
+      "default": "Meezan Bank Limited"
+    },
+    {
+      "type": "text",
+      "id": "bank_account_title",
+      "label": "Bank Account Title",
+      "default": "Enamels Medical Apparel"
+    },
+    {
+      "type": "text",
+      "id": "bank_account_no",
+      "label": "Bank Account Number",
+      "default": "0102-0103456789"
+    },
+    {
+      "type": "text",
+      "id": "bank_iban",
+      "label": "Bank IBAN",
+      "default": "PK45MEZN0001020103456789"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Hero Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Desktop Slide Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile Slide Image (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Image Alt Text",
+          "default": "Enamels Medical Apparel"
+        },
+        {
+          "type": "text",
+          "id": "link",
+          "label": "Slide Link or Section Hash",
+          "default": "#collection-sprinter"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Slide Title (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Slide Subtitle (Optional)"
+        }
+      ]
+    },
+    {
+      "type": "category_card",
+      "name": "3D Category Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "card_type",
+          "label": "Card Destination / Action",
+          "options": [
+            { "value": "men", "label": "Men's Collection (#men)" },
+            { "value": "women", "label": "Women's Collection (#women)" },
+            { "value": "home_service", "label": "Home Service Concierge (#self-service)" },
+            { "value": "customizer", "label": "Customizer Studio (#ready-to-wear)" },
+            { "value": "summer", "label": "Summer Collection (#summer-collection)" },
+            { "value": "winter", "label": "Winter Collection (#winter-collection)" },
+            { "value": "self_service_modal", "label": "Self-Service Portal (Coming Soon Modal)" },
+            { "value": "bulk_order_modal", "label": "Bulk Order (Coming Soon Modal)" },
+            { "value": "custom_link", "label": "Custom URL Link" }
+          ],
+          "default": "men"
+        },
+        {
+          "type": "text",
+          "id": "custom_link",
+          "label": "Custom URL (if Custom Link selected)",
+          "default": "#men"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card Thumbnail Image"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Pill Text",
+          "default": "MEN'S APPAREL"
+        },
+        {
+          "type": "select",
+          "id": "badge_color",
+          "label": "Badge Color Theme",
+          "options": [
+            { "value": "badge-men", "label": "Men (Dark Navy)" },
+            { "value": "badge-women", "label": "Women (Burgundy / Rose)" },
+            { "value": "badge-concierge", "label": "Concierge (Teal)" },
+            { "value": "badge-studio", "label": "Studio (Indigo)" },
+            { "value": "badge-summer", "label": "Summer (Aerocool Light Blue)" },
+            { "value": "badge-winter", "label": "Winter (Amber / Bronze)" },
+            { "value": "badge-coming-soon", "label": "Coming Soon (Gold / Warning)" }
+          ],
+          "default": "badge-men"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card Title",
+          "default": "Men"
+        },
+        {
+          "type": "text",
+          "id": "count_or_fee",
+          "label": "Count or Fee Badge",
+          "default": "12 Styles"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Card Description",
+          "default": "Athletic mechanical stretch, twill scrubs, and structured executive cuts tailored for male medical professionals."
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Button / Link Label",
+          "default": "Explore Collection"
+        }
+      ]
+    },
+    {
+      "type": "series_card",
+      "name": "Signature Series Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Series Name",
+          "default": "Sprinter Series"
+        },
+        {
+          "type": "text",
+          "id": "badge_tag",
+          "label": "Fabric Badge Tag",
+          "default": "4-Way Athletic Stretch"
+        },
+        {
+          "type": "select",
+          "id": "badge_color_preset",
+          "label": "Badge Color Preset",
+          "options": [
+            { "value": "blue", "label": "Sky Blue" },
+            { "value": "pink", "label": "Pink Rose" },
+            { "value": "amber", "label": "Warm Amber" },
+            { "value": "teal", "label": "Clinical Teal" }
+          ],
+          "default": "blue"
+        },
+        {
+          "type": "text",
+          "id": "price_label",
+          "label": "Price Label",
+          "default": "From Rs. 5,150"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Series Description",
+          "default": "Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility."
+        },
+        {
+          "type": "text",
+          "id": "series_key",
+          "label": "Series Filter Key",
+          "default": "Sprinter"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Explore Sprinter →"
+        }
+      ]
+    },
+    {
+      "type": "color_swatch",
+      "name": "Clinical Shade Swatch",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Shade Name",
+          "default": "Deep Navy"
+        },
+        {
+          "type": "color",
+          "id": "hex_code",
+          "label": "Hex Color Code",
+          "default": "#102A43"
+        },
+        {
+          "type": "text",
+          "id": "department",
+          "label": "Hospital Department (Optional)",
+          "default": "General & Surgery"
+        }
+      ]
+    },
+    {
+      "type": "trust_badge",
+      "name": "Trust Badge",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon_emoji",
+          "label": "Icon or Emoji",
+          "default": "🚚"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Free Shipping"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Description",
+          "default": "On all orders over Rs. 7,000 nationwide"
+        }
+      ]
+    },
+    {
+      "type": "testimonial",
+      "name": "Verified Doctor Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review",
+          "label": "Review Quote",
+          "default": "The 4-way mechanical stretch in the Sprinter series is unmatched during 24-hour calls. Exceptional stitch quality and fit."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Doctor / Clinician Name",
+          "default": "Dr. Hamza Tariq, FCPS"
+        },
+        {
+          "type": "text",
+          "id": "city",
+          "label": "Hospital / City",
+          "default": "Shaukat Khanum Memorial Hospital, Lahore"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified_buyer",
+          "label": "Show Verified Clinician Badge",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "announcement",
+      "name": "Announcement Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Announcement Text",
+          "default": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Optional Target Link"
+        }
+      ]
+    },
+    {
+      "type": "hospital_logo",
+      "name": "Hospital Crest Logo",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Hospital Name",
+          "default": "Aga Khan University Hospital"
+        },
+        {
+          "type": "text",
+          "id": "logo_id",
+          "label": "Logo ID (e.g. akuh, skmch, pims)",
+          "default": "akuh"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Crest Logo Image (Optional)"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Enamels Chromatic Lab"
+      "name": "Enamels Experience Studio"
     }
   ]
 }
 {% endschema %}
+

@@ -2158,5 +2158,45 @@
         "default": "Hi, I am browsing your store and would like assistance with an order."
       }
     ]
+  },
+  {
+    "name": "Enamels Brand & Concierge",
+    "settings": [
+      {
+        "type": "text",
+        "id": "enamels_support_phone",
+        "label": "Official Support Telephone",
+        "default": "+92 301 13 31 133",
+        "info": "Displayed in the top navigation bar and customer care channels."
+      },
+      {
+        "type": "header",
+        "content": "Official Bank Transfer Details"
+      },
+      {
+        "type": "text",
+        "id": "enamels_bank_name",
+        "label": "Bank Name",
+        "default": "Meezan Bank Limited (Premier)"
+      },
+      {
+        "type": "text",
+        "id": "enamels_bank_title",
+        "label": "Account Title",
+        "default": "Enamels Medical Apparel (Pvt) Ltd"
+      },
+      {
+        "type": "text",
+        "id": "enamels_bank_account",
+        "label": "Account Number",
+        "default": "01020104928172"
+      },
+      {
+        "type": "text",
+        "id": "enamels_bank_iban",
+        "label": "IBAN",
+        "default": "PK36MEZN0001020104928172"
+      }
+    ]
   }
 ]

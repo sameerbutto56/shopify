@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "chromatic_lab": {
+      "type": "enamels-chromatic-lab",
+      "settings": {
+        "self_service_heading": "Concierge In-Person Fitting & Measurement Visit",
+        "self_service_description": "Request a dedicated Enamels representative at your hospital, clinic, or residence. We bring physical fabric swatches, sizing samples, and help you configure clinical embroidery."
+      }
+    }
+  },
+  "order": [
+    "chromatic_lab"
+  ]
+}

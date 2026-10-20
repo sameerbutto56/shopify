@@ -21,11 +21,12 @@
     <button type="button" class="btn-drawer-close" onclick="window.closeCartDrawer()" aria-label="Close Cart">✕</button>
   </div>
 
-  <!-- Free Shipping Progress Bar (Rs. 7,000 threshold matching policy) -->
+  <!-- Free Shipping Progress Bar (Dynamic threshold from Theme Editor) -->
+  {% assign shipping_threshold = section.settings.free_shipping_threshold | default: 7000 %}
   <div class="drawer-free-shipping-bar">
     <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 600;">
-      <span id="free-shipping-label" style="color: #102a43;">Free Shipping Target: Rs. 7,000</span>
-      <span id="free-shipping-status" style="color: #00b8a9;">Rs. 7,000 remaining</span>
+      <span id="free-shipping-label" style="color: #102a43;">Free Shipping Target: Rs. {{ shipping_threshold }}</span>
+      <span id="free-shipping-status" style="color: #00b8a9;">Rs. {{ shipping_threshold }} remaining</span>
     </div>
     <div class="progress-track-bar">
       <div class="progress-fill" id="free-shipping-progress" style="width: 0%;"></div>
@@ -43,7 +44,7 @@
     <div id="cart-advance-payment-warning" class="advance-payment-alert-box" style="display: none; margin-bottom: 14px; padding: 10px 14px;">
       <span class="advance-alert-icon" style="font-size: 14px;">⚠️</span>
       <p class="advance-alert-text" style="font-size: 11px;">
-        Customized items in cart require advance payment before tailoring.
+        {{ section.settings.advance_payment_notice | default: 'Customized items in cart require advance payment before tailoring commences.' | escape }}
       </p>
     </div>
 
@@ -88,19 +89,19 @@
         <table style="width: 100%; font-size: 12px; line-height: 1.8;">
           <tr>
             <td style="color: #64748b; width: 120px;">Bank Name:</td>
-            <td><strong>Meezan Bank Limited (Premier)</strong></td>
+            <td><strong>{{ section.settings.bank_name | default: settings.enamels_bank_name | default: 'Meezan Bank Limited (Premier)' | escape }}</strong></td>
           </tr>
           <tr>
             <td style="color: #64748b;">Account Title:</td>
-            <td><strong>Enamels Medical Apparel (Pvt) Ltd</strong></td>
+            <td><strong>{{ section.settings.bank_account_title | default: settings.enamels_bank_title | default: 'Enamels Medical Apparel (Pvt) Ltd' | escape }}</strong></td>
           </tr>
           <tr>
             <td style="color: #64748b;">Account Number:</td>
-            <td><strong style="font-family: monospace; font-size: 13px;">01020104928172</strong></td>
+            <td><strong style="font-family: monospace; font-size: 13px;">{{ section.settings.bank_account_no | default: settings.enamels_bank_account | default: '01020104928172' | escape }}</strong></td>
           </tr>
           <tr>
             <td style="color: #64748b;">IBAN:</td>
-            <td><strong style="font-family: monospace; font-size: 13px;">PK36MEZN0001020104928172</strong></td>
+            <td><strong style="font-family: monospace; font-size: 13px;">{{ section.settings.bank_iban | default: settings.enamels_bank_iban | default: 'PK36MEZN0001020104928172' | escape }}</strong></td>
           </tr>
           <tr>
             <td style="color: #64748b;">Branch:</td>

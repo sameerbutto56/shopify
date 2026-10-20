@@ -23,16 +23,20 @@
     <!-- ============================================================ -->
     <div class="self-service-hero-card">
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-        <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">CONCIERGE MEDICAL SERVICE</span>
-        <span class="self-service-location-pill">📍 Currently Available in Lahore Only</span>
+        <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">
+          {{ section.settings.self_service_tag | default: 'CONCIERGE MEDICAL SERVICE' | escape }}
+        </span>
+        <span class="self-service-location-pill">
+          {{ section.settings.self_service_location_notice | default: '📍 Currently Available in Lahore Only' | escape }}
+        </span>
       </div>
 
       <h1 class="self-service-main-heading">
-        Personalized Scrub Shopping — At Your Convenience
+        {{ section.settings.self_service_heading | default: 'Personalized Scrub Shopping — At Your Convenience' | escape }}
       </h1>
 
       <p class="self-service-main-desc">
-        Request an in-person visit from an Enamels representative who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order at your hospital, clinic, or residence.
+        {{ section.settings.self_service_description | default: 'Request an in-person visit from an Enamels representative who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order at your hospital, clinic, or residence.' | escape }}
       </p>
 
       <!-- Key Benefits Grid -->
@@ -40,7 +44,7 @@
         <div class="self-service-benefit-item">
           <div class="self-service-benefit-icon">📏</div>
           <div>
-            <h4 class="self-service-benefit-title">Personal Sizing & Fitting</h4>
+            <h4 class="self-service-benefit-title">{{ section.settings.self_service_bullet_1 | default: 'Personal Sizing & Fitting' | escape }}</h4>
             <p class="self-service-benefit-desc">Precision body measurements taken on-site to guarantee zero fit issues.</p>
           </div>
         </div>
@@ -48,7 +52,7 @@
         <div class="self-service-benefit-item">
           <div class="self-service-benefit-icon">🎨</div>
           <div>
-            <h4 class="self-service-benefit-title">Fabric & Shade Consultation</h4>
+            <h4 class="self-service-benefit-title">{{ section.settings.self_service_bullet_2 | default: 'Fabric & Shade Consultation' | escape }}</h4>
             <p class="self-service-benefit-desc">Touch physical fabric swatches and compare hospital shades in your clinic light.</p>
           </div>
         </div>
@@ -56,7 +60,7 @@
         <div class="self-service-benefit-item">
           <div class="self-service-benefit-icon">🪡</div>
           <div>
-            <h4 class="self-service-benefit-title">Bespoke Customization Setup</h4>
+            <h4 class="self-service-benefit-title">{{ section.settings.self_service_bullet_3 | default: 'Bespoke Customization Setup' | escape }}</h4>
             <p class="self-service-benefit-desc">Select embroidery threads, font sizing, and approved hospital logo placements.</p>
           </div>
         </div>
@@ -64,7 +68,7 @@
         <div class="self-service-benefit-item">
           <div class="self-service-benefit-icon">📋</div>
           <div>
-            <h4 class="self-service-benefit-title">Order Placement Support</h4>
+            <h4 class="self-service-benefit-title">{{ section.settings.self_service_bullet_4 | default: 'Order Placement Support' | escape }}</h4>
             <p class="self-service-benefit-desc">Direct assistance with order drafting, advance payment, and delivery logistics.</p>
           </div>
         </div>
@@ -77,14 +81,14 @@
           <div style="flex: 1;">
             <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
               <strong style="color: #102a43; font-size: 13px; text-transform: uppercase;">
-                Representative Visit Service Fee: <span style="color: #00b8a9; font-size: 15px;">Rs. 500</span>
+                {{ section.settings.self_service_fee_title | default: 'Representative Visit Service Fee: Rs. 500' | escape }}
               </strong>
               <span style="font-size: 11px; background: #e6fffa; color: #008779; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
                 100% ADJUSTABLE AGAINST ORDER
               </span>
             </div>
             <p style="font-size: 12px; color: #475569; margin: 4px 0 0; line-height: 1.4;">
-              A nominal Rs. 500 consultation fee applies for in-person representative travel and sizing in Lahore. This fee is <strong>fully adjustable (deducted)</strong> from your uniform purchase when placing an order of Rs. 10,000 or more. Payable during the visit or via advance Bank Transfer. Garments and customizations are billed separately based on selected items.
+              {{ section.settings.self_service_fee_policy | default: 'A nominal Rs. 500 consultation fee applies for in-person representative travel and sizing in Lahore. This fee is 100% adjustable against orders over Rs. 10,000.' | escape }}
             </p>
           </div>
         </div>

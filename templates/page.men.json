@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "chromatic_lab": {
+      "type": "enamels-chromatic-lab",
+      "settings": {}
+    }
+  },
+  "order": [
+    "chromatic_lab"
+  ]
+}
