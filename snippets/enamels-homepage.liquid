@@ -165,318 +165,389 @@
     </div>
     {% endif %}
   </section>
+
   {% endif %}
 
   <!-- ============================================================ -->
-  <!-- 2. HOMEPAGE CATEGORIES (PREMIUM 3D REDESIGN & DYNAMIC BLOCKS) -->
+  <!-- 2. EXPLORE OUR BRANDS / SIGNATURE ARTICLES (SECTION 2)       -->
   <!-- ============================================================ -->
-  {% liquid
-    assign category_blocks_count = 0
-    for block in section.blocks
-      if block.type == 'category_card'
-        assign category_blocks_count = category_blocks_count | plus: 1
-      endif
-    endfor
-  %}
-
-  <section class="enamels-categories-section-3d page-container" id="homepage-categories-section">
-    <div class="categories-section-header">
-      <span class="categories-section-tag">{{ section.settings.categories_tag | default: 'CLINICAL APPAREL & SERVICES' | escape }}</span>
-      <h2 class="categories-section-title">{{ section.settings.categories_title | default: 'Categories' | escape }}</h2>
+  <section class="frubs-brands-section page-container" id="homepage-featured-articles" aria-label="Explore Our Brands and Signature Articles">
+    <div class="categories-section-header" style="margin-bottom: 12px;">
+      <span class="categories-section-tag">{{ section.settings.brands_tag | default: 'PURPOSE-BUILT CLINICAL APPAREL' | escape }}</span>
+      <h2 class="categories-section-title">{{ section.settings.brands_title | default: 'Explore Our Brands' | escape }}</h2>
       <p class="categories-section-subtitle">
-        {{ section.settings.categories_subtitle | default: 'Explore purpose-built medical uniforms, personalized studio customization, and concierge in-person sizing.' | escape }}
+        {{ section.settings.brands_subtitle | default: 'Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes.' | escape }}
       </p>
     </div>
 
-    <div class="enamels-categories-3d-grid" id="enamels-3d-cards-grid">
-      {% if category_blocks_count > 0 %}
-        {% assign card_counter = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'category_card' %}
-            {% assign card_counter = card_counter | plus: 1 %}
-            {% liquid
-              assign card_href = '#men'
-              assign card_onclick = "window.navigateToGender('men'); return false;"
-              assign default_card_img = 'cat-men-scrubs.jpg'
+    <div class="frubs-brands-grid">
+      <!-- 1. Vilora (Velora) -->
+      <a href="#collection-vilora" class="frubs-brand-tile" onclick="window.navigateToBrand('Velora'); return false;" aria-label="Explore Vilora Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #be185d; color: #ffffff;">MICRO-DRAPE</span>
+          <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Vilora Luxury Medical Scrubs" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Vilora Series</h3>
+          <p class="frubs-brand-tile-sub">Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for female clinicians.</p>
+          <span class="frubs-brand-tile-cta">Explore Vilora →</span>
+        </div>
+      </a>
 
-              case block.settings.card_type
-                when 'men'
-                  assign card_href = '#men'
-                  assign card_onclick = "window.navigateToGender('men'); return false;"
-                  assign default_card_img = 'cat-men-scrubs.jpg'
-                when 'women'
-                  assign card_href = '#women'
-                  assign card_onclick = "window.navigateToGender('women'); return false;"
-                  assign default_card_img = 'cat-women-scrubs.jpg'
-                when 'home_service'
-                  assign card_href = '#self-service'
-                  assign card_onclick = "window.navigateToView('self-service'); return false;"
-                  assign default_card_img = 'cat-labcoat.jpg'
-                when 'customizer'
-                  assign card_href = '#ready-to-wear'
-                  assign card_onclick = "window.navigateToView('ready-to-wear'); return false;"
-                  assign default_card_img = 'cat-sprinter.jpg'
-                when 'summer'
-                  assign card_href = '#summer-collection'
-                  assign card_onclick = "window.navigateToSeasonalCollection('summer'); return false;"
-                  assign default_card_img = 'cat-velora.jpg'
-                when 'winter'
-                  assign card_href = '#winter-collection'
-                  assign card_onclick = "window.navigateToSeasonalCollection('winter'); return false;"
-                  assign default_card_img = 'cat-crown.jpg'
-                when 'self_service_modal'
-                  assign card_href = '#self-service-portal'
-                  assign card_onclick = "window.openComingSoonModal('self-service'); return false;"
-                  assign default_card_img = 'cat-flexfit.jpg'
-                when 'bulk_order_modal'
-                  assign card_href = '#bulk-order'
-                  assign card_onclick = "window.openComingSoonModal('bulk-order'); return false;"
-                  assign default_card_img = 'banner-abbotabad.jpg'
-                when 'custom_link'
-                  assign card_href = block.settings.custom_link | default: '#men'
-                  assign card_onclick = ''
-              endcase
-            %}
+      <!-- 2. Splender (Sprinter) -->
+      <a href="#collection-splender" class="frubs-brand-tile" onclick="window.navigateToBrand('Sprinter'); return false;" aria-label="Explore Splender Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #102a43; color: #ffffff;">4-WAY STRETCH</span>
+          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Splender Athletic Scrub Series" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Splender Series</h3>
+          <p class="frubs-brand-tile-sub">Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers.</p>
+          <span class="frubs-brand-tile-cta">Explore Splender →</span>
+        </div>
+      </a>
 
-            <div class="category-card-3d-wrap" data-card-index="{{ card_counter }}" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
-              <a href="{{ card_href }}" class="category-card-3d" {% if card_onclick != '' %}onclick="{{ card_onclick }}"{% endif %} aria-label="{{ block.settings.title | escape }}">
-                <div class="category-card-glare"></div>
-                <div class="category-card-media-wrap">
-                  <span class="category-card-badge {{ block.settings.badge_color | default: 'badge-men' }}">
-                    {{ block.settings.badge_text | default: "ENAMELS" | escape }}
-                  </span>
-                  {% if block.settings.image != blank %}
-                    <img
-                      src="{{ block.settings.image | image_url: width: 600 }}"
-                      alt="{{ block.settings.title | escape }}"
-                      class="category-card-media-img"
-                      width="{{ block.settings.image.width }}"
-                      height="{{ block.settings.image.height }}"
-                      loading="lazy"
-                    />
-                  {% else %}
-                    <img
-                      src="{{ default_card_img | asset_url }}"
-                      alt="{{ block.settings.title | escape }}"
-                      class="category-card-media-img"
-                      width="600"
-                      height="450"
-                      loading="lazy"
-                    />
-                  {% endif %}
-                </div>
-                <div class="category-card-body">
-                  <div class="category-card-header-row">
-                    <h3 class="category-card-title">{{ block.settings.title | escape }}</h3>
-                    {% if block.settings.count_or_fee != blank %}
-                      <span class="category-card-count">{{ block.settings.count_or_fee | escape }}</span>
-                    {% endif %}
-                  </div>
-                  <p class="category-card-desc">{{ block.settings.description | escape }}</p>
-                  <div class="category-card-footer">
-                    <span class="category-card-cta">
-                      {{ block.settings.cta_text | default: 'Explore Collection' | escape }}
-                      <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                    </span>
-                  </div>
-                </div>
-              </a>
+      <!-- 3. Ground (Crown) -->
+      <a href="#collection-ground" class="frubs-brand-tile" onclick="window.navigateToBrand('Crown'); return false;" aria-label="Explore Ground Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #b45309; color: #ffffff;">EXECUTIVE CUT</span>
+          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Ground Executive Mandarin Scrubs" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Ground Series</h3>
+          <p class="frubs-brand-tile-sub">Distinctive standing mandarin collar with concealed front placket tailored for senior consultant rounds.</p>
+          <span class="frubs-brand-tile-cta">Explore Ground →</span>
+        </div>
+      </a>
+
+      <!-- 4. FlexFit (Flexwell) -->
+      <a href="#collection-flexfit" class="frubs-brand-tile" onclick="window.navigateToBrand('Flexwell'); return false;" aria-label="Explore FlexFit Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #0f766e; color: #ffffff;">ALL-DAY FLEX</span>
+          <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="FlexFit Clinical Comfort" width="300" height="400" loading="lazy" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">FlexFit Series</h3>
+          <p class="frubs-brand-tile-sub">Reinforced stretch seams and deep multi-pocket storage engineered for high-activity ward rotations.</p>
+          <span class="frubs-brand-tile-cta">Explore FlexFit →</span>
+        </div>
+      </a>
+
+      <!-- 5. Helium Lab Coats -->
+      <a href="#collection-helium" class="frubs-brand-tile" onclick="window.navigateToBrand('Helium'); return false;" aria-label="Explore Helium Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #0369a1; color: #ffffff;">LAB COATS</span>
+          <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Helium Technical White Lab Coats" width="300" height="400" loading="lazy" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Helium Series</h3>
+          <p class="frubs-brand-tile-sub">Crisp optical white technical doctor coats with reinforced stethoscope loop & tablet pockets.</p>
+          <span class="frubs-brand-tile-cta">Explore Helium →</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. SMALL CATEGORY THUMBNAILS + LARGE BRAND VIDEO (SECTION 3) -->
+  <!-- ============================================================ -->
+  <section class="split-cat-video-section page-container" id="homepage-category-video-split" aria-label="Category Selection and Brand Showcase">
+    <div class="split-cat-video-grid">
+      <!-- Left: Small Category Thumbnails -->
+      <div class="split-thumbnails-column">
+        <div class="split-column-header">
+          <span class="categories-section-tag">QUICK CATALOGUE DISCOVERY</span>
+          <h2 class="split-column-title">Shop by Category</h2>
+          <p class="split-column-sub">Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role.</p>
+        </div>
+
+        <div class="split-thumbnails-grid">
+          <!-- 1. Men -->
+          <a href="#men" class="split-category-tile" onclick="window.navigateToGender('men'); return false;" aria-label="Shop Men's Medical Scrubs">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs" width="160" height="160" loading="lazy" />
             </div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <!-- 1. Men -->
-        <div class="category-card-3d-wrap" data-card-index="1">
-          <a href="#men" class="category-card-3d" onclick="window.navigateToGender('men'); return false;" aria-label="Explore Men's Scrubs Collection">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-men">MEN'S APPAREL</span>
-              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs & Medical Apparel" class="category-card-media-img" width="600" height="450" loading="eager" />
+            <div class="split-category-info">
+              <h3 class="split-category-name">Men</h3>
+              <span class="split-category-meta">12 Styles →</span>
             </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Men</h3>
-                <span class="category-card-count">12 Styles</span>
-              </div>
-              <p class="category-card-desc">Athletic mechanical stretch, twill scrubs, and structured executive cuts tailored for male medical professionals.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta">
-                  Explore Collection
-                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                </span>
-              </div>
+          </a>
+
+          <!-- 2. Women -->
+          <a href="#women" class="split-category-tile" onclick="window.navigateToGender('women'); return false;" aria-label="Shop Women's Medical Scrubs">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Women</h3>
+              <span class="split-category-meta">14 Styles →</span>
+            </div>
+          </a>
+
+          <!-- 3. Scrubs -->
+          <a href="#category-scrubs" class="split-category-tile" onclick="window.selectProductCategory('scrubs'); return false;" aria-label="Shop Medical Scrubs">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Clinical Scrubs" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Scrubs</h3>
+              <span class="split-category-meta">All Series →</span>
+            </div>
+          </a>
+
+          <!-- 4. Lab Coats -->
+          <a href="#collection-lab-coats" class="split-category-tile" onclick="window.selectProductCategory('lab-coat'); return false;" aria-label="Shop Medical Lab Coats">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Doctor Lab Coats" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Lab Coats</h3>
+              <span class="split-category-meta">Helium White →</span>
+            </div>
+          </a>
+
+          <!-- 5. Caps -->
+          <a href="#collection-caps" class="split-category-tile" onclick="window.selectProductCategory('caps'); return false;" aria-label="Shop Surgical Scrub Caps">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Surgical Caps" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Caps</h3>
+              <span class="split-category-meta">BunFit™ Series →</span>
+            </div>
+          </a>
+
+          <!-- 6. Sleeves & Accessories -->
+          <a href="#accessories" class="split-category-tile" onclick="window.navigateToAccessories(); return false;" aria-label="Shop Clinical Accessories and Compression Sleeves">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Clinical Accessories" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Accessories</h3>
+              <span class="split-category-meta">Sleeves & More →</span>
             </div>
           </a>
         </div>
+      </div>
 
-        <!-- 2. Women -->
-        <div class="category-card-3d-wrap" data-card-index="2">
-          <a href="#women" class="category-card-3d" onclick="window.navigateToGender('women'); return false;" aria-label="Explore Women's Scrubs Collection">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-women">WOMEN'S APPAREL</span>
-              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs & Medical Apparel" class="category-card-media-img" width="600" height="450" loading="eager" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Women</h3>
-                <span class="category-card-count">14 Styles</span>
-              </div>
-              <p class="category-card-desc">Contour princess seams, elegant fluid drape, and ergonomic silhouettes designed for female clinicians.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta">
-                  Explore Collection
-                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                </span>
-              </div>
-            </div>
-          </a>
-        </div>
+      <!-- Right: Large Brand Video Showcase -->
+      <div class="split-video-column">
+        <div class="brand-video-card-container">
+          <div class="brand-video-wrapper">
+            {% if section.settings.brand_video_poster != blank %}
+              {% assign brand_poster = section.settings.brand_video_poster | image_url: width: 900 %}
+            {% else %}
+              {% assign brand_poster = 'demo-sprinter-navy.jpg' | asset_url %}
+            {% endif %}
+            {% assign brand_video_src = section.settings.brand_video_url | default: 'https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4' %}
+            <video
+              id="enamels-brand-promo-video"
+              class="brand-promo-video-element"
+              poster="{{ brand_poster }}"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-label="Enamels Medical Performance Brand Showcase Video"
+            >
+              <source src="{{ brand_video_src }}" type="video/mp4">
+            </video>
 
-        <!-- 3. Home Service -->
-        <div class="category-card-3d-wrap" data-card-index="3">
-          <a href="#self-service" class="category-card-3d" onclick="window.navigateToView('self-service'); return false;" aria-label="Book Enamels Home Service Representative Visit">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-concierge">LAHORE CONCIERGE</span>
-              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" class="category-card-media-img" width="600" height="450" loading="lazy" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Home Service</h3>
-                <span class="category-card-fee">Rs. 500 Visit</span>
+            <!-- Video Overlay Card with Controls -->
+            <div class="brand-video-overlay-banner">
+              <div class="brand-video-info">
+                <span class="brand-video-badge">CINEMATIC SHOWCASE</span>
+                <h3 class="brand-video-title">Engineered for Clinical Endurance</h3>
+                <p class="brand-video-desc">Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations.</p>
               </div>
-              <p class="category-card-desc">Request an in-person representative visit in Lahore for precision measurement, fabric swatch inspection, and guided order placement.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta cta-teal">
-                  Book Representative Visit
-                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                </span>
+              <div class="brand-video-controls">
+                <button
+                  type="button"
+                  class="brand-video-toggle-btn"
+                  id="brand-video-play-pause-btn"
+                  onclick="window.toggleBrandPromoVideo()"
+                  aria-label="Pause Promotional Video"
+                >
+                  <span id="brand-video-btn-icon">⏸</span>
+                  <span id="brand-video-btn-label">Pause</span>
+                </button>
               </div>
             </div>
-          </a>
+          </div>
         </div>
+      </div>
+    </div>
+  </section>
 
-        <!-- 4. Make Your Own Scrubs -->
-        <div class="category-card-3d-wrap" data-card-index="4">
-          <a href="#ready-to-wear" class="category-card-3d" onclick="window.navigateToView('ready-to-wear'); return false;" aria-label="Launch Make Your Own Scrubs Customizer Studio">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-studio">CUSTOM STUDIO</span>
-              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs 3D Configurator" class="category-card-media-img" width="600" height="450" loading="lazy" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Make Your Own Scrubs</h3>
-                <span class="category-card-badge-pill">Bespoke</span>
-              </div>
-              <p class="category-card-desc">Interactive all-in-one customizer. Select proprietary fabrics, hospital shades, bespoke sizing, custom alterations, and doctor name embroidery.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta">
-                  Launch Customizer Studio
-                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                </span>
-              </div>
-            </div>
-          </a>
-        </div>
+  <!-- ============================================================ -->
+  <!-- 7. CURATED LIVE PRODUCT GRID (REAL SHOPIFY PRODUCTS INCLUDED)-->
+  <!-- ============================================================ -->
+  <section class="page-container" style="padding: 56px 0;" id="homepage-live-catalogue-section" aria-label="Curated Live Product Catalogue">
+    <div class="categories-section-header">
+      <span class="categories-section-tag">ONLINE STORE APPAREL & ACCESSORIES</span>
+      <h2 class="categories-section-title">Curated Product Catalogue</h2>
+      <p class="categories-section-subtitle">
+        Explore our live collection of clinical scrubs, lab coats, surgical caps, and accessories.
+      </p>
+    </div>
 
-        <!-- 5. Summer Collection -->
-        <div class="category-card-3d-wrap" data-card-index="5">
-          <a href="#summer-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('summer'); return false;" aria-label="Shop Summer Medical Collection">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-summer">AEROCOOL™ EDITION</span>
-              <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Summer Medical Apparel Collection" class="category-card-media-img" width="600" height="450" loading="lazy" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Summer Collection</h3>
-                <span class="category-card-count">Aerocool Fit</span>
-              </div>
-              <p class="category-card-desc">Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and effortless cooling through high-demand summer rotations.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta">
-                  Shop Summer Edition
-                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                </span>
-              </div>
-            </div>
-          </a>
-        </div>
+    <!-- Category Filter Bar for Homepage -->
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 20px 0 28px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="homepage-category-filter-pills">
+        <button type="button" class="filter-pill-btn active" id="hp-filter-all" onclick="window.filterHomepageGrid('all')">
+          <span class="filter-pill-text">All Products</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-scrubs" onclick="window.filterHomepageGrid('scrubs')">
+          <span class="filter-pill-text">Scrubs</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-labcoat" onclick="window.filterHomepageGrid('lab-coat')">
+          <span class="filter-pill-text">Lab Coats</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-caps" onclick="window.filterHomepageGrid('caps')">
+          <span class="filter-pill-text">Surgical Caps</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-accessories" onclick="window.filterHomepageGrid('accessories')">
+          <span class="filter-pill-text">Accessories</span>
+        </button>
+      </div>
 
-        <!-- 6. Winter Collection -->
-        <div class="category-card-3d-wrap" data-card-index="6">
-          <a href="#winter-collection" class="category-card-3d" onclick="window.navigateToSeasonalCollection('winter'); return false;" aria-label="Shop Winter Medical Collection">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-winter">AUTUMN / WINTER</span>
-              <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Winter Medical Apparel Collection" class="category-card-media-img" width="600" height="450" loading="lazy" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Winter Collection</h3>
-                <span class="category-card-count">Warm Twill</span>
-              </div>
-              <p class="category-card-desc">Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta">
-                  Shop Winter Edition
-                  <span class="category-card-arrow-circle" aria-hidden="true">→</span>
-                </span>
-              </div>
-            </div>
-          </a>
-        </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <label for="homepage-sort-select" style="font-size: 12px; color: #64748b; font-weight: 600;">Sort By:</label>
+        <select id="homepage-sort-select" class="form-field-select" style="padding: 6px 12px; font-size: 12px; width: auto;" onchange="window.sortHomepageGrid(this.value)">
+          <option value="featured">Featured</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+    </div>
 
-        <!-- 7. Self-Service (Coming Soon) -->
-        <div class="category-card-3d-wrap" data-card-index="7">
-          <a href="#self-service-portal" class="category-card-3d" onclick="window.openComingSoonModal('self-service'); return false;" aria-label="Self-Service Portal - Coming Soon">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-coming-soon">COMING SOON</span>
-              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Enamels Self-Service Digital Portal" class="category-card-media-img" width="600" height="450" loading="lazy" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Self-Service</h3>
-                <span class="category-card-badge-pill" style="background: #fef3c7; color: #b45309;">Coming Soon</span>
-              </div>
-              <p class="category-card-desc">Direct self-ordering digital portal with rapid measurement profile management and express department reorders.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta" style="color: #b45309;">
-                  Preview Portal
-                  <span class="category-card-arrow-circle" aria-hidden="true" style="color: #b45309; background: #fef3c7;">→</span>
-                </span>
-              </div>
-            </div>
-          </a>
-        </div>
+    <!-- The Grid where real Shopify products like 'junaid' immediately render -->
+    <div class="enamels-products-grid" id="homepage-live-products-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+      <!-- Populated dynamically via window.renderHomepageLiveGrid() -->
+    </div>
+  </section>
 
-        <!-- 8. Bulk Order (Coming Soon) -->
-        <div class="category-card-3d-wrap" data-card-index="8">
-          <a href="#bulk-order" class="category-card-3d" onclick="window.openComingSoonModal('bulk-order'); return false;" aria-label="Bulk Order & Hospital Ward Orders - Coming Soon">
-            <div class="category-card-glare"></div>
-            <div class="category-card-media-wrap">
-              <span class="category-card-badge badge-coming-soon">COMING SOON</span>
-              <img src="{{ 'banner-abbotabad.jpg' | asset_url }}" alt="Enamels Institutional Ward & Bulk Orders" class="category-card-media-img" width="600" height="450" loading="lazy" />
-            </div>
-            <div class="category-card-body">
-              <div class="category-card-header-row">
-                <h3 class="category-card-title">Bulk Order</h3>
-                <span class="category-card-badge-pill" style="background: #fef3c7; color: #b45309;">Coming Soon</span>
-              </div>
-              <p class="category-card-desc">Institutional procurement, departmental hospital crest embroidery, and tiered corporate volume discounts for medical institutions.</p>
-              <div class="category-card-footer">
-                <span class="category-card-cta" style="color: #b45309;">
-                  Inquire for Enterprise
-                  <span class="category-card-arrow-circle" aria-hidden="true" style="color: #b45309; background: #fef3c7;">→</span>
-                </span>
-              </div>
-            </div>
-          </a>
+  <!-- ============================================================ -->
+  <!-- 5. MAKE YOUR OWN SCRUBS (BESPOKE STUDIO SHOWCASE)           -->
+  <!-- ============================================================ -->
+  <section class="page-container" style="padding: 48px 0 24px;" id="homepage-customizer-banner" aria-label="Make Your Own Scrubs Bespoke Studio">
+    <div class="customizer-editorial-banner">
+      <div class="customizer-banner-media">
+        <span class="customizer-banner-badge">BESPOKE CUSTOM STUDIO</span>
+        <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs Custom Studio" width="600" height="450" loading="lazy" />
+      </div>
+      <div class="customizer-banner-content">
+        <span class="categories-section-tag" style="margin-bottom: 8px;">TAILORED CLINICAL PRECISION</span>
+        <h2 class="customizer-banner-title">Make Your Own Scrubs</h2>
+        <p class="customizer-banner-desc">
+          Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.
+        </p>
+        <div class="customizer-banner-features">
+          <div class="customizer-feat-item">
+            <span class="feat-icon">📏</span>
+            <span>Custom Measurements (Inches / CM)</span>
+          </div>
+          <div class="customizer-feat-item">
+            <span class="feat-icon">🎨</span>
+            <span>Proprietary Fabrics & Hospital Shades</span>
+          </div>
+          <div class="customizer-feat-item">
+            <span class="feat-icon">🪡</span>
+            <span>Doctor Name & Department Crest Embroidery</span>
+          </div>
+          <div class="customizer-feat-item">
+            <span class="feat-icon">⚡</span>
+            <span>Direct Shopify Cart & Checkout Integration</span>
+          </div>
         </div>
-      {% endif %}
+        <div style="margin-top: 24px;">
+          <button type="button" class="btn-hero-primary" onclick="window.navigateToView('ready-to-wear')" style="padding: 14px 28px; font-size: 14px;">
+            Launch Customizer Studio →
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 6. HOME SERVICE (CONCIERGE REPRESENTATIVE VISIT)             -->
+  <!-- ============================================================ -->
+  <section class="page-container" style="padding: 24px 0 48px;" id="homepage-home-service-banner" aria-label="Concierge Home Service Visit">
+    <div class="home-service-editorial-banner">
+      <div class="home-service-banner-content">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">LAHORE CONCIERGE</span>
+          <span class="self-service-location-pill">📍 Currently Available in Lahore Only</span>
+        </div>
+        <h2 class="home-service-banner-title">Home Service — At Your Convenience</h2>
+        <p class="home-service-banner-desc">
+          Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.
+        </p>
+        <div class="home-service-banner-highlights">
+          <div class="home-service-hl-item">
+            <span>📏 In-Person Body Sizing & Fitting</span>
+          </div>
+          <div class="home-service-hl-item">
+            <span>🎨 Genuine Fabric Swatch Inspection</span>
+          </div>
+          <div class="home-service-hl-item">
+            <span>🪡 Embroidery & Logo Setup</span>
+          </div>
+          <div class="home-service-hl-item">
+            <span>💵 Nominal Rs. 500 Visit Fee (100% Adjustable Against Order)</span>
+          </div>
+        </div>
+        <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <button type="button" class="btn-card-action" onclick="window.navigateToView('self-service')" style="width: auto; padding: 14px 28px; font-size: 14px; font-weight: 700; background: #008779; color: #ffffff;">
+            Book a Representative Visit →
+          </button>
+          <span style="font-size: 12px; color: #64748b;">Rs. 500 consultation fee • Fully credited towards your order</span>
+        </div>
+      </div>
+      <div class="home-service-banner-media">
+        <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" width="600" height="450" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 7. SEASONAL CLINICAL EDITIONS (SUMMER & WINTER)             -->
+  <!-- ============================================================ -->
+  <section class="page-container" style="padding: 32px 0 56px;" id="homepage-seasonal-editions" aria-label="Seasonal Clinical Collections">
+    <div class="categories-section-header">
+      <span class="categories-section-tag">CLIMATIC ENDURANCE APPAREL</span>
+      <h2 class="categories-section-title">Seasonal Wardrobes</h2>
+      <p class="categories-section-subtitle">
+        Engineered for temperature variation throughout hospital shifts, from air-conditioned surgical suites to humid wards.
+      </p>
+    </div>
+
+    <div class="frubs-gender-split-grid" style="margin-top: 24px;">
+      <!-- Summer Collection -->
+      <a href="#summer-collection" class="frubs-gender-hero-card" onclick="window.navigateToSeasonalCollection('summer'); return false;" style="background-image: url('{{ 'cat-velora.jpg' | asset_url }}'); min-height: 380px;" aria-label="Shop Summer Aerocool Collection">
+        <div class="frubs-gender-content">
+          <span class="frubs-gender-tag" style="background: rgba(0, 184, 169, 0.4);">AEROCOOL™ EDITION</span>
+          <h3 class="frubs-gender-title" style="font-size: 26px;">Summer Collection</h3>
+          <p class="frubs-gender-desc">Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and cooling through intense summer rotations.</p>
+          <span class="frubs-gender-btn">
+            Shop Summer Edition →
+          </span>
+        </div>
+      </a>
+
+      <!-- Winter Collection -->
+      <a href="#winter-collection" class="frubs-gender-hero-card" onclick="window.navigateToSeasonalCollection('winter'); return false;" style="background-image: url('{{ 'cat-crown.jpg' | asset_url }}'); min-height: 380px;" aria-label="Shop Winter Warm Twill Collection">
+        <div class="frubs-gender-content">
+          <span class="frubs-gender-tag" style="background: rgba(180, 83, 9, 0.4);">WARM TWILL EDITION</span>
+          <h3 class="frubs-gender-title" style="font-size: 26px;">Winter Collection</h3>
+          <p class="frubs-gender-desc">Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.</p>
+          <span class="frubs-gender-btn">
+            Shop Winter Edition →
+          </span>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -658,62 +729,7 @@
   </section>
   {% endif %}
 
-  <!-- ============================================================ -->
-  <!-- 4b. CONCIERGE HOME SERVICE PROMO (EDITABLE VIA THEME STUDIO) -->
-  <!-- ============================================================ -->
-  {% if section.settings.enable_self_service %}
-  <section class="page-container" style="margin-top: 48px; margin-bottom: 24px;">
-    <div class="self-service-home-banner">
-      <div class="self-service-home-content">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">
-            {{ section.settings.self_service_tag | default: 'CONCIERGE MEDICAL SERVICE' | escape }}
-          </span>
-          <span class="self-service-location-pill">
-            {{ section.settings.self_service_location_notice | default: '📍 Currently Available in Lahore Only' | escape }}
-          </span>
-        </div>
 
-        <h2 style="font-size: 26px; font-weight: 700; color: #102a43; margin: 0 0 10px;">
-          {{ section.settings.self_service_heading | default: 'Personalized Scrub Shopping — At Your Convenience' | escape }}
-        </h2>
-
-        <p style="font-size: 14px; color: #475569; line-height: 1.5; margin: 0 0 20px; max-width: 650px;">
-          {{ section.settings.self_service_description | default: 'Request an in-person visit from an Enamels representative in Lahore who can help you choose your products, take your custom measurements, inspect genuine fabric swatches, and assist with placing your order.' | escape }}
-        </p>
-
-        <!-- 4 Highlights -->
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; max-width: 650px;">
-          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
-            <span style="font-size: 16px;">📏</span>
-            <span>{{ section.settings.self_service_bullet_1 | default: 'Accurate In-Person Sizing & Fit' | escape }}</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
-            <span style="font-size: 16px;">🎨</span>
-            <span>{{ section.settings.self_service_bullet_2 | default: 'Genuine Fabric Swatches & Shades' | escape }}</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
-            <span style="font-size: 16px;">🪡</span>
-            <span>{{ section.settings.self_service_bullet_3 | default: 'Doctor Embroidery & Crest Setup' | escape }}</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #102a43; font-weight: 600;">
-            <span style="font-size: 16px;">💵</span>
-            <span>{{ section.settings.self_service_bullet_4 | default: 'Fee 100% Adjustable Against Order' | escape }}</span>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-          <button type="button" class="btn-card-action" onclick="window.navigateToView('self-service')" style="background: #102a43; color: #ffffff; padding: 14px 28px; width: auto; font-size: 14px; font-weight: 700; box-shadow: 0 4px 12px rgba(16,42,67,0.15);">
-            {{ section.settings.self_service_cta_label | default: 'Book a Representative Visit →' | escape }}
-          </button>
-          <span style="font-size: 12px; color: #64748b;">
-            {{ section.settings.self_service_fee_title | default: 'Nominal Rs. 500 visit fee • Fully deducted from qualifying orders' | escape }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </section>
-  {% endif %}
 
   <!-- ============================================================ -->
   <!-- 4c. VERIFIED CLINICAL TESTIMONIALS SECTION                   -->

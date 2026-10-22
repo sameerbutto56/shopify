@@ -123,19 +123,93 @@
         </p>
       </div>
 
-      <!-- FILTER BAR WITH PROPER "ALL" OPTION + ARTICLE SERIES -->
+      <!-- ACCESSORIES CATEGORY SELECTION AREA (SECTION 5) -->
+      <div class="accessories-category-selection-container" id="accessories-category-selection-area" style="display: none; margin-bottom: 28px;">
+        <div class="categories-section-header" style="margin-bottom: 16px; text-align: left;">
+          <span class="categories-section-tag">CLINICAL GEAR & ESSENTIALS</span>
+          <h2 style="font-size: 20px; font-weight: 700; color: #102a43; margin: 4px 0;">Select Accessory Category</h2>
+          <p style="font-size: 13px; color: #64748b; margin: 0;">Explore surgical scrub caps, medical compression sleeves, hospital badges, and footwear.</p>
+        </div>
+        <div class="accessories-category-cards-grid">
+          <!-- 1. Sleeves -->
+          <a href="#collection-sleeves" class="accessories-category-card" onclick="window.selectProductCategory('sleeves'); return false;">
+            <div class="acc-cat-thumb">
+              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Medical Compression Sleeves" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="acc-cat-info">
+              <h3 class="acc-cat-title">Sleeves</h3>
+              <span class="acc-cat-sub">Compression & UV Protection →</span>
+            </div>
+          </a>
+          <!-- 2. Caps -->
+          <a href="#collection-caps" class="accessories-category-card" onclick="window.selectProductCategory('caps'); return false;">
+            <div class="acc-cat-thumb">
+              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Surgical Caps" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="acc-cat-info">
+              <h3 class="acc-cat-title">Caps</h3>
+              <span class="acc-cat-sub">BunFit™ Tie-Back Scrub Caps →</span>
+            </div>
+          </a>
+          <!-- 3. Other Accessories -->
+          <a href="#collection-accessories" class="accessories-category-card" onclick="window.selectProductCategory('accessories'); return false;">
+            <div class="acc-cat-thumb">
+              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Clinical Accessories" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="acc-cat-info">
+              <h3 class="acc-cat-title">Clinical Accessories</h3>
+              <span class="acc-cat-sub">Stethoscope Loops & Badges →</span>
+            </div>
+          </a>
+          <!-- 4. Hospital Footwear -->
+          <a href="#collection-clogs" class="accessories-category-card" onclick="window.selectProductCategory('accessories'); return false;">
+            <div class="acc-cat-thumb">
+              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Clinical Footwear" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="acc-cat-info">
+              <h3 class="acc-cat-title">Hospital Footwear</h3>
+              <span class="acc-cat-sub">Ergonomic Supportive Clogs →</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- BRAND COLLECTION GENDER FILTER BAR (SECTION 2: ALL / MEN / WOMEN) -->
+      <div class="brand-gender-pills-bar" id="brand-gender-filter-bar" style="display: none; margin-bottom: 20px; padding: 14px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span style="font-size: 13px; font-weight: 700; color: #102a43;">Filter by Gender:</span>
+            <div class="brand-gender-pills-group" id="brand-gender-pills-container" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="filter-pill-btn active" id="brand-gender-pill-all" onclick="window.setBrandGenderFilter('all')">
+                <span class="filter-pill-text">All Styles</span>
+                <span class="filter-pill-count" id="brand-count-all">0</span>
+              </button>
+              <button type="button" class="filter-pill-btn" id="brand-gender-pill-men" onclick="window.setBrandGenderFilter('men')">
+                <span class="filter-pill-text">Men</span>
+                <span class="filter-pill-count" id="brand-count-men">0</span>
+              </button>
+              <button type="button" class="filter-pill-btn" id="brand-gender-pill-women" onclick="window.setBrandGenderFilter('women')">
+                <span class="filter-pill-text">Women</span>
+                <span class="filter-pill-count" id="brand-count-women">0</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STANDARD FILTER BAR WITH "ALL BRANDS" + BRAND SERIES PILLS (SECTIONS 3 & 4) -->
       <div class="product-listing-filter-bar" id="product-listing-filter-bar">
         <div class="filter-bar-header-row">
           <div class="filter-pills-label-wrap">
-            <span class="filter-bar-title">Article / Series:</span>
+            <span class="filter-bar-title" id="filter-bar-brand-title">Brand / Series:</span>
             <!-- Article filter pills container rendered dynamically -->
             <div class="article-filter-pills-group" id="article-filter-pills-container">
-              <!-- Dynamically populated: [All (10)] [Sprinter (6)] [Velora (1)] [Crown (2)] [Flexwell (1)] -->
+              <!-- Dynamically populated: [All Brands] [Vilora] [Splender] [Ground] [FlexFit] [Helium] [BunFit] -->
             </div>
           </div>
 
           <!-- Quick Gender Switch within Category -->
-          <div class="listing-gender-switch-wrap">
+          <div class="listing-gender-switch-wrap" id="listing-gender-switch-wrap">
             <span class="filter-bar-subtitle">Gender:</span>
             <div class="listing-gender-btn-group">
               <button type="button" class="listing-gender-btn active" id="listing-gender-men" onclick="window.switchListingGender('men')">
@@ -163,6 +237,19 @@
             <option value="price-high">Price: High to Low</option>
             <option value="name">Alphabetical (A-Z)</option>
           </select>
+        </div>
+      </div>
+
+      <!-- BRAND EMPTY STATE (WHEN BRAND HAS NO PRODUCTS FOR CHOSEN GENDER) -->
+      <div id="brand-empty-state-box" style="display: none; padding: 48px 24px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; margin: 24px 0;">
+        <div style="font-size: 36px; margin-bottom: 12px;">🩺</div>
+        <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 8px;" id="empty-state-title">No Matching Products Found</h3>
+        <p style="font-size: 13px; color: #64748b; max-width: 480px; margin: 0 auto 20px; line-height: 1.5;" id="empty-state-message">
+          There are currently no products matching this filter combination.
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <button type="button" class="btn-card-action" style="width: auto; padding: 10px 20px;" onclick="window.resetBrandFilters()">View All Brand Products</button>
+          <button type="button" class="btn-hero-secondary" style="width: auto; padding: 10px 20px;" onclick="window.navigateToView('home')">Explore Homepage Brands</button>
         </div>
       </div>
 

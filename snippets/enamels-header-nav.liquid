@@ -178,6 +178,20 @@
           </div>
         </li>
 
+        <!-- Men -->
+        <li class="enamels-nav-item" id="nav-item-men">
+          <a href="#men" class="enamels-nav-link" onclick="window.navigateToGender('men'); return false;">
+            <span>Men</span>
+          </a>
+        </li>
+
+        <!-- Women -->
+        <li class="enamels-nav-item" id="nav-item-women">
+          <a href="#women" class="enamels-nav-link" onclick="window.navigateToGender('women'); return false;">
+            <span>Women</span>
+          </a>
+        </li>
+
         <!-- 2. Lab Coats -->
         <li class="enamels-nav-item" id="nav-item-lab-coats">
           <a href="#collection-lab-coats" class="enamels-nav-link" onclick="window.navigateToCollection('lab-coat', 'category'); return false;">
@@ -202,7 +216,7 @@
 
         <!-- 5. Accessories -->
         <li class="enamels-nav-item" id="nav-item-accessories">
-          <a href="#collection-accessories" class="enamels-nav-link" onclick="window.navigateToCollection('accessories', 'category'); return false;">
+          <a href="#accessories" class="enamels-nav-link" onclick="window.navigateToAccessories(); return false;">
             <span>Accessories</span>
           </a>
         </li>
@@ -215,10 +229,10 @@
           </a>
         </li>
 
-        <!-- 7. Self-Service / Representative Visit -->
-        <li class="enamels-nav-item" id="nav-item-self-service">
+        <!-- 7. Home Service / Representative Visit -->
+        <li class="enamels-nav-item" id="nav-item-home-service">
           <a href="#self-service" class="enamels-nav-link" onclick="window.navigateToView('self-service'); return false;" style="color: #00b8a9; font-weight: 700;">
-            <span>Self-Service</span>
+            <span>Home Service</span>
             <span class="nav-tag-badge" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">LAHORE VISIT</span>
           </a>
         </li>
@@ -236,19 +250,29 @@
     </div>
     <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
       <li>
+        <a href="#men" onclick="window.navigateToGender('men'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43;">
+          👔 Shop Men's Scrubs
+        </a>
+      </li>
+      <li>
+        <a href="#women" onclick="window.navigateToGender('women'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #008779;">
+          👗 Shop Women's Scrubs
+        </a>
+      </li>
+      <li>
         <a href="#category-scrubs" onclick="window.navigateToView('category-scrubs'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
           1. Scrubs Collection
         </a>
         <div style="padding-left: 14px; display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
-          <a href="#sprinter" onclick="window.navigateToCollection('Sprinter'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Sprinter Series</a>
-          <a href="#velora" onclick="window.navigateToCollection('Velora'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Velora Series</a>
-          <a href="#crown" onclick="window.navigateToCollection('Crown'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Crown Series</a>
-          <a href="#flexwell" onclick="window.navigateToCollection('Flexwell'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Flexwell Series</a>
+          <a href="#sprinter" onclick="window.navigateToBrand('Sprinter'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Splender / Sprinter Series</a>
+          <a href="#velora" onclick="window.navigateToBrand('Velora'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Vilora / Velora Series</a>
+          <a href="#crown" onclick="window.navigateToBrand('Crown'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Ground / Crown Series</a>
+          <a href="#flexwell" onclick="window.navigateToBrand('Flexwell'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ FlexFit / Flexwell Series</a>
         </div>
       </li>
       <li>
         <a href="#lab-coats" onclick="window.navigateToCollection('lab-coat', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          2. Lab Coats
+          2. Lab Coats (Helium)
         </a>
       </li>
       <li>
@@ -257,23 +281,18 @@
         </a>
       </li>
       <li>
-        <a href="#sleeves" onclick="window.navigateToCollection('sleeves', 'feature'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          4. Sleeves
-        </a>
-      </li>
-      <li>
-        <a href="#accessories" onclick="window.navigateToCollection('accessories', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          5. Accessories
+        <a href="#accessories" onclick="window.navigateToAccessories(); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
+          4. Accessories Hub (Sleeves, Caps, Clogs)
         </a>
       </li>
       <li>
         <a href="#ready-to-wear" onclick="window.navigateToView('ready-to-wear'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43; background: #f8fafc;">
-          6. Ready to Wear / Make Your Own Scrub ✨
+          5. Make Your Own Scrubs (Bespoke Studio) ✨
         </a>
       </li>
       <li>
         <a href="#self-service" onclick="window.navigateToView('self-service'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #008779; background: #f0fdfa;">
-          7. Self-Service (Representative Visit) 📍
+          6. Home Service (Representative Visit) 📍
         </a>
       </li>
     </ul>

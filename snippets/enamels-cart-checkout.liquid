@@ -54,12 +54,18 @@
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px;">
-      <button type="button" class="btn-proceed-checkout" onclick="window.openCheckoutModal('bank')">
-        Proceed to Checkout (Bank Transfer)
+      <button type="button" class="btn-proceed-checkout" id="btn-cart-shopify-checkout" onclick="window.proceedToShopifyCheckout()" style="background: #102a43; color: #ffffff; padding: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(16,42,67,0.18);">
+        <span>Proceed to Checkout (Shopify)</span>
+        <span aria-hidden="true">→</span>
       </button>
-      <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('rep')" style="width: 100%; text-align: center; border-radius: 4px; padding: 12px; font-weight: 700;">
-        💬 Order with Customer Representative
-      </button>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('bank')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 8px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #102a43;">
+          🏦 Bank Transfer
+        </button>
+        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('rep')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 8px; font-size: 11px; font-weight: 700; background: #e6fffa; border: 1px solid #99f6e4; color: #008779;">
+          💬 Concierge Assist
+        </button>
+      </div>
     </div>
 
     <div style="margin-top: 10px; text-align: center; font-size: 11px; color: #94a3b8;">
@@ -199,12 +205,15 @@
         </div>
       </div>
 
-      <div style="display: flex; justify-content: center; gap: 12px;">
+      <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
         <button type="button" class="gender-pill-btn" onclick="window.closeCheckoutModal(); window.navigateToView('home');">
-          Return to Homepage
+          Return to Store
         </button>
-        <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="btn-card-action" style="width: auto; padding: 10px 20px; background: #25d366; text-decoration: none;">
+        <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="btn-card-action" style="width: auto; padding: 10px 18px; background: #25d366; text-decoration: none;">
           Share Receipt on WhatsApp
+        </a>
+        <a href="/checkout" class="btn-proceed-checkout" style="width: auto; padding: 10px 20px; text-decoration: none; background: #102a43; color: #ffffff;">
+          Complete in Shopify Checkout →
         </a>
       </div>
     </div>
