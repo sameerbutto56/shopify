@@ -4053,15 +4053,15 @@
 
     window.openCartDrawer = function() {
       renderCartDrawerItems();
-      const drawer = document.getElementById('cart-drawer');
-      const overlay = document.getElementById('cart-drawer-overlay');
+      const drawer = document.getElementById('enamels-cart-drawer') || document.getElementById('cart-drawer') || document.querySelector('.enamels-cart-drawer');
+      const overlay = document.getElementById('cart-drawer-overlay') || document.querySelector('.enamels-cart-drawer-overlay');
       if (drawer) drawer.classList.add('open');
       if (overlay) overlay.classList.add('open');
     };
 
     window.closeCartDrawer = function() {
-      const drawer = document.getElementById('cart-drawer');
-      const overlay = document.getElementById('cart-drawer-overlay');
+      const drawer = document.getElementById('enamels-cart-drawer') || document.getElementById('cart-drawer') || document.querySelector('.enamels-cart-drawer');
+      const overlay = document.getElementById('cart-drawer-overlay') || document.querySelector('.enamels-cart-drawer-overlay');
       if (drawer) drawer.classList.remove('open');
       if (overlay) overlay.classList.remove('open');
     };
