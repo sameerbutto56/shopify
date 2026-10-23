@@ -186,7 +186,7 @@
 
 <!-- Mobile Navigation Drawer -->
 <div class="enamels-modal-backdrop" id="mobile-nav-backdrop" onclick="window.toggleMobileNavDrawer()">
-  <div class="enamels-modal-card" style="max-width: 340px; margin-left: 0; height: 100vh; max-height: 100vh; border-radius: 0; padding: 20px; overflow-y: auto;" onclick="event.stopPropagation()">
+  <div class="enamels-modal-card" id="mobile-nav-drawer" style="max-width: 340px; margin-left: 0; height: 100vh; max-height: 100vh; border-radius: 0; padding: 20px; overflow-y: auto;" onclick="event.stopPropagation()">
     <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
       <img src="{{ 'enamels-logo.png' | asset_url }}" alt="Enamels" width="75" height="36" />
       <button type="button" class="modal-close-trigger" onclick="window.toggleMobileNavDrawer()" style="position: static; font-size: 18px; border: none; background: none; cursor: pointer;">✕</button>
