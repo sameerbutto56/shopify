@@ -533,12 +533,14 @@
   z-index: 99990;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.35s ease, visibility 0.35s ease;
 }
 
 .enamels-product-drawer-backdrop.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .enamels-product-drawer-panel {
@@ -554,12 +556,14 @@
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
+  pointer-events: none;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
 
 .enamels-product-drawer-backdrop.active .enamels-product-drawer-panel {
   transform: translateX(0);
+  pointer-events: auto;
 }
 
 /* Drawer Header */

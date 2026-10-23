@@ -1792,11 +1792,13 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
   z-index: 10000;
   display: flex;
   flex-direction: column;
+  pointer-events: none;
   transition: right 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .enamels-cart-drawer.open {
   right: 0;
+  pointer-events: auto;
 }
 
 .drawer-top-header {

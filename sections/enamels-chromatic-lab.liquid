@@ -84,11 +84,11 @@
         description: {{ product.description | strip_html | json }},
         price: {{ product.price }},
         compare_at_price: {{ product.compare_at_price | default: 'null' }},
-        featured_image: {{ product.featured_image | image_url: width: 800 | json }},
+        featured_image: {% if product.featured_image %}{{ product.featured_image | image_url: width: 800 | json }}{% else %}null{% endif %},
         images: [
           {% for img in product.images %}
             {
-              src: {{ img | image_url: width: 800 | json }},
+              src: {% if img %}{{ img | image_url: width: 800 | json }}{% else %}null{% endif %},
               alt: {{ img.alt | json }}
             }{% unless forloop.last %},{% endunless %}
           {% endfor %}
@@ -104,7 +104,7 @@
               compare_at_price: {{ variant.compare_at_price | default: 'null' }},
               available: {{ variant.available | json }},
               options: {{ variant.options | json }},
-              featured_image: {{ variant.featured_image | image_url: width: 800 | json }}
+              featured_image: {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 800 | json }}{% else %}null{% endif %}
             }{% unless forloop.last %},{% endunless %}
           {% endfor %}
         ]
