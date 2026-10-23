@@ -43,7 +43,30 @@ body:has(.enamels-theme-root) #header-group {
   display: block;
 }
 
-body[data-active-view]:not([data-active-view="home"]) .enamels-homepage-modular-section {
+body[data-active-view]:not([data-active-view="home"]) .enamels-homepage-modular-section,
+body[data-active-view]:not([data-active-view="home"]) #enamels-hero-slideshow,
+body[data-active-view]:not([data-active-view="home"]) #homepage-featured-articles,
+body[data-active-view]:not([data-active-view="home"]) #homepage-category-video-split,
+body[data-active-view]:not([data-active-view="home"]) #homepage-live-catalogue-section,
+body[data-active-view]:not([data-active-view="home"]) #homepage-customizer-banner,
+body[data-active-view]:not([data-active-view="home"]) #homepage-home-service-banner,
+body[data-active-view]:not([data-active-view="home"]) #homepage-seasonal-editions,
+body[data-active-view]:not([data-active-view="home"]) #homepage-signature-series,
+body[data-active-view]:not([data-active-view="home"]) #homepage-hospital-shades,
+body[data-active-view]:not([data-active-view="home"]) #homepage-testimonials-section,
+body[data-active-view]:not([data-active-view="home"]) #homepage-trust-badges,
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(.enamels-homepage-modular-section),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#enamels-hero-slideshow),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-featured-articles),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-category-video-split),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-live-catalogue-section),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-customizer-banner),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-home-service-banner),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-seasonal-editions),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-signature-series),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-hospital-shades),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-testimonials-section),
+body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#homepage-trust-badges) {
   display: none !important;
 }
 

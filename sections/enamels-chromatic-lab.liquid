@@ -921,6 +921,12 @@
       }
       document.querySelectorAll('.chroma-view-panel').forEach(p => p.classList.remove('active'));
 
+      if (viewId === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        safeUpdateUrlHash('#home');
+        return;
+      }
+
       if (viewId === 'self-service') {
         const dedicatedPortal = document.getElementById('view-self-service');
         if (dedicatedPortal) {
@@ -1033,6 +1039,39 @@
     };
 
     function handleHashRouting() {
+      const searchParams = new URLSearchParams(window.location.search);
+      const genderQuery = (searchParams.get('gender') || '').toLowerCase();
+      const categoryQuery = (searchParams.get('category') || searchParams.get('cat') || '').toLowerCase();
+      const brandQuery = (searchParams.get('brand') || searchParams.get('series') || '').toLowerCase();
+      const viewQuery = (searchParams.get('view') || '').toLowerCase();
+      const colorQuery = (searchParams.get('color') || searchParams.get('shade') || '').toLowerCase();
+      const searchQuery = (searchParams.get('q') || searchParams.get('query') || searchParams.get('search') || '').toLowerCase();
+
+      if (searchQuery && typeof window.searchStorefrontCatalogue === 'function') {
+        window.searchStorefrontCatalogue(searchQuery);
+        return;
+      }
+      if (colorQuery && typeof window.filterCatalogueByColor === 'function') {
+        window.filterCatalogueByColor('#102A43', colorQuery);
+        return;
+      }
+      if (viewQuery === 'customizer' || viewQuery === 'ready-to-wear' || viewQuery === 'make-your-own-scrubs') {
+        window.navigateToView('ready-to-wear');
+        return;
+      }
+      if (viewQuery === 'home-service' || viewQuery === 'representative-visit' || viewQuery === 'self-service') {
+        window.navigateToView('self-service');
+        return;
+      }
+      if (brandQuery) {
+        window.navigateToBrand(brandQuery, genderQuery || 'all');
+        return;
+      }
+      if (genderQuery || categoryQuery) {
+        window.navigateToGender(genderQuery || 'all', categoryQuery || 'all', 'all');
+        return;
+      }
+
       const rawHash = window.location.hash || '';
       const hash = rawHash.toLowerCase();
       const path = (window.location.pathname || '').toLowerCase();
@@ -1101,6 +1140,16 @@
         window.navigateToView('self-service');
         if (typeof window.openSelfServiceAdminModal === 'function') {
           setTimeout(() => window.openSelfServiceAdminModal(), 200);
+        }
+      } else if (hash.startsWith('#color-')) {
+        const shade = decodeURIComponent(rawHash.replace(/#color-/i, ''));
+        if (typeof window.filterCatalogueByColor === 'function') {
+          window.filterCatalogueByColor('#102A43', shade);
+        }
+      } else if (hash.startsWith('#search-')) {
+        const query = decodeURIComponent(rawHash.replace(/#search-/i, ''));
+        if (typeof window.searchStorefrontCatalogue === 'function') {
+          window.searchStorefrontCatalogue(query);
         }
       } else if (hash === '#product-studio') {
         if (STATE.pdpProduct) {
@@ -2352,6 +2401,90 @@
       grid.style.display = (activeMode === 'grid') ? 'grid' : 'none';
     }
     window.renderGridWithItems = renderGridWithItems;
+
+    window.filterCatalogueByColor = function(hexCode, colorName) {
+      STATE.viewMode = 'gender';
+      STATE.genderFilter = 'all';
+      STATE.productCategoryFilter = 'all';
+      STATE.articleFilter = 'all';
+      window.navigateToView('category-scrubs');
+
+      const landingView = document.getElementById('subview-category-landing');
+      const listingView = document.getElementById('subview-product-listing');
+      const filterBar = document.getElementById('product-listing-filter-bar');
+      const brandGenderBar = document.getElementById('brand-gender-filter-bar');
+      if (landingView) landingView.style.display = 'none';
+      if (listingView) listingView.style.display = 'block';
+      if (brandGenderBar) brandGenderBar.style.display = 'none';
+      if (filterBar) filterBar.style.display = 'block';
+
+      const listingCatTag = document.getElementById('product-listing-category-tag');
+      if (listingCatTag) listingCatTag.textContent = `HOSPITAL SHADE: ${colorName.toUpperCase()}`;
+
+      const listingCatTitle = document.getElementById('product-listing-category-title');
+      if (listingCatTitle) listingCatTitle.textContent = `${colorName} Clinical Scrubs`;
+
+      const listingCatDesc = document.getElementById('product-listing-category-desc');
+      if (listingCatDesc) listingCatDesc.textContent = `Official ${colorName} hospital-approved uniform shades and clinical coordinates.`;
+
+      const catalogue = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
+      const lowerColor = (colorName || '').toLowerCase();
+
+      catalogue.forEach(item => {
+        if (item.colors && item.colors.some(c => c.name.toLowerCase().includes(lowerColor) || lowerColor.includes(c.name.toLowerCase()))) {
+          STATE.activeCardColors[item.id] = colorName;
+        }
+      });
+
+      const matched = catalogue.filter(item => {
+        return (item.colors || []).some(c => c.name.toLowerCase().includes(lowerColor) || lowerColor.includes(c.name.toLowerCase()));
+      });
+
+      renderGridWithItems(matched.length ? matched : catalogue);
+      safeUpdateUrlHash(`#color-${encodeURIComponent(colorName.toLowerCase())}`);
+    };
+
+    window.searchStorefrontCatalogue = function(term) {
+      if (!term || !term.trim()) return;
+      const lower = term.toLowerCase().trim();
+      STATE.viewMode = 'gender';
+      STATE.genderFilter = 'all';
+      STATE.productCategoryFilter = 'all';
+      STATE.articleFilter = 'all';
+      window.navigateToView('category-scrubs');
+
+      const landingView = document.getElementById('subview-category-landing');
+      const listingView = document.getElementById('subview-product-listing');
+      const filterBar = document.getElementById('product-listing-filter-bar');
+      const brandGenderBar = document.getElementById('brand-gender-filter-bar');
+      if (landingView) landingView.style.display = 'none';
+      if (listingView) listingView.style.display = 'block';
+      if (brandGenderBar) brandGenderBar.style.display = 'none';
+      if (filterBar) filterBar.style.display = 'block';
+
+      const listingCatTag = document.getElementById('product-listing-category-tag');
+      if (listingCatTag) listingCatTag.textContent = `SEARCH RESULTS FOR "${term.toUpperCase()}"`;
+
+      const listingCatTitle = document.getElementById('product-listing-category-title');
+      if (listingCatTitle) listingCatTitle.textContent = `Search: "${term}"`;
+
+      const listingCatDesc = document.getElementById('product-listing-category-desc');
+      if (listingCatDesc) listingCatDesc.textContent = `Showing all products matching your query "${term}".`;
+
+      const catalogue = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
+      const matched = catalogue.filter(p => {
+        const t = (p.title || '').toLowerCase();
+        const s = (p.series || '').toLowerCase();
+        const c = (p.category || '').toLowerCase();
+        const f = (p.fabric || '').toLowerCase();
+        const d = (p.description || '').toLowerCase();
+        const col = (p.colors || []).map(x => (x.name || '').toLowerCase()).join(' ');
+        return t.includes(lower) || s.includes(lower) || c.includes(lower) || f.includes(lower) || d.includes(lower) || col.includes(lower);
+      });
+
+      renderGridWithItems(matched);
+      safeUpdateUrlHash(`#search-${encodeURIComponent(lower)}`);
+    };
 
     // ------------------------------------------------------------
     // HOMEPAGE EDITORIAL & LIVE CATALOGUE CONTROLLERS

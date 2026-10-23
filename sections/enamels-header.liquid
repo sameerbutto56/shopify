@@ -42,7 +42,8 @@
           class="header-search-input"
           id="enamels-header-search-input"
           placeholder="{{ search_placeholder | escape }}"
-          onfocus="if (typeof window.openSearchModal === 'function') window.openSearchModal();"
+          onkeydown="if (event.key === 'Enter') { if (typeof window.searchStorefrontCatalogue === 'function') window.searchStorefrontCatalogue(this.value); }"
+          oninput="if (this.value.length >= 3) { if (typeof window.searchStorefrontCatalogue === 'function') window.searchStorefrontCatalogue(this.value); }"
           aria-label="Search Catalog"
         />
       </div>
