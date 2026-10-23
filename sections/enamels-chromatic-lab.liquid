@@ -2319,6 +2319,8 @@
           }
           emptyStateBox.style.display = 'block';
           grid.innerHTML = '';
+          const railMount = document.getElementById('enamels-hanging-rail-mount');
+          if (railMount) railMount.innerHTML = '';
         } else {
           grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 12px; border: 1.5px dashed #cbd5e1;">
@@ -2334,6 +2336,20 @@
 
       if (emptyStateBox) emptyStateBox.style.display = 'none';
       grid.innerHTML = sorted.map((item, idx) => window.renderProductCardHtml(item, idx)).join('');
+
+      // Update Boutique Hanging Rail
+      const railMount = document.getElementById('enamels-hanging-rail-mount');
+      if (railMount && typeof window.renderHangingRailHtml === 'function') {
+        railMount.innerHTML = window.renderHangingRailHtml(sorted);
+        if (typeof window.initHangingRail === 'function') {
+          window.initHangingRail();
+        }
+      }
+
+      // Respect active view mode
+      const activeMode = window.EnamelsRailState?.viewMode || 'rail';
+      if (railMount) railMount.style.display = (activeMode === 'rail') ? 'block' : 'none';
+      grid.style.display = (activeMode === 'grid') ? 'grid' : 'none';
     }
     window.renderGridWithItems = renderGridWithItems;
 

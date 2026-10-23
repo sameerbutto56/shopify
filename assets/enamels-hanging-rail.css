@@ -1,0 +1,955 @@
+/* ==========================================================================
+   ENAMELS BOUTIQUE HANGING CLOTHING RAIL & SELECTION DRAWER
+   Inspired by Velvetica Studio's "On the Rail" luxury interactive rack
+   ========================================================================== */
+
+:root {
+  --rail-finish-silver: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 22%, #94a3b8 55%, #64748b 85%, #334155 100%);
+  --rail-finish-black: linear-gradient(180deg, #475569 0%, #1e293b 25%, #0f172a 60%, #020617 100%);
+  --rail-finish-gold: linear-gradient(180deg, #fef9c3 0%, #eab308 28%, #ca8a04 65%, #854d0e 95%);
+  --rail-tilt-angle: -22deg;
+  --rail-lift-distance: -14px;
+  --rail-item-width: 260px;
+  --rail-item-gap: 24px;
+  --rail-accent: #00b8a9;
+  --rail-navy: #102a43;
+}
+
+/* ------------------------------------------------------------
+   1. SECTION & RAIL APPARATUS CONTAINER
+   ------------------------------------------------------------ */
+.enamels-hanging-rail-section {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  padding: 36px 0 60px 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+.enamels-rail-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.enamels-rail-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.enamels-rail-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rail-accent);
+  background: #e6fffa;
+  padding: 4px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.enamels-rail-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--rail-navy);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.enamels-rail-subtext {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* View Mode Switcher: Hanging Rail vs Classic Grid */
+.enamels-view-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.enamels-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.enamels-view-btn.active {
+  background: #ffffff;
+  color: var(--rail-navy);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.enamels-view-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ------------------------------------------------------------
+   2. LUXURY CLOTHING RAIL STRUCTURE (OVERHEAD BAR & BRACKETS)
+   ------------------------------------------------------------ */
+.enamels-rail-stage {
+  position: relative;
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  perspective: 1400px;
+  overflow: visible;
+}
+
+/* Ceiling / Wall mounting brackets */
+.enamels-rail-brackets {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+
+.enamels-rail-bracket {
+  width: 16px;
+  height: 44px;
+  background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 50%, #64748b 100%);
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.enamels-rail-bracket::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -4px;
+  width: 24px;
+  height: 12px;
+  background: #64748b;
+  border-radius: 2px;
+}
+
+/* The physical horizontal metal rail bar */
+.enamels-rail-bar {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: var(--rail-finish-silver);
+  border-radius: 7px;
+  box-shadow: 0 6px 14px rgba(16, 42, 67, 0.18), inset 0 2px 2px rgba(255, 255, 255, 0.8), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.enamels-rail-bar.finish-black {
+  background: var(--rail-finish-black);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.3), inset 0 -2px 3px rgba(0, 0, 0, 0.7);
+}
+
+.enamels-rail-bar.finish-gold {
+  background: var(--rail-finish-gold);
+  box-shadow: 0 6px 14px rgba(133, 77, 14, 0.25), inset 0 2px 2px rgba(255, 255, 255, 0.9), inset 0 -2px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* End-caps on rail bar */
+.enamels-rail-bar::before,
+.enamels-rail-bar::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: inherit;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.enamels-rail-bar::before { left: -8px; }
+.enamels-rail-bar::after { right: -8px; }
+
+/* ------------------------------------------------------------
+   3. HORIZONTAL SCROLLING TRACK & HANGER ITEMS
+   ------------------------------------------------------------ */
+.enamels-rail-track-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.enamels-rail-track {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rail-item-gap);
+  padding: 48px 60px 40px 60px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+}
+
+.enamels-rail-track::-webkit-scrollbar {
+  display: none;
+}
+
+.enamels-rail-track:active {
+  cursor: grabbing;
+}
+
+/* Each Garment Item on the Rail */
+.enamels-hanger-item {
+  flex: 0 0 var(--rail-item-width);
+  width: var(--rail-item-width);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-snap-align: center;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  cursor: pointer;
+}
+
+/* Angled side-on presentation at rest, rotating to front-facing on hover/active */
+.enamels-hanger-card {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  transform: rotateY(var(--rail-tilt-angle)) translateZ(-8px);
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.3s ease;
+  will-change: transform;
+}
+
+/* Hover or Active State: Garment faces shopper & lifts off rail slightly */
+.enamels-hanger-item:hover .enamels-hanger-card,
+.enamels-hanger-item.is-focused .enamels-hanger-card {
+  transform: rotateY(0deg) translateZ(28px) translateY(var(--rail-lift-distance));
+}
+
+/* When clicked, subtle lift-off transition before opening drawer */
+.enamels-hanger-item.lifting .enamels-hanger-card {
+  transform: rotateY(0deg) translateZ(40px) translateY(-40px) scale(1.04);
+  transition: transform 0.25s ease-out;
+}
+
+/* ------------------------------------------------------------
+   4. THE HANGER ASSEMBLY (HOOK & SHOULDER)
+   ------------------------------------------------------------ */
+.enamels-hanger-hook-wrap {
+  position: relative;
+  width: 32px;
+  height: 38px;
+  margin-bottom: -4px;
+  z-index: 10;
+}
+
+.enamels-hanger-hook-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+}
+
+.enamels-hanger-shoulders {
+  position: relative;
+  width: 190px;
+  height: 22px;
+  background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+  border-radius: 12px 12px 4px 4px;
+  box-shadow: 0 4px 8px rgba(16, 42, 67, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.enamels-hanger-shoulders::after {
+  content: 'ENAMELS';
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #475569;
+  opacity: 0.75;
+}
+
+/* ------------------------------------------------------------
+   5. GARMENT IMAGE CONTAINER & FABRIC SHADOWS
+   ------------------------------------------------------------ */
+.enamels-hanger-garment-wrap {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -8px;
+  z-index: 6;
+}
+
+.enamels-hanger-garment-img {
+  max-width: 95%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 20px rgba(16, 42, 67, 0.16));
+  transition: transform 0.35s ease, filter 0.35s ease;
+  pointer-events: none;
+}
+
+.enamels-hanger-item:hover .enamels-hanger-garment-img,
+.enamels-hanger-item.is-focused .enamels-hanger-garment-img {
+  filter: drop-shadow(0 22px 28px rgba(16, 42, 67, 0.22));
+}
+
+/* Floor shadow underneath hanging garment */
+.enamels-hanger-floor-shadow {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 16px;
+  background: radial-gradient(ellipse at center, rgba(16, 42, 67, 0.24) 0%, rgba(16, 42, 67, 0.06) 55%, transparent 75%);
+  border-radius: 50%;
+  transition: transform 0.4s ease, opacity 0.4s ease, width 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.enamels-hanger-item:hover .enamels-hanger-floor-shadow,
+.enamels-hanger-item.is-focused .enamels-hanger-floor-shadow {
+  transform: translateX(-50%) scale(1.15);
+  opacity: 0.85;
+  width: 170px;
+}
+
+/* ------------------------------------------------------------
+   6. HANGING BOUTIQUE PRICE & ARTICLE TAG
+   ------------------------------------------------------------ */
+.enamels-hanger-tag {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 9;
+  text-align: left;
+  transform: rotate(3deg);
+  transform-origin: top right;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  pointer-events: auto;
+}
+
+/* Fine cord connecting tag to hanger */
+.enamels-hanger-tag::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  right: 14px;
+  width: 1px;
+  height: 12px;
+  background: #cbd5e1;
+}
+
+.enamels-hanger-item:hover .enamels-hanger-tag {
+  transform: rotate(0deg) scale(1.02);
+  box-shadow: 0 6px 18px rgba(16, 42, 67, 0.16);
+}
+
+.enamels-hanger-tag-series {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rail-accent);
+}
+
+.enamels-hanger-tag-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rail-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+  margin: 0;
+}
+
+.enamels-hanger-tag-price {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--rail-navy);
+}
+
+/* Live colour swatches on hanger */
+.enamels-hanger-color-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.enamels-hanger-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 0 1px #cbd5e1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.enamels-hanger-dot:hover {
+  transform: scale(1.25);
+}
+
+.enamels-hanger-dot.active {
+  box-shadow: 0 0 0 2px var(--rail-accent);
+}
+
+/* Quick Select Button below garment */
+.enamels-hanger-select-btn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--rail-navy);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.enamels-hanger-item:hover .enamels-hanger-select-btn {
+  opacity: 1;
+  background: var(--rail-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 184, 169, 0.3);
+}
+
+/* ------------------------------------------------------------
+   7. NAVIGATION CHEVRONS & PROGRESS INDICATOR
+   ------------------------------------------------------------ */
+.enamels-rail-nav-btn {
+  position: absolute;
+  top: 55%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--rail-navy);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 6px 18px rgba(16, 42, 67, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 15;
+  transition: all 0.2s ease;
+}
+
+.enamels-rail-nav-btn:hover {
+  background: var(--rail-navy);
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.enamels-rail-nav-btn.prev-btn { left: 16px; }
+.enamels-rail-nav-btn.next-btn { right: 16px; }
+
+.enamels-rail-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Progress track bar at bottom of rail */
+.enamels-rail-progress-track {
+  width: 220px;
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin: 20px auto 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.enamels-rail-progress-thumb {
+  height: 100%;
+  background: var(--rail-accent);
+  border-radius: 2px;
+  width: 30%;
+  transition: transform 0.1s linear, width 0.2s ease;
+}
+
+/* ------------------------------------------------------------
+   8. SLIDE-OUT PRODUCT CONFIGURATION DRAWER
+   ------------------------------------------------------------ */
+.enamels-product-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 42, 67, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 99990;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.enamels-product-drawer-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.enamels-product-drawer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 520px;
+  max-width: 95vw;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -10px 0 35px rgba(16, 42, 67, 0.22);
+  z-index: 99995;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.enamels-product-drawer-backdrop.active .enamels-product-drawer-panel {
+  transform: translateX(0);
+}
+
+/* Drawer Header */
+.enamels-drawer-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.enamels-drawer-breadcrumb {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rail-accent);
+}
+
+.enamels-drawer-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--rail-navy);
+  margin: 2px 0 0 0;
+}
+
+.enamels-drawer-close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.enamels-drawer-close-btn:hover {
+  background: #e2e8f0;
+  color: var(--rail-navy);
+  transform: rotate(90deg);
+}
+
+/* Drawer Body (Scrollable) */
+.enamels-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Garment Visual Preview in Drawer */
+.enamels-drawer-media-box {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.enamels-drawer-media-img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.enamels-drawer-gallery-strip {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.enamels-drawer-gallery-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  object-fit: contain;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.enamels-drawer-gallery-thumb.active {
+  border-color: var(--rail-accent);
+}
+
+/* Price & SKU Bar */
+.enamels-drawer-pricing-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.enamels-drawer-price-main {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--rail-navy);
+}
+
+.enamels-drawer-price-compare {
+  font-size: 14px;
+  color: #94a3b8;
+  text-decoration: line-through;
+  margin-left: 8px;
+}
+
+.enamels-drawer-sku {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* Color Selection */
+.enamels-drawer-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rail-navy);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.enamels-drawer-color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.enamels-drawer-color-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rail-navy);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.enamels-drawer-color-btn:hover {
+  border-color: #cbd5e1;
+}
+
+.enamels-drawer-color-btn.active {
+  border-color: var(--rail-navy);
+  background: #f8fafc;
+}
+
+.enamels-drawer-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Standard Size Selection */
+.enamels-drawer-sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.enamels-drawer-size-btn {
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rail-navy);
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.enamels-drawer-size-btn:hover {
+  border-color: var(--rail-accent);
+}
+
+.enamels-drawer-size-btn.active {
+  background: var(--rail-navy);
+  color: #ffffff;
+  border-color: var(--rail-navy);
+}
+
+/* Custom 'C' Measurements Accordion */
+.enamels-custom-c-toggle-wrap {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.enamels-custom-c-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.enamels-custom-c-body {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.enamels-custom-c-body.open {
+  display: block;
+}
+
+.enamels-custom-c-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.enamels-custom-input-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.enamels-custom-input-group input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+}
+
+.enamels-custom-input-group input:focus {
+  border-color: var(--rail-accent);
+}
+
+/* Embroidery / Name Engraving Customization */
+.enamels-embroidery-box {
+  padding: 14px;
+  background: #f0fdfa;
+  border: 1px solid #99f6e4;
+  border-radius: 8px;
+}
+
+/* Drawer Sticky Footer with Add to Cart */
+.enamels-drawer-footer {
+  padding: 18px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.enamels-drawer-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.enamels-drawer-qty-selector {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.enamels-drawer-qty-btn {
+  background: #f8fafc;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.enamels-drawer-qty-val {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rail-navy);
+}
+
+.enamels-drawer-add-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--rail-navy);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+
+.enamels-drawer-add-btn:hover {
+  background: var(--rail-accent);
+  box-shadow: 0 4px 14px rgba(0, 184, 169, 0.35);
+  transform: translateY(-1px);
+}
+
+.enamels-drawer-add-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   9. MOBILE & REDUCED MOTION BREAKPOINTS
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  :root {
+    --rail-item-width: 210px;
+    --rail-item-gap: 16px;
+    --rail-tilt-angle: -14deg;
+  }
+
+  .enamels-hanging-rail-section {
+    padding: 24px 0 40px 0;
+  }
+
+  .enamels-rail-track {
+    padding: 40px 24px 30px 24px;
+  }
+
+  .enamels-hanger-garment-wrap {
+    height: 270px;
+  }
+
+  .enamels-hanger-tag {
+    padding: 6px 8px;
+    top: 8px;
+    right: 6px;
+  }
+
+  .enamels-hanger-tag-title {
+    max-width: 80px;
+    font-size: 10px;
+  }
+
+  .enamels-rail-nav-btn {
+    display: none; /* Mobile uses natural touch-swipe */
+  }
+
+  .enamels-product-drawer-panel {
+    width: 100vw;
+    max-width: 100vw;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enamels-hanger-card {
+    transform: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+  .enamels-hanger-item:hover .enamels-hanger-card {
+    transform: none !important;
+  }
+}

@@ -63,7 +63,8 @@
       signatureSeries: true,
       hospitalShades: true,
       testimonials: true,
-      trustBadges: true
+      trustBadges: true,
+      hangingRail: true
     }
   };
 
@@ -333,7 +334,8 @@
       { key: 'signatureSeries', name: '🩺 Signature Scrub Lines' },
       { key: 'hospitalShades', name: '🎨 Clinical Hospital Color Shades' },
       { key: 'testimonials', name: '⭐ Customer & Doctor Reviews' },
-      { key: 'trustBadges', name: '🛡️ Trust & Service Guarantee Badges' }
+      { key: 'trustBadges', name: '🛡️ Trust & Service Guarantee Badges' },
+      { key: 'hangingRail', name: '👔 Boutique Hanging Clothing Rail' }
     ];
 
     container.innerHTML = sectionsMeta.map(sec => `
@@ -553,6 +555,7 @@
     toggleElementDisplay('#homepage-hospital-shades', studioConfig.sections.hospitalShades);
     toggleElementDisplay('#homepage-testimonials-section', studioConfig.sections.testimonials);
     toggleElementDisplay('#homepage-trust-badges', studioConfig.sections.trustBadges);
+    toggleElementDisplay('#enamels-hanging-rail-container', studioConfig.sections.hangingRail);
 
     // 7. Theme tokens (CSS variables)
     if (studioConfig.colorPrimary) {

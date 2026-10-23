@@ -1,0 +1,211 @@
+{% comment %}
+  Section contract: enamels-hanging-rail.liquid
+  Velvetica Studio-inspired boutique clothing rail and slide-out product selection drawer.
+  Provides interactive hanging-garment presentation, side-on to front-facing rotation on scroll/hover,
+  dynamic hanger color changes, and direct Shopify cart integration.
+{% endcomment %}
+
+{{ 'enamels-hanging-rail.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'enamels-hanging-rail.js' | asset_url }}" defer></script>
+
+{% liquid
+  assign enable_rail = section.settings.enable_hanging_rail
+  assign rail_finish = section.settings.rail_finish | default: 'silver'
+  assign default_view = section.settings.default_view | default: 'rail'
+  assign show_tags = section.settings.show_tags
+  assign show_swatches = section.settings.show_swatches
+  assign tilt_angle = section.settings.tilt_angle | default: 22
+  assign lift_distance = section.settings.lift_distance | default: 14
+  assign section_bg = section.settings.section_bg | default: '#ffffff'
+  assign pad_top = section.settings.section_padding_top | default: 40
+  assign pad_bottom = section.settings.section_padding_bottom | default: 60
+  assign heading = section.settings.heading | default: 'Boutique Rail Collection'
+  assign subtext = section.settings.subtext | default: 'Glide along the rail to inspect luxury clinical scrubs and tailored medical uniforms.'
+%}
+
+{% if enable_rail %}
+<section
+  class="enamels-hanging-rail-section"
+  id="shopify-section-enamels-hanging-rail"
+  style="
+    background-color: {{ section_bg }};
+    padding-top: {{ pad_top }}px;
+    padding-bottom: {{ pad_bottom }}px;
+    --rail-tilt-angle: -{{ tilt_angle }}deg;
+    --rail-lift-distance: -{{ lift_distance }}px;
+  "
+  data-rail-finish="{{ rail_finish }}"
+  data-default-view="{{ default_view }}"
+>
+  <div class="page-container">
+    <!-- Rail Section Header Row -->
+    <div class="enamels-rail-header-row">
+      <div class="enamels-rail-title-wrap">
+        <span class="enamels-rail-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+          Interactive Showroom
+        </span>
+        <h2 class="enamels-rail-heading">{{ heading | escape }}</h2>
+        <p class="enamels-rail-subtext">{{ subtext | escape }}</p>
+      </div>
+
+      <!-- View Switcher Toggle -->
+      <div class="enamels-view-switcher" role="group" aria-label="Catalog View Mode">
+        <button
+          type="button"
+          class="enamels-view-btn {% if default_view == 'rail' %}active{% endif %}"
+          id="enamels-view-btn-rail"
+          onclick="window.switchEnamelsView('rail')"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 3h12M12 3v3M8 6h8l3 15H5L8 6z"></path>
+          </svg>
+          <span>Hanging Rail</span>
+        </button>
+        <button
+          type="button"
+          class="enamels-view-btn {% if default_view == 'grid' %}active{% endif %}"
+          id="enamels-view-btn-grid"
+          onclick="window.switchEnamelsView('grid')"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Grid View</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Dynamic Container Injected & Controlled via JS -->
+    <div id="enamels-rail-mount-point">
+      <!-- Injected by window.renderHangingRail(items) or initialized directly -->
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.initHangingRail === 'function') {
+      window.initHangingRail();
+    }
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Boutique Hanging Rail",
+  "tag": "section",
+  "class": "section-enamels-hanging-rail",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_hanging_rail",
+      "label": "Enable Boutique Hanging Rail",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "rail_finish",
+      "label": "Rail Metal Finish",
+      "options": [
+        { "value": "silver", "label": "Brushed Chrome / Silver" },
+        { "value": "black", "label": "Matte Obsidian Black" },
+        { "value": "gold", "label": "Champagne Gold" }
+      ],
+      "default": "silver"
+    },
+    {
+      "type": "select",
+      "id": "default_view",
+      "label": "Default Display Mode",
+      "options": [
+        { "value": "rail", "label": "Boutique Hanging Rail" },
+        { "value": "grid", "label": "Classic Grid View" }
+      ],
+      "default": "rail"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show Hanging Boutique Price Tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show Live Color Swatches on Rail",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tilt_angle",
+      "min": 10,
+      "max": 35,
+      "step": 1,
+      "unit": "deg",
+      "label": "Garment Resting Tilt Angle",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "lift_distance",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Hover Lift-Off Distance",
+      "default": 14
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Boutique Rail Collection"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Section Subtitle",
+      "default": "Glide along the rail to inspect luxury clinical scrubs and tailored medical uniforms."
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Boutique Hanging Rail"
+    }
+  ]
+}
+{% endschema %}

@@ -253,8 +253,48 @@
         </div>
       </div>
 
+      <!-- VIEW SWITCHER: BOUTIQUE HANGING RAIL vs CLASSIC GRID -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 12px; font-weight: 700; color: #102a43; text-transform: uppercase; letter-spacing: 0.05em;">Display Mode:</span>
+          <div class="enamels-view-switcher" role="group" aria-label="Catalog View Mode">
+            <button
+              type="button"
+              class="enamels-view-btn active"
+              id="enamels-view-btn-rail"
+              onclick="window.switchEnamelsView('rail')"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M6 3h12M12 3v3M8 6h8l3 15H5L8 6z"></path>
+              </svg>
+              <span>Boutique Rail</span>
+            </button>
+            <button
+              type="button"
+              class="enamels-view-btn"
+              id="enamels-view-btn-grid"
+              onclick="window.switchEnamelsView('grid')"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Classic Grid</span>
+            </button>
+          </div>
+        </div>
+        <span style="font-size: 11px; color: #64748b; font-style: italic;">Hover or swipe garments to inspect in 3D</span>
+      </div>
+
+      <!-- BOUTIQUE HANGING CLOTHING RAIL CONTAINER -->
+      <div id="enamels-hanging-rail-mount" style="display: block; margin-bottom: 30px;">
+        <!-- Injected dynamically by window.renderHangingRail(items) -->
+      </div>
+
       <!-- DYNAMIC GRID OF PRODUCTS WITH COLOR SWATCHES -->
-      <div class="products-cards-grid" id="scrubs-products-grid">
+      <div class="products-cards-grid" id="scrubs-products-grid" style="display: none;">
         <!-- Injected dynamically via catalogue data -->
       </div>
 
