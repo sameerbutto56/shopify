@@ -1,37 +1,55 @@
-# Enamels Implementation Task Tracker (GSD / Ralph Loop)
+# Enamels Implementation Task Tracker — Final Implementation Brief
 
-## Phase 1: Audit & Planning
-- [x] Audit Enamels live website (`enamelsonline.com`) collections, series, products, pricing, and customization methods
-- [x] Inspect existing Shopify theme structure (Horizon OS 2.0 component framework)
-- [x] Create and maintain full Git backup on GitHub (`sameerbutto56/shopify`)
-- [x] Define catalogue hierarchy: Scrubs (Men/Women/Unisex) -> Series (Sprinter, Velora, Crown, FlexFit) -> Caps (BunFit, Kennedy) -> Lab Coats -> Accessories
+## Milestone 1: Safety, Backups & Environment
+- [x] Tagged local git `pre-modularization-backup` and created branch `feature-full-theme-modularization-and-studio`
+- [x] Pushed remote backup theme `Horizon - Pre-Modularization Backup` (#192819396896) to Shopify store
+- [x] Target staging theme confirmed: `Horizon` [unpublished] (#192352092448) (Live theme #192354877728 protected)
 
-## Milestone 1: Catalogue & Design
-- [x] Navigation hierarchy and mega-menu support for Scrubs (Men, Women, Unisex), Surgical Caps, Lab Coats, Accessories
-- [x] Premium editorial homepage with 3D depth, Technical Fabric Performance Badges, Shop by Series, and Shop by Colour
-- [x] Collection pages with horizontal filters, sorting, responsive product grid, and trust perks (`templates/collection.json`)
-- [x] Colour swatches: automatic clinical shade dot indicator on all product cards in collection and search grids
-- [x] Responsive product cards with CSS3 hardware-accelerated 3D hover elevation (`assets/enamels-3d-tilt.css`)
+## Milestone 2: Remove All Fake / Demo Content
+- [x] Removed `{% render 'enamels-demo-mode' %}` from `layout/theme.liquid` (removes QA pill, modal, simulated responses)
+- [x] Cleared hardcoded `DEMO — ...` products and fake catalog fallback from `assets/enamels-catalogue-data.js` (`window.EnamelsCatalogue = []`)
+- [x] Ensure storefront relies exclusively on real Shopify products (`window.ShopifyLiveProducts`) and real store collections
+- [x] Provided neutral, clean empty states when no products match filters or when a category has no live products (zero fake replacements)
+- [x] Removed hardcoded fake doctor reviews from default content and made reviews optional blocks that cleanly hide when empty
+- [x] Verified zero fake titles ("DEMO — ..."), fake prices, or placeholder reviews appear on the storefront
 
-## Milestone 2: Product Configurator
-- [x] Multi-step Customization Wizard (`snippets/enamels-customization-wizard.liquid` & `sections/enamels-customizer-section.liquid`)
-- [x] Interactive size selection with pop-up Size Guide modal (measurements in inches and centimeters)
-- [x] Medical shade swatches (Burgundy, Navy, Olive Shine, Ceil Blue, Hunter Green, Obsidian Black, Heather Grey)
-- [x] Sleeve length selector: Half Sleeve (Clinical Standard) vs Full Sleeve (Modest Cut +Rs. 250)
-- [x] Personalization tiers: Plain, Direct Name Embroidery (+Rs. 450), Name Patch (+Rs. 350), Hospital Logo (+Rs. 650)
-- [x] Live Visual Chest Pocket Embroidery Simulator with live text rendering, thread colors, and font styles
-- [x] Line-item property binding (`properties['Embroidery Line 1']`, `properties['Color']`, etc.) to guarantee order accuracy
-- [x] Companion add-on products support for checkout billing integrity
+## Milestone 3: Modularize Homepage into Native OS 2.0 Sections
+- [x] Built `sections/enamels-announcement-bar.liquid` with message blocks, speed, and color settings
+- [x] Built `sections/enamels-header.liquid` with logo picker, nav links, support phone, search
+- [x] Built `sections/enamels-slideshow.liquid` with slide blocks, drag-and-drop image uploads, headings, links
+- [x] Built `sections/enamels-brand-gallery.liquid` with brand blocks, drag-and-drop thumbnail uploads, collection links
+- [x] Built `sections/enamels-category-video.liquid` with Men, Women, Scrubs, Lab Coats, Caps, Accessories 3D tiles & brand video
+- [x] Built `sections/enamels-live-catalogue.liquid` connected to real Shopify products, filter pills, sorting, and grid layout
+- [x] Built `sections/enamels-customizer-banner.liquid` for Make Your Own Scrubs promotional card
+- [x] Built `sections/enamels-home-service-banner.liquid` for Lahore Home Service / Concierge visit booking banner
+- [x] Built `sections/enamels-seasonal-collections.liquid` with Summer vs Winter seasonal card blocks
+- [x] Built `sections/enamels-signature-series.liquid` with series card blocks and badges
+- [x] Built `sections/enamels-hospital-shades.liquid` with hospital color swatch blocks
+- [x] Built `sections/enamels-testimonials.liquid` with review blocks and automatic empty-state hiding
+- [x] Built `sections/enamels-trust-badges.liquid` with value proposition perk blocks
+- [x] Updated `templates/index.json` to compose all modular sections in exact default visual order
+- [x] Enabled section drag-and-drop, add/remove, hide/show, and block reordering in Theme Editor
 
-## Milestone 3: Cross-Selling & Checkout
-- [x] Connect in-wizard matching surgical cap (+Rs. 800) and medical sleeves (+Rs. 750) add-ons
-- [x] Frequently Bought Together curated bundle section on product pages with 1-click cart addition
-- [x] Slide-out Cart Drawer with PKR 7,000 Free Shipping threshold progress bar (`snippets/cart-free-shipping-bar.liquid`)
-- [x] In-cart cross-sell carousel (`snippets/cart-drawer-upsell.liquid`)
-- [x] Cash on Delivery (COD) assurance badges below checkout button
-- [x] Smooth drawer slide-open trigger upon adding customized uniform
+## Milestone 4: Modularize Collection & Product Pages
+- [x] Built `sections/enamels-collection-template.liquid` for `templates/collection.json`, `page.men.json`, `page.women.json`
+- [x] Built `sections/enamels-product-template.liquid` for `templates/product.json` (preserving full customizer, size auto-fill, C (Custom) fit, line items)
+- [x] Built `sections/enamels-ready-to-wear-section.liquid` for `templates/page.customizer.json`
+- [x] Built `sections/enamels-self-service-section.liquid` for `templates/page.home-service.json`
 
-## Verification & Deployment
-- [x] `shopify theme check` passed with 0 errors across 371 files
-- [x] Pushed to unpublished preview theme `Horizon - Editorial Edition` (`#192354877728`)
-- [x] Git repository synced with `origin/main` on GitHub
+## Milestone 5: Build Easy Drag-and-Drop Studio Panel
+- [x] Created `snippets/enamels-studio-panel.liquid`, `assets/enamels-studio.css`, and `assets/enamels-studio.js`:
+  - Homepage Content Manager (headings, drag-and-drop images, buttons, visibility)
+  - Brand and Article Manager (brand name, drag-and-drop thumbnail, collection link, order)
+  - Category Manager (categories, ordering, images, visibility)
+  - Banner and Video Manager (banner image upload, text, link, video source, poster)
+  - Page and Section Manager (select page, view/reorder sections, edit settings)
+  - Drag-and-Drop Image Uploader with file validation, preview, replace, remove, persistent storage
+  - Fine-grained controls (typography, colors, padding, aspect ratio, border radius, animations)
+- [x] Wired Studio panel seamlessly with persistent store/theme settings and live storefront preview
+- [x] Keyboard shortcut `Shift + S` and URL parameter `?studio=true` support
+
+## Milestone 6: Verification, Testing & Staging Deployment
+- [ ] Automated verification of all 17 mandatory acceptance tests from the brief
+- [ ] Theme Check verification (ensure zero schema/liquid errors)
+- [ ] Deploy to Staging Theme `#192352092448`
+- [ ] Provide final comprehensive delivery report

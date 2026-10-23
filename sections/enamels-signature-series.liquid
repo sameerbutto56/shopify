@@ -1,0 +1,228 @@
+{% comment %}
+  Enamels Modular Signature Scrub Lines Section
+  Provides customizable series spotlight cards (Sprinter, Velora, Crown, etc.)
+  with color presets, descriptions, price tags, and direct collection triggers.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign tag_text = section.settings.series_tag | default: 'ENGINEERED FOR CLINICAL ROLES'
+  assign title_text = section.settings.series_title | default: 'Signature Scrub Lines'
+  assign subtitle_text = section.settings.series_subtitle | default: 'From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms.'
+  assign blocks_count = section.blocks.size
+-%}
+
+{% if enable_section %}
+<section style="background-color: #f8fafc; padding: 60px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;" id="homepage-signature-series" aria-label="Signature Scrub Lines">
+  <div class="page-container">
+    <div class="section-header-wrap" style="margin-top: 0;">
+      {% if tag_text != blank %}
+        <span class="section-tag-sub">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if title_text != blank %}
+        <h2 class="section-title-main">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if subtitle_text != blank %}
+        <p class="section-title-desc">{{ subtitle_text | escape }}</p>
+      {% endif %}
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+      {% if blocks_count > 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'series_card' %}
+            {% liquid
+              assign bg_color = '#e0f2fe'
+              assign text_color = '#0369a1'
+              case block.settings.badge_color_preset
+                when 'pink'
+                  assign bg_color = '#fdf2f8'
+                  assign text_color = '#be185d'
+                when 'amber'
+                  assign bg_color = '#fef3c7'
+                  assign text_color = '#b45309'
+                when 'teal'
+                  assign bg_color = '#ccfbf1'
+                  assign text_color = '#0f766e'
+              endcase
+            %}
+            <div
+              class="category-tile-card"
+              style="padding: 24px; text-align: left;"
+              id="shopify-block-{{ block.id }}"
+              {{ block.shopify_attributes }}
+            >
+              <span style="font-size: 10px; font-weight: 700; background: {{ bg_color }}; color: {{ text_color }}; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">
+                {{ block.settings.badge_tag | escape }}
+              </span>
+              <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">{{ block.settings.title | escape }}</h3>
+              <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">{{ block.settings.description | escape }}</p>
+              {% if block.settings.price_label != blank %}
+                <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">{{ block.settings.price_label | escape }}</div>
+              {% endif %}
+              <button
+                type="button"
+                class="btn-card-action"
+                onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('{{ block.settings.series_key | escape }}'); } else { window.location.href = '#collection-{{ block.settings.series_key | handleize }}'; }"
+              >
+                {{ block.settings.button_label | default: 'Explore Series →' | escape }}
+              </button>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <!-- Default Fallback Cards -->
+        <div class="category-tile-card" style="padding: 24px; text-align: left;">
+          <span style="font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">4-Way Athletic Stretch</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Sprinter Series</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility.</p>
+          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,150</div>
+          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Sprinter')">Explore Sprinter →</button>
+        </div>
+
+        <div class="category-tile-card" style="padding: 24px; text-align: left;">
+          <span style="font-size: 10px; font-weight: 700; background: #fdf2f8; color: #be185d; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Luxury Micro-Drape</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Velora Series</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Liquid soft touch with fluid drape. Engineered with antimicrobial finishing and wrinkle-release properties that stay sharp through 24-hour shifts without ironing.</p>
+          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 5,500</div>
+          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Velora')">Explore Velora →</button>
+        </div>
+
+        <div class="category-tile-card" style="padding: 24px; text-align: left;">
+          <span style="font-size: 10px; font-weight: 700; background: #fef3c7; color: #b45309; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Executive Mandarin</span>
+          <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">Crown Series</h3>
+          <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">Structured standing mandarin collar with concealed front placket. Tailored for department heads, senior consultants, and leadership rounds.</p>
+          <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">From Rs. 6,200</div>
+          <button type="button" class="btn-card-action" onclick="window.navigateToCollection('Crown')">Explore Crown →</button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Signature Scrub Lines",
+  "class": "enamels-signature-series-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "series_tag",
+      "label": "Section Tag",
+      "default": "ENGINEERED FOR CLINICAL ROLES"
+    },
+    {
+      "type": "text",
+      "id": "series_title",
+      "label": "Section Title",
+      "default": "Signature Scrub Lines"
+    },
+    {
+      "type": "textarea",
+      "id": "series_subtitle",
+      "label": "Section Subtitle",
+      "default": "From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "series_card",
+      "name": "Scrub Series Card",
+      "settings": [
+        {
+          "type": "select",
+          "id": "badge_color_preset",
+          "label": "Badge Color Theme",
+          "options": [
+            { "value": "blue", "label": "Clinical Blue" },
+            { "value": "pink", "label": "Berry / Pink" },
+            { "value": "amber", "label": "Amber Gold" },
+            { "value": "teal", "label": "Teal Green" }
+          ],
+          "default": "blue"
+        },
+        {
+          "type": "text",
+          "id": "badge_tag",
+          "label": "Badge Tag",
+          "default": "4-Way Athletic Stretch"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Series Name",
+          "default": "Sprinter Series"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility."
+        },
+        {
+          "type": "text",
+          "id": "price_label",
+          "label": "Price Display",
+          "default": "From Rs. 5,150"
+        },
+        {
+          "type": "text",
+          "id": "series_key",
+          "label": "Series Key / Identifier",
+          "default": "Sprinter"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Explore Series →"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Signature Scrub Lines",
+      "blocks": [
+        {
+          "type": "series_card",
+          "settings": {
+            "badge_color_preset": "blue",
+            "badge_tag": "4-Way Athletic Stretch",
+            "title": "Sprinter Series",
+            "price_label": "From Rs. 5,150",
+            "series_key": "Sprinter"
+          }
+        },
+        {
+          "type": "series_card",
+          "settings": {
+            "badge_color_preset": "pink",
+            "badge_tag": "Luxury Micro-Drape",
+            "title": "Velora Series",
+            "price_label": "From Rs. 5,500",
+            "series_key": "Velora"
+          }
+        },
+        {
+          "type": "series_card",
+          "settings": {
+            "badge_color_preset": "amber",
+            "badge_tag": "Executive Mandarin",
+            "title": "Crown Series",
+            "price_label": "From Rs. 6,200",
+            "series_key": "Crown"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

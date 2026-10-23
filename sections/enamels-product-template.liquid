@@ -1,0 +1,244 @@
+{% comment %}
+  Enamels Modular Product Detail & Customizer Section
+  Provides authentic medical apparel PDP with interactive media gallery, color swatches,
+  standard sizes, custom 'C' fit measurements (inches/cm), size chart modal,
+  embroidery personalization, and direct Shopify cart & checkout integration.
+{% endcomment %}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign enable_embroidery = section.settings.enable_embroidery
+  assign enable_custom_c = section.settings.enable_custom_c
+  assign show_size_chart = section.settings.show_size_chart
+-%}
+
+<div class="page-container" style="padding: 40px 0 60px;" id="enamels-modular-pdp-container">
+  <div class="pdp-studio-layout">
+    <!-- Left Column: Interactive Media Gallery -->
+    <div class="pdp-gallery-column">
+      <div class="pdp-main-media-wrap">
+        {% if product.featured_image != blank %}
+          <img
+            id="pdp-main-gallery-img"
+            src="{{ product.featured_image | image_url: width: 900 }}"
+            alt="{{ product.featured_image.alt | default: product.title | escape }}"
+            width="600"
+            height="800"
+            loading="eager"
+            class="pdp-main-img"
+          />
+        {% else %}
+          <div style="width: 100%; height: 500px; background: #f8fafc; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+            Clinical Apparel
+          </div>
+        {% endif %}
+      </div>
+
+      {% if product.images.size > 1 %}
+      <!-- Gallery Thumbnails -->
+      <div class="pdp-thumbnails-strip" style="display: flex; gap: 8px; margin-top: 12px; overflow-x: auto;">
+        {% for image in product.images %}
+          <button
+            type="button"
+            class="pdp-thumb-btn {% if forloop.first %}active{% endif %}"
+            onclick="document.getElementById('pdp-main-gallery-img').src = '{{ image | image_url: width: 900 }}'; document.querySelectorAll('.pdp-thumb-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');"
+            style="border: 2px solid {% if forloop.first %}#008779{% else %}#e2e8f0{% endif %}; border-radius: 6px; padding: 2px; background: #fff; cursor: pointer;"
+          >
+            <img src="{{ image | image_url: width: 120 }}" alt="{{ image.alt | escape }}" width="60" height="80" style="object-fit: cover; display: block; border-radius: 4px;" />
+          </button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right Column: Product Details & Customization -->
+    <div class="pdp-details-column">
+      <span class="frubs-card-brand" style="font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #008779; font-weight: 700;">
+        {{ product.vendor | default: 'ENAMELS' | escape }}
+      </span>
+      <h1 class="pdp-title" style="font-size: 26px; font-weight: 700; color: #102a43; margin: 6px 0 12px;">{{ product.title | escape }}</h1>
+
+      <div class="pdp-price-row" style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px;">
+        <span class="pdp-price" id="pdp-live-price" style="font-size: 22px; font-weight: 700; color: #102a43;">{{ current_variant.price | money }}</span>
+        {% if current_variant.compare_at_price > current_variant.price %}
+          <span class="pdp-compare-price" id="pdp-live-compare-price" style="font-size: 16px; color: #94a3b8; text-decoration: line-through;">{{ current_variant.compare_at_price | money }}</span>
+        {% endif %}
+      </div>
+
+      {% if product.description != blank %}
+        <div class="pdp-description" style="font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 24px;">
+          {{ product.description }}
+        </div>
+      {% endif %}
+
+      <!-- Standard Size Selection with Size Auto-Fill & Size Guide Modal -->
+      <div style="margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <label style="font-size: 12px; font-weight: 700; color: #102a43; text-transform: uppercase;">Select Size:</label>
+          {% if show_size_chart %}
+          <button type="button" class="btn-text-link" onclick="if (typeof window.openSizeChartModal === 'function') window.openSizeChartModal();" style="font-size: 11px; color: #008779; font-weight: 600; text-decoration: underline; background: none; border: none; cursor: pointer;">
+            📏 Size Guide & Measurements
+          </button>
+          {% endif %}
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="pdp-size-options">
+          <button type="button" class="size-pill-btn active" onclick="document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.getElementById('selected-size-input').value = 'M';">M</button>
+          <button type="button" class="size-pill-btn" onclick="document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.getElementById('selected-size-input').value = 'S';">S</button>
+          <button type="button" class="size-pill-btn" onclick="document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.getElementById('selected-size-input').value = 'L';">L</button>
+          <button type="button" class="size-pill-btn" onclick="document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.getElementById('selected-size-input').value = 'XL';">XL</button>
+          <button type="button" class="size-pill-btn" onclick="document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.getElementById('selected-size-input').value = '2XL';">2XL</button>
+          {% if enable_custom_c %}
+          <button type="button" class="size-pill-btn" onclick="document.querySelectorAll('.size-pill-btn').forEach(b => b.classList.remove('active')); this.classList.add('active'); document.getElementById('selected-size-input').value = 'C (Custom)'; const cBox = document.getElementById('pdp-custom-measurements-box'); if (cBox) cBox.style.display = 'block';">
+            C (Custom) ✨
+          </button>
+          {% endif %}
+        </div>
+        <input type="hidden" id="selected-size-input" value="M">
+      </div>
+
+      {% if enable_custom_c %}
+      <!-- Custom Measurements Accordion / Box (C Fit) -->
+      <div id="pdp-custom-measurements-box" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <span style="font-size: 12px; font-weight: 700; color: #102a43;">Tailored Precision Measurements</span>
+          <div style="display: flex; gap: 4px;">
+            <button type="button" class="unit-toggle-btn active" id="unit-in-btn" onclick="this.classList.add('active'); document.getElementById('unit-cm-btn').classList.remove('active');">IN</button>
+            <button type="button" class="unit-toggle-btn" id="unit-cm-btn" onclick="this.classList.add('active'); document.getElementById('unit-in-btn').classList.remove('active');">CM</button>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 11px; color: #64748b;">Chest / Bust:</label>
+            <input type="number" id="pdp-custom-chest" class="form-field-input" placeholder="e.g. 40" style="padding: 6px 10px; font-size: 12px;">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: #64748b;">Waist:</label>
+            <input type="number" id="pdp-custom-waist" class="form-field-input" placeholder="e.g. 34" style="padding: 6px 10px; font-size: 12px;">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: #64748b;">Hip:</label>
+            <input type="number" id="pdp-custom-hip" class="form-field-input" placeholder="e.g. 41" style="padding: 6px 10px; font-size: 12px;">
+          </div>
+          <div>
+            <label style="font-size: 11px; color: #64748b;">Inseam / Pant Length:</label>
+            <input type="number" id="pdp-custom-inseam" class="form-field-input" placeholder="e.g. 30" style="padding: 6px 10px; font-size: 12px;">
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if enable_embroidery %}
+      <!-- Clinical Embroidery Personalization -->
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+        <label style="font-size: 12px; font-weight: 700; color: #102a43; display: block; margin-bottom: 8px;">
+          🪡 Computerized Clinical Embroidery (+Rs. 350)
+        </label>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <input
+            type="text"
+            id="pdp-embroidery-name"
+            class="form-field-input"
+            placeholder="Clinician Name (e.g. Dr. A. Khan, MD)"
+            style="padding: 8px 12px; font-size: 13px;"
+          />
+          <input
+            type="text"
+            id="pdp-embroidery-dept"
+            class="form-field-input"
+            placeholder="Department / Hospital (Optional)"
+            style="padding: 8px 12px; font-size: 13px;"
+          />
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Actions: Quantity & Direct Add To Cart -->
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <div style="display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden;">
+          <button type="button" onclick="const q = document.getElementById('pdp-qty-input'); if (q.value > 1) q.value = parseInt(q.value) - 1;" style="padding: 10px 14px; background: #f8fafc; border: none; cursor: pointer;">-</button>
+          <input type="number" id="pdp-qty-input" value="1" min="1" style="width: 44px; text-align: center; border: none; font-size: 14px; font-weight: 600;" />
+          <button type="button" onclick="const q = document.getElementById('pdp-qty-input'); q.value = parseInt(q.value) + 1;" style="padding: 10px 14px; background: #f8fafc; border: none; cursor: pointer;">+</button>
+        </div>
+
+        <button
+          type="button"
+          class="btn-hero-primary"
+          id="pdp-add-to-cart-btn"
+          onclick="
+            const size = document.getElementById('selected-size-input').value;
+            const embName = document.getElementById('pdp-embroidery-name') ? document.getElementById('pdp-embroidery-name').value : '';
+            const embDept = document.getElementById('pdp-embroidery-dept') ? document.getElementById('pdp-embroidery-dept').value : '';
+            const qty = parseInt(document.getElementById('pdp-qty-input').value) || 1;
+            
+            const props = { 'Size': size };
+            if (embName) props['Doctor Name'] = embName;
+            if (embDept) props['Department'] = embDept;
+            if (size === 'C (Custom)') {
+              const chest = document.getElementById('pdp-custom-chest')?.value || '';
+              const waist = document.getElementById('pdp-custom-waist')?.value || '';
+              const hip = document.getElementById('pdp-custom-hip')?.value || '';
+              const inseam = document.getElementById('pdp-custom-inseam')?.value || '';
+              props['Custom Measurements'] = `Chest: ${chest}, Waist: ${waist}, Hip: ${hip}, Inseam: ${inseam}`;
+            }
+
+            if (typeof window.executeShopifyLiveAddToCart === 'function') {
+              window.executeShopifyLiveAddToCart({{ current_variant.id }}, qty, props);
+            } else {
+              fetch('/cart/add.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: {{ current_variant.id }}, quantity: qty, properties: props })
+              }).then(r => r.json()).then(() => {
+                if (typeof window.openCartDrawer === 'function') window.openCartDrawer();
+                else window.location.href = '/cart';
+              });
+            }
+          "
+          style="flex: 1; padding: 14px 24px; font-size: 14px; font-weight: 700; background: #008779; color: #ffffff; border: none; border-radius: 6px; cursor: pointer;"
+        >
+          Add to Cart — {{ current_variant.price | money }}
+        </button>
+      </div>
+
+      <!-- Trust Assurance Strip -->
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #f1f5f9; display: flex; gap: 16px; font-size: 11px; color: #64748b; flex-wrap: wrap;">
+        <span>🚚 Nationwide Delivery</span>
+        <span>💵 Cash on Delivery</span>
+        <span>⚡ 7-Day Exchange</span>
+        <span>🪡 Precision Stitching</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product Detail Studio",
+  "class": "enamels-product-template-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_size_chart",
+      "label": "Show Size Guide Modal Link",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_c",
+      "label": "Enable 'C' Custom Measurements Fit",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_embroidery",
+      "label": "Enable Computerized Embroidery Input",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Detail Studio"
+    }
+  ]
+}
+{% endschema %}

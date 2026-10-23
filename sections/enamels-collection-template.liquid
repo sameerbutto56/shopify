@@ -1,0 +1,225 @@
+{% comment %}
+  Enamels Modular Collection Template Section
+  Provides comprehensive collection browsing with brand article tabs (Sprinter, Velora, Crown, etc.),
+  gender filters (Men, Women), category thumbnails, sorting, customizable grid columns,
+  and clean empty states for real Shopify products.
+{% endcomment %}
+
+{%- liquid
+  assign enable_brand_tabs = section.settings.enable_brand_tabs
+  assign enable_gender_filter = section.settings.enable_gender_filter
+  assign enable_category_thumbs = section.settings.enable_category_thumbs
+  assign grid_cols = section.settings.grid_columns | default: 4
+  assign products_per_page = section.settings.products_per_page | default: 24
+  assign title_text = section.settings.custom_title | default: collection.title
+  assign desc_text = section.settings.custom_desc | default: collection.description
+-%}
+
+<div class="page-container" style="padding: 40px 0 60px;" id="enamels-modular-collection-container">
+  <!-- Collection Header -->
+  <div class="categories-section-header" style="margin-bottom: 24px;">
+    {% if section.settings.header_tag != blank %}
+      <span class="categories-section-tag">{{ section.settings.header_tag | escape }}</span>
+    {% endif %}
+    <h1 class="categories-section-title">{{ title_text | escape }}</h1>
+    {% if desc_text != blank %}
+      <p class="categories-section-subtitle">{{ desc_text | strip_html | escape }}</p>
+    {% endif %}
+  </div>
+
+  {% if enable_category_thumbs %}
+  <!-- Small Category Thumbnails -->
+  <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 24px;" class="cat-quick-strip">
+    <a href="/collections/all" class="pdp-swatch-item" style="padding: 8px 16px; text-decoration: none;">
+      <span>All Apparel</span>
+    </a>
+    <a href="#category-scrubs" class="pdp-swatch-item" onclick="if (typeof window.selectProductCategory === 'function') window.selectProductCategory('scrubs');" style="padding: 8px 16px; text-decoration: none;">
+      <span>Clinical Scrubs</span>
+    </a>
+    <a href="#collection-lab-coats" class="pdp-swatch-item" onclick="if (typeof window.selectProductCategory === 'function') window.selectProductCategory('lab-coat');" style="padding: 8px 16px; text-decoration: none;">
+      <span>Lab Coats</span>
+    </a>
+    <a href="#collection-caps" class="pdp-swatch-item" onclick="if (typeof window.selectProductCategory === 'function') window.selectProductCategory('caps');" style="padding: 8px 16px; text-decoration: none;">
+      <span>Surgical Caps</span>
+    </a>
+    <a href="#accessories" class="pdp-swatch-item" onclick="if (typeof window.navigateToAccessories === 'function') window.navigateToAccessories();" style="padding: 8px 16px; text-decoration: none;">
+      <span>Accessories</span>
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Filter & Tab Controls -->
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+      {% if enable_gender_filter %}
+      <button type="button" class="filter-pill-btn active" id="col-filter-all" onclick="if (typeof window.filterCollectionByGender === 'function') window.filterCollectionByGender('all');">
+        <span class="filter-pill-text">All Roles</span>
+      </button>
+      <button type="button" class="filter-pill-btn" id="col-filter-men" onclick="if (typeof window.filterCollectionByGender === 'function') window.filterCollectionByGender('men');">
+        <span class="filter-pill-text">Men</span>
+      </button>
+      <button type="button" class="filter-pill-btn" id="col-filter-women" onclick="if (typeof window.filterCollectionByGender === 'function') window.filterCollectionByGender('women');">
+        <span class="filter-pill-text">Women</span>
+      </button>
+      {% endif %}
+
+      {% if enable_brand_tabs %}
+      <div style="height: 20px; width: 1px; background: #cbd5e1; margin: 0 4px;"></div>
+      <button type="button" class="filter-pill-btn" onclick="if (typeof window.filterCollectionByBrand === 'function') window.filterCollectionByBrand('all');">
+        <span class="filter-pill-text">All Brands</span>
+      </button>
+      <button type="button" class="filter-pill-btn" onclick="if (typeof window.filterCollectionByBrand === 'function') window.filterCollectionByBrand('Sprinter');">
+        <span class="filter-pill-text">Sprinter</span>
+      </button>
+      <button type="button" class="filter-pill-btn" onclick="if (typeof window.filterCollectionByBrand === 'function') window.filterCollectionByBrand('Velora');">
+        <span class="filter-pill-text">Velora</span>
+      </button>
+      <button type="button" class="filter-pill-btn" onclick="if (typeof window.filterCollectionByBrand === 'function') window.filterCollectionByBrand('Crown');">
+        <span class="filter-pill-text">Crown</span>
+      </button>
+      <button type="button" class="filter-pill-btn" onclick="if (typeof window.filterCollectionByBrand === 'function') window.filterCollectionByBrand('Flexwell');">
+        <span class="filter-pill-text">Flexwell</span>
+      </button>
+      <button type="button" class="filter-pill-btn" onclick="if (typeof window.filterCollectionByBrand === 'function') window.filterCollectionByBrand('Helium');">
+        <span class="filter-pill-text">Helium</span>
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- Product Count Display -->
+    <div style="font-size: 12px; color: #64748b; font-weight: 600;" id="collection-live-count">
+      Showing genuine store products
+    </div>
+  </div>
+
+  <!-- Real Shopify Collection Product Grid -->
+  {% paginate collection.products by products_per_page %}
+    <div
+      class="enamels-products-grid"
+      id="enamels-collection-grid"
+      style="display: grid; grid-template-columns: repeat(auto-fit, minmax({% if grid_cols == 3 %}320px{% elsif grid_cols == 2 %}420px{% else %}260px{% endif %}, 1fr)); gap: 24px;"
+    >
+      {% if collection.products.size > 0 %}
+        {% for product in collection.products %}
+          <div
+            class="frubs-product-card"
+            data-product-id="{{ product.id }}"
+            data-category="{{ product.type | handleize }}"
+            onclick="if (typeof window.openProductStudio === 'function') { window.openProductStudio({{ product.id | json }}); } else { window.location.href = '{{ product.url }}'; }"
+          >
+            <div class="frubs-card-media-wrap">
+              {% if product.featured_image != blank %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  class="frubs-card-img"
+                  width="300"
+                  height="400"
+                  loading="lazy"
+                />
+              {% else %}
+                <div style="width: 100%; height: 320px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
+                  Clinical Apparel
+                </div>
+              {% endif %}
+            </div>
+            <div class="frubs-card-details">
+              <span class="frubs-card-brand">{{ product.vendor | default: 'ENAMELS' | escape }}</span>
+              <h3 class="frubs-card-title">{{ product.title | escape }}</h3>
+              <div class="frubs-card-price-row">
+                <span class="frubs-card-price">{{ product.price | money }}</span>
+                {% if product.compare_at_price > product.price %}
+                  <span class="frubs-card-compare-price">{{ product.compare_at_price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Clean Empty State (Zero Fake Products Inserted) -->
+        <div style="grid-column: 1 / -1; padding: 64px 24px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">
+          <div style="font-size: 36px; margin-bottom: 12px;">🩺</div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #102a43; margin: 0 0 8px;">No Products Found</h3>
+          <p style="font-size: 13px; color: #64748b; margin: 0 0 20px; max-width: 440px; margin-left: auto; margin-right: auto;">
+            This collection currently has no live items. Check back soon for new arrivals or browse other categories.
+          </p>
+          <a href="/collections/all" class="btn-card-action" style="display: inline-block; width: auto; padding: 10px 24px; text-decoration: none;">
+            Browse All Products →
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if paginate.pages > 1 %}
+      <div style="margin-top: 40px; text-align: center;">
+        {{ paginate | default_pagination }}
+      </div>
+    {% endif %}
+  {% endpaginate %}
+</div>
+
+{% schema %}
+{
+  "name": "Collection Template",
+  "class": "enamels-collection-template-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "header_tag",
+      "label": "Header Tag Text",
+      "default": "CLINICAL CATALOGUE"
+    },
+    {
+      "type": "text",
+      "id": "custom_title",
+      "label": "Custom Heading (Leave blank to use Collection Title)"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_desc",
+      "label": "Custom Description (Leave blank to use Collection Description)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gender_filter",
+      "label": "Show Men / Women Filter Pills",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_brand_tabs",
+      "label": "Show Brand Filter Pills (Sprinter, Velora, etc.)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_category_thumbs",
+      "label": "Show Quick Category Strip",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_columns",
+      "label": "Grid Columns Desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products Per Page",
+      "min": 12,
+      "max": 48,
+      "step": 6,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Template"
+    }
+  ]
+}
+{% endschema %}

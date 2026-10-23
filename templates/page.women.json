@@ -1,11 +1,22 @@
 {
   "sections": {
+    "collection": {
+      "type": "enamels-collection-template",
+      "settings": {
+        "header_tag": "WOMEN'S CLINICAL COLLECTION",
+        "custom_title": "Women's Medical Scrubs & Apparel",
+        "custom_desc": "Engineered for female clinicians: liquid-soft micro-drape fabrics, fluid-repellent antimicrobial finishing, tailored feminine silhouettes, and comfort waistbands."
+      }
+    },
     "chromatic_lab": {
       "type": "enamels-chromatic-lab",
-      "settings": {}
+      "settings": {
+        "hide_inline_homepage": true
+      }
     }
   },
   "order": [
+    "collection",
     "chromatic_lab"
   ]
 }

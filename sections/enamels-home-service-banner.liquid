@@ -1,0 +1,167 @@
+{% comment %}
+  Enamels Modular Home Service Concierge Section
+  Provides promotional booking banner for the Lahore in-person concierge representative visit,
+  with customizable image, highlights, fees, and booking triggers.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign badge_text = section.settings.badge | default: 'LAHORE CONCIERGE'
+  assign location_pill = section.settings.location_pill | default: '📍 Currently Available in Lahore Only'
+  assign title_text = section.settings.title | default: 'Home Service — At Your Convenience'
+  assign desc_text = section.settings.description | default: 'Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.'
+  assign button_label = section.settings.button_label | default: 'Book a Representative Visit →'
+  assign notice_text = section.settings.fee_notice | default: 'Rs. 500 consultation fee • Fully credited towards your order'
+-%}
+
+{% if enable_section %}
+<section class="page-container" style="padding: 24px 0 48px;" id="homepage-home-service-banner" aria-label="Concierge Home Service Visit">
+  <div class="home-service-editorial-banner">
+    <div class="home-service-banner-content">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+        {% if badge_text != blank %}
+          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">{{ badge_text | escape }}</span>
+        {% endif %}
+        {% if location_pill != blank %}
+          <span class="self-service-location-pill">{{ location_pill | escape }}</span>
+        {% endif %}
+      </div>
+      {% if title_text != blank %}
+        <h2 class="home-service-banner-title">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if desc_text != blank %}
+        <p class="home-service-banner-desc">{{ desc_text | escape }}</p>
+      {% endif %}
+      <div class="home-service-banner-highlights">
+        <div class="home-service-hl-item">
+          <span>{{ section.settings.hl1_text | default: '📏 In-Person Body Sizing & Fitting' | escape }}</span>
+        </div>
+        <div class="home-service-hl-item">
+          <span>{{ section.settings.hl2_text | default: '🎨 Genuine Fabric Swatch Inspection' | escape }}</span>
+        </div>
+        <div class="home-service-hl-item">
+          <span>{{ section.settings.hl3_text | default: '🪡 Embroidery & Logo Setup' | escape }}</span>
+        </div>
+        <div class="home-service-hl-item">
+          <span>{{ section.settings.hl4_text | default: '💵 Nominal Rs. 500 Visit Fee (100% Adjustable Against Order)' | escape }}</span>
+        </div>
+      </div>
+      <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <button
+          type="button"
+          class="btn-card-action"
+          onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); } else { window.location.href = '/pages/home-service'; }"
+          style="width: auto; padding: 14px 28px; font-size: 14px; font-weight: 700; background: #008779; color: #ffffff;"
+        >
+          {{ button_label | escape }}
+        </button>
+        {% if notice_text != blank %}
+          <span style="font-size: 12px; color: #64748b;">{{ notice_text | escape }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="home-service-banner-media">
+      {% if section.settings.image != blank %}
+        <img
+          src="{{ section.settings.image | image_url: width: 800 }}"
+          alt="{{ section.settings.image.alt | default: title_text | escape }}"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          loading="lazy"
+        />
+      {% else %}
+        <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" width="600" height="450" loading="lazy" />
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Home Service Concierge",
+  "class": "enamels-home-service-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner Media Image"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Top Badge",
+      "default": "LAHORE CONCIERGE"
+    },
+    {
+      "type": "text",
+      "id": "location_pill",
+      "label": "Location Availability Pill",
+      "default": "📍 Currently Available in Lahore Only"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Banner Title",
+      "default": "Home Service — At Your Convenience"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Banner Description",
+      "default": "Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Book a Representative Visit →"
+    },
+    {
+      "type": "text",
+      "id": "fee_notice",
+      "label": "Fee Notice Text",
+      "default": "Rs. 500 consultation fee • Fully credited towards your order"
+    },
+    {
+      "type": "header",
+      "content": "Highlight Bullets"
+    },
+    {
+      "type": "text",
+      "id": "hl1_text",
+      "label": "Highlight 1",
+      "default": "📏 In-Person Body Sizing & Fitting"
+    },
+    {
+      "type": "text",
+      "id": "hl2_text",
+      "label": "Highlight 2",
+      "default": "🎨 Genuine Fabric Swatch Inspection"
+    },
+    {
+      "type": "text",
+      "id": "hl3_text",
+      "label": "Highlight 3",
+      "default": "🪡 Embroidery & Logo Setup"
+    },
+    {
+      "type": "text",
+      "id": "hl4_text",
+      "label": "Highlight 4",
+      "default": "💵 Nominal Rs. 500 Visit Fee (100% Adjustable Against Order)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Service Concierge"
+    }
+  ]
+}
+{% endschema %}

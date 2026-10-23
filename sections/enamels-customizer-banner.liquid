@@ -1,0 +1,189 @@
+{% comment %}
+  Enamels Modular Customizer Studio Banner Section
+  Provides promotional showcase for 'Make Your Own Scrubs' with custom measurements,
+  embroidery details, image upload, and direct link into the interactive customizer.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign badge_text = section.settings.badge | default: 'BESPOKE CUSTOM STUDIO'
+  assign tag_text = section.settings.tag | default: 'TAILORED CLINICAL PRECISION'
+  assign title_text = section.settings.title | default: 'Make Your Own Scrubs'
+  assign desc_text = section.settings.description | default: 'Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.'
+  assign button_label = section.settings.button_label | default: 'Launch Customizer Studio →'
+  assign button_link = section.settings.button_link | default: '#ready-to-wear'
+-%}
+
+{% if enable_section %}
+<section class="page-container" style="padding: 48px 0 24px;" id="homepage-customizer-banner" aria-label="Make Your Own Scrubs Bespoke Studio">
+  <div class="customizer-editorial-banner">
+    <div class="customizer-banner-media">
+      {% if badge_text != blank %}
+        <span class="customizer-banner-badge">{{ badge_text | escape }}</span>
+      {% endif %}
+      {% if section.settings.image != blank %}
+        <img
+          src="{{ section.settings.image | image_url: width: 800 }}"
+          alt="{{ section.settings.image.alt | default: title_text | escape }}"
+          width="{{ section.settings.image.width }}"
+          height="{{ section.settings.image.height }}"
+          loading="lazy"
+        />
+      {% else %}
+        <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs Custom Studio" width="600" height="450" loading="lazy" />
+      {% endif %}
+    </div>
+    <div class="customizer-banner-content">
+      {% if tag_text != blank %}
+        <span class="categories-section-tag" style="margin-bottom: 8px;">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if title_text != blank %}
+        <h2 class="customizer-banner-title">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if desc_text != blank %}
+        <p class="customizer-banner-desc">{{ desc_text | escape }}</p>
+      {% endif %}
+      <div class="customizer-banner-features">
+        <div class="customizer-feat-item">
+          <span class="feat-icon">{{ section.settings.feat1_icon | default: '📏' }}</span>
+          <span>{{ section.settings.feat1_text | default: 'Custom Measurements (Inches / CM)' | escape }}</span>
+        </div>
+        <div class="customizer-feat-item">
+          <span class="feat-icon">{{ section.settings.feat2_icon | default: '🎨' }}</span>
+          <span>{{ section.settings.feat2_text | default: 'Proprietary Fabrics & Hospital Shades' | escape }}</span>
+        </div>
+        <div class="customizer-feat-item">
+          <span class="feat-icon">{{ section.settings.feat3_icon | default: '🪡' }}</span>
+          <span>{{ section.settings.feat3_text | default: 'Doctor Name & Department Crest Embroidery' | escape }}</span>
+        </div>
+        <div class="customizer-feat-item">
+          <span class="feat-icon">{{ section.settings.feat4_icon | default: '⚡' }}</span>
+          <span>{{ section.settings.feat4_text | default: 'Direct Shopify Cart & Checkout Integration' | escape }}</span>
+        </div>
+      </div>
+      <div style="margin-top: 24px;">
+        <button
+          type="button"
+          class="btn-hero-primary"
+          onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); } else { window.location.href = '{{ button_link }}'; }"
+          style="padding: 14px 28px; font-size: 14px;"
+        >
+          {{ button_label | escape }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Customizer Studio Banner",
+  "class": "enamels-customizer-banner-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Media Badge",
+      "default": "BESPOKE CUSTOM STUDIO"
+    },
+    {
+      "type": "text",
+      "id": "tag",
+      "label": "Header Tag",
+      "default": "TAILORED CLINICAL PRECISION"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Banner Title",
+      "default": "Make Your Own Scrubs"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Banner Description",
+      "default": "Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Launch Customizer Studio →"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Fallback Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Feature Highlights"
+    },
+    {
+      "type": "text",
+      "id": "feat1_icon",
+      "label": "Feature 1 Icon/Emoji",
+      "default": "📏"
+    },
+    {
+      "type": "text",
+      "id": "feat1_text",
+      "label": "Feature 1 Text",
+      "default": "Custom Measurements (Inches / CM)"
+    },
+    {
+      "type": "text",
+      "id": "feat2_icon",
+      "label": "Feature 2 Icon/Emoji",
+      "default": "🎨"
+    },
+    {
+      "type": "text",
+      "id": "feat2_text",
+      "label": "Feature 2 Text",
+      "default": "Proprietary Fabrics & Hospital Shades"
+    },
+    {
+      "type": "text",
+      "id": "feat3_icon",
+      "label": "Feature 3 Icon/Emoji",
+      "default": "🪡"
+    },
+    {
+      "type": "text",
+      "id": "feat3_text",
+      "label": "Feature 3 Text",
+      "default": "Doctor Name & Department Crest Embroidery"
+    },
+    {
+      "type": "text",
+      "id": "feat4_icon",
+      "label": "Feature 4 Icon/Emoji",
+      "default": "⚡"
+    },
+    {
+      "type": "text",
+      "id": "feat4_text",
+      "label": "Feature 4 Text",
+      "default": "Direct Shopify Cart & Checkout Integration"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customizer Studio Banner"
+    }
+  ]
+}
+{% endschema %}

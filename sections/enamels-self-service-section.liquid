@@ -1,0 +1,28 @@
+{% comment %}
+  Enamels Modular Home Service Concierge Portal Section
+  Renders the dedicated representative visit booking interface on custom pages.
+{% endcomment %}
+
+<div class="page-container" style="padding: 30px 0 60px;" id="enamels-modular-homeservice-container">
+  {% render 'enamels-self-service', section: section %}
+</div>
+
+{% schema %}
+{
+  "name": "Home Service Portal",
+  "class": "enamels-homeservice-section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Portal Heading",
+      "default": "Book Lahore Home Service Visit"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Service Portal"
+    }
+  ]
+}
+{% endschema %}

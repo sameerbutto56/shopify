@@ -748,100 +748,43 @@
     endfor
   %}
 
-  {% if enable_testimonials %}
+  {% if enable_testimonials and testimonial_blocks_count > 0 %}
   <section style="background-color: #ffffff; padding: 60px 0; border-top: 1px solid #e2e8f0;">
     <div class="page-container">
       <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
-        <span class="section-tag-sub">{{ section.settings.testimonials_tag | default: 'VERIFIED CLINICAL FEEDBACK' | escape }}</span>
-        <h2 class="section-title-main">{{ section.settings.testimonials_heading | default: 'Trusted by Healthcare Professionals' | escape }}</h2>
-        <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ section.settings.testimonials_subheading | default: 'Read authentic feedback from doctors, surgeons, and clinicians across Pakistan wearing Enamels medical apparel.' | escape }}</p>
+        <span class="section-tag-sub">{{ section.settings.testimonials_tag | default: 'CUSTOMER FEEDBACK' | escape }}</span>
+        <h2 class="section-title-main">{{ section.settings.testimonials_heading | default: 'Client Reviews' | escape }}</h2>
+        <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ section.settings.testimonials_subheading | escape }}</p>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 36px;">
-        {% if testimonial_blocks_count > 0 %}
-          {% for block in section.blocks %}
-            {% if block.type == 'testimonial' %}
-              <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
-                <div>
-                  <div style="display: flex; gap: 3px; margin-bottom: 12px;">
-                    {% for i in (1..block.settings.rating) %}
-                      <span style="color: #f59e0b; font-size: 16px;">★</span>
-                    {% endfor %}
-                  </div>
-                  <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
-                    “{{ block.settings.review | escape }}”
-                  </p>
+        {% for block in section.blocks %}
+          {% if block.type == 'testimonial' %}
+            <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+              <div>
+                <div style="display: flex; gap: 3px; margin-bottom: 12px;">
+                  {% for i in (1..block.settings.rating) %}
+                    <span style="color: #f59e0b; font-size: 16px;">★</span>
+                  {% endfor %}
                 </div>
-                <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
-                  <strong style="font-size: 13px; color: #102a43; display: block;">{{ block.settings.author | escape }}</strong>
-                  {% if block.settings.city != blank %}
-                    <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">{{ block.settings.city | escape }}</span>
-                  {% endif %}
-                  {% if block.settings.verified_buyer %}
-                    <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
-                      ✓ Verified Clinician
-                    </span>
-                  {% endif %}
-                </div>
+                <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
+                  “{{ block.settings.review | escape }}”
+                </p>
               </div>
-            {% endif %}
-          {% endfor %}
-        {% else %}
-          <!-- Default Verified Reviews -->
-          <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
-                <span style="color: #f59e0b; font-size: 16px;">★★★★★</span>
+              <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <strong style="font-size: 13px; color: #102a43; display: block;">{{ block.settings.author | escape }}</strong>
+                {% if block.settings.city != blank %}
+                  <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">{{ block.settings.city | escape }}</span>
+                {% endif %}
+                {% if block.settings.verified_buyer %}
+                  <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
+                    ✓ Verified Buyer
+                  </span>
+                {% endif %}
               </div>
-              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
-                “The 4-way mechanical stretch in the Sprinter series is unmatched during 24-hour ER calls. Exceptional stitch quality, breathable fabric, and the custom embroidery was sharp.”
-              </p>
             </div>
-            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
-              <strong style="font-size: 13px; color: #102a43; display: block;">Dr. Hamza Tariq, FCPS</strong>
-              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">Shaukat Khanum Memorial Hospital, Lahore</span>
-              <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
-                ✓ Verified Clinician
-              </span>
-            </div>
-          </div>
-
-          <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
-                <span style="color: #f59e0b; font-size: 16px;">★★★★★</span>
-              </div>
-              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
-                “The Velora luxury micro-drape feels as soft as silk. Wrinkle-resistant finishing means I don't have to iron before morning rounds. Highly recommended for female doctors.”
-              </p>
-            </div>
-            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
-              <strong style="font-size: 13px; color: #102a43; display: block;">Dr. Ayesha Malik, MRCOG</strong>
-              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">Aga Khan University Hospital, Karachi</span>
-              <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
-                ✓ Verified Clinician
-              </span>
-            </div>
-          </div>
-
-          <div class="category-tile-card" style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
-                <span style="color: #f59e0b; font-size: 16px;">★★★★★</span>
-              </div>
-              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
-                “The representative visit in Lahore was incredible. The rep brought sample sizes and swatches directly to our clinic. Custom measurement made our sizing 100% accurate.”
-              </p>
-            </div>
-            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
-              <strong style="font-size: 13px; color: #102a43; display: block;">Dr. Bilal Sheikh, Consultant Surgeon</strong>
-              <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">Services Hospital, Lahore</span>
-              <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
-                ✓ Verified Clinician
-              </span>
-            </div>
-          </div>
-        {% endif %}
+          {% endif %}
+        {% endfor %}
       </div>
     </div>
   </section>

@@ -1,0 +1,204 @@
+{% comment %}
+  Enamels Modular Seasonal Clinical Editions Section
+  Provides split seasonal cards (Summer Aerocool vs Winter Warm Twill)
+  with customizable background images, tags, descriptions, and collection triggers.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign tag_text = section.settings.section_tag | default: 'CLIMATIC ENDURANCE APPAREL'
+  assign title_text = section.settings.section_title | default: 'Seasonal Wardrobes'
+  assign subtitle_text = section.settings.section_subtitle | default: 'Engineered for temperature variation throughout hospital shifts, from air-conditioned surgical suites to humid wards.'
+  
+  if section.settings.summer_image != blank
+    assign summer_bg = section.settings.summer_image | image_url: width: 800
+  else
+    assign summer_bg = 'cat-velora.jpg' | asset_url
+  endif
+
+  if section.settings.winter_image != blank
+    assign winter_bg = section.settings.winter_image | image_url: width: 800
+  else
+    assign winter_bg = 'cat-crown.jpg' | asset_url
+  endif
+-%}
+
+{% if enable_section %}
+<section class="page-container" style="padding: 32px 0 56px;" id="homepage-seasonal-editions" aria-label="Seasonal Clinical Collections">
+  <div class="categories-section-header">
+    {% if tag_text != blank %}
+      <span class="categories-section-tag">{{ tag_text | escape }}</span>
+    {% endif %}
+    {% if title_text != blank %}
+      <h2 class="categories-section-title">{{ title_text | escape }}</h2>
+    {% endif %}
+    {% if subtitle_text != blank %}
+      <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
+    {% endif %}
+  </div>
+
+  <div class="frubs-gender-split-grid" style="margin-top: 24px;">
+    <!-- Summer Collection Card -->
+    <a
+      href="{{ section.settings.summer_link | default: '#summer-collection' }}"
+      class="frubs-gender-hero-card"
+      onclick="if (typeof window.navigateToSeasonalCollection === 'function') { window.navigateToSeasonalCollection('summer'); return false; }"
+      style="background-image: url('{{ summer_bg }}'); min-height: 380px;"
+      aria-label="Shop Summer {{ section.settings.summer_title | escape }}"
+    >
+      <div class="frubs-gender-content">
+        <span class="frubs-gender-tag" style="background: rgba(0, 184, 169, 0.4);">
+          {{ section.settings.summer_tag | default: 'AEROCOOL™ EDITION' | escape }}
+        </span>
+        <h3 class="frubs-gender-title" style="font-size: 26px;">
+          {{ section.settings.summer_title | default: 'Summer Collection' | escape }}
+        </h3>
+        <p class="frubs-gender-desc">
+          {{ section.settings.summer_desc | default: 'Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and cooling through intense summer rotations.' | escape }}
+        </p>
+        <span class="frubs-gender-btn">
+          {{ section.settings.summer_cta | default: 'Shop Summer Edition →' | escape }}
+        </span>
+      </div>
+    </a>
+
+    <!-- Winter Collection Card -->
+    <a
+      href="{{ section.settings.winter_link | default: '#winter-collection' }}"
+      class="frubs-gender-hero-card"
+      onclick="if (typeof window.navigateToSeasonalCollection === 'function') { window.navigateToSeasonalCollection('winter'); return false; }"
+      style="background-image: url('{{ winter_bg }}'); min-height: 380px;"
+      aria-label="Shop Winter {{ section.settings.winter_title | escape }}"
+    >
+      <div class="frubs-gender-content">
+        <span class="frubs-gender-tag" style="background: rgba(180, 83, 9, 0.4);">
+          {{ section.settings.winter_tag | default: 'WARM TWILL EDITION' | escape }}
+        </span>
+        <h3 class="frubs-gender-title" style="font-size: 26px;">
+          {{ section.settings.winter_title | default: 'Winter Collection' | escape }}
+        </h3>
+        <p class="frubs-gender-desc">
+          {{ section.settings.winter_desc | default: 'Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.' | escape }}
+        </p>
+        <span class="frubs-gender-btn">
+          {{ section.settings.winter_cta | default: 'Shop Winter Edition →' | escape }}
+        </span>
+      </div>
+    </a>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Seasonal Wardrobes",
+  "class": "enamels-seasonal-collections-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "section_tag",
+      "label": "Section Tag",
+      "default": "CLIMATIC ENDURANCE APPAREL"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Seasonal Wardrobes"
+    },
+    {
+      "type": "textarea",
+      "id": "section_subtitle",
+      "label": "Section Subtitle",
+      "default": "Engineered for temperature variation throughout hospital shifts, from air-conditioned surgical suites to humid wards."
+    },
+    {
+      "type": "header",
+      "content": "Summer Collection Card"
+    },
+    {
+      "type": "image_picker",
+      "id": "summer_image",
+      "label": "Summer Card Background Image"
+    },
+    {
+      "type": "text",
+      "id": "summer_tag",
+      "label": "Summer Badge Tag",
+      "default": "AEROCOOL™ EDITION"
+    },
+    {
+      "type": "text",
+      "id": "summer_title",
+      "label": "Summer Title",
+      "default": "Summer Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "summer_desc",
+      "label": "Summer Description",
+      "default": "Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and cooling through intense summer rotations."
+    },
+    {
+      "type": "text",
+      "id": "summer_cta",
+      "label": "Summer Button Label",
+      "default": "Shop Summer Edition →"
+    },
+    {
+      "type": "url",
+      "id": "summer_link",
+      "label": "Summer Target Link"
+    },
+    {
+      "type": "header",
+      "content": "Winter Collection Card"
+    },
+    {
+      "type": "image_picker",
+      "id": "winter_image",
+      "label": "Winter Card Background Image"
+    },
+    {
+      "type": "text",
+      "id": "winter_tag",
+      "label": "Winter Badge Tag",
+      "default": "WARM TWILL EDITION"
+    },
+    {
+      "type": "text",
+      "id": "winter_title",
+      "label": "Winter Title",
+      "default": "Winter Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "winter_desc",
+      "label": "Winter Description",
+      "default": "Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments."
+    },
+    {
+      "type": "text",
+      "id": "winter_cta",
+      "label": "Winter Button Label",
+      "default": "Shop Winter Edition →"
+    },
+    {
+      "type": "url",
+      "id": "winter_link",
+      "label": "Winter Target Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Seasonal Wardrobes"
+    }
+  ]
+}
+{% endschema %}

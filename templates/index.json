@@ -1,11 +1,179 @@
 {
   "sections": {
+    "announcement_bar": {
+      "type": "enamels-announcement-bar",
+      "blocks": {
+        "msg_1": {
+          "type": "message",
+          "settings": {
+            "text": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
+          }
+        },
+        "msg_2": {
+          "type": "message",
+          "settings": {
+            "text": "💵 CASH ON DELIVERY AVAILABLE ACROSS ALL CITIES IN PAKISTAN"
+          }
+        },
+        "msg_3": {
+          "type": "message",
+          "settings": {
+            "text": "⚡ 7-DAY EASY SIZE EXCHANGE & DEDICATED WHATSAPP ASSISTANCE"
+          }
+        }
+      },
+      "block_order": [
+        "msg_1",
+        "msg_2",
+        "msg_3"
+      ],
+      "settings": {
+        "enable_announcement_bar": true,
+        "announcement_bg": "#008779",
+        "announcement_color": "#ffffff",
+        "announcement_speed": 28
+      }
+    },
+    "header": {
+      "type": "enamels-header",
+      "settings": {
+        "logo_max_width": 100,
+        "phone_number": "+92 301 13 31 133",
+        "phone_tel": "+923011331133",
+        "search_placeholder": "Search scrubs, lab coats, surgical caps, sleeves...",
+        "show_wishlist": true
+      }
+    },
+    "slideshow": {
+      "type": "enamels-slideshow",
+      "settings": {
+        "enable_slideshow": true,
+        "show_slideshow_arrows": true,
+        "show_slideshow_dots": true,
+        "autoplay_speed": 6
+      }
+    },
+    "brand_gallery": {
+      "type": "enamels-brand-gallery",
+      "settings": {
+        "enable_section": true,
+        "brands_tag": "PURPOSE-BUILT CLINICAL APPAREL",
+        "brands_title": "Explore Our Brands",
+        "brands_subtitle": "Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes."
+      }
+    },
+    "category_video": {
+      "type": "enamels-category-video",
+      "settings": {
+        "enable_section": true,
+        "column_tag": "QUICK CATALOGUE DISCOVERY",
+        "column_title": "Shop by Category",
+        "column_sub": "Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role.",
+        "brand_video_url": "https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4",
+        "video_badge": "CINEMATIC SHOWCASE",
+        "video_title": "Engineered for Clinical Endurance",
+        "video_desc": "Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations."
+      }
+    },
+    "live_catalogue": {
+      "type": "enamels-live-catalogue",
+      "settings": {
+        "enable_section": true,
+        "section_tag": "ONLINE STORE APPAREL & ACCESSORIES",
+        "section_title": "Curated Product Catalogue",
+        "section_subtitle": "Explore our live collection of clinical scrubs, lab coats, surgical caps, and accessories.",
+        "show_filter_pills": true,
+        "show_sort": true,
+        "grid_columns": 4
+      }
+    },
+    "customizer_banner": {
+      "type": "enamels-customizer-banner",
+      "settings": {
+        "enable_section": true,
+        "badge": "BESPOKE CUSTOM STUDIO",
+        "tag": "TAILORED CLINICAL PRECISION",
+        "title": "Make Your Own Scrubs",
+        "description": "Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.",
+        "button_label": "Launch Customizer Studio →",
+        "button_link": "#ready-to-wear"
+      }
+    },
+    "home_service_banner": {
+      "type": "enamels-home-service-banner",
+      "settings": {
+        "enable_section": true,
+        "badge": "LAHORE CONCIERGE",
+        "location_pill": "📍 Currently Available in Lahore Only",
+        "title": "Home Service — At Your Convenience",
+        "description": "Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.",
+        "button_label": "Book a Representative Visit →",
+        "fee_notice": "Rs. 500 consultation fee • Fully credited towards your order"
+      }
+    },
+    "seasonal_collections": {
+      "type": "enamels-seasonal-collections",
+      "settings": {
+        "enable_section": true,
+        "section_tag": "CLIMATIC ENDURANCE APPAREL",
+        "section_title": "Seasonal Wardrobes",
+        "section_subtitle": "Engineered for temperature variation throughout hospital shifts, from air-conditioned surgical suites to humid wards."
+      }
+    },
+    "signature_series": {
+      "type": "enamels-signature-series",
+      "settings": {
+        "enable_section": true,
+        "series_tag": "ENGINEERED FOR CLINICAL ROLES",
+        "series_title": "Signature Scrub Lines",
+        "series_subtitle": "From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms."
+      }
+    },
+    "hospital_shades": {
+      "type": "enamels-hospital-shades",
+      "settings": {
+        "enable_section": true,
+        "palette_tag": "COLOR HARMONY",
+        "palette_title": "Shop by Hospital & Clinical Shade",
+        "palette_subtitle": "Adhere to strict hospital ward color guidelines or express individual professional style."
+      }
+    },
+    "testimonials": {
+      "type": "enamels-testimonials",
+      "settings": {
+        "enable_section": true,
+        "testimonials_tag": "CUSTOMER FEEDBACK",
+        "testimonials_heading": "Client Reviews"
+      }
+    },
+    "trust_badges": {
+      "type": "enamels-trust-badges",
+      "settings": {
+        "enable_section": true,
+        "trust_badges_bg": "#f8fafc"
+      }
+    },
     "chromatic_lab": {
       "type": "enamels-chromatic-lab",
-      "settings": {}
+      "settings": {
+        "hide_inline_homepage": true
+      }
     }
   },
   "order": [
+    "announcement_bar",
+    "header",
+    "slideshow",
+    "brand_gallery",
+    "category_video",
+    "live_catalogue",
+    "customizer_banner",
+    "home_service_banner",
+    "seasonal_collections",
+    "signature_series",
+    "hospital_shades",
+    "testimonials",
+    "trust_badges",
     "chromatic_lab"
   ]
 }

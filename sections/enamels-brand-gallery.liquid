@@ -1,0 +1,283 @@
+{% comment %}
+  Enamels Modular Brand & Signature Articles Gallery
+  Provides customizable brand cards (Vilora, Splender, Ground, FlexFit, Helium, etc.)
+  with drag-and-drop thumbnail uploads, custom badges, descriptions, and collection links.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign tag_text = section.settings.brands_tag | default: 'PURPOSE-BUILT CLINICAL APPAREL'
+  assign title_text = section.settings.brands_title | default: 'Explore Our Brands'
+  assign subtitle_text = section.settings.brands_subtitle | default: 'Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes.'
+  assign blocks_count = section.blocks.size
+-%}
+
+{% if enable_section %}
+<section class="frubs-brands-section page-container" id="homepage-featured-articles" aria-label="Explore Our Brands and Signature Articles">
+  <div class="categories-section-header" style="margin-bottom: 12px;">
+    {% if tag_text != blank %}
+      <span class="categories-section-tag">{{ tag_text | escape }}</span>
+    {% endif %}
+    {% if title_text != blank %}
+      <h2 class="categories-section-title">{{ title_text | escape }}</h2>
+    {% endif %}
+    {% if subtitle_text != blank %}
+      <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
+    {% endif %}
+  </div>
+
+  <div class="frubs-brands-grid">
+    {% if blocks_count > 0 %}
+      {% for block in section.blocks %}
+        {%- liquid
+          assign brand_name = block.settings.title | escape
+          assign badge_text = block.settings.badge | escape
+          assign badge_bg = block.settings.badge_bg | default: '#102a43'
+          assign badge_color = block.settings.badge_color | default: '#ffffff'
+          assign brand_desc = block.settings.description | escape
+          assign cta_text = block.settings.cta_text | default: 'Explore Series →' | escape
+          assign brand_link = block.settings.link
+        -%}
+        <a
+          href="{% if brand_link != blank %}{{ brand_link }}{% else %}#collection-{{ brand_name | handleize }}{% endif %}"
+          class="frubs-brand-tile"
+          id="shopify-block-{{ block.id }}"
+          onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('{{ brand_name }}'); return false; }"
+          aria-label="Explore {{ brand_name }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="frubs-brand-tile-media">
+            {% if badge_text != blank %}
+              <span class="frubs-brand-tile-badge" style="background: {{ badge_bg }}; color: {{ badge_color }};">
+                {{ badge_text }}
+              </span>
+            {% endif %}
+            {% if block.settings.image != blank %}
+              <img
+                src="{{ block.settings.image | image_url: width: 600 }}"
+                alt="{{ block.settings.image.alt | default: brand_name | escape }}"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                loading="lazy"
+              />
+            {% else %}
+              <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="{{ brand_name }}" width="300" height="400" loading="lazy" />
+            {% endif %}
+          </div>
+          <div class="frubs-brand-tile-body">
+            <h3 class="frubs-brand-tile-title">{{ brand_name }}</h3>
+            {% if brand_desc != blank %}
+              <p class="frubs-brand-tile-sub">{{ brand_desc }}</p>
+            {% endif %}
+            <span class="frubs-brand-tile-cta">{{ cta_text }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <!-- 1. Vilora -->
+      <a href="#collection-vilora" class="frubs-brand-tile" onclick="window.navigateToBrand('Velora'); return false;" aria-label="Explore Vilora Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #be185d; color: #ffffff;">MICRO-DRAPE</span>
+          <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Vilora Luxury Medical Scrubs" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Vilora Series</h3>
+          <p class="frubs-brand-tile-sub">Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for female clinicians.</p>
+          <span class="frubs-brand-tile-cta">Explore Vilora →</span>
+        </div>
+      </a>
+
+      <!-- 2. Splender -->
+      <a href="#collection-splender" class="frubs-brand-tile" onclick="window.navigateToBrand('Sprinter'); return false;" aria-label="Explore Splender Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #102a43; color: #ffffff;">4-WAY STRETCH</span>
+          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Splender Athletic Scrub Series" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Splender Series</h3>
+          <p class="frubs-brand-tile-sub">Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers.</p>
+          <span class="frubs-brand-tile-cta">Explore Splender →</span>
+        </div>
+      </a>
+
+      <!-- 3. Ground -->
+      <a href="#collection-ground" class="frubs-brand-tile" onclick="window.navigateToBrand('Crown'); return false;" aria-label="Explore Ground Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #b45309; color: #ffffff;">EXECUTIVE CUT</span>
+          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Ground Executive Mandarin Scrubs" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Ground Series</h3>
+          <p class="frubs-brand-tile-sub">Distinctive standing mandarin collar with concealed front placket tailored for senior consultant rounds.</p>
+          <span class="frubs-brand-tile-cta">Explore Ground →</span>
+        </div>
+      </a>
+
+      <!-- 4. FlexFit -->
+      <a href="#collection-flexfit" class="frubs-brand-tile" onclick="window.navigateToBrand('Flexwell'); return false;" aria-label="Explore FlexFit Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #0f766e; color: #ffffff;">ALL-DAY FLEX</span>
+          <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="FlexFit Clinical Comfort" width="300" height="400" loading="lazy" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">FlexFit Series</h3>
+          <p class="frubs-brand-tile-sub">Reinforced stretch seams and deep multi-pocket storage engineered for high-activity ward rotations.</p>
+          <span class="frubs-brand-tile-cta">Explore FlexFit →</span>
+        </div>
+      </a>
+
+      <!-- 5. Helium -->
+      <a href="#collection-helium" class="frubs-brand-tile" onclick="window.navigateToBrand('Helium'); return false;" aria-label="Explore Helium Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #0369a1; color: #ffffff;">LAB COATS</span>
+          <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Helium Technical White Lab Coats" width="300" height="400" loading="lazy" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Helium Series</h3>
+          <p class="frubs-brand-tile-sub">Crisp optical white technical doctor coats with reinforced stethoscope loop & tablet pockets.</p>
+          <span class="frubs-brand-tile-cta">Explore Helium →</span>
+        </div>
+      </a>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Brand & Article Gallery",
+  "class": "enamels-brand-gallery-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "brands_tag",
+      "label": "Section Header Tag",
+      "default": "PURPOSE-BUILT CLINICAL APPAREL"
+    },
+    {
+      "type": "text",
+      "id": "brands_title",
+      "label": "Section Title",
+      "default": "Explore Our Brands"
+    },
+    {
+      "type": "textarea",
+      "id": "brands_subtitle",
+      "label": "Section Subtitle",
+      "default": "Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "Brand / Article Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Brand / Article Name",
+          "default": "Vilora Series"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card Thumbnail Image"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge Text",
+          "default": "MICRO-DRAPE"
+        },
+        {
+          "type": "color",
+          "id": "badge_bg",
+          "label": "Badge Background Color",
+          "default": "#be185d"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "Badge Text Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Short Description",
+          "default": "Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for clinicians."
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Button Label",
+          "default": "Explore Series →"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Target Link / Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand & Article Gallery",
+      "blocks": [
+        {
+          "type": "brand",
+          "settings": {
+            "title": "Vilora Series",
+            "badge": "MICRO-DRAPE",
+            "badge_bg": "#be185d",
+            "description": "Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for clinicians."
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "title": "Splender Series",
+            "badge": "4-WAY STRETCH",
+            "badge_bg": "#102a43",
+            "description": "Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers."
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "title": "Ground Series",
+            "badge": "EXECUTIVE CUT",
+            "badge_bg": "#b45309",
+            "description": "Distinctive standing mandarin collar with concealed front placket tailored for senior rounds."
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "title": "FlexFit Series",
+            "badge": "ALL-DAY FLEX",
+            "badge_bg": "#0f766e",
+            "description": "Reinforced stretch seams and deep multi-pocket storage engineered for high-activity ward rotations."
+          }
+        },
+        {
+          "type": "brand",
+          "settings": {
+            "title": "Helium Series",
+            "badge": "LAB COATS",
+            "badge_bg": "#0369a1",
+            "description": "Crisp optical white technical doctor coats with reinforced stethoscope loop & tablet pockets."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

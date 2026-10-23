@@ -1,0 +1,280 @@
+{% doc %}
+  Enamels Visual Drag-and-Drop Studio Panel
+  Provides store owners an intuitive, code-free visual management interface
+  for editing text, uploading images via drag-and-drop, managing brands/categories,
+  toggling section visibility, and adjusting fine-grained design settings.
+{% enddoc %}
+
+<!-- Floating Studio Trigger Button -->
+<button
+  type="button"
+  class="enamels-studio-trigger-btn"
+  id="enamels-studio-trigger"
+  onclick="window.toggleStudioPanel()"
+  aria-label="Open Enamels Studio Panel"
+>
+  <span style="font-size: 15px;">🎨</span>
+  <span>Enamels Studio</span>
+</button>
+
+<!-- Studio Modal Overlay -->
+<div class="enamels-studio-overlay" id="enamels-studio-overlay" onclick="window.closeStudioPanel()"></div>
+
+<!-- Slide-Out Studio Panel Drawer -->
+<div class="enamels-studio-drawer" id="enamels-studio-drawer" role="dialog" aria-modal="true" aria-labelledby="studio-panel-title">
+  <!-- Studio Header -->
+  <div class="enamels-studio-header">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h2 class="enamels-studio-header-title" id="studio-panel-title">
+        <span>🎨</span>
+        <span>Enamels Studio</span>
+      </h2>
+      <span class="enamels-studio-header-badge">STAGING #192352092448</span>
+    </div>
+    <button type="button" class="enamels-studio-close-btn" onclick="window.closeStudioPanel()" aria-label="Close Studio">✕</button>
+  </div>
+
+  <!-- Studio Navigation Tabs -->
+  <nav class="enamels-studio-nav" aria-label="Studio Categories">
+    <button type="button" class="enamels-studio-tab-btn active" onclick="window.switchStudioTab('homepage')" id="studio-tab-homepage">
+      <span>🏠</span>
+      <span>Homepage</span>
+    </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('brands')" id="studio-tab-brands">
+      <span>🏷️</span>
+      <span>Brands</span>
+    </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('categories')" id="studio-tab-categories">
+      <span>📁</span>
+      <span>Categories</span>
+    </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('media')" id="studio-tab-media">
+      <span>🎬</span>
+      <span>Banners & Video</span>
+    </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('sections')" id="studio-tab-sections">
+      <span>🧩</span>
+      <span>Sections</span>
+    </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('design')" id="studio-tab-design">
+      <span>🎨</span>
+      <span>Design</span>
+    </button>
+  </nav>
+
+  <!-- Studio Content Body -->
+  <div class="enamels-studio-body" id="enamels-studio-body">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: HOMEPAGE CONTENT MANAGER           -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content active" id="studio-content-homepage">
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">📢 Announcement Bar Marquee</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Marquee Headline 1</label>
+          <input type="text" class="studio-field-input" id="studio-announcement-text" value="✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Support Phone Number</label>
+          <input type="text" class="studio-field-input" id="studio-header-phone" value="+92 301 13 31 133">
+        </div>
+      </div>
+
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">✨ Make Your Own Scrubs Card</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Card Title</label>
+          <input type="text" class="studio-field-input" id="studio-customizer-title" value="Make Your Own Scrubs">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Description</label>
+          <textarea class="studio-field-textarea" id="studio-customizer-desc">Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.</textarea>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Button Text</label>
+          <input type="text" class="studio-field-input" id="studio-customizer-btn" value="Launch Customizer Studio →">
+        </div>
+      </div>
+
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">📍 Home Service Concierge Card</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Card Title</label>
+          <input type="text" class="studio-field-input" id="studio-homeservice-title" value="Home Service — At Your Convenience">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Description</label>
+          <textarea class="studio-field-textarea" id="studio-homeservice-desc">Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.</textarea>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Visit Fee Notice</label>
+          <input type="text" class="studio-field-input" id="studio-homeservice-fee" value="Rs. 500 consultation fee • Fully credited towards your order">
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: BRAND & ARTICLE MANAGER            -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-brands">
+      <div style="margin-bottom: 12px; font-size: 12px; color: #64748b;">
+        Manage signature brand tiles, upload thumbnails via drag & drop, and customize badges.
+      </div>
+      <div id="studio-brands-list">
+        <!-- Rendered dynamically via window.renderStudioBrands() -->
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: CATEGORY MANAGER                   -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-categories">
+      <div style="margin-bottom: 12px; font-size: 12px; color: #64748b;">
+        Configure catalogue categories, meta text, and drag-and-drop thumbnail pictures.
+      </div>
+      <div id="studio-categories-list">
+        <!-- Rendered dynamically via window.renderStudioCategories() -->
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: BANNER & VIDEO MANAGER             -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-media">
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">🎬 Cinematic Brand Video</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">MP4 Video Source URL</label>
+          <input type="text" class="studio-field-input" id="studio-video-url" value="https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Video Title</label>
+          <input type="text" class="studio-field-input" id="studio-video-title" value="Engineered for Clinical Endurance">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Video Description</label>
+          <textarea class="studio-field-textarea" id="studio-video-desc">Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations.</textarea>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Video Poster Image</label>
+          <div class="studio-dropzone" ondragover="window.handleStudioDragOver(event)" ondragleave="window.handleStudioDragLeave(event)" ondrop="window.handleStudioDrop(event, 'video-poster')" onclick="document.getElementById('file-upload-video-poster').click()">
+            <div class="studio-dropzone-icon">📁</div>
+            <p class="studio-dropzone-text">Drag & drop poster image or click to browse</p>
+            <p class="studio-dropzone-sub">Supports JPG, PNG, WebP (Max 5MB)</p>
+            <input type="file" id="file-upload-video-poster" accept="image/*" style="display: none;" onchange="window.handleStudioFileSelect(event, 'video-poster')">
+          </div>
+          <div class="studio-preview-box" id="preview-box-video-poster" style="display: none;">
+            <img id="preview-img-video-poster" class="studio-preview-img" src="{{ 'demo-sprinter-navy.jpg' | asset_url }}" alt="Poster Preview" width="600" height="340">
+            <div class="studio-preview-actions">
+              <button type="button" class="studio-btn-tiny" onclick="window.removeStudioImage('video-poster')">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">🖼️ Hero Banner Slides</h3>
+        </div>
+        <div id="studio-slides-list">
+          <!-- Rendered dynamically via window.renderStudioSlides() -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: PAGE & SECTION MANAGER             -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-sections">
+      <div style="margin-bottom: 12px; font-size: 12px; color: #64748b;">
+        Toggle section visibility and adjust page layout elements.
+      </div>
+      <div id="studio-sections-list">
+        <!-- Rendered dynamically via window.renderStudioSections() -->
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 6: DESIGN & THEME TOKENS              -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-design">
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">🎨 Brand Color Tokens</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Primary Brand Color (Buttons & Highlights)</label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="color" id="studio-color-primary" value="#008779" style="width: 44px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer;">
+            <input type="text" class="studio-field-input" id="studio-color-primary-text" value="#008779" style="flex: 1;">
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Dark Accent Color (Header & Navy Tiles)</label>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="color" id="studio-color-dark" value="#102a43" style="width: 44px; height: 36px; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer;">
+            <input type="text" class="studio-field-input" id="studio-color-dark-text" value="#102a43" style="flex: 1;">
+          </div>
+        </div>
+      </div>
+
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">📐 Layout & Grid Tuning</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Catalogue Grid Columns (Desktop)</label>
+          <select class="studio-field-select" id="studio-grid-columns">
+            <option value="4" selected>4 Columns (Standard)</option>
+            <option value="3">3 Columns (Editorial Large)</option>
+            <option value="2">2 Columns (Showcase)</option>
+          </select>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Card Image Aspect Ratio</label>
+          <select class="studio-field-select" id="studio-aspect-ratio">
+            <option value="3/4" selected>3:4 Clinical Portrait</option>
+            <option value="1/1">1:1 Square</option>
+            <option value="4/5">4:5 Modern Fashion</option>
+          </select>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Border Radius</label>
+          <select class="studio-field-select" id="studio-border-radius">
+            <option value="8px" selected>8px (Smooth Curves)</option>
+            <option value="4px">4px (Subtle)</option>
+            <option value="12px">12px (Soft Pill)</option>
+            <option value="0px">0px (Sharp Modern)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Studio Footer Actions -->
+  <div class="enamels-studio-footer">
+    <button type="button" class="studio-preview-btn" onclick="window.resetStudioDefaults()" title="Reset to Theme Defaults">
+      🔄 Reset
+    </button>
+    <button type="button" class="studio-save-btn" onclick="window.saveStudioChanges()">
+      <span>💾</span>
+      <span>Save Changes</span>
+    </button>
+  </div>
+</div>
+
+<!-- Studio Toast Notification -->
+<div class="studio-toast" id="studio-toast">
+  <span>✅</span>
+  <span id="studio-toast-message">Changes saved successfully!</span>
+</div>

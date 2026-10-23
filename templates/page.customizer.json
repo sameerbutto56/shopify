@@ -1,16 +1,20 @@
 {
   "sections": {
     "customizer": {
-      "type": "enamels-customizer-section",
+      "type": "enamels-ready-to-wear-section",
       "settings": {
-        "show_header": true,
-        "badge": "Bespoke Medical Apparel",
-        "title": "Make Your Own Scrubs",
-        "subtitle": "Step-by-step technical scrub customization: select your medical fabric, certified hospital shade, personalized sizing, and clinical embroidery."
+        "heading": "Make Your Own Scrubs Studio"
+      }
+    },
+    "chromatic_lab": {
+      "type": "enamels-chromatic-lab",
+      "settings": {
+        "hide_inline_homepage": true
       }
     }
   },
   "order": [
-    "customizer"
+    "customizer",
+    "chromatic_lab"
   ]
 }

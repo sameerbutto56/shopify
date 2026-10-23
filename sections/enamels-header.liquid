@@ -1,0 +1,236 @@
+{% comment %}
+  Enamels Modular Header & Navigation Section
+  Provides logo upload, live search input, customer service phone, cart drawer toggle,
+  and 6-category navigation with multi-brand dropdown menus.
+{% endcomment %}
+
+{%- liquid
+  assign logo_max_width = section.settings.logo_max_width | default: 100
+  assign phone_number = section.settings.phone_number | default: '+92 301 13 31 133'
+  assign phone_tel = section.settings.phone_tel | default: '+923011331133'
+  assign search_placeholder = section.settings.search_placeholder | default: 'Search scrubs, lab coats, surgical caps, sleeves...'
+  assign show_wishlist = section.settings.show_wishlist
+-%}
+
+<header class="enamels-header" id="enamels-main-header">
+  <div class="page-container">
+    <div class="header-top-row">
+      <!-- 1. Enamels Logo -->
+      <a href="{{ routes.root_url }}" class="header-logo-wrap" onclick="window.navigateToView('home'); return false;" title="{{ shop.name }}">
+        {% if section.settings.logo != blank %}
+          <img
+            src="{{ section.settings.logo | image_url: width: 300 }}"
+            alt="{{ section.settings.logo.alt | default: shop.name | escape }}"
+            class="header-logo-img"
+            style="max-width: {{ logo_max_width }}px; height: auto;"
+            width="{{ section.settings.logo.width }}"
+            height="{{ section.settings.logo.height }}"
+            loading="eager"
+          />
+        {% else %}
+          <img src="{{ 'enamels-logo.png' | asset_url }}" alt="{{ shop.name }}" class="header-logo-img" width="100" height="48" style="max-width: {{ logo_max_width }}px; height: auto;" loading="eager" />
+        {% endif %}
+      </a>
+
+      <!-- 2. Interactive Search Bar -->
+      <div class="header-search-wrap">
+        <svg class="header-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          class="header-search-input"
+          id="enamels-header-search-input"
+          placeholder="{{ search_placeholder | escape }}"
+          onfocus="if (typeof window.openSearchModal === 'function') window.openSearchModal();"
+          aria-label="Search Catalog"
+        />
+      </div>
+
+      <!-- 3. Actions & Contact Info -->
+      <div class="header-actions-wrap">
+        <a href="tel:{{ phone_tel }}" class="customer-service-badge" title="Direct Phone Support">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <span>{{ phone_number | escape }}</span>
+        </a>
+
+        {% if show_wishlist %}
+        <!-- Wishlist Button -->
+        <button type="button" class="header-action-btn" onclick="if (typeof window.openWishlistModal === 'function') window.openWishlistModal();" aria-label="Wishlist">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="cart-bubble-badge" id="enamels-wishlist-count" style="background: #102a43;">0</span>
+        </button>
+        {% endif %}
+
+        <!-- Cart Button -->
+        <button type="button" class="header-action-btn" onclick="if (typeof window.openCartDrawer === 'function') window.openCartDrawer();" aria-label="Shopping Cart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="cart-bubble-badge" id="enamels-cart-count">0</span>
+        </button>
+
+        <!-- Mobile Hamburger -->
+        <button type="button" class="header-action-btn mobile-only-toggle" onclick="if (typeof window.toggleMobileNavDrawer === 'function') window.toggleMobileNavDrawer();" aria-label="Open Navigation Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Menu Bar with Dropdowns -->
+  <nav class="enamels-nav-bar" id="enamels-desktop-navbar" aria-label="Main Store Navigation">
+    <div class="page-container">
+      <ul class="enamels-nav-list">
+        <!-- 1. Scrubs with Dropdown Menu -->
+        <li class="enamels-nav-item has-dropdown" id="nav-item-scrubs">
+          <a href="#category-scrubs" class="enamels-nav-link" onclick="window.navigateToView('category-scrubs'); return false;">
+            <span>Scrubs</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="nav-arrow-icon">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </a>
+          <div class="nav-dropdown-menu">
+            <a href="#collection-sprinter" class="dropdown-item-link" onclick="window.navigateToBrand('Sprinter'); return false;">
+              <strong>Sprinter Series</strong>
+              <span>4-Way Athletic Mechanical Stretch</span>
+            </a>
+            <a href="#collection-velora" class="dropdown-item-link" onclick="window.navigateToBrand('Velora'); return false;">
+              <strong>Velora Series</strong>
+              <span>Luxury Tailored Micro-Drape</span>
+            </a>
+            <a href="#collection-crown" class="dropdown-item-link" onclick="window.navigateToBrand('Crown'); return false;">
+              <strong>Crown Series</strong>
+              <span>Executive Structured Mandarin Collar</span>
+            </a>
+            <a href="#collection-flexwell" class="dropdown-item-link" onclick="window.navigateToBrand('Flexwell'); return false;">
+              <strong>Flexwell Series</strong>
+              <span>Antimicrobial Laser-Perforated Aerocool</span>
+            </a>
+            <div style="height: 1px; background: #e2e8f0; margin: 6px 0;"></div>
+            <a href="#category-scrubs" class="dropdown-item-link" onclick="window.navigateToView('category-scrubs'); return false;" style="color: #00b8a9; font-weight: 700;">
+              View All Scrubs Categories →
+            </a>
+          </div>
+        </li>
+
+        <!-- Men -->
+        <li class="enamels-nav-item" id="nav-item-men">
+          <a href="#men" class="enamels-nav-link" onclick="window.navigateToGender('men'); return false;">
+            <span>Men</span>
+          </a>
+        </li>
+
+        <!-- Women -->
+        <li class="enamels-nav-item" id="nav-item-women">
+          <a href="#women" class="enamels-nav-link" onclick="window.navigateToGender('women'); return false;">
+            <span>Women</span>
+          </a>
+        </li>
+
+        <!-- 2. Lab Coats -->
+        <li class="enamels-nav-item" id="nav-item-lab-coats">
+          <a href="#collection-lab-coats" class="enamels-nav-link" onclick="window.navigateToCollection('lab-coat', 'category'); return false;">
+            <span>Lab Coats</span>
+          </a>
+        </li>
+
+        <!-- 3. Caps -->
+        <li class="enamels-nav-item" id="nav-item-caps">
+          <a href="#collection-caps" class="enamels-nav-link" onclick="window.navigateToCollection('caps', 'category'); return false;">
+            <span>Caps</span>
+            <span class="nav-tag-badge">BunFit™</span>
+          </a>
+        </li>
+
+        <!-- 4. Sleeves -->
+        <li class="enamels-nav-item" id="nav-item-sleeves">
+          <a href="#collection-sleeves" class="enamels-nav-link" onclick="window.navigateToCollection('sleeves', 'feature'); return false;">
+            <span>Sleeves</span>
+          </a>
+        </li>
+
+        <!-- 5. Accessories -->
+        <li class="enamels-nav-item" id="nav-item-accessories">
+          <a href="#accessories" class="enamels-nav-link" onclick="window.navigateToAccessories(); return false;">
+            <span>Accessories</span>
+          </a>
+        </li>
+
+        <!-- 6. Ready to Wear / Make Your Own Scrub -->
+        <li class="enamels-nav-item" id="nav-item-ready-to-wear">
+          <a href="#ready-to-wear" class="enamels-nav-link" onclick="window.navigateToView('ready-to-wear'); return false;" style="color: #102a43; font-weight: 700;">
+            <span>Ready to Wear / Make Your Own Scrub</span>
+            <span class="nav-tag-highlight">STUDIO</span>
+          </a>
+        </li>
+
+        <!-- 7. Home Service / Representative Visit -->
+        <li class="enamels-nav-item" id="nav-item-home-service">
+          <a href="#self-service" class="enamels-nav-link" onclick="window.navigateToView('self-service'); return false;" style="color: #008779; font-weight: 700;">
+            <span>Home Service</span>
+            <span class="nav-tag-badge" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">LAHORE VISIT</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+{% schema %}
+{
+  "name": "Header & Navigation",
+  "class": "enamels-header-section-wrapper",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Store Logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_max_width",
+      "label": "Logo Max Width (px)",
+      "min": 60,
+      "max": 200,
+      "step": 5,
+      "default": 100
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Bar Placeholder",
+      "default": "Search scrubs, lab coats, surgical caps, sleeves..."
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Support Phone Display",
+      "default": "+92 301 13 31 133"
+    },
+    {
+      "type": "text",
+      "id": "phone_tel",
+      "label": "Telephone Link (digits)",
+      "default": "+923011331133"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist",
+      "label": "Show Wishlist Icon",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header & Navigation"
+    }
+  ]
+}
+{% endschema %}

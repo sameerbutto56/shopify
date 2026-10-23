@@ -43,6 +43,10 @@ body:has(.enamels-theme-root) #header-group {
   display: block;
 }
 
+body[data-active-view]:not([data-active-view="home"]) .enamels-homepage-modular-section {
+  display: none !important;
+}
+
 @keyframes fadeInPanel {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }

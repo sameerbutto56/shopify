@@ -1,0 +1,145 @@
+{% comment %}
+  Enamels Modular Testimonials Section
+  Renders genuine customer reviews when added by store owner.
+  Automatically hides cleanly when no blocks are present so fake/dummy reviews never appear.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign tag_text = section.settings.testimonials_tag | default: 'CUSTOMER FEEDBACK'
+  assign heading_text = section.settings.testimonials_heading | default: 'Client Reviews'
+  assign subheading_text = section.settings.testimonials_subheading
+  assign blocks_count = section.blocks.size
+-%}
+
+{% if enable_section and blocks_count > 0 %}
+<section style="background-color: #ffffff; padding: 60px 0; border-top: 1px solid #e2e8f0;" id="homepage-testimonials-section" aria-label="Customer Reviews">
+  <div class="page-container">
+    <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
+      {% if tag_text != blank %}
+        <span class="section-tag-sub">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if heading_text != blank %}
+        <h2 class="section-title-main">{{ heading_text | escape }}</h2>
+      {% endif %}
+      {% if subheading_text != blank %}
+        <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ subheading_text | escape }}</p>
+      {% endif %}
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 36px;">
+      {% for block in section.blocks %}
+        {% if block.type == 'testimonial' %}
+          <div
+            class="category-tile-card"
+            style="padding: 24px; text-align: left; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;"
+            id="shopify-block-{{ block.id }}"
+            {{ block.shopify_attributes }}
+          >
+            <div>
+              <div style="display: flex; gap: 3px; margin-bottom: 12px;">
+                {% assign star_rating = block.settings.rating | default: 5 %}
+                {% for i in (1..star_rating) %}
+                  <span style="color: #f59e0b; font-size: 16px;">★</span>
+                {% endfor %}
+              </div>
+              <p style="font-size: 13px; line-height: 1.6; color: #334155; margin: 0 0 16px; font-style: italic;">
+                “{{ block.settings.review | escape }}”
+              </p>
+            </div>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px;">
+              <strong style="font-size: 13px; color: #102a43; display: block;">{{ block.settings.author | escape }}</strong>
+              {% if block.settings.city != blank %}
+                <span style="font-size: 11px; color: #64748b; display: block; margin-top: 2px;">{{ block.settings.city | escape }}</span>
+              {% endif %}
+              {% if block.settings.verified_buyer %}
+                <span style="font-size: 10px; font-weight: 700; color: #059669; display: inline-flex; align-items: center; gap: 3px; margin-top: 6px;">
+                  ✓ Verified Buyer
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Customer Reviews",
+  "class": "enamels-testimonials-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "testimonials_tag",
+      "label": "Section Tag",
+      "default": "CUSTOMER FEEDBACK"
+    },
+    {
+      "type": "text",
+      "id": "testimonials_heading",
+      "label": "Section Heading",
+      "default": "Client Reviews"
+    },
+    {
+      "type": "textarea",
+      "id": "testimonials_subheading",
+      "label": "Section Subheading"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Verified Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "review",
+          "label": "Review Text",
+          "default": "Exceptional fabric quality, comfortable fit during long surgical shifts, and precise custom name embroidery."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Customer / Doctor Name",
+          "default": "Dr. Sarah Khan"
+        },
+        {
+          "type": "text",
+          "id": "city",
+          "label": "Hospital / City",
+          "default": "Lahore"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified_buyer",
+          "label": "Show Verified Buyer Badge",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Reviews"
+    }
+  ]
+}
+{% endschema %}

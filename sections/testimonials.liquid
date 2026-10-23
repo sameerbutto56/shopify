@@ -2,6 +2,7 @@
   Customer Reviews & Testimonials Section
 {% endcomment %}
 
+{% if section.blocks.size > 0 %}
 <div class="testimonials-section section-padding" style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};">
   <div class="page-width">
     {% if section.settings.heading != blank %}
@@ -41,6 +42,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <style>
   .testimonials-section {

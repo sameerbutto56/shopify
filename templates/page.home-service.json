@@ -1,14 +1,20 @@
 {
   "sections": {
+    "portal": {
+      "type": "enamels-self-service-section",
+      "settings": {
+        "heading": "Book Lahore Home Service Visit"
+      }
+    },
     "chromatic_lab": {
       "type": "enamels-chromatic-lab",
       "settings": {
-        "self_service_heading": "Concierge In-Person Fitting & Measurement Visit",
-        "self_service_description": "Request a dedicated Enamels representative at your hospital, clinic, or residence. We bring physical fabric swatches, sizing samples, and help you configure clinical embroidery."
+        "hide_inline_homepage": true
       }
     }
   },
   "order": [
+    "portal",
     "chromatic_lab"
   ]
 }

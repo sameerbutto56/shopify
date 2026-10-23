@@ -1,11 +1,22 @@
 {
   "sections": {
+    "collection": {
+      "type": "enamels-collection-template",
+      "settings": {
+        "header_tag": "MEN'S CLINICAL COLLECTION",
+        "custom_title": "Men's Medical Scrubs & Apparel",
+        "custom_desc": "Engineered for male clinicians: 4-way stretch, athletic cargo joggers, executive mandarin collars, and tailored technical lab coats."
+      }
+    },
     "chromatic_lab": {
       "type": "enamels-chromatic-lab",
-      "settings": {}
+      "settings": {
+        "hide_inline_homepage": true
+      }
     }
   },
   "order": [
+    "collection",
     "chromatic_lab"
   ]
 }

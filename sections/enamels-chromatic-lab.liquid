@@ -18,13 +18,17 @@
 %}
 
 <div class="enamels-theme-root" id="enamels-app-root">
-  <!-- Top Announcement Bar, Header & Exact 6-Category Navigation -->
-  {% render 'enamels-header-nav', section: section %}
+  {% unless section.settings.hide_inline_homepage %}
+    <!-- Top Announcement Bar, Header & Exact 6-Category Navigation -->
+    {% render 'enamels-header-nav', section: section %}
+  {% endunless %}
 
   <!-- Main Storefront Views Container -->
   <main id="enamels-main-content">
-    <!-- View 1: Homepage & 5-Slide Banner Slideshow -->
-    {% render 'enamels-homepage', section: section %}
+    {% unless section.settings.hide_inline_homepage %}
+      <!-- View 1: Homepage & 5-Slide Banner Slideshow -->
+      {% render 'enamels-homepage', section: section %}
+    {% endunless %}
 
     <!-- View 2: Scrubs Collection with Gender Filter & Article Tabs -->
     {% render 'enamels-scrubs-collection', section: section %}
@@ -401,19 +405,6 @@
 
       const activeColorName = STATE.activeCardColors[productId] || (item.colors?.[0]?.name) || 'Deep Navy';
       const activeColorLower = activeColorName.toLowerCase();
-
-      // Multi-view demo presets for standard demo catalogue articles
-      const multiViewPresets = {
-        'demo-sprinter-mens-navy': ['demo-sprinter-navy.jpg', 'cat-sprinter.jpg', 'cat-men-scrubs.jpg'],
-        'demo-velora-womens-teal': ['demo-velora-teal.jpg', 'cat-velora.jpg', 'cat-women-scrubs.jpg'],
-        'demo-crown-unisex-burgundy': ['demo-crown-burgundy.jpg', 'cat-crown.jpg', 'banner-autumn.jpg'],
-        'demo-flexfit-mens-olive': ['cat-flexfit.jpg', 'cat-men-scrubs.jpg', 'cat-sprinter.jpg'],
-        'demo-helium-labcoat-white': ['cat-labcoat.jpg', 'cat-women-scrubs.jpg'],
-        'demo-bunfit-cap-navy': ['cat-caps.jpg', 'banner-caps.jpg']
-      };
-      if (multiViewPresets[item.id]) {
-        return multiViewPresets[item.id].map(img => window.ShopifyThemeAssets?.[img] || img);
-      }
 
       // 1. Color object specific images (populated during adaptation)
       if (item.colors && item.colors.length) {
@@ -925,6 +916,9 @@
     window.safeUpdateUrlHash = safeUpdateUrlHash;
 
     window.navigateToView = function(viewId) {
+      if (typeof document !== 'undefined' && document.body && document.body.dataset) {
+        document.body.dataset.activeView = viewId;
+      }
       document.querySelectorAll('.chroma-view-panel').forEach(p => p.classList.remove('active'));
 
       if (viewId === 'self-service') {
@@ -937,7 +931,10 @@
           if (studio) {
             studio.classList.add('active');
             if (!STATE.pdpProduct) {
-              window.openProductStudio('demo-sprinter-mens-navy');
+              const catalogue = window.getStorefrontCatalogue();
+              if (catalogue && catalogue.length) {
+                window.openProductStudio(catalogue[0].id);
+              }
             }
             setTimeout(() => {
               window.scrollToRepVisitSection();
@@ -5004,6 +5001,13 @@
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "hide_inline_homepage",
+      "label": "Modular Mode: Hide Monolithic Header & Homepage",
+      "info": "Enable when using separate modular sections for header, slideshow, and homepage sections.",
+      "default": false
+    },
     {
       "type": "header",
       "content": "Top Announcement Ticker"

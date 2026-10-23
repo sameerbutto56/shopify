@@ -1,0 +1,342 @@
+{% comment %}
+  Enamels Modular Category Thumbnails & Brand Video Section
+  Provides category discovery tiles (Men, Women, Scrubs, Lab Coats, Caps, Accessories)
+  alongside a cinematic brand video showcase with play/pause controls and poster upload.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign col_tag = section.settings.column_tag | default: 'QUICK CATALOGUE DISCOVERY'
+  assign col_title = section.settings.column_title | default: 'Shop by Category'
+  assign col_sub = section.settings.column_sub | default: 'Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role.'
+  
+  assign video_badge = section.settings.video_badge | default: 'CINEMATIC SHOWCASE'
+  assign video_title = section.settings.video_title | default: 'Engineered for Clinical Endurance'
+  assign video_desc = section.settings.video_desc | default: 'Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations.'
+  assign video_url = section.settings.brand_video_url | default: 'https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4'
+  
+  if section.settings.brand_video_poster != blank
+    assign brand_poster = section.settings.brand_video_poster | image_url: width: 900
+  else
+    assign brand_poster = 'demo-sprinter-navy.jpg' | asset_url
+  endif
+-%}
+
+{% if enable_section %}
+<section class="split-cat-video-section page-container" id="homepage-category-video-split" aria-label="Category Selection and Brand Showcase">
+  <div class="split-cat-video-grid">
+    <!-- Left: Small Category Thumbnails -->
+    <div class="split-thumbnails-column">
+      <div class="split-column-header">
+        {% if col_tag != blank %}<span class="categories-section-tag">{{ col_tag | escape }}</span>{% endif %}
+        {% if col_title != blank %}<h2 class="split-column-title">{{ col_title | escape }}</h2>{% endif %}
+        {% if col_sub != blank %}<p class="split-column-sub">{{ col_sub | escape }}</p>{% endif %}
+      </div>
+
+      <div class="split-thumbnails-grid">
+        {% if section.blocks.size > 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'category' %}
+              {%- liquid
+                assign cat_name = block.settings.title | escape
+                assign cat_meta = block.settings.meta | escape
+                assign cat_link = block.settings.link
+              -%}
+              <a
+                href="{% if cat_link != blank %}{{ cat_link }}{% else %}#category-{{ cat_name | handleize }}{% endif %}"
+                class="split-category-tile"
+                id="shopify-block-{{ block.id }}"
+                aria-label="Shop {{ cat_name }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="split-category-thumb">
+                  {% if block.settings.image != blank %}
+                    <img
+                      src="{{ block.settings.image | image_url: width: 320 }}"
+                      alt="{{ block.settings.image.alt | default: cat_name | escape }}"
+                      width="160"
+                      height="160"
+                      loading="lazy"
+                    />
+                  {% else %}
+                    <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="{{ cat_name }}" width="160" height="160" loading="lazy" />
+                  {% endif %}
+                </div>
+                <div class="split-category-info">
+                  <h3 class="split-category-name">{{ cat_name }}</h3>
+                  {% if cat_meta != blank %}
+                    <span class="split-category-meta">{{ cat_meta }}</span>
+                  {% endif %}
+                </div>
+              </a>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <!-- 1. Men -->
+          <a href="#men" class="split-category-tile" onclick="window.navigateToGender('men'); return false;" aria-label="Shop Men's Medical Scrubs">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Men</h3>
+              <span class="split-category-meta">12 Styles →</span>
+            </div>
+          </a>
+
+          <!-- 2. Women -->
+          <a href="#women" class="split-category-tile" onclick="window.navigateToGender('women'); return false;" aria-label="Shop Women's Medical Scrubs">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Women</h3>
+              <span class="split-category-meta">14 Styles →</span>
+            </div>
+          </a>
+
+          <!-- 3. Scrubs -->
+          <a href="#category-scrubs" class="split-category-tile" onclick="window.selectProductCategory('scrubs'); return false;" aria-label="Shop Medical Scrubs">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Clinical Scrubs" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Scrubs</h3>
+              <span class="split-category-meta">All Series →</span>
+            </div>
+          </a>
+
+          <!-- 4. Lab Coats -->
+          <a href="#collection-lab-coats" class="split-category-tile" onclick="window.selectProductCategory('lab-coat'); return false;" aria-label="Shop Medical Lab Coats">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Doctor Lab Coats" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Lab Coats</h3>
+              <span class="split-category-meta">Helium White →</span>
+            </div>
+          </a>
+
+          <!-- 5. Caps -->
+          <a href="#collection-caps" class="split-category-tile" onclick="window.selectProductCategory('caps'); return false;" aria-label="Shop Surgical Scrub Caps">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Surgical Caps" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Caps</h3>
+              <span class="split-category-meta">BunFit™ Series →</span>
+            </div>
+          </a>
+
+          <!-- 6. Accessories -->
+          <a href="#accessories" class="split-category-tile" onclick="window.navigateToAccessories(); return false;" aria-label="Shop Clinical Accessories">
+            <div class="split-category-thumb">
+              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Clinical Accessories" width="160" height="160" loading="lazy" />
+            </div>
+            <div class="split-category-info">
+              <h3 class="split-category-name">Accessories</h3>
+              <span class="split-category-meta">Sleeves & More →</span>
+            </div>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right: Large Brand Video Showcase -->
+    <div class="split-video-column">
+      <div class="brand-video-card-container">
+        <div class="brand-video-wrapper">
+          <video
+            id="enamels-brand-promo-video"
+            class="brand-promo-video-element"
+            poster="{{ brand_poster }}"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            aria-label="Enamels Medical Performance Brand Showcase Video"
+          >
+            <source src="{{ video_url }}" type="video/mp4">
+          </video>
+
+          <!-- Video Overlay Card with Controls -->
+          <div class="brand-video-overlay-banner">
+            <div class="brand-video-info">
+              {% if video_badge != blank %}
+                <span class="brand-video-badge">{{ video_badge | escape }}</span>
+              {% endif %}
+              {% if video_title != blank %}
+                <h3 class="brand-video-title">{{ video_title | escape }}</h3>
+              {% endif %}
+              {% if video_desc != blank %}
+                <p class="brand-video-desc">{{ video_desc | escape }}</p>
+              {% endif %}
+            </div>
+            <div class="brand-video-controls">
+              <button
+                type="button"
+                class="brand-video-toggle-btn"
+                id="brand-video-play-pause-btn"
+                onclick="if (typeof window.toggleBrandPromoVideo === 'function') window.toggleBrandPromoVideo();"
+                aria-label="Pause Promotional Video"
+              >
+                <span id="brand-video-btn-icon">⏸</span>
+                <span id="brand-video-btn-label">Pause</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Category & Video Split",
+  "class": "enamels-category-video-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Category Column Settings"
+    },
+    {
+      "type": "text",
+      "id": "column_tag",
+      "label": "Tag",
+      "default": "QUICK CATALOGUE DISCOVERY"
+    },
+    {
+      "type": "text",
+      "id": "column_title",
+      "label": "Title",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "textarea",
+      "id": "column_sub",
+      "label": "Subtitle",
+      "default": "Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role."
+    },
+    {
+      "type": "header",
+      "content": "Brand Video Showcase Settings"
+    },
+    {
+      "type": "text",
+      "id": "brand_video_url",
+      "label": "MP4 Video URL",
+      "default": "https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_video_poster",
+      "label": "Video Poster Image"
+    },
+    {
+      "type": "text",
+      "id": "video_badge",
+      "label": "Video Badge",
+      "default": "CINEMATIC SHOWCASE"
+    },
+    {
+      "type": "text",
+      "id": "video_title",
+      "label": "Video Title",
+      "default": "Engineered for Clinical Endurance"
+    },
+    {
+      "type": "textarea",
+      "id": "video_desc",
+      "label": "Video Description",
+      "default": "Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category Thumbnail",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Name",
+          "default": "Men"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "Meta Text (e.g. 12 Styles →)",
+          "default": "12 Styles →"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Thumbnail Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Category Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category & Video Split",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "Men",
+            "meta": "12 Styles →"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Women",
+            "meta": "14 Styles →"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Scrubs",
+            "meta": "All Series →"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Lab Coats",
+            "meta": "Helium White →"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Caps",
+            "meta": "BunFit™ Series →"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Accessories",
+            "meta": "Sleeves & More →"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

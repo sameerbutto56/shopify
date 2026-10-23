@@ -1,0 +1,136 @@
+{% comment %}
+  Enamels Modular Live Catalogue Section
+  Renders curated real Shopify products on the homepage with interactive category pills,
+  sort options, responsive grid layout, and clean empty states.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign tag_text = section.settings.section_tag | default: 'ONLINE STORE APPAREL & ACCESSORIES'
+  assign title_text = section.settings.section_title | default: 'Curated Product Catalogue'
+  assign subtitle_text = section.settings.section_subtitle | default: 'Explore our live collection of clinical scrubs, lab coats, surgical caps, and accessories.'
+  assign show_filter_pills = section.settings.show_filter_pills
+  assign show_sort = section.settings.show_sort
+  assign grid_cols = section.settings.grid_columns | default: 4
+-%}
+
+{% if enable_section %}
+<section class="page-container" style="padding: 56px 0;" id="homepage-live-catalogue-section" aria-label="Curated Live Product Catalogue">
+  <div class="categories-section-header">
+    {% if tag_text != blank %}
+      <span class="categories-section-tag">{{ tag_text | escape }}</span>
+    {% endif %}
+    {% if title_text != blank %}
+      <h2 class="categories-section-title">{{ title_text | escape }}</h2>
+    {% endif %}
+    {% if subtitle_text != blank %}
+      <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
+    {% endif %}
+  </div>
+
+  {% if show_filter_pills or show_sort %}
+  <!-- Category Filter & Sort Bar -->
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 20px 0 28px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+    {% if show_filter_pills %}
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="homepage-category-filter-pills">
+      <button type="button" class="filter-pill-btn active" id="hp-filter-all" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('all');">
+        <span class="filter-pill-text">All Products</span>
+      </button>
+      <button type="button" class="filter-pill-btn" id="hp-filter-scrubs" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('scrubs');">
+        <span class="filter-pill-text">Scrubs</span>
+      </button>
+      <button type="button" class="filter-pill-btn" id="hp-filter-labcoat" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('lab-coat');">
+        <span class="filter-pill-text">Lab Coats</span>
+      </button>
+      <button type="button" class="filter-pill-btn" id="hp-filter-caps" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('caps');">
+        <span class="filter-pill-text">Surgical Caps</span>
+      </button>
+      <button type="button" class="filter-pill-btn" id="hp-filter-accessories" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('accessories');">
+        <span class="filter-pill-text">Accessories</span>
+      </button>
+    </div>
+    {% endif %}
+
+    {% if show_sort %}
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <label for="homepage-sort-select" style="font-size: 12px; color: #64748b; font-weight: 600;">Sort By:</label>
+      <select id="homepage-sort-select" class="form-field-select" style="padding: 6px 12px; font-size: 12px; width: auto;" onchange="if (typeof window.sortHomepageGrid === 'function') window.sortHomepageGrid(this.value);">
+        <option value="featured">Featured</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="name">Name: A to Z</option>
+      </select>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- The Grid container where real Shopify products like 'junaid' immediately render -->
+  <div
+    class="enamels-products-grid"
+    id="homepage-live-products-grid"
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax({% if grid_cols == 3 %}320px{% elsif grid_cols == 2 %}420px{% else %}260px{% endif %}, 1fr)); gap: 24px;"
+  >
+    <!-- Populated dynamically via window.renderHomepageLiveGrid() -->
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Live Product Catalogue",
+  "class": "enamels-live-catalogue-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "section_tag",
+      "label": "Section Header Tag",
+      "default": "ONLINE STORE APPAREL & ACCESSORIES"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Curated Product Catalogue"
+    },
+    {
+      "type": "textarea",
+      "id": "section_subtitle",
+      "label": "Section Subtitle",
+      "default": "Explore our live collection of clinical scrubs, lab coats, surgical caps, and accessories."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_pills",
+      "label": "Show Category Filter Pills",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Show Sort Dropdown",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_columns",
+      "label": "Max Columns Desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Live Product Catalogue"
+    }
+  ]
+}
+{% endschema %}

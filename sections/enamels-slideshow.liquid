@@ -1,0 +1,252 @@
+{% comment %}
+  Enamels Modular Slideshow Section
+  Provides authentic banner slideshow with customizable slides, drag-and-drop image uploads,
+  mobile image overrides, titles, links, autoplay, arrows, and navigation dots.
+{% endcomment %}
+
+{%- liquid
+  assign enable_slideshow = section.settings.enable_slideshow
+  assign show_arrows = section.settings.show_slideshow_arrows
+  assign show_dots = section.settings.show_slideshow_dots
+  assign slide_blocks_count = section.blocks.size
+-%}
+
+{% if enable_slideshow %}
+<section class="enamels-slideshow-container" id="enamels-hero-slideshow" aria-label="Official Enamels Slideshow">
+  <div class="slideshow-track" id="enamels-slideshow-track">
+    {% if slide_blocks_count > 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'slide' %}
+          <a
+            href="{{ block.settings.link | default: '#collection-sprinter' }}"
+            class="slide-panel"
+            id="shopify-block-{{ block.id }}"
+            {{ block.shopify_attributes }}
+          >
+            {% if block.settings.image != blank %}
+              <picture>
+                {% if block.settings.image_mobile != blank %}
+                  <source media="(max-width: 640px)" srcset="{{ block.settings.image_mobile | image_url: width: 800 }}">
+                {% endif %}
+                <img
+                  src="{{ block.settings.image | image_url: width: 1600 }}"
+                  alt="{{ block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape }}"
+                  class="slide-img-full"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                />
+              </picture>
+            {% else %}
+              <img
+                src="{{ 'banner-autumn.jpg' | asset_url }}"
+                alt="{{ block.settings.alt | default: 'Enamels Medical Apparel' | escape }}"
+                class="slide-img-full"
+                width="1500"
+                height="575"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              />
+            {% endif %}
+            {% if block.settings.title != blank or block.settings.subtitle != blank %}
+              <div class="slide-caption-overlay">
+                {% if block.settings.title != blank %}<h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>{% endif %}
+                {% if block.settings.subtitle != blank %}<p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>{% endif %}
+              </div>
+            {% endif %}
+          </a>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <!-- Slide 1: Sprinter Autumn Edition -->
+      <a href="#collection-sprinter" class="slide-panel" onclick="window.navigateToCollection('Sprinter'); return false;">
+        <img
+          src="{{ 'banner-autumn.jpg' | asset_url }}"
+          alt="Enamels Sprinter Autumn Edition"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="eager"
+        />
+      </a>
+
+      <!-- Slide 2: Clinical Clogs & Footwear -->
+      <a href="#collection-clogs" class="slide-panel" onclick="window.navigateToCollection('clogs', 'category'); return false;">
+        <img
+          src="{{ 'banner-clogs.jpg' | asset_url }}"
+          alt="Enamels Clinical Clogs & Footwear"
+          class="slide-img-full"
+          width="1500"
+          height="625"
+          loading="lazy"
+        />
+      </a>
+
+      <!-- Slide 3: New Arrivals / Abbotabad Banner -->
+      <a href="#collection-new-arrivals" class="slide-panel" onclick="window.navigateToCollection('all', 'category'); return false;">
+        <img
+          src="{{ 'banner-abbotabad.jpg' | asset_url }}"
+          alt="Enamels New Arrivals 2026"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="lazy"
+        />
+      </a>
+
+      <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
+      <a href="#collection-caps" class="slide-panel" onclick="window.navigateToCollection('caps', 'category'); return false;">
+        <img
+          src="{{ 'banner-caps.jpg' | asset_url }}"
+          alt="Enamels BunFit Surgical Caps"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="lazy"
+        />
+      </a>
+
+      <!-- Slide 5: Velora By Enamels -->
+      <a href="#collection-velora" class="slide-panel" onclick="window.navigateToCollection('Velora'); return false;">
+        <img
+          src="{{ 'banner-velora.jpg' | asset_url }}"
+          alt="Velora Luxury Micro-Drape By Enamels"
+          class="slide-img-full"
+          width="1500"
+          height="575"
+          loading="lazy"
+        />
+      </a>
+    {% endif %}
+  </div>
+
+  {% if show_arrows %}
+  <!-- Navigation Controls -->
+  <button type="button" class="slideshow-arrow prev" onclick="window.stepBannerSlide(-1)" aria-label="Previous Slide">‹</button>
+  <button type="button" class="slideshow-arrow next" onclick="window.stepBannerSlide(1)" aria-label="Next Slide">›</button>
+  {% endif %}
+
+  {% if show_dots %}
+  <!-- Pagination Dots -->
+  <div class="slideshow-dots-bar" id="slideshow-dots-bar">
+    {% if slide_blocks_count > 0 %}
+      {% assign dot_index = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'slide' %}
+          <button type="button" class="slideshow-dot {% if dot_index == 0 %}active{% endif %}" onclick="window.jumpToBannerSlide({{ dot_index }})" aria-label="Slide {{ dot_index | plus: 1 }}"></button>
+          {% assign dot_index = dot_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
+      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Hero Slideshow",
+  "class": "enamels-slideshow-section-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_slideshow",
+      "label": "Enable Slideshow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slideshow_arrows",
+      "label": "Show Arrow Navigation",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slideshow_dots",
+      "label": "Show Dot Pagination",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay Transition (Seconds)",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Banner Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Desktop Banner Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile Banner Image (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Caption Title (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Caption Subtitle (Optional)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Slide Target Link"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Image Alt Text",
+          "default": "Enamels Medical Apparel"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Slideshow",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Sprinter Autumn Edition",
+            "subtitle": "Athletic 4-Way Stretch Twill"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Clinical Footwear",
+            "subtitle": "Ergonomic Hospital Clogs"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "BunFit™ Surgical Caps",
+            "subtitle": "Breathable Elastic Adjuster"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
