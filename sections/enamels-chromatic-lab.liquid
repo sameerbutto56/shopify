@@ -4431,8 +4431,14 @@
     window.toggleMobileNavDrawer = function() {
       const backdrop = document.getElementById('mobile-nav-backdrop');
       if (backdrop) {
-        const isShown = backdrop.style.display === 'flex';
-        backdrop.style.display = isShown ? 'none' : 'flex';
+        const isShown = backdrop.style.display === 'flex' || backdrop.classList.contains('open');
+        if (isShown) {
+          backdrop.classList.remove('open');
+          backdrop.style.display = 'none';
+        } else {
+          backdrop.classList.add('open');
+          backdrop.style.display = 'flex';
+        }
       }
     };
 
