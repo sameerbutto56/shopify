@@ -13,6 +13,72 @@
 -%}
 
 {% if enable_section %}
+{%- style -%}
+  #shopify-section-{{ section.id }} .signature-series-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_width_desktop | default: 280 }}px, 1fr));
+    gap: {{ section.settings.grid_gap_desktop | default: 24 }}px;
+  }
+  #shopify-section-{{ section.id }} .category-tile-card {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    overflow: hidden;
+    padding: 0;
+  }
+  #shopify-section-{{ section.id }} .signature-card-media {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px {{ section.settings.card_border_radius | default: 12 }}px 0 0;
+    background: #e2e8f0;
+    {% if section.settings.image_aspect_ratio == 'custom' %}
+      height: {{ section.settings.media_height_desktop | default: 260 }}px;
+      aspect-ratio: unset;
+    {% elsif section.settings.image_aspect_ratio == '1_1' %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == '3_4' %}
+      aspect-ratio: 3 / 4;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == '16_9' %}
+      aspect-ratio: 16 / 9;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == 'natural' %}
+      aspect-ratio: auto;
+      height: auto;
+    {% else %}
+      aspect-ratio: 4 / 3;
+      height: auto;
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .category-tile-card.is-image-only .signature-card-media {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+  }
+  #shopify-section-{{ section.id }} .signature-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
+    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+    transition: transform 0.45s ease;
+  }
+  #shopify-section-{{ section.id }} .category-tile-card:hover .signature-card-media img {
+    transform: scale(1.05);
+  }
+  #shopify-section-{{ section.id }} .signature-card-body {
+    padding: {{ section.settings.caption_padding | default: 20 }}px;
+    text-align: left;
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .signature-series-grid {
+      grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_width_mobile | default: 220 }}px, 1fr));
+      gap: {{ section.settings.grid_gap_mobile | default: 14 }}px;
+    }
+    {% if section.settings.image_aspect_ratio == 'custom' %}
+      #shopify-section-{{ section.id }} .signature-card-media {
+        height: {{ section.settings.media_height_mobile | default: 190 }}px;
+      }
+    {% endif %}
+  }
+{%- endstyle -%}
 <section class="enamels-homepage-modular-section" style="background-color: #f8fafc; padding: 60px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;" id="homepage-signature-series" aria-label="Signature Scrub Lines">
   <div class="page-container">
     <div class="section-header-wrap" style="margin-top: 0;">
@@ -27,7 +93,7 @@
       {% endif %}
     </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+    <div class="signature-series-grid">
       {% if blocks_count > 0 %}
         {% for block in section.blocks %}
           {% if block.type == 'series_card' %}
@@ -45,29 +111,70 @@
                   assign bg_color = '#ccfbf1'
                   assign text_color = '#0f766e'
               endcase
+
+              assign badge_tag = block.settings.badge_tag | strip
+              assign card_title = block.settings.title | strip
+              assign card_desc = block.settings.description | strip
+              assign card_price = block.settings.price_label | strip
+              assign card_btn = block.settings.button_label | strip
+              assign card_img = block.settings.image
+
+              assign has_body = false
+              if badge_tag != blank or card_title != blank or card_desc != blank or card_price != blank or card_btn != blank
+                assign has_body = true
+              endif
+
+              assign has_content = false
+              if has_body or card_img != blank
+                assign has_content = true
+              endif
             %}
-            <div
-              class="category-tile-card"
-              style="padding: 24px; text-align: left;"
-              id="shopify-block-{{ block.id }}"
-              {{ block.shopify_attributes }}
-            >
-              <span style="font-size: 10px; font-weight: 700; background: {{ bg_color }}; color: {{ text_color }}; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">
-                {{ block.settings.badge_tag | escape }}
-              </span>
-              <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">{{ block.settings.title | escape }}</h3>
-              <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">{{ block.settings.description | escape }}</p>
-              {% if block.settings.price_label != blank %}
-                <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">{{ block.settings.price_label | escape }}</div>
-              {% endif %}
-              <button
-                type="button"
-                class="btn-card-action"
-                onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('{{ block.settings.series_key | escape }}'); } else { window.location.href = '#collection-{{ block.settings.series_key | handleize }}'; }"
+            {% if has_content %}
+              <div
+                class="category-tile-card{% unless has_body %} is-image-only{% endunless %}"
+                id="shopify-block-{{ block.id }}"
+                {{ block.shopify_attributes }}
               >
-                {{ block.settings.button_label | default: 'Explore Series →' | escape }}
-              </button>
-            </div>
+                {% if card_img != blank %}
+                  <div class="signature-card-media">
+                    <img
+                      src="{{ card_img | image_url: width: 600 }}"
+                      alt="{{ card_img.alt | default: card_title | default: 'Scrub Line Thumbnail' | escape }}"
+                      width="{{ card_img.width }}"
+                      height="{{ card_img.height }}"
+                      loading="lazy"
+                    />
+                  </div>
+                {% endif %}
+                {% if has_body %}
+                <div class="signature-card-body">
+                  {% if badge_tag != blank %}
+                    <span style="font-size: 10px; font-weight: 700; background: {{ bg_color }}; color: {{ text_color }}; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">
+                      {{ badge_tag | escape }}
+                    </span>
+                  {% endif %}
+                  {% if card_title != blank %}
+                    <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 12px 0 6px;">{{ card_title | escape }}</h3>
+                  {% endif %}
+                  {% if card_desc != blank %}
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">{{ card_desc | escape }}</p>
+                  {% endif %}
+                  {% if card_price != blank %}
+                    <div style="font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 16px;">{{ card_price | escape }}</div>
+                  {% endif %}
+                  {% if card_btn != blank %}
+                    <button
+                      type="button"
+                      class="btn-card-action"
+                      onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('{{ block.settings.series_key | escape }}'); } else { window.location.href = '#collection-{{ block.settings.series_key | handleize }}'; }"
+                    >
+                      {{ card_btn | escape }}
+                    </button>
+                  {% endif %}
+                </div>
+                {% endif %}
+              </div>
+            {% endif %}
           {% endif %}
         {% endfor %}
       {% else %}
@@ -129,6 +236,136 @@
       "id": "series_subtitle",
       "label": "Section Subtitle",
       "default": "From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms."
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail & Card Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "card_width_desktop",
+      "label": "Card Min Width Desktop (px)",
+      "min": 200,
+      "max": 450,
+      "step": 5,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card Min Width Mobile (px)",
+      "min": 150,
+      "max": 320,
+      "step": 5,
+      "default": 220,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "media_height_desktop",
+      "label": "Thumbnail Height Desktop (px)",
+      "min": 140,
+      "max": 500,
+      "step": 5,
+      "default": 260,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "media_height_mobile",
+      "label": "Thumbnail Height Mobile (px)",
+      "min": 120,
+      "max": 360,
+      "step": 5,
+      "default": 190,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Thumbnail Aspect Ratio",
+      "options": [
+        { "value": "custom", "label": "Custom (Height in px)" },
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "4_3", "label": "4:3 Classic" },
+        { "value": "3_4", "label": "3:4 Portrait" },
+        { "value": "16_9", "label": "16:9 Widescreen" },
+        { "value": "natural", "label": "Natural / Auto" }
+      ],
+      "default": "4_3"
+    },
+    {
+      "type": "select",
+      "id": "image_fit_mode",
+      "label": "Image Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_x",
+      "label": "Horizontal Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_y",
+      "label": "Vertical Image Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "label": "Card Spacing Desktop (px)",
+      "min": 10,
+      "max": 48,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Card Spacing Mobile (px)",
+      "min": 6,
+      "max": 28,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "caption_padding",
+      "label": "Caption Padding (px)",
+      "min": 8,
+      "max": 36,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
     }
   ],
   "blocks": [
@@ -136,6 +373,11 @@
       "type": "series_card",
       "name": "Scrub Series Card",
       "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card Thumbnail Image"
+        },
         {
           "type": "select",
           "id": "badge_color_preset",

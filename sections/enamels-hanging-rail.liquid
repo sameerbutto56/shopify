@@ -14,25 +14,40 @@
   assign default_view = section.settings.default_view | default: 'rail'
   assign show_tags = section.settings.show_tags
   assign show_swatches = section.settings.show_swatches
+  assign show_product_names = section.settings.show_product_names
+  assign show_prices = section.settings.show_prices
   assign tilt_angle = section.settings.tilt_angle | default: 22
   assign lift_distance = section.settings.lift_distance | default: 14
+  assign enable_hover_reveal = section.settings.enable_hover_reveal
+  assign anim_speed = section.settings.anim_speed | default: 0.45
+  assign item_spacing = section.settings.item_spacing | default: 36
+  assign garment_height = section.settings.garment_height | default: 480
   assign section_bg = section.settings.section_bg | default: '#ffffff'
+  assign heading_color = section.settings.heading_color | default: '#102a43'
+  assign text_color = section.settings.text_color | default: '#64748b'
   assign pad_top = section.settings.section_padding_top | default: 40
   assign pad_bottom = section.settings.section_padding_bottom | default: 60
+  assign badge_text = section.settings.badge_text | default: 'Interactive Showroom'
   assign heading = section.settings.heading | default: 'Boutique Rail Collection'
   assign subtext = section.settings.subtext | default: 'Glide along the rail to inspect luxury clinical scrubs and tailored medical uniforms.'
+  assign selected_collection = collections[section.settings.collection]
+  assign product_limit = section.settings.products_to_show | default: 8
 %}
 
 {% if enable_rail %}
 <section
   class="enamels-hanging-rail-section"
-  id="shopify-section-enamels-hanging-rail"
+  id="shopify-section-{{ section.id }}"
   style="
-    background-color: {{ section_bg }};
+    background: {{ section_bg }};
     padding-top: {{ pad_top }}px;
     padding-bottom: {{ pad_bottom }}px;
     --rail-tilt-angle: -{{ tilt_angle }}deg;
     --rail-lift-distance: -{{ lift_distance }}px;
+    --rail-hover-rotate: {% if enable_hover_reveal %}0deg{% else %}-{{ tilt_angle }}deg{% endif %};
+    --rail-anim-speed: {{ anim_speed }}s;
+    --rail-item-gap: {{ item_spacing }}px;
+    --garment-height: {{ garment_height }}px;
   "
   data-rail-finish="{{ rail_finish }}"
   data-default-view="{{ default_view }}"
@@ -41,15 +56,19 @@
     <!-- Rail Section Header Row -->
     <div class="enamels-rail-header-row">
       <div class="enamels-rail-title-wrap">
-        <span class="enamels-rail-tag">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="12" cy="12" r="10"></circle>
-            <path d="M12 6v6l4 2"></path>
-          </svg>
-          Interactive Showroom
-        </span>
-        <h2 class="enamels-rail-heading">{{ heading | escape }}</h2>
-        <p class="enamels-rail-subtext">{{ subtext | escape }}</p>
+        {% if badge_text != blank %}
+          <span class="enamels-rail-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v6l4 2"></path>
+            </svg>
+            {{ badge_text | escape }}
+          </span>
+        {% endif %}
+        <h2 class="enamels-rail-heading" style="color: {{ heading_color }};">{{ heading | escape }}</h2>
+        {% if subtext != blank %}
+          <p class="enamels-rail-subtext" style="color: {{ text_color }};">{{ subtext | escape }}</p>
+        {% endif %}
       </div>
 
       <!-- View Switcher Toggle -->
@@ -57,7 +76,7 @@
         <button
           type="button"
           class="enamels-view-btn {% if default_view == 'rail' %}active{% endif %}"
-          id="enamels-view-btn-rail"
+          id="enamels-view-btn-rail-{{ section.id }}"
           onclick="window.switchEnamelsView('rail')"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -68,7 +87,7 @@
         <button
           type="button"
           class="enamels-view-btn {% if default_view == 'grid' %}active{% endif %}"
-          id="enamels-view-btn-grid"
+          id="enamels-view-btn-grid-{{ section.id }}"
           onclick="window.switchEnamelsView('grid')"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -82,19 +101,71 @@
       </div>
     </div>
 
-    <!-- Dynamic Container Injected & Controlled via JS -->
-    <div id="enamels-rail-mount-point">
-      <!-- Injected by window.renderHangingRail(items) or initialized directly -->
+    <!-- Mount Point for the Hanging Rail Items -->
+    <div id="enamels-rail-mount-point-{{ section.id }}" class="enamels-rail-mount-target">
+      <!-- Rail items rendered via client initialization below -->
     </div>
   </div>
 </section>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    if (typeof window.initHangingRail === 'function') {
-      window.initHangingRail();
+  (function() {
+    function initSectionRail() {
+      var mount = document.getElementById('enamels-rail-mount-point-{{ section.id }}');
+      if (!mount) return;
+
+      var realItems = [];
+      {% if selected_collection != blank and selected_collection.products_count > 0 %}
+        {% for prod in selected_collection.products limit: product_limit %}
+          realItems.push({
+            id: {{ prod.id | json }},
+            title: {{ prod.title | json }},
+            handle: {{ prod.handle | json }},
+            basePrice: {{ prod.price | divided_by: 100.0 }},
+            image: {{ prod.featured_image | image_url: width: 640 | json }},
+            category: 'scrubs',
+            series: {{ prod.type | default: 'CLINICAL' | json }},
+            colors: [
+              {% for opt in prod.options_with_values %}
+                {% if opt.name == 'Color' or opt.name == 'Colour' %}
+                  {% for val in opt.values %}
+                    { name: {{ val | json }}, hex: '#1e293b' }{% unless forloop.last %},{% endunless %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            ]
+          });
+        {% endfor %}
+      {% endif %}
+
+      var items = (realItems.length > 0) ? realItems : (window.EnamelsFullCatalogue || window.ENAMELS_DEFAULT_SCRUBS || []);
+      if (!items || !items.length) {
+        // Retry shortly if catalog is loading asynchronously
+        setTimeout(initSectionRail, 150);
+        return;
+      }
+
+      var sliced = items.slice(0, {{ product_limit }});
+      if (typeof window.renderHangingRailHtml === 'function') {
+        mount.innerHTML = window.renderHangingRailHtml(sliced, {
+          rail_finish: {{ rail_finish | json }},
+          show_tags: {{ show_tags | json }},
+          show_swatches: {{ show_swatches | json }},
+          show_names: {{ show_product_names | json }},
+          show_prices: {{ show_prices | json }}
+        });
+        if (typeof window.initHangingRail === 'function') {
+          window.initHangingRail();
+        }
+      }
     }
-  });
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSectionRail);
+    } else {
+      initSectionRail();
+    }
+  })();
 </script>
 {% endif %}
 
@@ -105,10 +176,55 @@
   "class": "section-enamels-hanging-rail",
   "settings": [
     {
+      "type": "header",
+      "content": "Visibility & Collection"
+    },
+    {
       "type": "checkbox",
       "id": "enable_hanging_rail",
       "label": "Enable Boutique Hanging Rail",
       "default": true
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Featured Collection (Optional)",
+      "info": "Leave blank to display the signature Enamels surgical scrubs catalogue"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "label": "Number of Garments on Rail",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Section Content & Copy"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Pill Badge Text",
+      "default": "Interactive Showroom"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Boutique Rail Collection"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Section Subtitle",
+      "default": "Glide along the rail to inspect luxury clinical scrubs and tailored medical uniforms."
+    },
+    {
+      "type": "header",
+      "content": "Hanging Mode Presentation & Physics"
     },
     {
       "type": "select",
@@ -132,9 +248,82 @@
       "default": "rail"
     },
     {
+      "type": "range",
+      "id": "tilt_angle",
+      "min": 10,
+      "max": 35,
+      "step": 1,
+      "unit": "deg",
+      "label": "Resting Angle / Wardrobe Tilt",
+      "default": 22
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover_reveal",
+      "label": "Enable Hover-to-Front Rotation",
+      "info": "Smoothly rotates the garment forward when hovered or focused",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "lift_distance",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Hover Lift-Off Distance",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "anim_speed",
+      "min": 0.2,
+      "max": 1.0,
+      "step": 0.1,
+      "unit": "s",
+      "label": "Animation Speed",
+      "default": 0.5
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Spacing Between Garments",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "garment_height",
+      "min": 360,
+      "max": 560,
+      "step": 20,
+      "unit": "px",
+      "label": "Garment Display Height",
+      "default": 480
+    },
+    {
+      "type": "header",
+      "content": "Labels & Elements Visibility"
+    },
+    {
       "type": "checkbox",
       "id": "show_tags",
       "label": "Show Hanging Boutique Price Tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_names",
+      "label": "Show Product Names",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prices",
+      "label": "Show Product Prices",
       "default": true
     },
     {
@@ -144,48 +333,32 @@
       "default": true
     },
     {
-      "type": "range",
-      "id": "tilt_angle",
-      "min": 10,
-      "max": 35,
-      "step": 1,
-      "unit": "deg",
-      "label": "Garment Resting Tilt Angle",
-      "default": 22
-    },
-    {
-      "type": "range",
-      "id": "lift_distance",
-      "min": 5,
-      "max": 30,
-      "step": 1,
-      "unit": "px",
-      "label": "Hover Lift-Off Distance",
-      "default": 14
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Section Heading",
-      "default": "Boutique Rail Collection"
-    },
-    {
-      "type": "text",
-      "id": "subtext",
-      "label": "Section Subtitle",
-      "default": "Glide along the rail to inspect luxury clinical scrubs and tailored medical uniforms."
+      "type": "header",
+      "content": "Colors & Layout Spacing"
     },
     {
       "type": "color",
       "id": "section_bg",
-      "label": "Background Color",
+      "label": "Section Background Color",
       "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Subtitle Color",
+      "default": "#64748b"
     },
     {
       "type": "range",
       "id": "section_padding_top",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "unit": "px",
       "label": "Padding Top",
@@ -195,7 +368,7 @@
       "type": "range",
       "id": "section_padding_bottom",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "unit": "px",
       "label": "Padding Bottom",

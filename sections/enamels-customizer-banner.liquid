@@ -12,10 +12,13 @@
   assign desc_text = section.settings.description | default: 'Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.'
   assign button_label = section.settings.button_label | default: 'Launch Customizer Studio →'
   assign button_link = section.settings.button_link | default: '#ready-to-wear'
+  assign section_bg = section.settings.section_bg | default: '#ffffff'
+  assign pad_top = section.settings.padding_top | default: 48
+  assign pad_bottom = section.settings.padding_bottom | default: 24
 -%}
 
 {% if enable_section %}
-<section class="page-container enamels-homepage-modular-section" style="padding: 48px 0 24px;" id="homepage-customizer-banner" aria-label="Make Your Own Scrubs Bespoke Studio">
+<section class="page-container enamels-homepage-modular-section" style="background-color: {{ section_bg }}; padding: {{ pad_top }}px 0 {{ pad_bottom }}px;" id="homepage-customizer-banner" aria-label="Make Your Own Scrubs Bespoke Studio">
   <div class="customizer-editorial-banner">
     <div class="customizer-banner-media">
       {% if badge_text != blank %}
@@ -178,6 +181,36 @@
       "id": "feat4_text",
       "label": "Feature 4 Text",
       "default": "Direct Shopify Cart & Checkout Integration"
+    },
+    {
+      "type": "header",
+      "content": "Layout & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 24
     }
   ],
   "presets": [

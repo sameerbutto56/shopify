@@ -3,7 +3,7 @@
   Renders the interactive 6-step bespoke scrub configurator on dedicated pages.
 {% endcomment %}
 
-<div class="page-container" style="padding: 30px 0 60px;" id="enamels-modular-customizer-container">
+<div class="page-container" style="background-color: {{ section.settings.bg_color | default: '#ffffff' }}; padding: {{ section.settings.padding_top | default: 30 }}px 0 {{ section.settings.padding_bottom | default: 60 }}px;" id="enamels-modular-customizer-container">
   {% render 'enamels-ready-to-wear', section: section %}
 </div>
 
@@ -13,10 +13,62 @@
   "class": "enamels-rtw-section-wrapper",
   "settings": [
     {
+      "type": "header",
+      "content": "Studio Header & Copy"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Studio Badge",
+      "default": "BESPOKE MEDICAL APPAREL STUDIO"
+    },
+    {
       "type": "text",
       "id": "heading",
       "label": "Customizer Heading",
-      "default": "Make Your Own Scrubs Studio"
+      "default": "Make Your Own Scrubs — Tailoring Configurator"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Customizer Description",
+      "default": "Configure your technical medical uniform step-by-step. Select certified fabrics, official hospital shades or custom laboratory dyes, standard sizes or custom body measurements, and computerized doctor embroidery."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home_service_cta",
+      "label": "Show Home Service Fitting Button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
     }
   ],
   "presets": [

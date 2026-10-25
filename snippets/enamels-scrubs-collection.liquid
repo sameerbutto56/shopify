@@ -71,6 +71,52 @@
       <!-- PAGE 1 ENDS HERE: STRICTLY NO PRODUCT CARDS OR PRODUCT GRID! -->
     </div>
 
+    <!-- ============================================================ -->
+    <!-- SUBVIEW 1B: BRAND / COLLECTION SELECTION (STEP 3)             -->
+    <!-- Displays available Brands/Collections for chosen Category.    -->
+    <!-- E.g., Men -> Scrubs shows Sprinter, Crown; Men -> Lab Coat    -->
+    <!-- shows Helium, Suiting.                                       -->
+    <!-- ============================================================ -->
+    <div id="subview-brand-selection" style="display: none;">
+      <!-- Breadcrumbs & Back Button -->
+      <div class="listing-nav-top-row" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 22px;">
+        <nav aria-label="Breadcrumb" class="collection-breadcrumbs-bar" style="font-size: 13px; color: #64748b; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <a href="#" onclick="window.navigateToView('home'); return false;" class="breadcrumb-link">Home</a>
+          <span class="breadcrumb-sep">/</span>
+          <a href="#" id="brand-crumb-gender" onclick="window.navigateToGenderLanding(STATE.genderFilter || 'men'); return false;" class="breadcrumb-link">Men</a>
+          <span class="breadcrumb-sep">/</span>
+          <strong style="color: #102a43;" id="brand-crumb-category">Scrubs</strong>
+        </nav>
+        <button
+          type="button"
+          class="btn-back-to-categories"
+          onclick="window.navigateToGenderLanding(STATE.genderFilter || 'men')"
+          aria-label="Return to Category Selection"
+        >
+          <span class="back-arrow-icon">←</span>
+          <span>Back to Categories</span>
+        </button>
+      </div>
+
+      <!-- Header -->
+      <div class="collection-header-container" style="margin-bottom: 28px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+          <span class="nav-tag-highlight" id="brand-select-category-tag" style="background: #102a43; color: #ffffff;">SCRUBS SERIES</span>
+          <span class="level-indicator-pill">STEP 2: CHOOSE BRAND / COLLECTION</span>
+        </div>
+        <h1 class="collection-main-heading" id="brand-select-main-heading">
+          Select Scrub Brand
+        </h1>
+        <p class="collection-sub-desc" id="brand-select-sub-desc">
+          Choose from our signature clinical scrub lines engineered for distinct clinical specialties and fits.
+        </p>
+      </div>
+
+      <!-- Brand Cards Grid -->
+      <div class="collection-category-grid" id="category-brands-cards-grid" style="margin-bottom: 30px;">
+        <!-- Injected dynamically by renderBrandCardsForCategory(gender, category) -->
+      </div>
+    </div>
 
     <!-- ============================================================ -->
     <!-- SUBVIEW 2: SELECTED PRODUCT CATEGORY & LISTING (PAGE 2)      -->
@@ -86,26 +132,27 @@
           <span class="breadcrumb-sep">/</span>
           
           <!-- Gender Crumb (returns to Page 1: Category Landing) -->
-          <a href="#" id="listing-crumb-gender" onclick="window.navigateToGender(STATE.genderFilter || 'men', 'all', 'all'); return false;" class="breadcrumb-link">Men</a>
+          <a href="#" id="listing-crumb-gender" onclick="window.navigateToGenderLanding(STATE.genderFilter || 'men'); return false;" class="breadcrumb-link">Men</a>
           
           <span class="breadcrumb-sep">/</span>
-          <!-- Category Crumb (resets article filter to All) -->
-          <a href="#" id="listing-crumb-category" onclick="window.setArticleFilter('all'); return false;" class="breadcrumb-link">Scrubs</a>
+          <!-- Category Crumb (returns to Page 1B: Brand Selection) -->
+          <a href="#" id="listing-crumb-category" onclick="window.navigateToCategory(STATE.genderFilter || 'men', STATE.productCategoryFilter || 'scrubs'); return false;" class="breadcrumb-link">Scrubs</a>
 
           <!-- Article Crumb (shown when an individual article is selected) -->
-          <span id="listing-crumb-article-sep" style="display: none;" class="breadcrumb-sep">/</span>
-          <strong style="color: #102a43; display: none;" id="listing-crumb-article-current">All Products</strong>
+          <span id="listing-crumb-article-sep" style="display: inline;" class="breadcrumb-sep">/</span>
+          <strong style="color: #102a43; display: inline;" id="listing-crumb-article-current">All Products</strong>
         </nav>
 
-        <!-- Back to Categories Button -->
+        <!-- Back to Brands Button -->
         <button
           type="button"
           class="btn-back-to-categories"
-          onclick="window.navigateToGender(STATE.genderFilter || 'men', 'all', 'all')"
-          aria-label="Return to Category Selection"
+          id="btn-back-to-brands-or-cats"
+          onclick="window.handleListingBackClick()"
+          aria-label="Return to Previous Step"
         >
           <span class="back-arrow-icon">←</span>
-          <span id="back-to-categories-label">Back to Categories</span>
+          <span id="back-to-categories-label">Back to Brands</span>
         </button>
       </div>
 
@@ -113,7 +160,7 @@
       <div class="collection-header-container" style="margin-bottom: 24px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
           <span class="nav-tag-highlight" id="listing-category-tag" style="background: #102a43; color: #ffffff;">MEN'S SCRUBS</span>
-          <span class="level-indicator-pill" id="listing-level-tag">STEP 2 OF 2: SELECT ARTICLE & PRODUCT</span>
+          <span class="level-indicator-pill" id="listing-level-tag">STEP 3: SELECT ARTICLE & COLOUR</span>
         </div>
         <h1 class="collection-main-heading" id="listing-main-heading">
           Men's Scrubs

@@ -52,6 +52,18 @@
 <!-- ============================================================ -->
 <script>
   window.ShopifyThemeAssets = {
+    'demo-hang-scrub-navy.jpg': {{ 'demo-hang-scrub-navy.jpg' | asset_url | json }},
+    'demo-hang-scrub-burgundy.jpg': {{ 'demo-hang-scrub-burgundy.jpg' | asset_url | json }},
+    'demo-hang-scrub-teal.jpg': {{ 'demo-hang-scrub-teal.jpg' | asset_url | json }},
+    'demo-hang-scrub-black.jpg': {{ 'demo-hang-scrub-black.jpg' | asset_url | json }},
+    'demo-hang-scrub-olive.jpg': {{ 'demo-hang-scrub-olive.jpg' | asset_url | json }},
+    'demo-hang-labcoat-white.jpg': {{ 'demo-hang-labcoat-white.jpg' | asset_url | json }},
+    'demo-hang-scrub-navy.png': {{ 'demo-hang-scrub-navy.png' | asset_url | json }},
+    'demo-hang-scrub-burgundy.png': {{ 'demo-hang-scrub-burgundy.png' | asset_url | json }},
+    'demo-hang-scrub-teal.png': {{ 'demo-hang-scrub-teal.png' | asset_url | json }},
+    'demo-hang-scrub-black.png': {{ 'demo-hang-scrub-black.png' | asset_url | json }},
+    'demo-hang-scrub-olive.png': {{ 'demo-hang-scrub-olive.png' | asset_url | json }},
+    'demo-hang-labcoat-white.png': {{ 'demo-hang-labcoat-white.png' | asset_url | json }},
     'demo-sprinter-navy.jpg': {{ 'demo-sprinter-navy.jpg' | asset_url | json }},
     'demo-velora-teal.jpg': {{ 'demo-velora-teal.jpg' | asset_url | json }},
     'demo-crown-burgundy.jpg': {{ 'demo-crown-burgundy.jpg' | asset_url | json }},
@@ -243,10 +255,38 @@
       });
       const primaryImg = (sp.featured_image ? (typeof sp.featured_image === 'string' ? sp.featured_image : sp.featured_image.src || sp.featured_image.url) : (images[0]?.src || ''));
 
+      // 1. Structured tag parsing (both prefix colon tags and simple tags)
       const tags = Array.isArray(sp.tags) ? sp.tags : (typeof sp.tags === 'string' ? sp.tags.split(',').map(t => t.trim()) : []);
       const tagsLower = tags.map(t => t.toLowerCase());
+      const tagKeyMap = {};
+      tags.forEach(t => {
+        if (t.includes(':')) {
+          const parts = t.split(':');
+          const k = parts[0].trim().toLowerCase();
+          const v = parts.slice(1).join(':').trim().toLowerCase();
+          tagKeyMap[k] = v;
+        }
+      });
+
+      // 2. Category classification: supports category:tag, sp.product_type, simple tags, and title keywords
+      const rawProductType = (sp.product_type || '').toLowerCase();
+      const catTag = tagKeyMap['category'] || '';
       let category = 'scrub-set';
-      if (tagsLower.includes('caps') || tagsLower.includes('scrub cap') || tagsLower.includes('surgical cap') || cleanTitle.toLowerCase().includes('cap')) {
+      if (catTag.includes('cap') || rawProductType.includes('cap')) {
+        category = 'caps';
+      } else if (catTag.includes('lab') || rawProductType.includes('lab')) {
+        category = 'lab-coat';
+      } else if (catTag.includes('sleeve') || rawProductType.includes('sleeve')) {
+        category = 'sleeves';
+      } else if (catTag.includes('acc') || catTag.includes('clog') || rawProductType.includes('acc') || rawProductType.includes('clog') || rawProductType.includes('footwear')) {
+        category = 'accessories';
+      } else if (catTag === 'scrub-top' || catTag === 'scrub_top') {
+        category = 'scrub-top';
+      } else if (catTag === 'scrub-pants' || catTag === 'scrub_pants' || catTag === 'jogger') {
+        category = 'scrub-pants';
+      } else if (catTag.includes('scrub') || rawProductType.includes('scrub')) {
+        category = 'scrub-set';
+      } else if (tagsLower.includes('caps') || tagsLower.includes('scrub cap') || tagsLower.includes('surgical cap') || cleanTitle.toLowerCase().includes('cap')) {
         category = 'caps';
       } else if (tagsLower.includes('lab-coat') || tagsLower.includes('lab coat') || cleanTitle.toLowerCase().includes('lab coat')) {
         category = 'lab-coat';
@@ -258,24 +298,46 @@
         category = 'scrub-top';
       } else if (cleanTitle.toLowerCase().includes('pant') || cleanTitle.toLowerCase().includes('jogger')) {
         category = 'scrub-pants';
+      } else if (tagsLower.includes('scrubs') || tagsLower.includes('scrub set')) {
+        category = 'scrub-set';
       }
 
+      // 3. Gender classification: supports gender:tag, simple tags, and title keywords
+      const genderTag = tagKeyMap['gender'] || '';
       let gender = 'unisex';
-      if (tagsLower.includes('men') || tagsLower.includes("men's") || cleanTitle.toLowerCase().includes("men's") || cleanTitle.toLowerCase().includes("men ")) {
+      if (genderTag === 'men' || genderTag === 'male' || tagsLower.includes('men') || tagsLower.includes("men's") || cleanTitle.toLowerCase().includes("men's") || cleanTitle.toLowerCase().includes("men ")) {
         gender = 'men';
-      } else if (tagsLower.includes('women') || tagsLower.includes("women's") || cleanTitle.toLowerCase().includes("women's") || cleanTitle.toLowerCase().includes("women ")) {
+      } else if (genderTag === 'women' || genderTag === 'female' || tagsLower.includes('women') || tagsLower.includes("women's") || cleanTitle.toLowerCase().includes("women's") || cleanTitle.toLowerCase().includes("women ")) {
         gender = 'women';
       }
 
+      // 4. Series / Brand classification: supports brand:tag, series:tag, sp.vendor, simple tags, and title keywords
+      const brandTag = tagKeyMap['brand'] || tagKeyMap['series'] || '';
+      const rawVendor = (sp.vendor || '').toLowerCase();
       let series = 'Sprinter';
-      if (tagsLower.includes('velora') || cleanTitle.toLowerCase().includes('velora') || tagsLower.includes('vilora') || cleanTitle.toLowerCase().includes('vilora')) series = 'Velora';
-      else if (tagsLower.includes('crown') || cleanTitle.toLowerCase().includes('crown') || tagsLower.includes('ground') || cleanTitle.toLowerCase().includes('ground')) series = 'Crown';
-      else if (tagsLower.includes('flexfit') || tagsLower.includes('flexwell') || cleanTitle.toLowerCase().includes('flex')) series = 'Flexwell';
-      else if (tagsLower.includes('helium') || cleanTitle.toLowerCase().includes('helium')) series = 'Helium';
-      else if (tagsLower.includes('bunfit') || cleanTitle.toLowerCase().includes('bunfit')) series = 'BunFit';
-      else if (tagsLower.includes('splender') || cleanTitle.toLowerCase().includes('splender') || tagsLower.includes('sprinter') || cleanTitle.toLowerCase().includes('sprinter')) series = 'Sprinter';
+      if (brandTag.includes('vilora') || brandTag.includes('velora') || rawVendor.includes('vilora') || tagsLower.includes('velora') || cleanTitle.toLowerCase().includes('velora') || tagsLower.includes('vilora') || cleanTitle.toLowerCase().includes('vilora')) series = 'Vilora';
+      else if (brandTag.includes('crown') || rawVendor.includes('crown') || tagsLower.includes('crown') || cleanTitle.toLowerCase().includes('crown')) series = 'Crown';
+      else if (brandTag.includes('ground') || rawVendor.includes('ground') || tagsLower.includes('ground') || cleanTitle.toLowerCase().includes('ground')) series = 'Ground';
+      else if (brandTag.includes('flexfit') || rawVendor.includes('flexfit') || tagsLower.includes('flexfit') || tagsLower.includes('flexwell') || cleanTitle.toLowerCase().includes('flex')) series = 'FlexFit';
+      else if (brandTag.includes('suiting') || rawVendor.includes('suiting') || tagsLower.includes('suiting') || cleanTitle.toLowerCase().includes('suiting')) series = 'Suiting';
+      else if (brandTag.includes('helium') || rawVendor.includes('helium') || tagsLower.includes('helium') || cleanTitle.toLowerCase().includes('helium')) series = 'Helium';
+      else if (brandTag.includes('bunfit') || rawVendor.includes('bunfit') || tagsLower.includes('bunfit') || cleanTitle.toLowerCase().includes('bunfit')) series = 'BunFit';
+      else if (brandTag.includes('sprinter') || brandTag.includes('splender') || rawVendor.includes('sprinter') || tagsLower.includes('splender') || cleanTitle.toLowerCase().includes('splender') || tagsLower.includes('sprinter') || cleanTitle.toLowerCase().includes('sprinter')) series = 'Sprinter';
       else if (category === 'lab-coat') series = 'Helium';
       else if (category === 'caps') series = 'BunFit';
+      else if (category === 'sleeves') series = 'FlexFit';
+
+      // 5. Article & Fabric & Features
+      const fabricTag = tagKeyMap['fabric'] || '';
+      const customFabric = fabricTag ? fabricTag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : (tagsLower.find(t => t.includes('stretch') || t.includes('twill') || t.includes('poly')) || 'Flexi-Tech Performance (72% Poly, 21% Rayon, 7% Spandex)');
+
+      const featureTag = tagKeyMap['feature'] || tagKeyMap['badge'] || '';
+      let badge = '';
+      if (featureTag.includes('best') || tagsLower.includes('best seller') || tagsLower.includes('bestseller')) badge = 'BEST SELLER';
+      else if (featureTag.includes('new') || tagsLower.includes('new arrival') || tagsLower.includes('new')) badge = 'NEW ARRIVAL';
+      else if (featureTag.includes('stretch') || category === 'scrub-set') badge = '4-WAY STRETCH';
+
+      const isCustomizable = tagKeyMap['customizable'] === 'true' || tagKeyMap['feature'] === 'customizable' || tagsLower.includes('customizable') || category === 'scrub-set' || category === 'scrub-top' || category === 'lab-coat';
 
       const variants = sp.variants || [];
       const colorsMap = new Map();
@@ -338,8 +400,8 @@
         series: series,
         basePrice: basePrice,
         comparePrice: comparePrice,
-        badge: tagsLower.includes('best seller') ? 'BEST SELLER' : (tagsLower.includes('new') ? 'NEW ARRIVAL' : (category === 'scrubs' ? '4-WAY STRETCH' : '')),
-        fabric: tagsLower.find(t => t.includes('stretch') || t.includes('twill') || t.includes('poly')) || 'Flexi-Tech Performance (72% Poly, 21% Rayon, 7% Spandex)',
+        badge: badge,
+        fabric: customFabric,
         description: sp.description || sp.body_html?.replace(/<[^>]+>/g, '') || 'Enamels premium medical uniform engineered for peak clinical performance.',
         image: primaryImg,
         images: images,
@@ -347,7 +409,7 @@
         sizes: sizes,
         variants: variants,
         variantId: variants[0]?.id || 67718805684512,
-        supportsCustomization: category === 'scrub-set' || category === 'scrub-top' || category === 'lab-coat',
+        supportsCustomization: isCustomizable,
         companionIds: ['demo-cap-bunfit-navy', 'demo-acc-sleeves-black']
       };
     }
@@ -932,6 +994,9 @@
         if (dedicatedPortal) {
           dedicatedPortal.classList.add('active');
           window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (typeof window.initHomeServicePortal === 'function') {
+            window.initHomeServicePortal();
+          }
         } else {
           const studio = document.getElementById('view-product-studio');
           if (studio) {
@@ -1064,11 +1129,15 @@
         return;
       }
       if (brandQuery) {
-        window.navigateToBrand(brandQuery, genderQuery || 'all');
+        window.navigateToArticleSeries(genderQuery || 'all', categoryQuery || 'scrubs', brandQuery);
         return;
       }
-      if (genderQuery || categoryQuery) {
-        window.navigateToGender(genderQuery || 'all', categoryQuery || 'all', 'all');
+      if (genderQuery && categoryQuery) {
+        window.navigateToCategory(genderQuery, categoryQuery);
+        return;
+      }
+      if (genderQuery) {
+        window.navigateToGenderLanding(genderQuery);
         return;
       }
 
@@ -1081,9 +1150,9 @@
       } else if (path.includes('/pages/customizer') || path.includes('/pages/make-your-own-scrubs')) {
         window.navigateToView('ready-to-wear');
       } else if (path.includes('/pages/men')) {
-        window.navigateToGender('men', 'all', 'all');
+        window.navigateToGenderLanding('men');
       } else if (path.includes('/pages/women')) {
-        window.navigateToGender('women', 'all', 'all');
+        window.navigateToGenderLanding('women');
       } else if (!hash || hash === '#home') {
         window.navigateToView('home');
       } else if (hash === '#self-service-portal') {
@@ -1091,47 +1160,69 @@
       } else if (hash === '#bulk-order') {
         window.openComingSoonModal('bulk-order');
       } else if (hash === '#accessories' || hash === '#collection-accessories' || hash === '#category-accessories') {
-        window.navigateToAccessories();
+        window.navigateToCategory(STATE.genderFilter || 'men', 'accessories');
       } else if (hash === '#men') {
-        window.navigateToGender('men', 'all', 'all');
+        window.navigateToGenderLanding('men');
       } else if (hash === '#women') {
-        window.navigateToGender('women', 'all', 'all');
+        window.navigateToGenderLanding('women');
       } else if (hash === '#men-scrubs') {
-        window.navigateToGender('men', 'scrubs', 'all');
+        window.navigateToCategory('men', 'scrubs');
       } else if (hash === '#women-scrubs') {
-        window.navigateToGender('women', 'scrubs', 'all');
-      } else if (hash === '#men-lab-coat') {
-        window.navigateToGender('men', 'lab-coat', 'all');
-      } else if (hash === '#women-lab-coat') {
-        window.navigateToGender('women', 'lab-coat', 'all');
+        window.navigateToCategory('women', 'scrubs');
+      } else if (hash === '#men-lab-coat' || hash === '#men-lab-coats') {
+        window.navigateToCategory('men', 'lab-coat');
+      } else if (hash === '#women-lab-coat' || hash === '#women-lab-coats') {
+        window.navigateToCategory('women', 'lab-coat');
       } else if (hash === '#men-caps') {
-        window.navigateToGender('men', 'caps', 'all');
+        window.navigateToArticleSeries('men', 'caps', 'all');
       } else if (hash === '#women-caps') {
-        window.navigateToGender('women', 'caps', 'all');
+        window.navigateToArticleSeries('women', 'caps', 'all');
       } else if (hash === '#men-accessories') {
-        window.navigateToGender('men', 'accessories', 'all');
+        window.navigateToCategory('men', 'accessories');
       } else if (hash === '#women-accessories') {
-        window.navigateToGender('women', 'accessories', 'all');
+        window.navigateToCategory('women', 'accessories');
       } else if (hash.startsWith('#men-')) {
-        const rest = rawHash.replace(/#men-/i, '');
-        if (['scrubs', 'lab-coat', 'caps', 'accessories', 'sleeves'].includes(rest.toLowerCase())) {
-          window.navigateToGender('men', rest.toLowerCase(), 'all');
+        const rest = rawHash.replace(/#men-/i, '').toLowerCase();
+        if (['scrubs', 'lab-coat', 'accessories'].includes(rest)) {
+          window.navigateToCategory('men', rest);
+        } else if (['caps', 'sleeves'].includes(rest)) {
+          window.navigateToArticleSeries('men', rest, 'all');
+        } else if (rest.startsWith('scrubs-')) {
+          const brand = rest.replace('scrubs-', '');
+          window.navigateToArticleSeries('men', 'scrubs', brand);
+        } else if (rest.startsWith('lab-coat-')) {
+          const brand = rest.replace('lab-coat-', '');
+          window.navigateToArticleSeries('men', 'lab-coat', brand);
+        } else if (rest.startsWith('accessories-')) {
+          const brand = rest.replace('accessories-', '');
+          window.navigateToArticleSeries('men', 'accessories', brand);
         } else {
-          window.navigateToGender('men', 'all', rest);
+          window.navigateToArticleSeries('men', 'scrubs', rest);
         }
       } else if (hash.startsWith('#women-')) {
-        const rest = rawHash.replace(/#women-/i, '');
-        if (['scrubs', 'lab-coat', 'caps', 'accessories', 'sleeves'].includes(rest.toLowerCase())) {
-          window.navigateToGender('women', rest.toLowerCase(), 'all');
+        const rest = rawHash.replace(/#women-/i, '').toLowerCase();
+        if (['scrubs', 'lab-coat', 'accessories'].includes(rest)) {
+          window.navigateToCategory('women', rest);
+        } else if (['caps', 'sleeves'].includes(rest)) {
+          window.navigateToArticleSeries('women', rest, 'all');
+        } else if (rest.startsWith('scrubs-')) {
+          const brand = rest.replace('scrubs-', '');
+          window.navigateToArticleSeries('women', 'scrubs', brand);
+        } else if (rest.startsWith('lab-coat-')) {
+          const brand = rest.replace('lab-coat-', '');
+          window.navigateToArticleSeries('women', 'lab-coat', brand);
+        } else if (rest.startsWith('accessories-')) {
+          const brand = rest.replace('accessories-', '');
+          window.navigateToArticleSeries('women', 'accessories', brand);
         } else {
-          window.navigateToGender('women', 'all', rest);
+          window.navigateToArticleSeries('women', 'scrubs', rest);
         }
       } else if (hash === '#summer-collection') {
         window.navigateToSeasonalCollection('summer');
       } else if (hash === '#winter-collection') {
         window.navigateToSeasonalCollection('winter');
       } else if (hash === '#category-scrubs') {
-        window.navigateToGender(STATE.genderFilter || 'men', 'all', 'all');
+        window.navigateToGenderLanding(STATE.genderFilter || 'men');
       } else if (hash === '#ready-to-wear') {
         window.navigateToView('ready-to-wear');
       } else if (hash === '#self-service' || hash === '#self-service-booking' || hash === '#representative-visit-section') {
@@ -1161,33 +1252,36 @@
         const target = rawHash.replace(/#collection-/i, '');
         const targetLower = target.toLowerCase();
         
-        // Brand collections (Vilora, Splender, Ground, FlexFit, Helium, BunFit)
         if (targetLower.startsWith('vilora') || targetLower.startsWith('velora')) {
-          const gender = targetLower.includes('men') && !targetLower.includes('women') ? 'men' : (targetLower.includes('women') ? 'women' : 'all');
-          window.navigateToBrand('Vilora', gender);
+          window.navigateToArticleSeries('women', 'scrubs', 'Vilora');
         } else if (targetLower.startsWith('splender') || targetLower.startsWith('sprinter')) {
-          const gender = targetLower.includes('men') && !targetLower.includes('women') ? 'men' : (targetLower.includes('women') ? 'women' : 'all');
-          window.navigateToBrand('Splender', gender);
-        } else if (targetLower.startsWith('ground') || targetLower.startsWith('crown')) {
-          const gender = targetLower.includes('men') && !targetLower.includes('women') ? 'men' : (targetLower.includes('women') ? 'women' : 'all');
-          window.navigateToBrand('Ground', gender);
+          const gender = targetLower.includes('women') ? 'women' : 'men';
+          window.navigateToArticleSeries(gender, 'scrubs', 'Sprinter');
+        } else if (targetLower.startsWith('crown')) {
+          const gender = targetLower.includes('women') ? 'women' : 'men';
+          window.navigateToArticleSeries(gender, 'scrubs', 'Crown');
+        } else if (targetLower.startsWith('ground')) {
+          const gender = targetLower.includes('women') ? 'women' : 'men';
+          window.navigateToArticleSeries(gender, 'scrubs', 'Ground');
         } else if (targetLower.startsWith('flexfit') || targetLower.startsWith('flexwell')) {
-          const gender = targetLower.includes('men') && !targetLower.includes('women') ? 'men' : (targetLower.includes('women') ? 'women' : 'all');
-          window.navigateToBrand('FlexFit', gender);
+          const gender = targetLower.includes('women') ? 'women' : 'men';
+          window.navigateToArticleSeries(gender, 'scrubs', 'FlexFit');
         } else if (targetLower.startsWith('helium')) {
-          const gender = targetLower.includes('men') && !targetLower.includes('women') ? 'men' : (targetLower.includes('women') ? 'women' : 'all');
-          window.navigateToBrand('Helium', gender);
+          const gender = targetLower.includes('women') ? 'women' : 'men';
+          window.navigateToArticleSeries(gender, 'lab-coat', 'Helium');
+        } else if (targetLower.startsWith('suiting')) {
+          const gender = targetLower.includes('women') ? 'women' : 'men';
+          window.navigateToArticleSeries(gender, 'lab-coat', 'Suiting');
         } else if (targetLower.startsWith('bunfit')) {
-          const gender = targetLower.includes('men') && !targetLower.includes('women') ? 'men' : (targetLower.includes('women') ? 'women' : 'all');
-          window.navigateToBrand('BunFit', gender);
+          window.navigateToArticleSeries('all', 'caps', 'BunFit');
         } else if (targetLower === 'accessories' || targetLower === 'clogs') {
-          window.navigateToAccessories();
+          window.navigateToCategory(STATE.genderFilter || 'men', 'accessories');
         } else if (targetLower === 'sleeves') {
-          window.navigateToGender('all', 'sleeves', 'all');
+          window.navigateToArticleSeries('all', 'sleeves', 'all');
         } else if (targetLower === 'caps') {
-          window.navigateToGender('all', 'caps', 'all');
+          window.navigateToArticleSeries('all', 'caps', 'all');
         } else if (targetLower === 'lab-coats' || targetLower === 'lab-coat') {
-          window.navigateToGender('all', 'lab-coat', 'all');
+          window.navigateToCategory(STATE.genderFilter || 'men', 'lab-coat');
         } else {
           window.navigateToCollection(target, 'category');
         }
@@ -1413,11 +1507,13 @@
     function canonicalizeBrand(name) {
       if (!name || name === 'all') return 'all';
       const lower = name.toLowerCase().trim();
-      if (lower === 'vilora' || lower === 'velora') return 'Velora';
+      if (lower === 'vilora' || lower === 'velora') return 'Vilora';
       if (lower === 'splender' || lower === 'sprinter') return 'Sprinter';
-      if (lower === 'ground' || lower === 'crown') return 'Crown';
-      if (lower === 'flexfit' || lower === 'flexwell') return 'Flexwell';
+      if (lower === 'crown') return 'Crown';
+      if (lower === 'ground') return 'Ground';
+      if (lower === 'flexfit' || lower === 'flexwell') return 'FlexFit';
       if (lower === 'helium') return 'Helium';
+      if (lower === 'suiting') return 'Suiting';
       if (lower === 'bunfit') return 'BunFit';
       if (lower === 'accessories' || lower === 'sleeves') return 'Accessories';
       return name.charAt(0).toUpperCase() + name.slice(1);
@@ -1425,246 +1521,317 @@
 
     function getDisplayBrandName(name) {
       if (!name || name === 'all') return 'All Brands';
-      const lower = name.toLowerCase().trim();
-      if (lower === 'velora' || lower === 'vilora') return 'Vilora';
-      if (lower === 'sprinter' || lower === 'splender') return 'Splender';
-      if (lower === 'crown' || lower === 'ground') return 'Ground';
-      if (lower === 'flexwell' || lower === 'flexfit') return 'FlexFit';
-      if (lower === 'helium') return 'Helium';
-      if (lower === 'bunfit') return 'BunFit';
-      if (lower === 'accessories') return 'Accessories';
-      return name;
+      return canonicalizeBrand(name);
     }
     window.canonicalizeBrand = canonicalizeBrand;
     window.getDisplayBrandName = getDisplayBrandName;
 
-    // BRAND COLLECTION PAGES (SECTION 2: VILORA, SPLENDER, GROUND, FLEXFIT, HELIUM)
-    window.navigateToBrand = function(brandName, gender = 'all') {
-      const canonical = canonicalizeBrand(brandName);
-      const display = getDisplayBrandName(canonical);
-
-      STATE.viewMode = 'brand';
-      STATE.activeBrand = canonical;
-      STATE.brandGender = gender;
-      STATE.genderFilter = gender;
-      STATE.productCategoryFilter = 'all';
-      STATE.articleFilter = canonical;
-      STATE.seasonFilter = null;
-
-      window.navigateToView('category-scrubs');
-
-      const landingView = document.getElementById('subview-category-landing');
-      const listingView = document.getElementById('subview-product-listing');
-      const filterBar = document.getElementById('product-listing-filter-bar');
-      const brandGenderBar = document.getElementById('brand-gender-filter-bar');
-      const accArea = document.getElementById('accessories-category-selection-area');
-
-      if (landingView) landingView.style.display = 'none';
-      if (listingView) listingView.style.display = 'block';
-      if (accArea) accArea.style.display = 'none';
-      if (brandGenderBar) brandGenderBar.style.display = 'block';
-      if (filterBar) filterBar.style.display = 'none';
-
-      // Breadcrumbs
-      const listingCrumbGender = document.getElementById('listing-crumb-gender');
-      const listingCrumbCategory = document.getElementById('listing-crumb-category');
-      const listingCrumbArticleSep = document.getElementById('listing-crumb-article-sep');
-      const listingCrumbArticleCurrent = document.getElementById('listing-crumb-article-current');
-      const backBtnLabel = document.getElementById('back-to-categories-label');
-
-      if (listingCrumbGender) {
-        listingCrumbGender.textContent = 'Brands';
-        listingCrumbGender.onclick = function() {
-          window.navigateToView('home');
-          setTimeout(() => {
-            const bSec = document.getElementById('homepage-featured-articles');
-            if (bSec) bSec.scrollIntoView({ behavior: 'smooth' });
-          }, 100);
-          return false;
-        };
+    const BRAND_CARDS_METADATA = {
+      'Sprinter': {
+        name: 'Sprinter',
+        tagline: 'Athletic 4-Way Mechanical Stretch Twill for Surgical Agility',
+        badge: 'ATHLETIC 4-WAY STRETCH',
+        image: 'cat-sprinter.jpg',
+        description: 'Engineered with raglan sleeves and multi-pocket joggers for surgical agility and high-movement shifts.'
+      },
+      'Crown': {
+        name: 'Crown',
+        tagline: 'Executive Standing Mandarin Collar for Senior Clinicians',
+        badge: 'EXECUTIVE MANDARIN',
+        image: 'cat-crown.jpg',
+        description: 'Refined standing mandarin collar with concealed front placket for department heads and clinical rounds.'
+      },
+      'Ground': {
+        name: 'Ground',
+        tagline: 'Heavy-Duty Reinforced Tactical Twill with Liquid Barrier',
+        badge: 'HEAVY-DUTY PERFORMANCE',
+        image: 'cat-crown.jpg',
+        description: 'High-density tactical weave engineered for emergency room resilience and intense clinical duty.'
+      },
+      'Vilora': {
+        name: 'Vilora',
+        tagline: 'Liquid-Soft Luxury Micro-Drape Tailored Contour Scrubs',
+        badge: 'LUXURY MICRO-DRAPE',
+        image: 'cat-velora.jpg',
+        description: 'Silk-touch fluid drape, contour princess seams, and silver-ion antimicrobial defense.'
+      },
+      'Helium': {
+        name: 'Helium (Wrinkle-Free)',
+        tagline: 'Technical Optical White Lab Coat with Stethoscope Loop',
+        badge: 'WRINKLE-FREE TECHNICAL',
+        image: 'cat-labcoat.jpg',
+        description: 'Shield-barrier optical white consultant coat with iPad/tablet pockets and stain-repellent finish.'
+      },
+      'Suiting': {
+        name: 'Suiting Collection',
+        tagline: 'Executive Structured Consultation Lab Coat',
+        badge: 'EXECUTIVE SUITING',
+        image: 'cat-labcoat.jpg',
+        description: 'Structured gabardine weave, tailored lapels, and executive back pleat for chief consultants.'
+      },
+      'BunFit': {
+        name: 'BunFit™ Caps',
+        tagline: 'Ergonomic Surgical Scrub Caps with Terry Sweatband',
+        badge: 'SURGICAL THEATRE',
+        image: 'cat-caps.jpg',
+        description: 'Full hair containment, mask ear-relief buttons, and adjustable tie-back closures.'
+      },
+      'Accessories': {
+        name: 'Clinical Accessories',
+        tagline: 'Graduated Arm Compression Sleeves & Theatre Clogs',
+        badge: 'CLINICAL PERFORMANCE',
+        image: 'cat-flexfit.jpg',
+        description: 'Medical-grade 15-20 mmHg graduated compression sleeves and orthopedic EVA clogs.'
       }
-
-      if (listingCrumbCategory) {
-        listingCrumbCategory.textContent = `${display} Collection`;
-        listingCrumbCategory.onclick = function() {
-          window.setBrandGenderFilter('all');
-          return false;
-        };
-      }
-
-      if (gender === 'all') {
-        if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'none';
-        if (listingCrumbArticleCurrent) listingCrumbArticleCurrent.style.display = 'none';
-      } else {
-        if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'inline';
-        if (listingCrumbArticleCurrent) {
-          listingCrumbArticleCurrent.style.display = 'inline';
-          listingCrumbArticleCurrent.textContent = gender === 'women' ? "Women's Collection" : "Men's Collection";
-        }
-      }
-
-      if (backBtnLabel) {
-        backBtnLabel.textContent = 'Explore All Brands';
-      }
-
-      // Headers
-      const listingCatTag = document.getElementById('listing-category-tag');
-      const listingLevelTag = document.getElementById('listing-level-tag');
-      const listingMainHeading = document.getElementById('listing-main-heading');
-      const listingSubDesc = document.getElementById('listing-sub-desc');
-      const filterDesc = document.getElementById('collection-filter-descriptor');
-
-      if (listingCatTag) listingCatTag.textContent = `${display.toUpperCase()} OFFICIAL BRAND COLLECTION`;
-      if (listingLevelTag) {
-        listingLevelTag.textContent = gender === 'all'
-          ? 'ALL STYLES & GENDERS'
-          : (gender === 'women' ? "WOMEN'S LINE" : "MEN'S LINE");
-      }
-      if (listingMainHeading) {
-        listingMainHeading.textContent = gender === 'all'
-          ? `${display} Collection`
-          : (gender === 'women' ? `Women's ${display} Collection` : `Men's ${display} Collection`);
-      }
-      if (listingSubDesc) {
-        listingSubDesc.textContent = `Discover premium clinical uniforms and medical apparel from the signature ${display} series. Engineered for ultimate mobility, fluid resistance, and hospital durability.`;
-      }
-      if (filterDesc) {
-        filterDesc.textContent = `${display} — ${gender === 'all' ? 'All Styles' : (gender === 'women' ? "Women's" : "Men's")}`;
-      }
-
-      updateBrandGenderCounts(canonical);
-      updateBrandGenderPillsActive(gender);
-
-      renderScrubsGrid();
-
-      const hash = `#collection-${display.toLowerCase()}${gender !== 'all' ? `-${gender}` : ''}`;
-      safeUpdateUrlHash(hash);
     };
 
-    window.setBrandGenderFilter = function(gender) {
-      STATE.brandGender = gender;
-      STATE.genderFilter = gender;
+    function renderBrandCardsForCategory(gender, catKey) {
+      const container = document.getElementById('category-brands-cards-grid');
+      if (!container) return;
 
-      const canonical = STATE.activeBrand;
-      const display = getDisplayBrandName(canonical);
-
-      updateBrandGenderPillsActive(gender);
-
-      const listingCrumbArticleSep = document.getElementById('listing-crumb-article-sep');
-      const listingCrumbArticleCurrent = document.getElementById('listing-crumb-article-current');
-      if (gender === 'all') {
-        if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'none';
-        if (listingCrumbArticleCurrent) listingCrumbArticleCurrent.style.display = 'none';
-      } else {
-        if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'inline';
-        if (listingCrumbArticleCurrent) {
-          listingCrumbArticleCurrent.style.display = 'inline';
-          listingCrumbArticleCurrent.textContent = gender === 'women' ? "Women's Collection" : "Men's Collection";
-        }
-      }
-
-      const listingLevelTag = document.getElementById('listing-level-tag');
-      const listingMainHeading = document.getElementById('listing-main-heading');
-      const filterDesc = document.getElementById('collection-filter-descriptor');
-
-      if (listingLevelTag) {
-        listingLevelTag.textContent = gender === 'all'
-          ? 'ALL STYLES & GENDERS'
-          : (gender === 'women' ? "WOMEN'S LINE" : "MEN'S LINE");
-      }
-      if (listingMainHeading) {
-        listingMainHeading.textContent = gender === 'all'
-          ? `${display} Collection`
-          : (gender === 'women' ? `Women's ${display} Collection` : `Men's ${display} Collection`);
-      }
-      if (filterDesc) {
-        filterDesc.textContent = `${display} — ${gender === 'all' ? 'All Styles' : (gender === 'women' ? "Women's" : "Men's")}`;
-      }
-
-      renderScrubsGrid();
-
-      const hash = `#collection-${display.toLowerCase()}${gender !== 'all' ? `-${gender}` : ''}`;
-      safeUpdateUrlHash(hash);
-    };
-
-    function updateBrandGenderCounts(canonicalBrand) {
       const catalogue = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
-      const brandItems = catalogue.filter(item => {
-        return item.series === canonicalBrand || canonicalizeBrand(item.series) === canonicalBrand;
-      });
-
-      const countAll = brandItems.length;
-      const countMen = brandItems.filter(i => i.gender === 'men' || i.gender === 'unisex').length;
-      const countWomen = brandItems.filter(i => i.gender === 'women' || i.gender === 'unisex').length;
-
-      const elAll = document.getElementById('brand-count-all');
-      const elMen = document.getElementById('brand-count-men');
-      const elWomen = document.getElementById('brand-count-women');
-
-      if (elAll) elAll.textContent = countAll;
-      if (elMen) elMen.textContent = countMen;
-      if (elWomen) elWomen.textContent = countWomen;
-    }
-
-    function updateBrandGenderPillsActive(gender) {
-      const pillAll = document.getElementById('brand-gender-pill-all');
-      const pillMen = document.getElementById('brand-gender-pill-men');
-      const pillWomen = document.getElementById('brand-gender-pill-women');
-
-      if (pillAll) pillAll.classList.toggle('active', gender === 'all');
-      if (pillMen) pillMen.classList.toggle('active', gender === 'men');
-      if (pillWomen) pillWomen.classList.toggle('active', gender === 'women');
-    }
-
-    window.resetBrandFilters = function() {
-      if (STATE.viewMode === 'brand') {
-        window.setBrandGenderFilter('all');
-      } else {
-        window.setArticleFilter('all');
-      }
-    };
-
-    function getCategoryCount(gender, catKey) {
-      const catalogue = window.getStorefrontCatalogue ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
-      return catalogue.filter(item => {
+      const genderItems = catalogue.filter(item => {
         const matchesGender = (gender === 'all') || (item.gender === gender || item.gender === 'unisex');
         if (!matchesGender) return false;
         if (catKey === 'all') return true;
+        if (catKey === 'accessories') {
+          const topCat = getTopCategory(item);
+          return topCat === 'accessories' || topCat === 'caps' || topCat === 'sleeves';
+        }
         return getTopCategory(item) === catKey;
-      }).length;
-    }
+      });
 
-    // LEVEL 1 -> 6 MAIN NAVIGATION HIERARCHY CONTROLLER
-    // Men & Women Shopping Pages show all applicable products across all brands by default
-    // with top Brand Filters: [All Brands] [Vilora] [Splender] [Ground] [FlexFit] [Helium] [BunFit]
-    window.navigateToGender = function(gender, catKey = 'all', article = 'all') {
-      STATE.viewMode = (catKey === 'accessories') ? 'accessories' : 'gender';
+      let brandKeys = [];
+      if (catKey === 'scrubs') {
+        brandKeys = (gender === 'women')
+          ? ['Vilora', 'Sprinter', 'Crown', 'Ground']
+          : ['Sprinter', 'Crown', 'Ground'];
+      } else if (catKey === 'lab-coat') {
+        brandKeys = ['Helium', 'Suiting'];
+      } else if (catKey === 'caps') {
+        brandKeys = ['BunFit'];
+      } else if (catKey === 'sleeves') {
+        brandKeys = ['Accessories'];
+      } else if (catKey === 'accessories') {
+        brandKeys = ['BunFit', 'Accessories'];
+      } else {
+        brandKeys = ['Sprinter', 'Crown', 'Ground', 'Vilora'];
+      }
+
+      const validBrands = brandKeys.filter(bKey => {
+        const canonical = canonicalizeBrand(bKey);
+        return genderItems.some(item => canonicalizeBrand(item.series) === canonical);
+      });
+
+      let cardsHtml = validBrands.map((bKey, index) => {
+        const canonical = canonicalizeBrand(bKey);
+        const meta = BRAND_CARDS_METADATA[canonical] || {
+          name: bKey,
+          tagline: 'Signature clinical collection',
+          badge: 'SIGNATURE LINE',
+          image: 'cat-sprinter.jpg'
+        };
+        const count = genderItems.filter(item => canonicalizeBrand(item.series) === canonical).length;
+        const imgUrl = window.ShopifyThemeAssets?.[meta.image] || meta.image;
+        const animDelay = index * 70;
+
+        return `
+          <div class="collection-category-card-3d-wrap" style="animation-delay: ${animDelay}ms;">
+            <div
+              class="collection-category-card"
+              data-brand="${canonical}"
+              onclick="window.navigateToArticleSeries('${gender}', '${catKey}', '${canonical}')"
+              role="button"
+              tabindex="0"
+              aria-label="${meta.name} (${count} Articles)"
+            >
+              <div class="category-card-glare"></div>
+              <div class="collection-category-thumb-wrap">
+                <img
+                  src="${imgUrl}"
+                  alt="${meta.name}"
+                  class="collection-category-thumb-img"
+                  onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'"
+                  loading="lazy"
+                />
+                <span class="article-card-badge" style="position: absolute; top: 10px; left: 10px; background: rgba(16, 42, 67, 0.9); color: #ffffff; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase;">${meta.badge}</span>
+              </div>
+              <div class="collection-category-info">
+                <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
+                  <h3 class="collection-category-title">${meta.name}</h3>
+                  <span class="article-card-count" style="font-size: 11px; font-weight: 700; color: #008779;">${count} ${count === 1 ? 'Article' : 'Articles'}</span>
+                </div>
+                <p class="collection-category-desc">${meta.tagline}</p>
+                <div class="collection-category-action">
+                  <span>Browse ${meta.name} Articles</span>
+                  <span class="category-arrow-icon">→</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const totalCount = genderItems.length;
+      const catMeta = CATEGORY_META[catKey] || { name: 'Category' };
+      const allAnimDelay = validBrands.length * 70;
+      cardsHtml += `
+        <div class="collection-category-card-3d-wrap" style="animation-delay: ${allAnimDelay}ms;">
+          <div
+            class="collection-category-card"
+            data-brand="all"
+            onclick="window.navigateToArticleSeries('${gender}', '${catKey}', 'all')"
+            role="button"
+            tabindex="0"
+            aria-label="View All ${catMeta.name} (${totalCount} Articles)"
+            style="border: 2px dashed #00b8a9; background: #f0fdf4;"
+          >
+            <div class="category-card-glare"></div>
+            <div class="collection-category-thumb-wrap" style="background: #e6fffa; display: flex; align-items: center; justify-content: center;">
+              <div style="font-size: 42px;">🩺</div>
+              <span class="article-card-badge" style="position: absolute; top: 10px; left: 10px; background: #008779; color: #ffffff; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase;">COMPLETE COLLECTION</span>
+            </div>
+            <div class="collection-category-info">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 4px; margin-bottom: 2px;">
+                <h3 class="collection-category-title">All ${catMeta.name}</h3>
+                <span class="article-card-count" style="font-size: 11px; font-weight: 700; color: #008779;">${totalCount} Articles</span>
+              </div>
+              <p class="collection-category-desc">Explore all signature brands, fits, and fabrics in one place.</p>
+              <div class="collection-category-action">
+                <span>View Complete Catalogue</span>
+                <span class="category-arrow-icon">→</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = cardsHtml;
+      initCategoryCards3DTilt(container);
+    }
+    window.renderBrandCardsForCategory = renderBrandCardsForCategory;
+
+    // STAGE 1: GENDER CATEGORY LANDING (LEVEL 1: Men or Women)
+    window.navigateToGenderLanding = function(gender = 'men') {
       STATE.genderFilter = gender;
-      STATE.productCategoryFilter = catKey;
-      STATE.articleFilter = (article === 'all') ? 'all' : canonicalizeBrand(article);
+      STATE.productCategoryFilter = 'all';
+      STATE.articleFilter = 'all';
       STATE.seasonFilter = null;
+      STATE.viewMode = 'gender';
+
       window.navigateToView('category-scrubs');
 
-      const genderTitle = gender === 'women' ? "Women's" : (gender === 'men' ? "Men's" : "All");
-      const catMeta = CATEGORY_META[catKey];
-      const catTitle = catMeta ? catMeta.name : (catKey === 'all' ? 'Medical Apparel' : 'Clinical Uniforms');
+      const landingView = document.getElementById('subview-category-landing');
+      const brandView = document.getElementById('subview-brand-selection');
+      const listingView = document.getElementById('subview-product-listing');
+
+      if (landingView) landingView.style.display = 'block';
+      if (brandView) brandView.style.display = 'none';
+      if (listingView) listingView.style.display = 'none';
+
+      const genderTitle = (gender === 'women') ? "Women's" : "Men's";
+      const landingGenderTag = document.getElementById('landing-gender-tag');
+      const landingMainHeading = document.getElementById('landing-main-heading');
+      const landingSubDesc = document.getElementById('landing-sub-desc');
+      const landingCrumbGender = document.getElementById('landing-crumb-gender');
+
+      if (landingGenderTag) landingGenderTag.textContent = `${genderTitle.toUpperCase()} MEDICAL APPAREL`;
+      if (landingMainHeading) landingMainHeading.textContent = `${genderTitle} Clinical Collections`;
+      if (landingSubDesc) {
+        landingSubDesc.textContent = gender === 'women'
+          ? "Explore purpose-built female clinical uniforms, contoured surgical scrubs, and medical apparel engineered for healthcare professionals."
+          : "Explore purpose-built male clinical uniforms, athletic 4-way stretch scrubs, and executive hospital apparel engineered for healthcare professionals.";
+      }
+      if (landingCrumbGender) landingCrumbGender.textContent = gender === 'women' ? 'Women' : 'Men';
+
+      renderCategoryCardsForGender(gender, 'all');
+
+      safeUpdateUrlHash(`#${gender}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // STAGE 2: BRAND / COLLECTION SELECTION FOR CATEGORY (LEVEL 2: E.g., Men -> Scrubs shows Sprinter, Crown, Ground)
+    window.navigateToCategory = function(gender = 'men', catKey = 'scrubs') {
+      STATE.genderFilter = gender;
+      STATE.productCategoryFilter = catKey;
+      STATE.articleFilter = 'all';
+      STATE.seasonFilter = null;
+      STATE.viewMode = 'category';
+
+      window.navigateToView('category-scrubs');
 
       const landingView = document.getElementById('subview-category-landing');
+      const brandView = document.getElementById('subview-brand-selection');
+      const listingView = document.getElementById('subview-product-listing');
+
+      if (landingView) landingView.style.display = 'none';
+      if (brandView) brandView.style.display = 'block';
+      if (listingView) listingView.style.display = 'none';
+
+      const genderTitle = (gender === 'women') ? "Women's" : "Men's";
+      const catMeta = CATEGORY_META[catKey] || { name: 'Clinical Uniforms', tagline: 'Signature medical lines' };
+      const catTitle = catMeta.name;
+
+      const brandCrumbGender = document.getElementById('brand-crumb-gender');
+      const brandCrumbCategory = document.getElementById('brand-crumb-category');
+      if (brandCrumbGender) {
+        brandCrumbGender.textContent = gender === 'women' ? 'Women' : 'Men';
+        brandCrumbGender.onclick = function() {
+          window.navigateToGenderLanding(gender);
+          return false;
+        };
+      }
+      if (brandCrumbCategory) {
+        brandCrumbCategory.textContent = catTitle;
+      }
+
+      const brandSelectCategoryTag = document.getElementById('brand-select-category-tag');
+      const brandSelectMainHeading = document.getElementById('brand-select-main-heading');
+      const brandSelectSubDesc = document.getElementById('brand-select-sub-desc');
+
+      if (brandSelectCategoryTag) brandSelectCategoryTag.textContent = `${genderTitle.toUpperCase()} ${catTitle.toUpperCase()}`;
+      if (brandSelectMainHeading) brandSelectMainHeading.textContent = `Select ${genderTitle} ${catTitle} Brand / Range`;
+      if (brandSelectSubDesc) {
+        brandSelectSubDesc.textContent = `Choose a signature Enamels ${catTitle.toLowerCase()} collection below to view available articles, fits, and clinical fabrics.`;
+      }
+
+      renderBrandCardsForCategory(gender, catKey);
+
+      safeUpdateUrlHash(`#${gender}-${catKey}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // STAGE 3: ARTICLE LISTING & PRODUCT CONFIGURATION (LEVEL 3: E.g., Men -> Scrubs -> Crown)
+    window.navigateToArticleSeries = function(gender = 'men', catKey = 'scrubs', brand = 'all') {
+      const canonical = canonicalizeBrand(brand);
+      const display = getDisplayBrandName(canonical);
+
+      STATE.genderFilter = gender;
+      STATE.productCategoryFilter = catKey;
+      STATE.articleFilter = canonical;
+      STATE.seasonFilter = null;
+      STATE.viewMode = (canonical === 'all') ? 'category' : 'brand';
+
+      window.navigateToView('category-scrubs');
+
+      const landingView = document.getElementById('subview-category-landing');
+      const brandView = document.getElementById('subview-brand-selection');
       const listingView = document.getElementById('subview-product-listing');
       const filterBar = document.getElementById('product-listing-filter-bar');
       const brandGenderBar = document.getElementById('brand-gender-filter-bar');
       const accArea = document.getElementById('accessories-category-selection-area');
 
       if (landingView) landingView.style.display = 'none';
+      if (brandView) brandView.style.display = 'none';
       if (listingView) listingView.style.display = 'block';
       if (brandGenderBar) brandGenderBar.style.display = 'none';
       if (filterBar) filterBar.style.display = 'block';
+      if (accArea) accArea.style.display = (catKey === 'accessories') ? 'block' : 'none';
 
-      if (accArea) {
-        accArea.style.display = (catKey === 'accessories') ? 'block' : 'none';
-      }
+      const genderTitle = (gender === 'women') ? "Women's" : "Men's";
+      const catMeta = CATEGORY_META[catKey] || { name: 'Clinical Uniforms' };
+      const catTitle = catMeta.name;
 
-      // Breadcrumbs & Back Button
       const listingCrumbGender = document.getElementById('listing-crumb-gender');
       const listingCrumbCategory = document.getElementById('listing-crumb-category');
       const listingCrumbArticleSep = document.getElementById('listing-crumb-article-sep');
@@ -1672,23 +1839,21 @@
       const backBtnLabel = document.getElementById('back-to-categories-label');
 
       if (listingCrumbGender) {
-        listingCrumbGender.textContent = gender === 'women' ? 'Women' : (gender === 'men' ? 'Men' : 'Catalogue');
+        listingCrumbGender.textContent = gender === 'women' ? 'Women' : 'Men';
         listingCrumbGender.onclick = function() {
-          window.navigateToGender(gender, 'all', 'all');
+          window.navigateToGenderLanding(gender);
           return false;
         };
       }
-
       if (listingCrumbCategory) {
-        listingCrumbCategory.textContent = catKey === 'all' ? 'All Articles' : (catMeta ? catMeta.name : catKey);
+        listingCrumbCategory.textContent = catTitle;
         listingCrumbCategory.onclick = function() {
-          window.setArticleFilter('all');
+          window.navigateToCategory(gender, catKey);
           return false;
         };
       }
 
-      const activeBrandDisplay = getDisplayBrandName(STATE.articleFilter);
-      if (STATE.articleFilter === 'all') {
+      if (canonical === 'all') {
         if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'none';
         if (listingCrumbArticleCurrent) {
           listingCrumbArticleCurrent.style.display = 'none';
@@ -1698,104 +1863,89 @@
         if (listingCrumbArticleSep) listingCrumbArticleSep.style.display = 'inline';
         if (listingCrumbArticleCurrent) {
           listingCrumbArticleCurrent.style.display = 'inline';
-          listingCrumbArticleCurrent.textContent = `${activeBrandDisplay} Series`;
+          listingCrumbArticleCurrent.textContent = `${display} Series`;
         }
       }
 
       if (backBtnLabel) {
-        backBtnLabel.textContent = `All ${genderTitle} Categories`;
+        backBtnLabel.textContent = `Back to ${catTitle} Brands`;
       }
 
-      // Header
       const listingCatTag = document.getElementById('listing-category-tag');
       const listingLevelTag = document.getElementById('listing-level-tag');
       const listingMainHeading = document.getElementById('listing-main-heading');
       const listingSubDesc = document.getElementById('listing-sub-desc');
-      const filterDesc = document.getElementById('collection-filter-descriptor');
 
       if (listingCatTag) {
-        listingCatTag.textContent = `${genderTitle.toUpperCase()} ${catTitle.toUpperCase()}`;
+        listingCatTag.textContent = canonical === 'all'
+          ? `${genderTitle.toUpperCase()} ${catTitle.toUpperCase()}`
+          : `${genderTitle.toUpperCase()} ${display.toUpperCase()} ARTICLES`;
       }
-
       if (listingLevelTag) {
-        if (STATE.articleFilter === 'all') {
-          listingLevelTag.textContent = catKey === 'all' ? `ALL ${genderTitle.toUpperCase()} ARTICLES` : `ALL ${catTitle.toUpperCase()}`;
-        } else {
-          listingLevelTag.textContent = `FILTERED: ${activeBrandDisplay.toUpperCase()} SERIES`;
-        }
+        listingLevelTag.textContent = canonical === 'all'
+          ? `STEP 3: ALL ${catTitle.toUpperCase()} ARTICLES`
+          : `STEP 3: ${display.toUpperCase()} ARTICLES ONLY`;
       }
-
       if (listingMainHeading) {
-        if (STATE.articleFilter === 'all') {
-          listingMainHeading.textContent = `${genderTitle} ${catTitle}`;
-        } else {
-          listingMainHeading.textContent = `${genderTitle} ${activeBrandDisplay} Series ${catTitle}`;
-        }
+        listingMainHeading.textContent = canonical === 'all'
+          ? `${genderTitle} ${catTitle}`
+          : `${genderTitle} ${display} ${catTitle}`;
       }
-
       if (listingSubDesc) {
-        if (catKey === 'all') {
-          listingSubDesc.textContent = gender === 'women'
-            ? "Explore precision-tailored clinical apparel for female healthcare professionals. Fluid drape antimicrobial fabrics, contour seams, and performance weaves across all signature series."
-            : "Explore clinical scrubs and uniforms engineered for male healthcare professionals. Athletic 4-way stretch twill, executive mandarin collars, and aerocool weaves across all signature series.";
-        } else if (catKey === 'scrubs') {
-          listingSubDesc.textContent = gender === 'women'
-            ? "Precision-tailored medical scrubs featuring moisture-wicking stretch, functional deep pockets, and wrinkle-resistant fabric engineered for intense hospital shifts."
-            : "Athletic raglan cuts, reinforced double-needle stitching, and executive mandarin collar scrubs engineered for peak hospital rounds.";
-        } else if (catKey === 'lab-coat') {
-          listingSubDesc.textContent = "Executive consultant lab coats with stain-repellent finish, tablet-sized pockets, and refined lapels tailored for ward rounds.";
-        } else if (catKey === 'caps') {
-          listingSubDesc.textContent = "High-performance BunFit™ surgical caps featuring built-in sweatbands, ponytail chambers, and secure tie-backs.";
-        } else {
-          listingSubDesc.textContent = "Clinical compression sleeves, hospital department patches, and medical accessories.";
-        }
+        listingSubDesc.textContent = canonical === 'all'
+          ? `Browse all available ${catTitle.toLowerCase()} designs in our ${genderTitle.toLowerCase()} collection.`
+          : `Showing exclusive ${display} series articles for ${genderTitle.toLowerCase()} medical professionals. Choose an article below to preview colours and configuration.`;
       }
 
-      if (filterDesc) {
-        filterDesc.textContent = STATE.articleFilter === 'all'
-          ? `${genderTitle} ${catTitle} — All Brands`
-          : `${genderTitle} ${catTitle} — ${activeBrandDisplay} Series`;
-      }
-
-      // Gender buttons on Listing
-      const listingGenderMen = document.getElementById('listing-gender-men');
-      const listingGenderWomen = document.getElementById('listing-gender-women');
-      if (listingGenderMen) listingGenderMen.classList.toggle('active', gender === 'men');
-      if (listingGenderWomen) listingGenderWomen.classList.toggle('active', gender === 'women');
-
-      // Render Article Filter Bar with "All Brands" option
-      renderArticleFilterPills(gender, catKey, STATE.articleFilter);
-
-      // Render Products Grid
+      renderArticleFilterPills(gender, catKey, canonical);
       renderScrubsGrid();
 
-      // Update URL hash
-      let hash = `#${gender}`;
-      if (catKey !== 'all') {
-        hash += `-${catKey}`;
-      }
-      if (STATE.articleFilter !== 'all') {
-        hash += `-${activeBrandDisplay.toLowerCase()}`;
+      let hash = `#${gender}-${catKey}`;
+      if (canonical !== 'all') {
+        hash += `-${display.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
       }
       safeUpdateUrlHash(hash);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.handleListingBackClick = function() {
+      if (STATE.productCategoryFilter && STATE.productCategoryFilter !== 'all') {
+        window.navigateToCategory(STATE.genderFilter || 'men', STATE.productCategoryFilter);
+      } else {
+        window.navigateToGenderLanding(STATE.genderFilter || 'men');
+      }
+    };
+
+    // Backwards-compatibility helpers
+    window.navigateToGender = function(gender, catKey = 'all', article = 'all') {
+      if (catKey === 'all') {
+        window.navigateToGenderLanding(gender);
+      } else if (article === 'all') {
+        window.navigateToCategory(gender, catKey);
+      } else {
+        window.navigateToArticleSeries(gender, catKey, article);
+      }
+    };
+
+    window.navigateToBrand = function(brandName, gender = 'all') {
+      const canonical = canonicalizeBrand(brandName);
+      let detectedCat = 'scrubs';
+      if (canonical === 'Helium' || canonical === 'Suiting') detectedCat = 'lab-coat';
+      else if (canonical === 'BunFit') detectedCat = 'caps';
+      else if (canonical === 'Accessories') detectedCat = 'accessories';
+      window.navigateToArticleSeries(gender === 'all' ? (STATE.genderFilter || 'men') : gender, detectedCat, canonical);
     };
 
     window.navigateToAccessories = function() {
-      window.navigateToGender('all', 'accessories', 'all');
+      window.navigateToCategory(STATE.genderFilter || 'men', 'accessories');
     };
 
-    // LEVEL 2 -> LEVEL 3 TRANSITION: Select Product Category
     window.selectProductCategory = function(catKey) {
-      window.navigateToGender(STATE.genderFilter || 'men', catKey, 'all');
-      const listing = document.getElementById('subview-product-listing');
-      if (listing) {
-        listing.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      window.navigateToCategory(STATE.genderFilter || 'men', catKey);
     };
 
-    // Switch gender within product listing without losing category
     window.switchListingGender = function(newGender) {
-      window.navigateToGender(newGender, STATE.productCategoryFilter || 'all', STATE.articleFilter || 'all');
+      window.navigateToArticleSeries(newGender, STATE.productCategoryFilter || 'scrubs', STATE.articleFilter || 'all');
     };
 
     // Filter by Brand / Article Series with working "All" option
@@ -1946,6 +2096,21 @@
       safeUpdateUrlHash(hash);
     };
 
+    function getCategoryCount(gender, catKey) {
+      const catalogue = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
+      return catalogue.filter(item => {
+        const matchesGender = (gender === 'all') || (item.gender === gender || item.gender === 'unisex');
+        if (!matchesGender) return false;
+        if (catKey === 'all') return true;
+        if (catKey === 'accessories') {
+          const topCat = getTopCategory(item);
+          return topCat === 'accessories' || topCat === 'caps' || topCat === 'sleeves';
+        }
+        return getTopCategory(item) === catKey;
+      }).length;
+    }
+    window.getCategoryCount = getCategoryCount;
+
     function renderCategoryCardsForGender(gender, activeCat = 'all') {
       const container = document.getElementById('collection-category-cards-grid');
       if (!container) return;
@@ -2078,16 +2243,16 @@
 
       let baseList;
       if (catKey === 'all') {
-        baseList = ['Vilora', 'Splender', 'Ground', 'FlexFit', 'Helium', 'BunFit'];
+        baseList = ['Sprinter', 'Crown', 'Ground', 'Vilora', 'Helium', 'Suiting', 'BunFit', 'Accessories'];
       } else {
         const seriesOrderMap = {
-          'scrubs': gender === 'women' ? ['Vilora', 'Splender', 'Ground', 'FlexFit'] : ['Splender', 'Vilora', 'Ground', 'FlexFit'],
-          'lab-coat': ['Helium'],
+          'scrubs': gender === 'women' ? ['Vilora', 'Sprinter', 'Crown', 'Ground'] : ['Sprinter', 'Crown', 'Ground'],
+          'lab-coat': ['Helium', 'Suiting'],
           'caps': ['BunFit'],
-          'sleeves': ['Accessories', 'FlexFit'],
-          'accessories': ['Accessories', 'Splender', 'Ground', 'Vilora']
+          'sleeves': ['Accessories'],
+          'accessories': ['BunFit', 'Accessories']
         };
-        baseList = [...(seriesOrderMap[catKey] || ['Vilora', 'Splender', 'Ground', 'FlexFit'])];
+        baseList = [...(seriesOrderMap[catKey] || ['Sprinter', 'Crown', 'Ground', 'Vilora'])];
       }
 
       // Add other series if found in catalogue
@@ -3780,6 +3945,16 @@
       }
     };
 
+    window.calculateRtwTotal = function() {
+      const isCustomSize = (STATE.rtwSizeMode === 'custom' || STATE.rtwStandardSize === 'C');
+      const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
+      const customDyeFee = STATE.rtwColor?.isCustomDye ? 500 : 0;
+      const customSizeFee = isCustomSize ? 750 : 0;
+      const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
+      const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
+      return basePrice + customDyeFee + customSizeFee + embFee + logoFee;
+    };
+
     function renderRtwReview() {
       const fabricEl = document.getElementById('rtw-rev-fabric');
       const colorEl = document.getElementById('rtw-rev-color');
@@ -3821,12 +3996,10 @@
         }
       }
 
-      const basePrice = (STATE.rtwDesign?.price || 5150) + (STATE.rtwFabric?.price || 0);
+      const total = window.calculateRtwTotal();
       const customDyeFee = STATE.rtwColor?.isCustomDye ? 500 : 0;
-      const customSizeFee = isCustomSize ? 750 : 0;
       const embFee = (STATE.rtwEngravingType !== 'none') ? 450 : 0;
       const logoFee = STATE.rtwLogoEnabled ? 650 : 0;
-      const total = basePrice + customDyeFee + customSizeFee + embFee + logoFee;
 
       const dyeRow = document.getElementById('rtw-rev-custom-dye-row');
       if (dyeRow) {
@@ -4446,91 +4619,280 @@
     };
 
     // ============================================================
-    // 16. SELF-SERVICE & REPRESENTATIVE VISIT BOOKING CONTROLLER
+    // 16. ENAMELS HOME SERVICE BOOKING & ADMIN ORDER MANAGEMENT
     // ============================================================
-    const SS_STORAGE_KEY = 'enamels_self_service_bookings_v2';
+    const SS_STORAGE_KEY = 'enamels_home_service_bookings_v2';
+
+    // Read dynamic config from Theme Editor bridge if present
+    const ssCfgEl = document.getElementById('enamels-home-service-config');
+    let ssConfig = {};
+    try {
+      if (ssCfgEl) ssConfig = JSON.parse(ssCfgEl.textContent || '{}');
+    } catch (e) {
+      console.warn('Could not parse enamels-home-service-config', e);
+    }
+
+    const MINIMUM_HOME_SERVICE_ORDER_VALUE = ssConfig.minOrderValue || 25000;
+    const REQUIRED_HOME_SERVICE_ADVANCE = ssConfig.advanceAmount || 3000;
+
+    // Administrator-configured list of approved Lahore locations
+    const DEFAULT_LAHORE_ADDRESSES = [
+      {
+        id: 'lhr-dha-5',
+        area: 'DHA Phase 5',
+        zoneTag: 'Sector CCA & Broadway',
+        fullAddress: 'Commercial Broadway & Sector CCA Enclave, DHA Phase 5, Lahore',
+        active: true
+      },
+      {
+        id: 'lhr-gulberg-3',
+        area: 'Gulberg III',
+        zoneTag: 'Main Boulevard Corridor',
+        fullAddress: 'Main Boulevard & MM Alam Medical Corridor, Gulberg III, Lahore',
+        active: true
+      },
+      {
+        id: 'lhr-model-town',
+        area: 'Model Town',
+        zoneTag: 'Central Commercial & Link Rd',
+        fullAddress: 'Central Commercial Market & Model Town Link Road, Lahore',
+        active: true
+      },
+      {
+        id: 'lhr-cantt',
+        area: 'Cantt / Garrison',
+        zoneTag: 'Officers Colony & Sarwar Rd',
+        fullAddress: 'Sarwar Road & Officers Housing Colony, Lahore Cantt',
+        active: true
+      },
+      {
+        id: 'lhr-johar-town',
+        area: 'Johar Town',
+        zoneTag: 'Doctors Hospital Medical Hub',
+        fullAddress: 'Doctors Hospital Medical Enclave, G1 Market, Johar Town, Lahore',
+        active: true
+      },
+      {
+        id: 'lhr-shadman',
+        area: 'Jail Road / Shadman',
+        zoneTag: 'Services & SIMS Corridor',
+        fullAddress: 'Services Hospital & SIMS Academic Corridor, Jail Road, Lahore',
+        active: true
+      },
+      {
+        id: 'lhr-garden-town',
+        area: 'Ferozepur Road / Garden Town',
+        zoneTag: 'Shaikh Zayed & Children Hospital',
+        fullAddress: 'Shaikh Zayed & Children Hospital Healthcare Corridor, Garden Town, Lahore',
+        active: true
+      },
+      {
+        id: 'lhr-bahria-town',
+        area: 'Bahria Town',
+        zoneTag: 'Sector C Commercial Hub',
+        fullAddress: 'Sector C Commercial Plaza Corridor, Bahria Town, Lahore',
+        active: true
+      }
+    ];
+
+    window.EnamelsApprovedLahoreAddresses = (ssConfig.addresses && ssConfig.addresses.length > 0)
+      ? ssConfig.addresses
+      : DEFAULT_LAHORE_ADDRESSES;
+
+    window.getHomeServiceCatalogueProducts = function() {
+      return [
+        {
+          id: 'hs-scrub-sprinter',
+          title: "Men’s Sprinter Athletic 4-Way Stretch Scrub Set",
+          category: 'Medical Scrubs',
+          price: 6250,
+          sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', 'Custom Sizing'],
+          colors: ['Deep Navy', 'Hunter Green', 'Ceil Blue', 'Obsidian Black']
+        },
+        {
+          id: 'hs-scrub-crown',
+          title: "Men’s Crown Executive Mandarin Scrub Set",
+          category: 'Medical Scrubs',
+          price: 6850,
+          sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', 'Custom Sizing'],
+          colors: ['Burgundy Maroon', 'Deep Navy', 'Olive Shine', 'Obsidian Black']
+        },
+        {
+          id: 'hs-scrub-velora',
+          title: "Women’s Velora Micro-Drape Scrub Set",
+          category: 'Medical Scrubs',
+          price: 6450,
+          sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', 'Custom Sizing'],
+          colors: ['Clinical Teal', 'Deep Navy', 'Lilac Bloom', 'Obsidian Black']
+        },
+        {
+          id: 'hs-labcoat-exec',
+          title: "Executive Tailored Consultation Lab Coat",
+          category: 'Lab Coats / White Coats',
+          price: 4800,
+          sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', 'Custom Sizing'],
+          colors: ['Clinical White']
+        },
+        {
+          id: 'hs-labcoat-fluid',
+          title: "Clinical Fluid-Barrier Long White Coat",
+          category: 'Lab Coats / White Coats',
+          price: 4200,
+          sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', 'Custom Sizing'],
+          colors: ['Clinical White']
+        },
+        {
+          id: 'hs-cap-bunfit',
+          title: "BunFit™ Surgical Scrub Cap",
+          category: 'Caps',
+          price: 1250,
+          sizes: ['Universal Elastic Fit'],
+          colors: ['Deep Navy', 'Clinical Teal', 'Obsidian Black']
+        },
+        {
+          id: 'hs-sleeves-comp',
+          title: "Micro-Compression Fluid-Shield Arm Sleeves",
+          category: 'Sleeves',
+          price: 950,
+          sizes: ['Standard (Pair)', 'Large (Pair)'],
+          colors: ['Deep Navy', 'Black', 'White']
+        },
+        {
+          id: 'hs-acc-organizer',
+          title: "Clinical Pocket Organizer & Tool Holster",
+          category: 'Accessories',
+          price: 1800,
+          sizes: ['Standard Pocket Size'],
+          colors: ['Obsidian Black', 'Clinical Teal']
+        }
+      ];
+    };
+
+    // Home Service form local runtime state
+    let hsSelectedAddressId = 'lhr-shadman';
+    let selfServiceCurrentStep = 1;
+    let currentAdminDetailBookingId = null;
 
     const INITIAL_SAMPLE_BOOKINGS = [
       {
-        id: 'ENM-VISIT-2026-1048',
-        createdAt: '2026-10-16T14:30:00.000Z',
-        updatedAt: '2026-10-17T09:15:00.000Z',
+        id: 'HS-ENM-2026-1048',
+        orderType: 'HOME SERVICE',
+        createdAt: '2026-10-22T14:30:00.000Z',
+        updatedAt: '2026-10-22T15:00:00.000Z',
         fullName: 'Dr. Ayesha Malik',
         phone: '0300-8451290',
         whatsapp: '0300-8451290',
-        email: 'ayesha.malik@doctorshospital.pk',
+        email: 'ayesha.malik@serviceshospital.org',
         contactMethod: 'WhatsApp',
-        city: 'Lahore',
-        area: 'Jail Road / Shadman (Services / SIMS / PIC)',
-        street: 'Doctors Hostel, Suite 4B, SIMS',
-        building: 'Services Institute of Medical Sciences (SIMS)',
-        landmark: 'Near Gate 2 / OPD Tower',
-        isLahoreConfirmed: true,
-        isWaitlist: false,
-        selectedNeeds: ['Scrubs', 'Custom Sizing / Fit', 'Chest Embroidery'],
-        preferredSeries: 'Sprinter Series',
-        estimatedQty: '3 – 5 Sets (Full Weekly Rotation)',
-        specialNotes: 'Need tall trouser length (32.5 in), interested in Deep Navy and Emerald. Name embroidery on left chest.',
-        preferredDate: '2026-10-20',
-        preferredTimeWindow: 'Afternoon (2:00 PM – 5:00 PM)',
-        setting: 'Hospital Ward / On-Duty Room',
-        serviceFee: 500,
-        feeAdjustableThreshold: 10000,
-        feePolicy: '100% adjustable against qualifying uniform orders over Rs. 10,000.',
-        status: 'Representative Assigned',
-        assignedRep: 'Usman Tariq (Senior Fitter - Lahore)',
-        shopifyOrderId: '',
-        consentTerms: true,
+        preferredVisitWindow: 'Wednesday (2:00 PM – 5:00 PM)',
+        preferredDate: '2026-10-22',
+        customerNotes: 'Need in-person sizing for surgical team.',
+        addressSnapshot: {
+          id: 'lhr-shadman',
+          area: 'Jail Road / Shadman',
+          zoneTag: 'Services & SIMS Corridor',
+          fullAddress: 'Services Hospital & SIMS Academic Corridor, Jail Road, Lahore',
+          landmark: 'Doctors Hostel Block B, Ward 4'
+        },
+        advanceRequired: 3000,
+        advancePaymentStatus: 'Advance Paid',
+        verifiedAmountReceived: 3000,
+        paymentMethod: 'Shopify Checkout (PKR 3,000 Advance)',
+        trxRef: 'CHG-984218',
+        representativeName: 'Muhammad Hamza (Senior Uniform Specialist)',
+        visitTime: '22 Oct 2026, 3:00 PM',
+        agreedRequirements: "4x Men's Sprinter Athletic Scrubs (Navy, Size L, +2\" tall inseam), 1x Tailored Consultation Lab Coat (Size 42, Embroidered: Dr. Ayesha Malik / SIMS Surgery). Chest: 42, Waist: 34, Inseam: 32.",
+        confirmedOrderTotal: 29800,
+        linkedShopifyOrderId: '#ENM-1088',
+        remainingBalance: 26800,
+        lifecycleStatus: 'Final Order Created',
         adminNotes: [
-          { timestamp: '2026-10-16T15:00:00.000Z', note: 'Customer contacted via WhatsApp. Confirmed shift ends at 2 PM.', author: 'Admin Concierge' },
-          { timestamp: '2026-10-17T09:15:00.000Z', note: 'Assigned Usman Tariq with Sprinter sample kit & fabric swatches.', author: 'Dispatch Supervisor' }
+          { timestamp: '2026-10-22T16:00:00.000Z', note: 'In-person fitting completed by Muhammad Hamza. Requirements & measurements collected. Final order total PKR 29,800 confirmed and linked to order #ENM-1088. PKR 3,000 advance credited.', author: 'Muhammad Hamza (Staff)' },
+          { timestamp: '2026-10-22T15:00:00.000Z', note: 'Customer contacted via WhatsApp. Confirmed fitting date for Wednesday 3 PM.', author: 'Customer Care Staff' }
         ],
         statusHistory: [
-          { timestamp: '2026-10-16T14:30:00.000Z', fromStatus: 'None', toStatus: 'New Request', note: 'Customer submitted visit request form', updatedBy: 'Customer (Online)' },
-          { timestamp: '2026-10-16T15:00:00.000Z', fromStatus: 'New Request', toStatus: 'Under Review', note: 'Reviewed address in Lahore (Shadman / SIMS)', updatedBy: 'Admin Concierge' },
-          { timestamp: '2026-10-17T09:15:00.000Z', fromStatus: 'Under Review', toStatus: 'Representative Assigned', note: 'Usman Tariq assigned for Oct 20 afternoon slot', updatedBy: 'Dispatch Supervisor' }
+          { timestamp: '2026-10-22T14:30:00.000Z', fromStatus: 'None', toStatus: 'Awaiting Customer Care', note: 'Booking submitted online with advance deposit', updatedBy: 'System' },
+          { timestamp: '2026-10-22T15:00:00.000Z', fromStatus: 'Awaiting Customer Care', toStatus: 'Visit Scheduled', note: 'Consultation slot agreed with customer', updatedBy: 'Customer Care Staff' },
+          { timestamp: '2026-10-22T16:30:00.000Z', fromStatus: 'Visit Scheduled', toStatus: 'Final Order Created', note: 'Requirements collected and final order #ENM-1088 created. Remaining: PKR 26,800', updatedBy: 'Muhammad Hamza' }
         ]
       },
       {
-        id: 'ENM-VISIT-2026-0982',
-        createdAt: '2026-10-14T11:00:00.000Z',
-        updatedAt: '2026-10-15T16:45:00.000Z',
+        id: 'HS-ENM-2026-0982',
+        orderType: 'HOME SERVICE',
+        createdAt: '2026-10-23T11:00:00.000Z',
+        updatedAt: '2026-10-23T11:30:00.000Z',
         fullName: 'Dr. Bilal Qureshi',
         phone: '0321-4567890',
         whatsapp: '0321-4567890',
         email: 'bilal.q@skm.org.pk',
         contactMethod: 'Phone Call',
-        city: 'Lahore',
-        area: 'Johar Town',
-        street: 'Department of Surgical Oncology, Block R-3',
-        building: 'Shaukat Khanum Memorial Cancer Hospital (SKMCH)',
-        landmark: 'Behind Radiation Oncology Wing',
-        isLahoreConfirmed: true,
-        isWaitlist: false,
-        selectedNeeds: ['Scrubs', 'Lab Coats', 'Chest Embroidery', 'Hospital Crest'],
-        preferredSeries: 'Crown Series',
-        estimatedQty: '6 – 10 Sets (Clinic Team / Department)',
-        specialNotes: 'Department team order for 4 surgeons. Need consultation on Crown twill vs Velora.',
-        preferredDate: '2026-10-15',
-        preferredTimeWindow: 'Morning (10:00 AM – 1:00 PM)',
-        setting: 'Hospital Ward / On-Duty Room',
-        serviceFee: 500,
-        feeAdjustableThreshold: 10000,
-        feePolicy: '100% adjustable against qualifying uniform orders over Rs. 10,000.',
-        status: 'Order Created',
-        assignedRep: 'Fatima Ali (Clinical Consultant)',
-        shopifyOrderId: '#ENM-1039',
-        consentTerms: true,
+        preferredVisitWindow: 'Thursday Morning (10:00 AM – 1:00 PM)',
+        preferredDate: '2026-10-29',
+        customerNotes: 'Hospital oncology team uniform fitting.',
+        addressSnapshot: {
+          id: 'lhr-johar-town',
+          area: 'Johar Town',
+          zoneTag: 'Doctors Hospital Medical Hub',
+          fullAddress: 'Doctors Hospital Medical Enclave, G1 Market, Johar Town, Lahore',
+          landmark: 'Behind Radiation Oncology Wing, SKMCH'
+        },
+        advanceRequired: 3000,
+        advancePaymentStatus: 'Awaiting Advance Payment',
+        verifiedAmountReceived: 0,
+        paymentMethod: 'Bank Transfer (Meezan Bank)',
+        trxRef: 'IBFT-771920',
+        representativeName: 'Unassigned',
+        visitTime: 'Pending Advance Verification',
+        agreedRequirements: 'To be determined during representative consultation',
+        confirmedOrderTotal: null,
+        linkedShopifyOrderId: '',
+        remainingBalance: null,
+        lifecycleStatus: 'Awaiting Advance Payment',
         adminNotes: [
-          { timestamp: '2026-10-14T12:30:00.000Z', note: 'Visit confirmed for Oct 15 morning.', author: 'Fatima Ali' },
-          { timestamp: '2026-10-15T13:30:00.000Z', note: 'Fitting completed. Sized 4 consultants, drafted order for 8 scrub sets.', author: 'Fatima Ali' },
-          { timestamp: '2026-10-15T16:45:00.000Z', note: 'Shopify order created #ENM-1039 for Rs. 44,200. Rs. 500 visit fee deducted.', author: 'Fatima Ali' }
+          { timestamp: '2026-10-23T11:30:00.000Z', note: 'Bank transfer slip uploaded. Awaiting finance confirmation.', author: 'Customer Care Staff' }
         ],
         statusHistory: [
-          { timestamp: '2026-10-14T11:00:00.000Z', fromStatus: 'None', toStatus: 'New Request', note: 'Customer submitted visit request form', updatedBy: 'Customer (Online)' },
-          { timestamp: '2026-10-14T12:00:00.000Z', fromStatus: 'New Request', toStatus: 'Confirmed', note: 'Time verified with surgeon office', updatedBy: 'Fatima Ali' },
-          { timestamp: '2026-10-15T13:30:00.000Z', fromStatus: 'Confirmed', toStatus: 'Visit Completed', note: 'Sizing & swatches done', updatedBy: 'Fatima Ali' },
-          { timestamp: '2026-10-15T16:45:00.000Z', fromStatus: 'Visit Completed', toStatus: 'Order Created', note: 'Order #ENM-1039 linked', updatedBy: 'Fatima Ali' }
+          { timestamp: '2026-10-23T11:00:00.000Z', fromStatus: 'None', toStatus: 'Awaiting Advance Payment', note: 'Customer submitted with manual bank deposit slip', updatedBy: 'System' }
+        ]
+      },
+      {
+        id: 'HS-ENM-2026-1120',
+        orderType: 'HOME SERVICE',
+        createdAt: '2026-10-24T09:15:00.000Z',
+        updatedAt: '2026-10-24T10:00:00.000Z',
+        fullName: 'Dr. Usman Tariq',
+        phone: '0333-5129840',
+        whatsapp: '0333-5129840',
+        email: 'usman.tariq@clinics.pk',
+        contactMethod: 'WhatsApp',
+        preferredVisitWindow: 'Friday Evening (5:00 PM – 8:00 PM)',
+        preferredDate: '2026-10-31',
+        customerNotes: 'Looking for executive gabardine mandarin collar scrubs.',
+        addressSnapshot: {
+          id: 'lhr-gulberg',
+          area: 'Gulberg III',
+          zoneTag: 'Main Boulevard Corridor',
+          fullAddress: 'Gulberg III Medical Pavilion, Main Boulevard, Lahore',
+          landmark: 'Clinic Suite 302'
+        },
+        advanceRequired: 3000,
+        advancePaymentStatus: 'Advance Paid',
+        verifiedAmountReceived: 3000,
+        paymentMethod: 'Shopify Checkout (PKR 3,000 Advance)',
+        trxRef: 'CHG-102948',
+        representativeName: 'Tariq Mehmood',
+        visitTime: 'Friday 31 Oct, 5:30 PM',
+        agreedRequirements: 'To be collected during visit',
+        confirmedOrderTotal: null,
+        linkedShopifyOrderId: '',
+        remainingBalance: null,
+        lifecycleStatus: 'Visit Scheduled',
+        adminNotes: [
+          { timestamp: '2026-10-24T10:00:00.000Z', note: 'Advance verified. Fitting appointment scheduled with Tariq Mehmood for Friday 5:30 PM.', author: 'Customer Care Staff' }
+        ],
+        statusHistory: [
+          { timestamp: '2026-10-24T09:15:00.000Z', fromStatus: 'None', toStatus: 'Advance Paid', note: 'Advance payment processed', updatedBy: 'System' },
+          { timestamp: '2026-10-24T10:00:00.000Z', fromStatus: 'Advance Paid', toStatus: 'Visit Scheduled', note: 'Appointment assigned to Tariq Mehmood', updatedBy: 'Customer Care Staff' }
         ]
       }
     ];
@@ -4556,43 +4918,79 @@
       }
     }
 
-    window.seedSampleBookingsIfEmpty = function() {
+    window.getStoredBookings = getStoredBookings;
+    window.saveStoredBookings = saveStoredBookings;
+
+    window.seedHomeServiceSampleBookings = function() {
       saveStoredBookings(INITIAL_SAMPLE_BOOKINGS);
       window.renderAdminBookingList();
-      alert('Sample Lahore representative booking records restored.');
+      alert('Enamels Home Service demo order records restored.');
     };
 
-    let selfServiceCurrentStep = 1;
-    let currentAdminDetailBookingId = null;
+    window.initHomeServicePortal = function() {
+      window.renderApprovedAddressesList();
+      if (selfServiceCurrentStep === 3) {
+        renderSelfServiceRecap();
+      }
+    };
+
+    // Safe fallbacks for backward compatibility
+    window.renderHomeServiceProductList = function() {};
+    window.updateHomeServiceProductQty = function() {};
+    window.updateHomeServiceProductOption = function() {};
+    window.calculateHomeServiceOrderTotal = function() { return 0; };
+    window.updateHomeServiceTotalsDisplay = function() {};
+
+    window.renderApprovedAddressesList = function() {
+      const container = document.getElementById('ss-approved-addresses-list');
+      if (!container) return;
+
+      const activeAddresses = window.EnamelsApprovedLahoreAddresses.filter(a => a.active);
+      container.innerHTML = activeAddresses.map(addr => {
+        const isSelected = addr.id === hsSelectedAddressId;
+        return `
+          <label class="hs-address-card" onclick="window.selectApprovedHomeServiceAddress('${addr.id}')" style="display: block; background: ${isSelected ? '#f0fdfa' : '#ffffff'}; border: 2px solid ${isSelected ? '#008779' : '#e2e8f0'}; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.2s ease;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="ss_approved_address" value="${addr.id}" ${isSelected ? 'checked' : ''} style="accent-color: #008779;" />
+                <strong style="color: #102a43; font-size: 14px;">${escapeHtml(addr.area)}</strong>
+              </div>
+              <span style="font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px;">APPROVED ZONE</span>
+            </div>
+            <div style="font-size: 11px; font-weight: 600; color: #008779; margin-bottom: 4px;">${escapeHtml(addr.zoneTag)}</div>
+            <p style="font-size: 12px; color: #64748b; margin: 0; line-height: 1.4;">${escapeHtml(addr.fullAddress)}</p>
+          </label>
+        `;
+      }).join('');
+    };
+
+    window.selectApprovedHomeServiceAddress = function(id) {
+      hsSelectedAddressId = id;
+      window.renderApprovedAddressesList();
+    };
 
     window.goToSelfServiceStep = function(step) {
       selfServiceCurrentStep = step;
       const stepLabels = {
-        1: { name: 'Customer Details', sub: 'Enter your personal contact details' },
-        2: { name: 'Lahore Service Address', sub: 'Confirm your address in Lahore' },
-        3: { name: 'Shopping Requirements', sub: 'Choose products & services needed' },
-        4: { name: 'Visit Schedule Preferences', sub: 'Select preferred date & time window' },
-        5: { name: 'Review Charges & Confirmation', sub: 'Final review and request submission' }
+        1: { name: 'Customer Information & Visit Preferences', sub: 'Enter clinician contact details & visit preferences' },
+        2: { name: 'Select Approved Lahore Address', sub: 'Choose approved healthcare zone in Lahore' },
+        3: { name: 'Review Booking & Advance Deposit Policy', sub: `Review details & PKR ${REQUIRED_HOME_SERVICE_ADVANCE.toLocaleString()} adjustable deposit` }
       };
 
-      // Update badge and status message
       const badgeText = document.getElementById('ss-step-badge-text');
       const remText = document.getElementById('ss-step-remaining-text');
       const statusMsg = document.getElementById('ss-stepper-status-msg');
       const fillBar = document.getElementById('ss-progress-fill');
 
-      if (badgeText) badgeText.textContent = `Step ${step} of 5: ${stepLabels[step].name}`;
-      if (remText) remText.textContent = step === 5 ? 'Final Step' : `${5 - step} steps remaining`;
+      if (badgeText) badgeText.textContent = `Step ${step} of 3: ${stepLabels[step].name}`;
+      if (remText) remText.textContent = step === 3 ? 'Final Step' : `${3 - step} step${3 - step > 1 ? 's' : ''} remaining`;
       if (statusMsg) statusMsg.textContent = stepLabels[step].sub;
-      if (fillBar) fillBar.style.width = `${(step / 5) * 100}%`;
+      if (fillBar) fillBar.style.width = step === 1 ? '33.3%' : (step === 2 ? '66.6%' : '100%');
 
-      // Update Stepper Navigation Buttons
       const stepMap = [
-        { id: 'ss-nav-btn-contact', subId: 'ss-sub-contact', label: 'Contact', defaultSub: 'Required' },
-        { id: 'ss-nav-btn-address', subId: 'ss-sub-address', label: 'Lahore Address', defaultSub: 'Required' },
-        { id: 'ss-nav-btn-needs', subId: 'ss-sub-needs', label: 'Requirements', defaultSub: 'Select Items' },
-        { id: 'ss-nav-btn-time', subId: 'ss-sub-time', label: 'Visit Time', defaultSub: 'Preference' },
-        { id: 'ss-nav-btn-confirm', subId: 'ss-sub-confirm', label: 'Review & Submit', defaultSub: 'Finalize' }
+        { id: 'ss-nav-btn-contact', subId: 'ss-sub-contact', label: 'Contact & Visit', defaultSub: 'Required' },
+        { id: 'ss-nav-btn-address', subId: 'ss-sub-address', label: 'Lahore Area', defaultSub: 'Select Zone' },
+        { id: 'ss-nav-btn-review', subId: 'ss-sub-review', label: 'Review & Deposit', defaultSub: `PKR ${REQUIRED_HOME_SERVICE_ADVANCE.toLocaleString()} Advance` }
       ];
 
       stepMap.forEach((item, index) => {
@@ -4613,19 +5011,20 @@
         }
       });
 
-      // Switch Panes
       document.querySelectorAll('.self-service-pane').forEach(p => p.classList.remove('active'));
       const activePane = document.getElementById(`ss-pane-${step}`);
       if (activePane) activePane.classList.add('active');
 
-      // Clear error banner
       const errBanner = document.getElementById('ss-form-error-banner');
       if (errBanner) {
         errBanner.style.display = 'none';
         errBanner.textContent = '';
       }
 
-      // Smooth scroll to card
+      if (step === 3) {
+        renderSelfServiceRecap();
+      }
+
       const card = document.getElementById('self-service-booking-card');
       if (card) {
         card.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -4640,16 +5039,10 @@
       }
     };
 
-    window.handleSelfServiceCityChange = function(city) {
-      const alertBox = document.getElementById('ss-out-of-area-alert');
-      const lahoreCheck = document.getElementById('ss-confirm-lahore');
-
-      if (city !== 'Lahore') {
-        if (alertBox) alertBox.style.display = 'block';
-        if (lahoreCheck) lahoreCheck.checked = false;
-      } else {
-        if (alertBox) alertBox.style.display = 'none';
-        if (lahoreCheck) lahoreCheck.checked = true;
+    window.toggleManualPaymentDetails = function(isBankTransfer) {
+      const bankDetails = document.getElementById('ss-manual-bank-details');
+      if (bankDetails) {
+        bankDetails.style.display = isBankTransfer ? 'block' : 'none';
       }
     };
 
@@ -4670,42 +5063,16 @@
         const phone = document.getElementById('ss-input-phone')?.value.trim();
         const wa = document.getElementById('ss-input-whatsapp')?.value.trim();
 
-        if (!name) return showErr('Please enter your full name and title.');
+        if (!name) return showErr('Please enter your full name and title (e.g. Dr. Ayesha Malik).');
         if (!phone || phone.length < 9) return showErr('Please enter a valid mobile number (e.g. 0300-1234567).');
-        if (!wa || wa.length < 9) return showErr('Please enter a valid WhatsApp number for visit coordination.');
+        if (wa && wa.length < 9) return showErr('Please enter a valid WhatsApp number.');
 
         window.goToSelfServiceStep(2);
       } else if (currentStep === 2) {
-        const city = document.getElementById('ss-input-city')?.value;
-        const area = document.getElementById('ss-input-area')?.value;
-        const street = document.getElementById('ss-input-street')?.value.trim();
-        const isLahoreConfirmed = document.getElementById('ss-confirm-lahore')?.checked;
-
-        if (city === 'Lahore') {
-          if (!area) return showErr('Please select your area or sector in Lahore.');
-          if (!street) return showErr('Please provide your complete street / hospital address.');
-          if (!isLahoreConfirmed) return showErr('Please confirm that the visit location is within Lahore district.');
-        } else {
-          if (!street) return showErr('Please provide your delivery/clinic address for the expansion waitlist.');
+        if (!hsSelectedAddressId) {
+          return showErr('Please select an approved Lahore service address from the list.');
         }
-
         window.goToSelfServiceStep(3);
-      } else if (currentStep === 3) {
-        const selectedNeeds = Array.from(document.querySelectorAll('input[name="ss_need"]:checked')).map(el => el.value);
-        if (selectedNeeds.length === 0) {
-          return showErr('Please select at least one item or service you need assistance with.');
-        }
-
-        window.goToSelfServiceStep(4);
-      } else if (currentStep === 4) {
-        const date = document.getElementById('ss-input-date')?.value;
-        const timeslot = document.getElementById('ss-input-timeslot')?.value;
-
-        if (!date) return showErr('Please select your preferred visit date.');
-        if (!timeslot) return showErr('Please select your preferred visit time window.');
-
-        renderSelfServiceRecap();
-        window.goToSelfServiceStep(5);
       }
     };
 
@@ -4715,63 +5082,44 @@
 
       const name = document.getElementById('ss-input-name')?.value.trim() || '-';
       const phone = document.getElementById('ss-input-phone')?.value.trim() || '-';
-      const wa = document.getElementById('ss-input-whatsapp')?.value.trim() || '-';
+      const wa = document.getElementById('ss-input-whatsapp')?.value.trim() || phone;
       const email = document.getElementById('ss-input-email')?.value.trim() || 'Not supplied';
       const contactMethod = document.querySelector('input[name="ss_contact_method"]:checked')?.value || 'WhatsApp';
+      const visitWindow = document.getElementById('ss-input-visit-window')?.value || 'Flexible';
+      const preferredDate = document.getElementById('ss-input-preferred-date')?.value || '';
+      const notes = document.getElementById('ss-input-notes')?.value.trim() || 'None provided';
 
-      const city = document.getElementById('ss-input-city')?.value || 'Lahore';
-      const area = document.getElementById('ss-input-area')?.value || '-';
-      const street = document.getElementById('ss-input-street')?.value.trim() || '-';
-      const building = document.getElementById('ss-input-building')?.value.trim() || 'N/A';
-      const landmark = document.getElementById('ss-input-landmark')?.value.trim() || 'N/A';
-
-      const selectedNeeds = Array.from(document.querySelectorAll('input[name="ss_need"]:checked')).map(el => el.value);
-      const series = document.getElementById('ss-input-series')?.value || 'Sprinter Series';
-      const qty = document.getElementById('ss-input-qty')?.value || '1-2 Sets';
-      const notes = document.getElementById('ss-input-notes')?.value.trim() || 'None';
-
-      const date = document.getElementById('ss-input-date')?.value || '-';
-      const timeslot = document.getElementById('ss-input-timeslot')?.value || '-';
-      const setting = document.querySelector('input[name="ss_setting"]:checked')?.value || 'Hospital Ward';
-
-      const isWaitlist = city !== 'Lahore';
+      const selectedAddr = window.EnamelsApprovedLahoreAddresses.find(a => a.id === hsSelectedAddressId) || window.EnamelsApprovedLahoreAddresses[0];
+      const landmark = document.getElementById('ss-input-landmark')?.value.trim() || 'None provided';
 
       recapGrid.innerHTML = `
         <div class="self-service-recap-box">
-          <div class="self-service-recap-title">👤 Contact Information</div>
+          <div class="self-service-recap-title">👤 Customer Contact</div>
           <div class="self-service-recap-val">
             <strong>${escapeHtml(name)}</strong><br>
             Mobile: ${escapeHtml(phone)} | WhatsApp: ${escapeHtml(wa)}<br>
             Email: ${escapeHtml(email)}<br>
-            Preferred Channel: <span style="color: #00b8a9; font-weight: 600;">${escapeHtml(contactMethod)}</span>
+            Preferred Channel: <span style="color: #008779; font-weight: 700;">${escapeHtml(contactMethod)}</span>
           </div>
         </div>
 
         <div class="self-service-recap-box">
-          <div class="self-service-recap-title">📍 Service Location (${isWaitlist ? 'Waitlist' : 'Lahore'})</div>
+          <div class="self-service-recap-title">📍 Approved Lahore Address Snapshot</div>
           <div class="self-service-recap-val">
-            <strong>${escapeHtml(city)}</strong> — ${escapeHtml(area)}<br>
-            Street: ${escapeHtml(street)}<br>
-            Facility: ${escapeHtml(building)} | Instructions: ${escapeHtml(landmark)}
+            <strong>${escapeHtml(selectedAddr.area)}</strong> — <span style="font-size: 11px; color: #008779;">${escapeHtml(selectedAddr.zoneTag)}</span><br>
+            ${escapeHtml(selectedAddr.fullAddress)}<br>
+            <span style="font-size: 11px; color: #64748b;">Landmark: ${escapeHtml(landmark)}</span>
           </div>
         </div>
 
-        <div class="self-service-recap-box">
-          <div class="self-service-recap-title">🩺 Requirements & Preferences</div>
+        <div class="self-service-recap-box" style="grid-column: 1 / -1;">
+          <div class="self-service-recap-title">🗓️ Visit Preferences & Notes</div>
           <div class="self-service-recap-val">
-            Services: <strong>${selectedNeeds.map(n => escapeHtml(n)).join(', ')}</strong><br>
-            Preferred Series: ${escapeHtml(series)} | Est. Quantity: ${escapeHtml(qty)}<br>
-            Notes: <em>${escapeHtml(notes)}</em>
-          </div>
-        </div>
-
-        <div class="self-service-recap-box">
-          <div class="self-service-recap-title">📅 Preferred Appointment Window</div>
-          <div class="self-service-recap-val">
-            Date: <strong>${escapeHtml(date)}</strong><br>
-            Window: ${escapeHtml(timeslot)}<br>
-            Setting: ${escapeHtml(setting)}<br>
-            <span style="font-size: 11px; color: #64748b;">(Preference subject to confirmation by representative)</span>
+            <div>Preferred Slot: <strong>${escapeHtml(visitWindow)}</strong>${preferredDate ? ` (Date: <strong>${escapeHtml(preferredDate)}</strong>)` : ''}</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Notes: <em>${escapeHtml(notes)}</em></div>
+            <div style="font-size: 11px; color: #008779; font-weight: 600; margin-top: 6px;">
+              🩺 Our representative will bring trial size garments, genuine textile rings, and embroidery samples to collect your uniform requirements and measurements in person.
+            </div>
           </div>
         </div>
       `;
@@ -4787,125 +5135,171 @@
     window.submitSelfServiceBooking = function() {
       const termsAccepted = document.getElementById('ss-confirm-terms')?.checked;
       if (!termsAccepted) {
-        const errBanner = document.getElementById('ss-form-error-banner');
-        if (errBanner) {
-          errBanner.textContent = 'Please check the acknowledgement box before submitting.';
-          errBanner.style.display = 'block';
-        } else {
-          alert('Please check the acknowledgement box before submitting.');
-        }
+        alert('Please acknowledge the terms checkbox before proceeding.');
+        return;
+      }
+
+      const name = document.getElementById('ss-input-name')?.value.trim() || 'Customer';
+      const phone = document.getElementById('ss-input-phone')?.value.trim() || '';
+      const wa = document.getElementById('ss-input-whatsapp')?.value.trim() || phone;
+      const email = document.getElementById('ss-input-email')?.value.trim() || '';
+      const contactMethod = document.querySelector('input[name="ss_contact_method"]:checked')?.value || 'WhatsApp';
+      const visitWindow = document.getElementById('ss-input-visit-window')?.value || 'Flexible';
+      const preferredDate = document.getElementById('ss-input-preferred-date')?.value || '';
+      const landmark = document.getElementById('ss-input-landmark')?.value.trim() || '';
+      const notes = document.getElementById('ss-input-notes')?.value.trim() || '';
+
+      const selectedAddr = window.EnamelsApprovedLahoreAddresses.find(a => a.id === hsSelectedAddressId) || window.EnamelsApprovedLahoreAddresses[0];
+      const addressSnapshot = {
+        id: selectedAddr.id,
+        area: selectedAddr.area,
+        zoneTag: selectedAddr.zoneTag,
+        fullAddress: selectedAddr.fullAddress,
+        landmark: landmark
+      };
+
+      const paymentMethodRadio = document.querySelector('input[name="ss_payment_method"]:checked')?.value || 'shopify_checkout';
+      const trxRef = document.getElementById('ss-input-trx-ref')?.value.trim() || '';
+
+      if (paymentMethodRadio === 'bank_transfer' && !trxRef) {
+        alert('Please enter your Bank / JazzCash transaction reference or deposit slip ID.');
         return;
       }
 
       const submitBtn = document.getElementById('ss-submit-booking-btn');
       if (submitBtn) {
+        if (submitBtn.disabled) return; // Prevent duplicate clicks
         submitBtn.disabled = true;
         submitBtn.innerHTML = '⏳ Submitting Request...';
       }
 
-      setTimeout(() => {
-        const name = document.getElementById('ss-input-name')?.value.trim() || 'Valued Customer';
-        const phone = document.getElementById('ss-input-phone')?.value.trim() || '';
-        const wa = document.getElementById('ss-input-whatsapp')?.value.trim() || phone;
-        const email = document.getElementById('ss-input-email')?.value.trim() || '';
-        const contactMethod = document.querySelector('input[name="ss_contact_method"]:checked')?.value || 'WhatsApp';
+      const bookingId = 'HS-ENM-2026-' + Math.floor(1000 + Math.random() * 9000);
+      const nowIso = new Date().toISOString();
+      const isShopify = paymentMethodRadio === 'shopify_checkout';
 
-        const city = document.getElementById('ss-input-city')?.value || 'Lahore';
-        const area = document.getElementById('ss-input-area')?.value || 'Lahore Area';
-        const street = document.getElementById('ss-input-street')?.value.trim() || '';
-        const building = document.getElementById('ss-input-building')?.value.trim() || '';
-        const landmark = document.getElementById('ss-input-landmark')?.value.trim() || '';
-        const isLahoreConfirmed = document.getElementById('ss-confirm-lahore')?.checked || false;
+      const newBooking = {
+        id: bookingId,
+        orderType: 'HOME SERVICE',
+        createdAt: nowIso,
+        updatedAt: nowIso,
+        fullName: name,
+        phone: phone,
+        whatsapp: wa,
+        email: email,
+        contactMethod: contactMethod,
+        preferredVisitWindow: visitWindow,
+        preferredDate: preferredDate,
+        customerNotes: notes,
+        addressSnapshot: addressSnapshot,
+        advanceRequired: REQUIRED_HOME_SERVICE_ADVANCE,
+        advancePaymentStatus: isShopify ? 'Awaiting Advance Payment Verification' : 'Awaiting Advance Payment',
+        verifiedAmountReceived: 0,
+        paymentMethod: isShopify ? 'Shopify Checkout (PKR 3,000 Booking Deposit)' : 'Bank Transfer / JazzCash',
+        trxRef: isShopify ? ('DEP-' + Math.floor(100000 + Math.random() * 900000)) : trxRef,
+        representativeName: 'Unassigned',
+        visitTime: 'Pending Customer Care Scheduling',
+        agreedRequirements: 'To be collected during visit',
+        confirmedOrderTotal: null,
+        linkedShopifyOrderId: '',
+        remainingBalance: null,
+        lifecycleStatus: isShopify ? 'Awaiting Customer Care' : 'Awaiting Advance Payment',
+        adminNotes: [
+          {
+            timestamp: nowIso,
+            note: isShopify
+              ? 'Home Service request submitted via Shopify Checkout deposit. Awaiting Customer Care visit coordination.'
+              : `Home Service request submitted via manual bank transfer. Transaction Ref: ${trxRef}. Awaiting verification.`,
+            author: 'System (Online Request)'
+          }
+        ],
+        statusHistory: [
+          {
+            timestamp: nowIso,
+            fromStatus: 'None',
+            toStatus: isShopify ? 'Awaiting Customer Care' : 'Awaiting Advance Payment',
+            note: 'Home Service consultation request submitted online (No products selected online)',
+            updatedBy: 'Customer (Online)'
+          }
+        ]
+      };
 
-        const selectedNeeds = Array.from(document.querySelectorAll('input[name="ss_need"]:checked')).map(el => el.value);
-        const series = document.getElementById('ss-input-series')?.value || 'Sprinter Series';
-        const qty = document.getElementById('ss-input-qty')?.value || '1-2 Sets';
-        const notes = document.getElementById('ss-input-notes')?.value.trim() || '';
+      const existing = getStoredBookings();
+      existing.unshift(newBooking);
+      saveStoredBookings(existing);
 
-        const date = document.getElementById('ss-input-date')?.value || new Date().toISOString().split('T')[0];
-        const timeslot = document.getElementById('ss-input-timeslot')?.value || 'Afternoon (2:00 PM – 5:00 PM)';
-        const setting = document.querySelector('input[name="ss_setting"]:checked')?.value || 'Hospital Ward / Duty Room';
-
-        const isWaitlist = city !== 'Lahore';
-        const bookingId = 'ENM-VISIT-2026-' + Math.floor(1000 + Math.random() * 9000);
-        const nowIso = new Date().toISOString();
-
-        const newBooking = {
-          id: bookingId,
-          createdAt: nowIso,
-          updatedAt: nowIso,
-          fullName: name,
-          phone: phone,
-          whatsapp: wa,
-          email: email,
-          contactMethod: contactMethod,
-          city: city,
-          area: area,
-          street: street,
-          building: building,
-          landmark: landmark,
-          isLahoreConfirmed: isLahoreConfirmed,
-          isWaitlist: isWaitlist,
-          selectedNeeds: selectedNeeds,
-          preferredSeries: series,
-          estimatedQty: qty,
-          specialNotes: notes,
-          preferredDate: date,
-          preferredTimeWindow: timeslot,
-          setting: setting,
-          serviceFee: 500,
-          feeAdjustableThreshold: 10000,
-          feePolicy: '100% adjustable against qualifying uniform orders over Rs. 10,000.',
-          status: isWaitlist ? 'New Request (Waitlist)' : 'New Request',
-          assignedRep: '',
-          shopifyOrderId: '',
-          consentTerms: true,
-          adminNotes: [],
-          statusHistory: [
-            {
-              timestamp: nowIso,
-              fromStatus: 'None',
-              toStatus: isWaitlist ? 'New Request (Waitlist)' : 'New Request',
-              note: isWaitlist ? 'Submitted for expansion waitlist outside Lahore' : 'Submitted by customer for Lahore concierge visit',
-              updatedBy: 'Customer (Online)'
-            }
-          ]
+      // If Shopify Checkout mode, record the deposit line-item in cart safely
+      if (isShopify && typeof fetch === 'function') {
+        const lineProps = {
+          '_order_type': 'Home Service',
+          'Booking Reference': bookingId,
+          'Customer Name': name,
+          'Customer Phone': phone,
+          'Customer WhatsApp': wa,
+          'Approved Lahore Address': addressSnapshot.fullAddress,
+          'Deposit Amount': `PKR ${REQUIRED_HOME_SERVICE_ADVANCE.toLocaleString()} (Adjustable against final order)`,
+          'Minimum Qualifying Order': `PKR ${MINIMUM_HOME_SERVICE_ORDER_VALUE.toLocaleString()}`
         };
 
-        const existing = getStoredBookings();
-        existing.unshift(newBooking);
-        saveStoredBookings(existing);
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: [{
+              id: 67718805684512,
+              quantity: 1,
+              properties: lineProps
+            }]
+          })
+        }).catch(() => {});
+      }
 
-        // Display Success View
-        const bookingCard = document.getElementById('self-service-booking-card');
-        const successView = document.getElementById('self-service-success-view');
-        if (bookingCard) bookingCard.style.display = 'none';
-        if (successView) successView.style.display = 'block';
+      // Display Success Confirmation View (Step 4)
+      const bookingCard = document.getElementById('self-service-booking-card');
+      const successView = document.getElementById('self-service-success-view');
+      if (bookingCard) bookingCard.style.display = 'none';
+      if (successView) successView.style.display = 'block';
 
-        const refEl = document.getElementById('ss-success-ref-id');
-        const cityEl = document.getElementById('ss-success-city-area');
-        const phoneEl = document.getElementById('ss-success-contact-phone');
-        const waLink = document.getElementById('ss-whatsapp-direct-link');
+      const refEl = document.getElementById('ss-success-ref-id');
+      const nameEl = document.getElementById('ss-success-name');
+      const contactEl = document.getElementById('ss-success-contact');
+      const locEl = document.getElementById('ss-success-location');
+      const visitEl = document.getElementById('ss-success-visit-window');
+      const payStatusEl = document.getElementById('ss-success-payment-status');
+      const totalEl = document.getElementById('ss-success-total');
+      const advEl = document.getElementById('ss-success-advance');
+      const balEl = document.getElementById('ss-success-balance');
+      const waLink = document.getElementById('ss-whatsapp-direct-link');
 
-        if (refEl) refEl.textContent = bookingId;
-        if (cityEl) cityEl.textContent = `${city} (${area})`;
-        if (phoneEl) phoneEl.textContent = `${wa} (${name})`;
-        if (waLink) {
-          const waMsg = encodeURIComponent(`Hello Enamels Concierge! I have submitted a Self-Service visit request.\nReference ID: ${bookingId}\nName: ${name}\nLocation: ${city} (${area})\nPreferred Date: ${date} (${timeslot})`);
-          waLink.href = `https://wa.me/923011331133?text=${waMsg}`;
-        }
+      if (refEl) refEl.textContent = bookingId;
+      if (nameEl) nameEl.textContent = name;
+      if (contactEl) contactEl.textContent = `${phone} (Preferred: ${contactMethod})`;
+      if (locEl) locEl.textContent = `${addressSnapshot.area} — ${addressSnapshot.fullAddress}`;
+      if (visitEl) visitEl.textContent = `${visitWindow}${preferredDate ? ' on ' + preferredDate : ''}`;
+      if (payStatusEl) {
+        payStatusEl.textContent = isShopify ? 'Pending Payment Verification (Shopify Checkout)' : 'Awaiting Advance Payment Verification (Bank Deposit Slip)';
+        payStatusEl.style.color = '#92400e';
+      }
+      if (totalEl) totalEl.textContent = 'To be determined during representative consultation';
+      if (advEl) advEl.textContent = `PKR ${REQUIRED_HOME_SERVICE_ADVANCE.toLocaleString()} (Adjustable Booking Deposit)`;
+      if (balEl) balEl.textContent = 'Calculated upon final order creation';
 
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = '📩 Submit Visit Request';
-        }
+      if (waLink) {
+        const waMsg = encodeURIComponent(`Hello Enamels Customer Care! I have requested Home Service in Lahore.\nBooking Reference: ${bookingId}\nName: ${name}\nLocation: ${addressSnapshot.area}\nDeposit: PKR 3,000 (Adjustable against PKR 25,000 min order)`);
+        waLink.href = `https://wa.me/923011331133?text=${waMsg}`;
+      }
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 400);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '🔒 Request Home Service & Submit Booking';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.resetSelfServiceForm = function() {
-      const formIds = ['ss-input-name', 'ss-input-phone', 'ss-input-whatsapp', 'ss-input-email', 'ss-input-street', 'ss-input-building', 'ss-input-landmark', 'ss-input-notes', 'ss-input-date'];
+      hsSelectedAddressId = 'lhr-shadman';
+
+      const formIds = ['ss-input-name', 'ss-input-phone', 'ss-input-whatsapp', 'ss-input-email', 'ss-input-preferred-date', 'ss-input-landmark', 'ss-input-notes', 'ss-input-trx-ref'];
       formIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -4914,79 +5308,71 @@
       const sameWa = document.getElementById('ss-same-whatsapp');
       if (sameWa) sameWa.checked = false;
 
-      const citySelect = document.getElementById('ss-input-city');
-      if (citySelect) {
-        citySelect.value = 'Lahore';
-        window.handleSelfServiceCityChange('Lahore');
-      }
+      const windowSelect = document.getElementById('ss-input-visit-window');
+      if (windowSelect) windowSelect.selectedIndex = 0;
 
       const bookingCard = document.getElementById('self-service-booking-card');
       const successView = document.getElementById('self-service-success-view');
       if (bookingCard) bookingCard.style.display = 'block';
       if (successView) successView.style.display = 'none';
 
+      window.initHomeServicePortal();
       window.goToSelfServiceStep(1);
     };
 
     // ------------------------------------------------------------
-    // ADMIN / REPRESENTATIVE PORTAL WORKFLOW
+    // ADMIN HOME SERVICE ORDER MANAGEMENT WORKFLOW
     // ------------------------------------------------------------
     window.openSelfServiceAdminModal = function() {
       const modal = document.getElementById('self-service-admin-modal');
       if (modal) {
+        modal.classList.add('active');
         modal.style.display = 'flex';
         window.renderAdminBookingList();
       }
     };
+    window.openAdminSelfServiceModal = window.openSelfServiceAdminModal;
 
     window.closeSelfServiceAdminModal = function() {
       const modal = document.getElementById('self-service-admin-modal');
-      if (modal) modal.style.display = 'none';
+      if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+      }
     };
 
     window.renderAdminBookingList = function() {
-      const tbody = document.getElementById('ss-admin-bookings-tbody');
+      const tbody = document.getElementById('ss-admin-table-body');
       const countEl = document.getElementById('ss-admin-bookings-count');
       const searchInput = document.getElementById('ss-admin-search-input')?.value.toLowerCase().trim() || '';
-      const statusFilter = document.getElementById('ss-admin-status-filter')?.value || 'all';
+      const statusFilter = document.getElementById('ss-admin-status-filter')?.value || 'ALL';
 
       if (!tbody) return;
 
       const bookings = getStoredBookings();
       const filtered = bookings.filter(b => {
-        if (statusFilter !== 'all' && b.status !== statusFilter) return false;
+        if (statusFilter !== 'ALL' && b.lifecycleStatus !== statusFilter && b.advancePaymentStatus !== statusFilter) return false;
         if (!searchInput) return true;
-        const searchStr = `${b.id} ${b.fullName} ${b.phone} ${b.whatsapp} ${b.area} ${b.city} ${b.shopifyOrderId || ''}`.toLowerCase();
+        const searchStr = `${b.id} ${b.fullName} ${b.phone} ${b.whatsapp} ${b.addressSnapshot?.area || ''} ${b.addressSnapshot?.fullAddress || ''} ${b.representativeName || ''} ${b.linkedShopifyOrderId || ''}`.toLowerCase();
         return searchStr.includes(searchInput);
       });
 
-      if (countEl) countEl.textContent = `${filtered.length} Requests`;
+      if (countEl) countEl.textContent = `${filtered.length} Home Service Orders`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 24px; color: #64748b;">No matching representative visit requests found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">No matching Home Service bookings found.</td></tr>`;
         return;
       }
 
-      const getStatusClass = (status) => {
-        switch (status) {
-          case 'New Request': return 'status-new';
-          case 'Under Review': return 'status-review';
-          case 'Contact Required': return 'status-contact';
-          case 'Visit Proposed': return 'status-proposed';
-          case 'Confirmed': return 'status-confirmed';
-          case 'Representative Assigned': return 'status-assigned';
-          case 'Visit Completed': return 'status-completed';
-          case 'Order Created': return 'status-order-created';
-          case 'Cancelled': return 'status-cancelled';
-          default: return 'status-review';
-        }
-      };
-
       tbody.innerHTML = filtered.map(b => {
         const formattedDate = new Date(b.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-        const repName = b.assignedRep ? escapeHtml(b.assignedRep.split(' ')[0] + ' ' + (b.assignedRep.split(' ')[1] || '')) : '<em style="color:#94a3b8;">Unassigned</em>';
-        const needsSummary = (b.selectedNeeds || []).slice(0, 2).map(n => `<span style="font-size:10px; background:#f1f5f9; padding:1px 6px; border-radius:3px; margin-right:3px;">${escapeHtml(n)}</span>`).join('');
-        const extraNeeds = (b.selectedNeeds || []).length > 2 ? `<span style="font-size:10px; color:#64748b;">+${(b.selectedNeeds || []).length - 2}</span>` : '';
+        const isPaid = b.advancePaymentStatus === 'Advance Paid';
+        const advStatusBadge = isPaid
+          ? `<span style="font-size:10px; font-weight:700; background:#dcfce7; color:#166534; padding:2px 8px; border-radius:4px;">PAID (PKR 3k)</span>`
+          : `<span style="font-size:10px; font-weight:700; background:#fef3c7; color:#92400e; padding:2px 8px; border-radius:4px;">AWAITING ADV</span>`;
+
+        const totalDisplay = b.confirmedOrderTotal ? `PKR ${b.confirmedOrderTotal.toLocaleString()}` : `<span style="color:#64748b; font-style:italic;">Pending Visit</span>`;
+        const dueDisplay = b.remainingBalance !== null && b.remainingBalance !== undefined ? `PKR ${b.remainingBalance.toLocaleString()}` : `<span style="color:#64748b; font-style:italic;">Pending Order</span>`;
 
         return `
           <tr style="border-bottom: 1px solid #f1f5f9;">
@@ -4994,25 +5380,35 @@
               <a href="#" onclick="window.openAdminBookingDetail('${b.id}'); return false;" style="color: #008779; text-decoration: underline;">
                 ${escapeHtml(b.id)}
               </a>
+              <div style="font-size: 10px; color: #64748b; font-family: sans-serif;">${formattedDate}</div>
             </td>
-            <td style="color: #64748b; white-space: nowrap;">${formattedDate}</td>
             <td>
               <strong style="color: #102a43;">${escapeHtml(b.fullName)}</strong><br>
               <span style="color: #64748b; font-size: 11px;">${escapeHtml(b.phone)}</span>
             </td>
             <td>
-              <span style="font-weight: 600; color: #102a43;">${escapeHtml(b.city)}</span><br>
-              <span style="color: #64748b; font-size: 11px;">${escapeHtml(b.area || '-')}</span>
+              <span style="font-weight: 600; color: #102a43;">${escapeHtml(b.addressSnapshot?.area || '-')}</span><br>
+              <span style="color: #64748b; font-size: 10px;">${escapeHtml(b.addressSnapshot?.zoneTag || '')}</span>
             </td>
-            <td>${needsSummary}${extraNeeds}</td>
             <td>
-              <span class="self-service-status-pill ${getStatusClass(b.status)}">
-                ${escapeHtml(b.status)}
+              <span style="font-size: 11px; color: #102a43;">${escapeHtml(b.preferredVisitWindow || 'Flexible')}</span>
+            </td>
+            <td style="text-align: right;">
+              ${advStatusBadge}
+            </td>
+            <td style="text-align: right; font-weight: 700; color: #102a43;">
+              ${totalDisplay}
+            </td>
+            <td style="text-align: right; font-weight: 700; color: #008779;">
+              ${dueDisplay}
+            </td>
+            <td>
+              <span style="font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px;">
+                ${escapeHtml(b.lifecycleStatus || 'New Request')}
               </span>
             </td>
-            <td>${repName}</td>
             <td style="text-align: right;">
-              <button type="button" class="gender-pill-btn" onclick="window.openAdminBookingDetail('${b.id}')" style="padding: 4px 10px; font-size: 11px;">
+              <button type="button" class="gender-pill-btn" onclick="window.openAdminBookingDetail('${b.id}')" style="padding: 4px 10px; font-size: 11px; font-weight: 700;">
                 Manage
               </button>
             </td>
@@ -5034,24 +5430,111 @@
       const titleEl = document.getElementById('ss-admin-detail-title');
       const custEl = document.getElementById('ss-admin-detail-customer');
       const addrEl = document.getElementById('ss-admin-detail-address');
-      const needsEl = document.getElementById('ss-admin-detail-needs');
-      const feeEl = document.getElementById('ss-admin-detail-fee');
+      const notesEl = document.getElementById('ss-admin-detail-notes');
+      const accEl = document.getElementById('ss-admin-detail-accounting');
+
+      const repInput = document.getElementById('ss-admin-rep-name');
+      const visitInput = document.getElementById('ss-admin-visit-time');
+      const reqsInput = document.getElementById('ss-admin-agreed-reqs');
+      const confirmedTotalInput = document.getElementById('ss-admin-detail-confirmed-total');
+      const linkedOrderInput = document.getElementById('ss-admin-linked-order');
+
       const statusSelect = document.getElementById('ss-admin-detail-status-select');
-      const repSelect = document.getElementById('ss-admin-detail-rep-select');
-      const orderIdInput = document.getElementById('ss-admin-detail-order-id');
+      const advStatusSelect = document.getElementById('ss-admin-detail-adv-status-select');
 
-      if (titleEl) titleEl.textContent = `Request Detail: ${booking.id} (${booking.status})`;
-      if (custEl) custEl.innerHTML = `<strong>${escapeHtml(booking.fullName)}</strong><br>Phone: ${escapeHtml(booking.phone)} | WA: ${escapeHtml(booking.whatsapp)}<br>Email: ${escapeHtml(booking.email || 'None')}<br>Preferred Channel: ${escapeHtml(booking.contactMethod)}`;
-      if (addrEl) addrEl.innerHTML = `<strong>${escapeHtml(booking.city)}</strong> — ${escapeHtml(booking.area)}<br>${escapeHtml(booking.street)}<br>Facility: ${escapeHtml(booking.building || 'N/A')}<br>Note: ${escapeHtml(booking.landmark || 'N/A')}`;
-      if (needsEl) needsEl.innerHTML = `Items: <strong>${(booking.selectedNeeds || []).map(n => escapeHtml(n)).join(', ')}</strong><br>Preferred Series: ${escapeHtml(booking.preferredSeries)} | Qty: ${escapeHtml(booking.estimatedQty)}<br>Preferred Date: <strong>${escapeHtml(booking.preferredDate)} (${escapeHtml(booking.preferredTimeWindow)})</strong><br>Customer Note: <em>${escapeHtml(booking.specialNotes || 'None')}</em>`;
-      if (feeEl) feeEl.innerHTML = `Service Fee: <strong>Rs. ${booking.serviceFee}</strong> (Adjustable &gt; Rs. ${booking.feeAdjustableThreshold})<br>Payment: Payable during visit or Bank Transfer<br>Shopify Order: <strong>${booking.shopifyOrderId ? escapeHtml(booking.shopifyOrderId) : '<span style="color:#64748b;">Not yet linked</span>'}</strong>`;
+      if (titleEl) titleEl.textContent = `Home Service Order: ${booking.id} (${booking.lifecycleStatus})`;
+      if (custEl) custEl.innerHTML = `<strong>${escapeHtml(booking.fullName)}</strong><br>Phone: ${escapeHtml(booking.phone)} | WhatsApp: ${escapeHtml(booking.whatsapp)}<br>Email: ${escapeHtml(booking.email || 'None')}<br>Preferred Channel: <strong>${escapeHtml(booking.contactMethod)}</strong>`;
+      
+      const addr = booking.addressSnapshot || {};
+      if (addrEl) addrEl.innerHTML = `<strong>${escapeHtml(addr.area || 'Lahore')}</strong> (${escapeHtml(addr.zoneTag || '')})<br>${escapeHtml(addr.fullAddress || '')}<br><span style="color:#64748b; font-size:11px;">Landmark: ${escapeHtml(addr.landmark || 'None')}</span>`;
+      
+      if (notesEl) notesEl.innerHTML = `Preferred Window: <strong>${escapeHtml(booking.preferredVisitWindow || 'Flexible')}</strong><br>${booking.preferredDate ? 'Specific Date: <strong>' + escapeHtml(booking.preferredDate) + '</strong><br>' : ''}Customer Notes: <em>${escapeHtml(booking.customerNotes || 'None')}</em>`;
 
-      if (statusSelect) statusSelect.value = booking.status || 'New Request';
-      if (repSelect) repSelect.value = booking.assignedRep || '';
-      if (orderIdInput) orderIdInput.value = booking.shopifyOrderId || '';
+      const totalVal = booking.confirmedOrderTotal;
+      const verifiedVal = booking.verifiedAmountReceived || (booking.advancePaymentStatus === 'Advance Paid' ? 3000 : 0);
+      const remainingVal = totalVal ? Math.max(0, totalVal - verifiedVal) : null;
+
+      if (accEl) {
+        if (totalVal) {
+          accEl.innerHTML = `
+            Confirmed Order Total: <strong>PKR ${totalVal.toLocaleString()}</strong><br>
+            Advance Status: <strong>${escapeHtml(booking.advancePaymentStatus)}</strong> (Verified: PKR ${verifiedVal.toLocaleString()})<br>
+            <span style="color:#008779; font-weight:700;">Remaining Balance Due: PKR ${remainingVal.toLocaleString()}</span><br>
+            <span style="font-size:10px; color:#64748b;">Formula: Confirmed Total (${totalVal.toLocaleString()}) − Verified Deposit (${verifiedVal.toLocaleString()})</span>
+          `;
+        } else {
+          accEl.innerHTML = `
+            Confirmed Order Total: <span style="color:#64748b; font-style:italic;">Pending In-Person Visit (Min. PKR 25,000)</span><br>
+            Advance Status: <strong>${escapeHtml(booking.advancePaymentStatus)}</strong> (Verified: PKR ${verifiedVal.toLocaleString()})<br>
+            <span style="color:#008779; font-weight:700;">Remaining Balance: Calculated upon final order creation</span><br>
+            <span style="font-size:10px; color:#64748b;">The PKR 3,000 advance will be credited toward the final order total.</span>
+          `;
+        }
+      }
+
+      if (repInput) repInput.value = booking.representativeName || '';
+      if (visitInput) visitInput.value = booking.visitTime || '';
+      if (reqsInput) reqsInput.value = booking.agreedRequirements || '';
+      if (confirmedTotalInput) confirmedTotalInput.value = booking.confirmedOrderTotal || '';
+      if (linkedOrderInput) linkedOrderInput.value = booking.linkedShopifyOrderId || '';
+
+      if (statusSelect) statusSelect.value = booking.lifecycleStatus || 'New Request';
+      if (advStatusSelect) advStatusSelect.value = booking.advancePaymentStatus || 'Awaiting Advance Payment';
 
       renderAdminDetailLogs(booking);
       pane.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+
+    window.handleAdminAdvStatusChange = function(newStatus) {
+      if (!currentAdminDetailBookingId) return;
+      const confirmedTotalInput = document.getElementById('ss-admin-detail-confirmed-total');
+      const total = Number(confirmedTotalInput?.value) || 0;
+      const verified = newStatus === 'Advance Paid' ? 3000 : 0;
+      const accEl = document.getElementById('ss-admin-detail-accounting');
+
+      if (accEl) {
+        if (total > 0) {
+          const remaining = Math.max(0, total - verified);
+          accEl.innerHTML = `
+            Confirmed Order Total: <strong>PKR ${total.toLocaleString()}</strong><br>
+            Advance Status: <strong>${escapeHtml(newStatus)}</strong> (Verified: PKR ${verified.toLocaleString()})<br>
+            <span style="color:#008779; font-weight:700;">Remaining Balance Due: PKR ${remaining.toLocaleString()}</span><br>
+            <span style="font-size:10px; color:#64748b;">Formula: Confirmed Total (${total.toLocaleString()}) − Verified Deposit (${verified.toLocaleString()})</span>
+          `;
+        } else {
+          accEl.innerHTML = `
+            Confirmed Order Total: <span style="color:#64748b; font-style:italic;">Pending In-Person Visit (Min. PKR 25,000)</span><br>
+            Advance Status: <strong>${escapeHtml(newStatus)}</strong> (Verified: PKR ${verified.toLocaleString()})<br>
+            <span style="color:#008779; font-weight:700;">Remaining Balance: Calculated upon final order creation</span>
+          `;
+        }
+      }
+    };
+
+    window.handleAdminTotalChange = function(newTotalStr) {
+      if (!currentAdminDetailBookingId) return;
+      const advStatusSelect = document.getElementById('ss-admin-detail-adv-status-select');
+      const total = Number(newTotalStr) || 0;
+      const verified = advStatusSelect?.value === 'Advance Paid' ? 3000 : 0;
+      const accEl = document.getElementById('ss-admin-detail-accounting');
+
+      if (accEl) {
+        if (total > 0) {
+          const remaining = Math.max(0, total - verified);
+          accEl.innerHTML = `
+            Confirmed Order Total: <strong>PKR ${total.toLocaleString()}</strong><br>
+            Advance Status: <strong>${escapeHtml(advStatusSelect?.value || 'Awaiting Advance Payment')}</strong> (Verified: PKR ${verified.toLocaleString()})<br>
+            <span style="color:#008779; font-weight:700;">Remaining Balance Due: PKR ${remaining.toLocaleString()}</span><br>
+            <span style="font-size:10px; color:#64748b;">Formula: Confirmed Total (${total.toLocaleString()}) − Verified Deposit (${verified.toLocaleString()})</span>
+          `;
+        } else {
+          accEl.innerHTML = `
+            Confirmed Order Total: <span style="color:#64748b; font-style:italic;">Pending In-Person Visit (Min. PKR 25,000)</span><br>
+            Advance Status: <strong>${escapeHtml(advStatusSelect?.value || 'Awaiting Advance Payment')}</strong> (Verified: PKR ${verified.toLocaleString()})<br>
+            <span style="color:#008779; font-weight:700;">Remaining Balance: Calculated upon final order creation</span>
+          `;
+        }
+      }
     };
 
     function renderAdminDetailLogs(booking) {
@@ -5091,7 +5574,7 @@
       booking.adminNotes.unshift({
         timestamp: new Date().toISOString(),
         note: text,
-        author: 'Concierge Staff'
+        author: 'Staff Concierge'
       });
       booking.updatedAt = new Date().toISOString();
 
@@ -5103,52 +5586,61 @@
     window.saveAdminBookingChanges = function() {
       if (!currentAdminDetailBookingId) return;
       const statusSelect = document.getElementById('ss-admin-detail-status-select');
-      const repSelect = document.getElementById('ss-admin-detail-rep-select');
-      const orderIdInput = document.getElementById('ss-admin-detail-order-id');
+      const advStatusSelect = document.getElementById('ss-admin-detail-adv-status-select');
+      const confirmedTotalInput = document.getElementById('ss-admin-detail-confirmed-total');
+      const repInput = document.getElementById('ss-admin-rep-name');
+      const visitInput = document.getElementById('ss-admin-visit-time');
+      const reqsInput = document.getElementById('ss-admin-agreed-reqs');
+      const linkedOrderInput = document.getElementById('ss-admin-linked-order');
 
       const newStatus = statusSelect?.value || 'New Request';
-      const newRep = repSelect?.value || '';
-      const newOrderId = orderIdInput?.value.trim() || '';
+      const newAdvStatus = advStatusSelect?.value || 'Awaiting Advance Payment';
+      const newTotal = confirmedTotalInput?.value ? Number(confirmedTotalInput.value) : null;
+      const newVerified = newAdvStatus === 'Advance Paid' ? 3000 : 0;
+      const newBalance = newTotal ? Math.max(0, newTotal - newVerified) : null;
 
       const bookings = getStoredBookings();
       const booking = bookings.find(b => b.id === currentAdminDetailBookingId);
       if (!booking) return;
 
       const nowIso = new Date().toISOString();
-      if (booking.status !== newStatus) {
+      if (booking.lifecycleStatus !== newStatus || booking.advancePaymentStatus !== newAdvStatus) {
         if (!booking.statusHistory) booking.statusHistory = [];
         booking.statusHistory.unshift({
           timestamp: nowIso,
-          fromStatus: booking.status,
-          toStatus: newStatus,
-          note: `Status changed from ${booking.status} to ${newStatus}`,
+          fromStatus: `${booking.lifecycleStatus} / ${booking.advancePaymentStatus}`,
+          toStatus: `${newStatus} / ${newAdvStatus}`,
+          note: `Status updated. Confirmed total: ${newTotal ? 'PKR ' + newTotal.toLocaleString() : 'Pending'}, Remaining: ${newBalance !== null ? 'PKR ' + newBalance.toLocaleString() : 'Pending'}`,
           updatedBy: 'Admin Representative'
         });
-        booking.status = newStatus;
       }
 
-      booking.assignedRep = newRep;
-      booking.shopifyOrderId = newOrderId;
+      booking.lifecycleStatus = newStatus;
+      booking.advancePaymentStatus = newAdvStatus;
+      booking.verifiedAmountReceived = newVerified;
+      booking.representativeName = repInput?.value.trim() || '';
+      booking.visitTime = visitInput?.value.trim() || '';
+      booking.agreedRequirements = reqsInput?.value.trim() || '';
+      booking.confirmedOrderTotal = newTotal;
+      booking.linkedShopifyOrderId = linkedOrderInput?.value.trim() || '';
+      booking.remainingBalance = newBalance;
       booking.updatedAt = nowIso;
 
       saveStoredBookings(bookings);
       window.renderAdminBookingList();
       window.openAdminBookingDetail(currentAdminDetailBookingId);
-      alert(`Booking ${currentAdminDetailBookingId} updated successfully.`);
+      alert(`Home Service order ${currentAdminDetailBookingId} updated successfully.\nLifecycle: ${newStatus}\nRemaining Balance: ${newBalance !== null ? 'PKR ' + newBalance.toLocaleString() : 'Pending final order creation'}`);
     };
 
-    window.createOrderFromBooking = function() {
-      if (!currentAdminDetailBookingId) return;
-      const bookings = getStoredBookings();
-      const booking = bookings.find(b => b.id === currentAdminDetailBookingId);
-      if (!booking) return;
-
-      // Close modal and open Product Studio
-      window.closeSelfServiceAdminModal();
-      window.openProductStudio('sprinter-athletic-set');
-
-      alert(`Product Studio opened for ${booking.fullName}.\n\nRequirements:\n- Preferred Series: ${booking.preferredSeries}\n- Needs: ${(booking.selectedNeeds || []).join(', ')}\n- Notes: ${booking.specialNotes || 'Standard'}\n\nRepresentative may now choose colours, confirm sizes, alterations and add to cart.`);
-    };
+    // Auto-init Home Service on document load if view is present
+    if (typeof document !== 'undefined') {
+      document.addEventListener('DOMContentLoaded', () => {
+        const portal = document.getElementById('view-self-service');
+        if (portal) {
+          window.initHomeServicePortal();
+        }
+      });
+    }
 
   })();
 </script>
@@ -5436,13 +5928,13 @@
       "type": "text",
       "id": "self_service_fee_title",
       "label": "Visit Fee Title",
-      "default": "Representative Visit Service Fee: Rs. 500"
+      "default": "Home Service Advance Deposit: PKR 3,000"
     },
     {
       "type": "textarea",
       "id": "self_service_fee_policy",
       "label": "Visit Fee Policy & Terms",
-      "default": "A nominal Rs. 500 consultation fee applies for in-person representative travel and sizing in Lahore. This fee is 100% adjustable against orders over Rs. 10,000."
+      "default": "A PKR 3,000 advance payment applies for in-person sizing in Lahore. This fee is 100% adjustable against your final order total (Min. order PKR 25,000)."
     },
     {
       "type": "text",

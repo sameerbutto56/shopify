@@ -40,101 +40,179 @@
     <div class="slideshow-track" id="enamels-slideshow-track">
       {% if slide_blocks_count > 0 %}
         {% for block in section.blocks %}
-          {% if block.type == 'slide' %}
-            <a href="{{ block.settings.link | default: '#collection-sprinter' }}" class="slide-panel" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
-              {% if block.settings.image != blank %}
-                <picture>
-                  {% if block.settings.image_mobile != blank %}
-                    <source media="(max-width: 640px)" srcset="{{ block.settings.image_mobile | image_url: width: 800 }}">
-                  {% endif %}
-                  <img
-                    src="{{ block.settings.image | image_url: width: 1600 }}"
-                    alt="{{ block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape }}"
-                    class="slide-img-full"
-                    width="{{ block.settings.image.width }}"
-                    height="{{ block.settings.image.height }}"
-                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                  />
-                </picture>
-              {% else %}
-                <img
-                  src="{{ 'banner-autumn.jpg' | asset_url }}"
-                  alt="{{ block.settings.alt | default: 'Enamels Medical Apparel' | escape }}"
-                  class="slide-img-full"
-                  width="1500"
-                  height="575"
-                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                />
-              {% endif %}
-              {% if block.settings.title != blank or block.settings.subtitle != blank %}
-                <div class="slide-caption-overlay">
-                  {% if block.settings.title != blank %}<h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>{% endif %}
-                  {% if block.settings.subtitle != blank %}<p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>{% endif %}
-                </div>
-              {% endif %}
-            </a>
+          {% if block.type == 'slide' and block.settings.visible != false %}
+            {%- liquid
+              assign has_title = false
+              if block.settings.title != blank
+                assign has_title = true
+              endif
+
+              assign has_caption = false
+              if block.settings.subtitle != blank
+                assign has_caption = true
+              endif
+
+              assign has_button = false
+              if block.settings.button_label != blank
+                assign has_button = true
+              endif
+
+              assign has_content = false
+              if has_title or has_caption or has_button
+                assign has_content = true
+              endif
+
+              assign slide_link = block.settings.link | default: block.settings.button_link | default: '#collection-sprinter'
+              assign button_target = block.settings.button_link | default: block.settings.link | default: '#collection-sprinter'
+              assign focal_point = block.settings.image_focal_point | default: 'center'
+              assign caption_pos_desk = block.settings.caption_position | default: 'center_left'
+              assign caption_pos_mob = block.settings.caption_position_mobile | default: 'bottom'
+              assign text_align = block.settings.text_align | default: 'left'
+              assign caption_style = block.settings.caption_style | default: 'subtle_glass'
+              assign text_color = block.settings.text_color | default: '#ffffff'
+              assign button_style = block.settings.button_style | default: 'primary_teal'
+              assign alt_text = block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape
+            -%}
+            <div class="slide-panel" id="shopify-block-{{ block.id }}" data-slide-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              <div class="slide-media-wrap">
+                {% if slide_link != blank and has_button == false %}
+                  <a href="{{ slide_link }}" class="slide-media-link" aria-label="{{ alt_text }}">
+                {% endif %}
+
+                {% if block.settings.image != blank %}
+                  <picture class="slide-picture">
+                    {% if block.settings.image_mobile != blank %}
+                      <source media="(max-width: 767px)" srcset="{{ block.settings.image_mobile | image_url: width: 900 }}">
+                    {% endif %}
+                    <img
+                      src="{{ block.settings.image | image_url: width: 1800 }}"
+                      alt="{{ alt_text }}"
+                      class="slide-img-full"
+                      width="{{ block.settings.image.width }}"
+                      height="{{ block.settings.image.height }}"
+                      style="object-position: {{ focal_point }};"
+                      loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    />
+                  </picture>
+                {% else %}
+                  <picture class="slide-picture">
+                    <img
+                      src="{{ 'banner-autumn.jpg' | asset_url }}"
+                      alt="{{ alt_text }}"
+                      class="slide-img-full"
+                      width="1500"
+                      height="575"
+                      style="object-position: {{ focal_point }};"
+                      loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    />
+                  </picture>
+                {% endif %}
+
+                {% if slide_link != blank and has_button == false %}
+                  </a>
+                {% endif %}
+
+                {% if has_content %}
+                  <div class="slide-caption-overlay pos-{{ caption_pos_desk }} mpos-{{ caption_pos_mob }}">
+                    <div class="slide-caption-card style-{{ caption_style }} align-{{ text_align }}" style="--slide-text-color: {{ text_color }};">
+                      {% if has_title %}
+                        <h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>
+                      {% endif %}
+                      {% if has_caption %}
+                        <p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>
+                      {% endif %}
+                      {% if has_button %}
+                        <a href="{{ button_target }}" class="slide-caption-btn btn-{{ button_style }}">
+                          {{ block.settings.button_label | escape }}
+                        </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
           {% endif %}
         {% endfor %}
       {% else %}
         <!-- Slide 1: Sprinter Autumn Edition -->
-        <a href="#collection-sprinter" class="slide-panel" onclick="window.navigateToCollection('Sprinter'); return false;">
-          <img
-            src="{{ 'banner-autumn.jpg' | asset_url }}"
-            alt="Enamels Sprinter Autumn Edition"
-            class="slide-img-full"
-            width="1500"
-            height="575"
-            loading="eager"
-          />
-        </a>
+        <div class="slide-panel">
+          <div class="slide-media-wrap">
+            <a href="#collection-sprinter" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('Sprinter'); return false;">
+              <img
+                src="{{ 'banner-autumn.jpg' | asset_url }}"
+                alt="Enamels Sprinter Autumn Edition"
+                class="slide-img-full"
+                width="1500"
+                height="575"
+                loading="eager"
+              />
+            </a>
+          </div>
+        </div>
 
         <!-- Slide 2: Clinical Clogs & Footwear -->
-        <a href="#collection-clogs" class="slide-panel" onclick="window.navigateToCollection('clogs', 'category'); return false;">
-          <img
-            src="{{ 'banner-clogs.jpg' | asset_url }}"
-            alt="Enamels Clinical Clogs & Footwear"
-            class="slide-img-full"
-            width="1500"
-            height="625"
-            loading="lazy"
-          />
-        </a>
+        <div class="slide-panel">
+          <div class="slide-media-wrap">
+            <a href="#collection-clogs" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('clogs', 'category'); return false;">
+              <img
+                src="{{ 'banner-clogs.jpg' | asset_url }}"
+                alt="Enamels Clinical Clogs & Footwear"
+                class="slide-img-full"
+                width="1500"
+                height="625"
+                loading="lazy"
+              />
+            </a>
+          </div>
+        </div>
 
         <!-- Slide 3: New Arrivals / Abbotabad Banner -->
-        <a href="#collection-new-arrivals" class="slide-panel" onclick="window.navigateToCollection('all', 'category'); return false;">
-          <img
-            src="{{ 'banner-abbotabad.jpg' | asset_url }}"
-            alt="Enamels New Arrivals 2026"
-            class="slide-img-full"
-            width="1500"
-            height="575"
-            loading="lazy"
-          />
-        </a>
+        <div class="slide-panel">
+          <div class="slide-media-wrap">
+            <a href="#collection-new-arrivals" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('all', 'category'); return false;">
+              <img
+                src="{{ 'banner-abbotabad.jpg' | asset_url }}"
+                alt="Enamels New Arrivals 2026"
+                class="slide-img-full"
+                width="1500"
+                height="575"
+                loading="lazy"
+              />
+            </a>
+          </div>
+        </div>
 
         <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
-        <a href="#collection-caps" class="slide-panel" onclick="window.navigateToCollection('caps', 'category'); return false;">
-          <img
-            src="{{ 'banner-caps.jpg' | asset_url }}"
-            alt="Enamels BunFit Surgical Caps"
-            class="slide-img-full"
-            width="1500"
-            height="575"
-            loading="lazy"
-          />
-        </a>
+        <div class="slide-panel">
+          <div class="slide-media-wrap">
+            <a href="#collection-caps" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('caps', 'category'); return false;">
+              <img
+                src="{{ 'banner-caps.jpg' | asset_url }}"
+                alt="Enamels BunFit Surgical Caps"
+                class="slide-img-full"
+                width="1500"
+                height="575"
+                loading="lazy"
+              />
+            </a>
+          </div>
+        </div>
 
         <!-- Slide 5: Velora By Enamels -->
-        <a href="#collection-velora" class="slide-panel" onclick="window.navigateToCollection('Velora'); return false;">
-          <img
-            src="{{ 'banner-velora.jpg' | asset_url }}"
-            alt="Velora Luxury Micro-Drape By Enamels"
-            class="slide-img-full"
-            width="1500"
-            height="575"
-            loading="lazy"
-          />
-        </a>
+        <div class="slide-panel">
+          <div class="slide-media-wrap">
+            <a href="#collection-velora" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('Velora'); return false;">
+              <img
+                src="{{ 'banner-velora.jpg' | asset_url }}"
+                alt="Velora Luxury Micro-Drape By Enamels"
+                class="slide-img-full"
+                width="1500"
+                height="575"
+                loading="lazy"
+              />
+            </a>
+          </div>
+        </div>
       {% endif %}
     </div>
 
@@ -496,14 +574,14 @@
             <span>🪡 Embroidery & Logo Setup</span>
           </div>
           <div class="home-service-hl-item">
-            <span>💵 Nominal Rs. 500 Visit Fee (100% Adjustable Against Order)</span>
+            <span>💵 PKR 3,000 Advance (Adjustable Against PKR 25,000 Min. Order)</span>
           </div>
         </div>
         <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
           <button type="button" class="btn-card-action" onclick="window.navigateToView('self-service')" style="width: auto; padding: 14px 28px; font-size: 14px; font-weight: 700; background: #008779; color: #ffffff;">
-            Book a Representative Visit →
+            Book Home Service (Lahore) →
           </button>
-          <span style="font-size: 12px; color: #64748b;">Rs. 500 consultation fee • Fully credited towards your order</span>
+          <span style="font-size: 12px; color: #64748b;">Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only</span>
         </div>
       </div>
       <div class="home-service-banner-media">

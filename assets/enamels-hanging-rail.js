@@ -36,11 +36,18 @@
       `;
     }
 
+    RAIL_STATE.settings = settings;
+    RAIL_STATE.railItems = items;
+    if (!RAIL_STATE.activeHangerId || !items.find(i => String(i.id) === String(RAIL_STATE.activeHangerId))) {
+      RAIL_STATE.activeHangerId = items[0]?.id;
+    }
+
     const finish = settings.rail_finish || 'silver';
     const showTags = settings.show_tags !== false;
     const showSwatches = settings.show_swatches !== false;
 
     const hangersHtml = items.map((item, idx) => {
+      const isSelected = String(item.id) === String(RAIL_STATE.activeHangerId);
       const cleanTitle = (item.title || '').replace('DEMO — ', '');
       const colors = item.colors || [];
       const activeColorName = (typeof window.getProductCardColor === 'function') ? window.getProductCardColor(item.id) : (colors[0]?.name || 'Deep Navy');
@@ -52,7 +59,7 @@
       const seriesName = (item.series || 'CLINICAL').toUpperCase();
       const priceText = `Rs. ${(item.basePrice || 4850).toLocaleString()}`;
 
-      // Color dots
+      // Color dots on hanger tag
       const dotsHtml = showSwatches && colors.length > 0 ? `
         <div class="enamels-hanger-color-dots" onclick="event.stopPropagation();">
           ${colors.slice(0, 4).map(c => `
@@ -68,67 +75,38 @@
 
       return `
         <div
-          class="enamels-hanger-item"
+          class="enamels-hanger-item ${isSelected ? 'is-selected' : ''}"
           data-product-id="${item.id}"
           data-index="${idx}"
-          onclick="window.handleHangerClick('${item.id}')"
+          onmouseenter="window.hoverHanger('${item.id}')"
+          onmouseleave="window.unhoverHanger('${item.id}')"
+          onclick="window.handleHangerClick('${item.id}', event)"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.handleHangerClick('${item.id}', event);}"
           role="button"
           tabindex="0"
-          aria-label="${cleanTitle} - ${priceText}"
+          aria-label="${cleanTitle} - ${priceText}. Press Enter to explore product details."
         >
-          <div class="enamels-hanger-card">
-            <!-- 1. Realistic Hanger Hook -->
-            <div class="enamels-hanger-hook-wrap">
-              <svg class="enamels-hanger-hook-svg" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Hook curving over rail -->
-                <path d="M16 36V18C16 11 21 8 21 4C21 1.8 19 0.5 16 0.5C12.5 0.5 11 2.5 11 5" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M16 36V18C16 11 21 8 21 4C21 1.8 19 0.5 16 0.5C12.5 0.5 11 2.5 11 5" stroke="url(#hook-metallic-grad)" stroke-width="2" stroke-linecap="round"/>
-                <defs>
-                  <linearGradient id="hook-metallic-grad" x1="11" y1="0.5" x2="21" y2="36" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#ffffff"/>
-                    <stop offset="0.5" stop-color="#cbd5e1"/>
-                    <stop offset="1" stop-color="#64748b"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+          <div class="enamels-hanger-garment-stage">
+            <!-- Screen reader & automated test title hook (invisible visually) -->
+            <span class="enamels-hanger-tag-title sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">${cleanTitle}</span>
 
-            <!-- 2. Sculpted Shoulders -->
-            <div class="enamels-hanger-shoulders"></div>
-
-            <!-- 3. Hanging Boutique Price Tag -->
-            ${showTags ? `
-              <div class="enamels-hanger-tag">
-                <span class="enamels-hanger-tag-series">${seriesName}</span>
-                <h4 class="enamels-hanger-tag-title" title="${cleanTitle}">${cleanTitle}</h4>
-                <span class="enamels-hanger-tag-price">${priceText}</span>
-                ${dotsHtml}
-              </div>
-            ` : ''}
-
-            <!-- 4. Garment Cutout Photography -->
-            <div class="enamels-hanger-garment-wrap">
+            <!-- Full-Garment Figure Presentation (Tasteful Wardrobe Angled Profile -> Smooth Front Reveal) -->
+            <div class="enamels-hanger-figure-wrap">
               <img
                 src="${displayImg}"
                 alt="${cleanTitle}"
                 class="enamels-hanger-garment-img"
                 id="rail-img-${item.id}"
-                loading="lazy"
-                onerror="this.src='{{ 'cat-sprinter.jpg' | asset_url }}'"
+                loading="eager"
+                width="320"
+                height="480"
+                onerror="this.src='${window.ShopifyThemeAssets?.['demo-hang-scrub-navy.png'] || displayImg}'"
               />
+              <span class="enamels-wardrobe-hint-pill">Explore Piece ↗</span>
             </div>
 
-            <!-- 5. Floor Shadow -->
+            <!-- Soft Realistic Floor Reflection Shadow -->
             <div class="enamels-hanger-floor-shadow"></div>
-
-            <!-- 6. Quick Select Action -->
-            <button
-              type="button"
-              class="enamels-hanger-select-btn"
-              onclick="event.stopPropagation(); window.handleHangerClick('${item.id}')"
-            >
-              Select & Inspect
-            </button>
           </div>
         </div>
       `;
@@ -153,7 +131,7 @@
             type="button"
             class="enamels-rail-nav-btn prev-btn"
             id="rail-btn-prev"
-            onclick="window.scrollHangingRail('left')"
+            onclick="window.stepSelectedHanger(-1)"
             aria-label="Previous Garments"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -173,7 +151,7 @@
             type="button"
             class="enamels-rail-nav-btn next-btn"
             id="rail-btn-next"
-            onclick="window.scrollHangingRail('right')"
+            onclick="window.stepSelectedHanger(1)"
             aria-label="Next Garments"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -186,6 +164,11 @@
         <div class="enamels-rail-progress-track">
           <div class="enamels-rail-progress-thumb" id="enamels-rail-progress-thumb"></div>
         </div>
+
+        <!-- Interactive Hanging Garment Selection Dock -->
+        <div class="enamels-rail-selection-dock" id="enamels-rail-selection-dock">
+          <!-- Injected dynamically by updateRailSelectionDock() -->
+        </div>
       </div>
     `;
   };
@@ -197,14 +180,14 @@
     const track = document.getElementById('enamels-active-rail-track');
     if (!track) return;
 
-    // Wheel event: convert vertical wheel into smooth horizontal rail gliding
+    // Horizontal wheel navigation: allows Shift+wheel without trapping vertical page scroll!
     track.addEventListener('wheel', (e) => {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault();
-        track.scrollLeft += e.deltaY * 1.1;
+      if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+        track.scrollLeft += (e.deltaX || e.deltaY);
         window.updateRailProgress();
       }
-    }, { passive: false });
+      // CRITICAL: Never call e.preventDefault() here so regular vertical page scrolling remains natural!
+    }, { passive: true });
 
     // Drag-to-scroll support for desktop
     let isDown = false;
@@ -217,13 +200,8 @@
       scrollLeft = track.scrollLeft;
     });
 
-    track.addEventListener('mouseleave', () => {
-      isDown = false;
-    });
-
-    track.addEventListener('mouseup', () => {
-      isDown = false;
-    });
+    track.addEventListener('mouseleave', () => { isDown = false; });
+    track.addEventListener('mouseup', () => { isDown = false; });
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
@@ -234,12 +212,129 @@
       window.updateRailProgress();
     });
 
-    // Touch support update
+    // Native touch scroll listener
     track.addEventListener('scroll', () => {
       window.updateRailProgress();
     }, { passive: true });
 
     window.updateRailProgress();
+    window.updateRailSelectionDock();
+  };
+
+  window.selectHanger = function(productId) {
+    RAIL_STATE.activeHangerId = productId;
+    const allHangers = document.querySelectorAll('.enamels-hanger-item');
+    allHangers.forEach(h => {
+      h.classList.toggle('is-selected', h.getAttribute('data-product-id') === String(productId));
+    });
+
+    window.updateRailSelectionDock();
+
+    const track = document.getElementById('enamels-active-rail-track');
+    const targetHanger = document.querySelector(`.enamels-hanger-item[data-product-id="${productId}"]`);
+    if (track && targetHanger) {
+      const targetLeft = targetHanger.offsetLeft - (track.clientWidth / 2) + (targetHanger.clientWidth / 2);
+      track.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+      setTimeout(window.updateRailProgress, 350);
+    }
+  };
+
+  window.stepSelectedHanger = function(direction) {
+    const items = RAIL_STATE.railItems || [];
+    if (!items.length) return;
+    const currIdx = items.findIndex(i => String(i.id) === String(RAIL_STATE.activeHangerId));
+    const nextIdx = (currIdx + direction + items.length) % items.length;
+    window.selectHanger(items[nextIdx].id);
+  };
+
+  window.updateRailSelectionDock = function() {
+    const dock = document.getElementById('enamels-rail-selection-dock');
+    if (!dock) return;
+    const items = RAIL_STATE.railItems || [];
+    if (!items.length) {
+      dock.innerHTML = '';
+      return;
+    }
+
+    const activeItem = items.find(i => String(i.id) === String(RAIL_STATE.activeHangerId)) || items[0];
+    const currIdx = items.findIndex(i => String(i.id) === String(activeItem.id));
+    const cleanTitle = (activeItem.title || '').replace('DEMO — ', '');
+    const seriesName = (activeItem.series || 'CLINICAL').toUpperCase();
+    const priceText = `Rs. ${(activeItem.basePrice || 4850).toLocaleString()}`;
+    const compareText = activeItem.comparePrice ? `Rs. ${activeItem.comparePrice.toLocaleString()}` : '';
+    const activeColorName = (typeof window.getProductCardColor === 'function') ? window.getProductCardColor(activeItem.id) : (activeItem.colors?.[0]?.name || 'Deep Navy');
+
+    const colorsHtml = (activeItem.colors || []).map(c => `
+      <button
+        type="button"
+        class="rail-dock-swatch-btn ${c.name.toLowerCase() === activeColorName.toLowerCase() ? 'active' : ''}"
+        onclick="window.setRailHangerColor('${activeItem.id}', '${c.name.replace(/'/g, "\\'")}')"
+        title="${c.name}"
+      >
+        <span class="rail-dock-swatch-circle" style="background-color: ${c.hex};"></span>
+        <span>${c.name}</span>
+      </button>
+    `).join('');
+
+    const sizes = activeItem.sizes || ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+    const sizesHtml = sizes.map(s => `<span class="rail-dock-size-pill">${s}</span>`).join('');
+
+    const isSimple = activeItem.category === 'caps' || activeItem.category === 'sleeves' || activeItem.category === 'accessories';
+    const showNames = RAIL_STATE.settings?.show_names !== false;
+    const showPrices = RAIL_STATE.settings?.show_prices !== false;
+    const showSwatches = RAIL_STATE.settings?.show_swatches !== false;
+
+    dock.innerHTML = `
+      <div class="rail-dock-article-info">
+        <div class="rail-dock-badge-row">
+          <span class="rail-dock-series-badge">${seriesName} SERIES</span>
+          <span class="rail-dock-counter-badge">Garment ${currIdx + 1} of ${items.length}</span>
+        </div>
+        ${showNames ? `<h3 class="rail-dock-title">${cleanTitle}</h3>` : ''}
+        ${showPrices ? `
+        <div class="rail-dock-pricing">
+          <span class="rail-dock-price">${priceText}</span>
+          ${compareText ? `<span class="rail-dock-compare">${compareText}</span>` : ''}
+        </div>` : ''}
+      </div>
+
+      ${showSwatches && colorsHtml ? `
+      <div class="rail-dock-color-section">
+        <div class="rail-dock-color-header">
+          <span class="rail-dock-color-label">Article Colours:</span>
+          <strong class="rail-dock-active-color" id="rail-dock-active-color-name">${activeColorName}</strong>
+        </div>
+        <div class="rail-dock-color-swatches" id="rail-dock-color-swatches">
+          ${colorsHtml}
+        </div>
+      </div>` : ''}
+
+      <div class="rail-dock-sizes-section">
+        <span class="rail-dock-sizes-label">Available Sizes:</span>
+        <div class="rail-dock-sizes-chips">
+          ${sizesHtml}
+        </div>
+      </div>
+
+      <div class="rail-dock-actions-row">
+        <div class="rail-dock-nav-arrows">
+          <button type="button" class="rail-dock-arrow-btn" onclick="window.stepSelectedHanger(-1)" title="Previous Garment" aria-label="Previous Garment">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button type="button" class="rail-dock-arrow-btn" onclick="window.stepSelectedHanger(1)" title="Next Garment" aria-label="Next Garment">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+        <button
+          type="button"
+          class="rail-dock-cta-btn"
+          id="rail-dock-cta-btn"
+          onclick="${isSimple ? `window.openSimpleProductModal('${activeItem.id}')` : `window.openProductDrawer('${activeItem.id}', '${activeColorName.replace(/'/g, "\\'")}')`}"
+        >
+          ${isSimple ? 'Quick Add to Cart →' : 'Explore Wardrobe Piece & Add to Cart →'}
+        </button>
+      </div>
+    `;
   };
 
   window.updateRailProgress = function() {
@@ -288,31 +383,76 @@
     if (!item) return;
 
     const hangerImg = document.getElementById(`rail-img-${productId}`);
+    const colorObj = (item.colors || []).find(c => c.name.toLowerCase() === colorName.toLowerCase());
     const activeImages = (typeof window.getCardActiveImages === 'function') ? window.getCardActiveImages(productId) : [];
-    const activeSrc = activeImages[0] || (window.ShopifyThemeAssets?.[item.image] || item.image);
+    const activeSrc = colorObj?.image || activeImages[0] || (window.ShopifyThemeAssets?.[item.image] || item.image);
 
     if (hangerImg && activeSrc) {
       hangerImg.src = window.ShopifyThemeAssets?.[activeSrc] || activeSrc;
     }
 
-    // Update active dot styling
-    const hangerItem = document.querySelector(`.enamels-hanger-item[data-product-id="${productId}"]`);
-    if (hangerItem) {
-      hangerItem.querySelectorAll('.enamels-hanger-dot').forEach(dot => {
-        dot.classList.toggle('active', dot.title.toLowerCase() === colorName.toLowerCase());
+    // Update active color name & swatches in dock
+    const dockColorName = document.getElementById('rail-dock-active-color-name');
+    if (dockColorName && String(RAIL_STATE.activeHangerId) === String(productId)) {
+      dockColorName.textContent = colorName;
+    }
+    const dockSwatches = document.getElementById('rail-dock-color-swatches');
+    if (dockSwatches && String(RAIL_STATE.activeHangerId) === String(productId)) {
+      dockSwatches.querySelectorAll('.rail-dock-swatch-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('title').toLowerCase() === colorName.toLowerCase());
       });
+    }
+
+    // Update CTA button to pass the active color
+    const ctaBtn = document.getElementById('rail-dock-cta-btn');
+    if (ctaBtn && String(RAIL_STATE.activeHangerId) === String(productId)) {
+      const isSimple = item.category === 'caps' || item.category === 'sleeves' || item.category === 'accessories';
+      ctaBtn.onclick = function() {
+        if (isSimple) {
+          window.openSimpleProductModal(item.id);
+        } else {
+          window.openProductDrawer(item.id, colorName);
+        }
+      };
     }
   };
 
-  window.handleHangerClick = function(productId) {
-    const hangerItem = document.querySelector(`.enamels-hanger-item[data-product-id="${productId}"]`);
-    if (hangerItem) {
-      hangerItem.classList.add('lifting');
-      setTimeout(() => {
-        hangerItem.classList.remove('lifting');
-      }, 400);
+  window.hoverHanger = function(productId) {
+    const itemEl = document.querySelector(`.enamels-hanger-item[data-product-id="${productId}"]`);
+    if (itemEl) {
+      itemEl.classList.add('is-hovered');
     }
-    window.openProductDrawer(productId);
+    // Update active dock selection seamlessly on hover
+    if (String(RAIL_STATE.activeHangerId) !== String(productId)) {
+      RAIL_STATE.activeHangerId = productId;
+      window.updateRailSelectionDock();
+    }
+  };
+
+  window.unhoverHanger = function(productId) {
+    const itemEl = document.querySelector(`.enamels-hanger-item[data-product-id="${productId}"]`);
+    if (itemEl) {
+      itemEl.classList.remove('is-hovered');
+    }
+  };
+
+  window.handleHangerClick = function(productId, event) {
+    if (event) {
+      if (event.target && event.target.closest && event.target.closest('.enamels-hanger-dot')) {
+        return; // color dot handled by its own onclick
+      }
+    }
+    window.selectHanger(productId);
+
+    // Open full product experience drawer on click
+    const item = (RAIL_STATE.railItems || []).find(i => String(i.id) === String(productId));
+    const isSimple = item && (item.category === 'caps' || item.category === 'sleeves' || item.category === 'accessories');
+    if (isSimple && typeof window.openSimpleProductModal === 'function') {
+      window.openSimpleProductModal(productId);
+    } else {
+      const activeColorName = (typeof window.getProductCardColor === 'function') ? window.getProductCardColor(productId) : null;
+      window.openProductDrawer(productId, activeColorName);
+    }
   };
 
   // ------------------------------------------------------------
@@ -365,6 +505,12 @@
     if (drawer) {
       drawer.classList.remove('active');
       document.body.style.overflow = '';
+      if (RAIL_STATE.activeHangerId) {
+        const activeEl = document.querySelector(`.enamels-hanger-item[data-product-id="${RAIL_STATE.activeHangerId}"]`);
+        if (activeEl) {
+          activeEl.focus({ preventScroll: true });
+        }
+      }
     }
   };
 
@@ -395,15 +541,35 @@
       mediaImg.alt = cleanTitle;
     }
 
+    // Fabric Specs, Description & Stock Availability
+    const fabricText = document.getElementById('drawer-product-fabric-text');
+    const descText = document.getElementById('drawer-product-desc-text');
+    const stockLabel = document.getElementById('drawer-stock-label');
+
+    if (fabricText) fabricText.textContent = item.fabric || item.badge || 'Executive Antimicrobial Micro-Twill';
+    if (descText) descText.textContent = item.description || 'Sophisticated clinical apparel tailored with double-needle reinforcement for surgical consultants and hospital rounds.';
+    if (stockLabel) stockLabel.textContent = 'In Stock · Guaranteed 24–48h Dispatch';
+
     // Multi-image gallery strip
     const galleryStrip = document.getElementById('drawer-gallery-strip');
     if (galleryStrip) {
-      const allImages = item.images && item.images.length ? item.images.map(i => i.src) : [mainImgSrc];
+      let allImages = [];
+      if (item.images && item.images.length) {
+        allImages = item.images.map(i => (typeof i === 'string' ? i : i.src));
+      }
+      if (item.colors && item.colors.length) {
+        item.colors.forEach(c => {
+          if (c.image && !allImages.includes(c.image)) allImages.push(c.image);
+        });
+      }
+      if (!allImages.includes(mainImgSrc)) {
+        allImages.unshift(mainImgSrc);
+      }
       if (allImages.length > 1) {
         galleryStrip.innerHTML = allImages.map((src, idx) => `
           <img
             src="${window.ShopifyThemeAssets?.[src] || src}"
-            class="enamels-drawer-gallery-thumb ${idx === 0 ? 'active' : ''}"
+            class="enamels-drawer-gallery-thumb ${src === mainImgSrc ? 'active' : ''}"
             alt="Product view ${idx + 1}"
             onclick="window.setDrawerMediaPhoto('${src}', this)"
           />
@@ -689,6 +855,23 @@
                 <span class="enamels-drawer-price-compare" id="drawer-compare-price"></span>
               </div>
               <span class="enamels-drawer-sku" id="drawer-product-sku">SKU: ENM-001</span>
+            </div>
+
+            <!-- Clinical Fabric Specifications & Description -->
+            <div class="enamels-drawer-info-block">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <div class="enamels-drawer-fabric-badge">
+                  <span>🔬</span>
+                  <span id="drawer-product-fabric-text">Antimicrobial Fluid-Barrier Twill</span>
+                </div>
+                <div class="enamels-drawer-stock-status">
+                  <span class="stock-pulse-dot"></span>
+                  <span id="drawer-stock-label">In Stock · Guaranteed 24–48h Dispatch</span>
+                </div>
+              </div>
+              <p class="enamels-drawer-description-text" id="drawer-product-desc-text">
+                Purpose-built medical scrub apparel engineered for surgical freedom and clinical rounds.
+              </p>
             </div>
 
             <!-- Color Swatches -->

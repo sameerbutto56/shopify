@@ -13,15 +13,181 @@
   "class": "enamels-homeservice-section-wrapper",
   "settings": [
     {
+      "type": "header",
+      "content": "Service Presentation & Headings"
+    },
+    {
       "type": "text",
       "id": "heading",
-      "label": "Portal Heading",
-      "default": "Book Lahore Home Service Visit"
+      "label": "Portal Main Heading",
+      "default": "Enamels Home Service — Sizing & Uniform Consultation"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Service Explanation",
+      "default": "Experience personalized medical uniform fitting at your hospital, clinic, or residence in Lahore. An authorized Enamels representative visits with sample sizing garments, genuine textile swatch rings, and embroidery consultation to assess your exact requirements and take precision measurements in person."
+    },
+    {
+      "type": "header",
+      "content": "Pricing & Policy Configuration"
+    },
+    {
+      "type": "number",
+      "id": "min_order_value",
+      "label": "Minimum Qualifying Order Value (PKR)",
+      "default": 25000
+    },
+    {
+      "type": "number",
+      "id": "advance_amount",
+      "label": "Required Advance Booking Deposit (PKR)",
+      "default": 3000
+    },
+    {
+      "type": "text",
+      "id": "advance_explanation",
+      "label": "Advance Deposit Adjustment Explanation",
+      "default": "100% adjustable against your final order total. It is not an additional service charge."
+    },
+    {
+      "type": "text",
+      "id": "service_area_notice",
+      "label": "Service Area Coverage Notice",
+      "default": "Service is provided exclusively to administrator-approved Lahore medical zones and healthcare corridors."
+    },
+    {
+      "type": "text",
+      "id": "confirmation_message",
+      "label": "Customer Care Next-Step Message",
+      "default": "Our Customer Care team will contact you directly to confirm visit slot, venue, and consultation details."
+    },
+    {
+      "type": "header",
+      "content": "Form Field Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_visit_preferences",
+      "label": "Enable Visit Timing & Slot Preferences",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_customer_notes",
+      "label": "Enable Special Instructions / Notes Field",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "approved_address",
+      "name": "Approved Lahore Location",
+      "settings": [
+        {
+          "type": "text",
+          "id": "area",
+          "label": "Area / Sector Name",
+          "default": "DHA Phase 5"
+        },
+        {
+          "type": "text",
+          "id": "zone_tag",
+          "label": "Zone Tag / Hub",
+          "default": "Sector CCA & Broadway"
+        },
+        {
+          "type": "text",
+          "id": "full_address",
+          "label": "Full Location Description",
+          "default": "Commercial Broadway & Sector CCA Enclave, DHA Phase 5, Lahore"
+        },
+        {
+          "type": "checkbox",
+          "id": "active",
+          "label": "Active Service Location",
+          "default": true
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Home Service Portal"
+      "name": "Home Service Portal",
+      "blocks": [
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "DHA Phase 5",
+            "zone_tag": "Sector CCA & Broadway",
+            "full_address": "Commercial Broadway & Sector CCA Enclave, DHA Phase 5, Lahore",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Gulberg III",
+            "zone_tag": "Main Boulevard Corridor",
+            "full_address": "Main Boulevard & MM Alam Medical Corridor, Gulberg III, Lahore",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Model Town",
+            "zone_tag": "Central Commercial & Link Rd",
+            "full_address": "Central Commercial Market & Model Town Link Road, Lahore",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Cantt / Garrison",
+            "zone_tag": "Officers Colony & Sarwar Rd",
+            "full_address": "Sarwar Road & Officers Housing Colony, Lahore Cantt",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Johar Town",
+            "zone_tag": "Doctors Hospital Medical Hub",
+            "full_address": "Doctors Hospital Medical Enclave, G1 Market, Johar Town, Lahore",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Jail Road / Shadman",
+            "zone_tag": "Services & SIMS Corridor",
+            "full_address": "Services Hospital & SIMS Academic Corridor, Jail Road, Lahore",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Ferozepur Road / Garden Town",
+            "zone_tag": "Shaikh Zayed & Children Hospital",
+            "full_address": "Shaikh Zayed & Children Hospital Healthcare Corridor, Garden Town, Lahore",
+            "active": true
+          }
+        },
+        {
+          "type": "approved_address",
+          "settings": {
+            "area": "Bahria Town",
+            "zone_tag": "Sector C Commercial Hub",
+            "full_address": "Sector C Commercial Plaza Corridor, Bahria Town, Lahore",
+            "active": true
+          }
+        }
+      ]
     }
   ]
 }

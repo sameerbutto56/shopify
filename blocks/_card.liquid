@@ -5,6 +5,7 @@
 {% capture children %}
   {% content_for 'blocks' %}
 {% endcapture %}
+{% assign stripped_children = children | strip %}
 
 {% liquid
   if block_settings.background_color != blank
@@ -17,7 +18,7 @@
 %}
 
 <div
-  class="card{% if block_settings.background_color != blank %} color-custom-{{ block.id }}{% endif %}"
+  class="card{% if block_settings.background_color != blank %} color-custom-{{ block.id }}{% endif %}{% if stripped_children == blank %} card--image-only is-image-only{% endif %}"
   ref="slides[]"
   data-carousel-card
   {{ block.shopify_attributes }}
@@ -39,7 +40,7 @@
     endif
 
     assign show_placeholder = false
-    if preview_image == blank and children == blank
+    if preview_image == blank and stripped_children == blank
       assign show_placeholder = true
     endif
 
@@ -70,7 +71,7 @@
     endif
 
     # When card has content, use auto aspect-ratio with min-height from ratio if there is media
-    if children != blank
+    if stripped_children != blank
       assign card_ratio = 'auto'
       if block_settings.background_media != 'none'
         assign has_min_height = true
@@ -93,6 +94,7 @@
     </div>
   {%- endif -%}
 
+  {%- if stripped_children != blank or request.design_mode -%}
   <div
     class="spacing-style card__content{% if has_min_height %} card__content--has-min-height{% endif %}{% if preview_image or block_settings.toggle_overlay or show_placeholder %} background-transparent{% endif %}{% if request.design_mode %} card__content--design-mode{% endif %}"
     style="--card-ratio: {{ card_ratio }}; {% if has_min_height %}--card-ratio-numeric: {{ card_ratio_numeric }};{% endif %} {% render 'spacing-style', settings: block_settings %}"
@@ -106,14 +108,27 @@
       "
       style="{% render 'layout-panel-style', settings: block_settings %}"
     >
-      {% if children != blank %}
+      {% if stripped_children != blank %}
         {{ children }}
       {% endif %}
     </div>
   </div>
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
+  .card.card--image-only .card__content:empty,
+  .card__content:empty {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .card.is-image-only {
+    min-height: auto;
+  }
+
   .card {
     position: relative;
     display: flex;

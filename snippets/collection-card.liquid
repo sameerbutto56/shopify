@@ -29,6 +29,7 @@
 {% liquid
   assign onboarding = false
   assign block_settings = block.settings
+  assign stripped_children = children | strip
 
   if collection == blank
     assign onboarding = true
@@ -47,6 +48,7 @@
     {% if section.settings.layout_type == 'bento' %}collection-card--image-height-fixed{% endif %}
     {% if section.settings.layout_type == 'editorial' %}collection-card--flexible-aspect-ratio{% endif %}
     {% if block_settings.background_color != blank %} color-custom-{{ block.id }}{% endif %}
+    {% if stripped_children == blank %} collection-card--image-only is-image-only{% endif %}
   "
   data-block-id="{{ block.id }}"
   {% if onboarding %}
@@ -70,13 +72,26 @@
   </a>
   <div class="collection-card__inner">
     {{ card_image }}
-    <div class="collection-card__content layout-panel-flex--column">
-      {{ children }}
-    </div>
+    {% if stripped_children != blank %}
+      <div class="collection-card__content layout-panel-flex--column">
+        {{ children }}
+      </div>
+    {% endif %}
   </div>
 </div>
 
 {% stylesheet %}
+  .collection-card.is-image-only .collection-card__inner,
+  .collection-card.collection-card--image-only .collection-card__inner {
+    gap: 0;
+  }
+
+  .collection-card__content:empty {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
   .collection-card {
     --fixed-card-height: var(--height-small);
 

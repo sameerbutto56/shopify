@@ -96,7 +96,7 @@
   <div {{ attributes | strip_newlines | strip }}>
     {{ fallback_text }}
   </div>
-{% elsif plain_text != blank %}
+{% elsif plain_text != blank and visible_text != blank %}
   <{{ element }} {{ attributes | strip_newlines | strip }}>
     {{ block.settings.text }}
   </{{ element }}>

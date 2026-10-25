@@ -1,18 +1,28 @@
 {% comment %}
   Enamels Modular Category Thumbnails & Brand Video Section
-  Provides category discovery tiles (Men, Women, Scrubs, Lab Coats, Caps, Accessories)
-  alongside a cinematic brand video showcase with play/pause controls and poster upload.
+  Provides category discovery tiles (Men, Women, Scrubs, Lab Coats, Caps, Accessories, Sleeves)
+  with independently editable titles, images, descriptions, links, and visibility toggles,
+  alongside customizable aspect ratio, text alignment, spacing, colors, and cinematic brand video.
 {% endcomment %}
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign col_tag = section.settings.column_tag | default: 'QUICK CATALOGUE DISCOVERY'
-  assign col_title = section.settings.column_title | default: 'Shop by Category'
-  assign col_sub = section.settings.column_sub | default: 'Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role.'
+  assign col_tag = section.settings.column_tag | strip
+  assign col_title = section.settings.column_title | strip
+  assign col_sub = section.settings.column_sub | strip
   
-  assign video_badge = section.settings.video_badge | default: 'CINEMATIC SHOWCASE'
-  assign video_title = section.settings.video_title | default: 'Engineered for Clinical Endurance'
-  assign video_desc = section.settings.video_desc | default: 'Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations.'
+  assign aspect_ratio = section.settings.aspect_ratio | default: '1_1'
+  assign text_align = section.settings.text_align | default: 'left'
+  assign pad_top = section.settings.padding_top | default: 48
+  assign pad_bottom = section.settings.padding_bottom | default: 48
+  assign section_bg = section.settings.section_bg | default: '#ffffff'
+  assign card_bg = section.settings.card_bg | default: '#ffffff'
+  assign card_text_color = section.settings.card_text_color | default: '#102a43'
+  assign meta_color = section.settings.meta_color | default: '#008779'
+
+  assign video_badge = section.settings.video_badge | strip
+  assign video_title = section.settings.video_title | strip
+  assign video_desc = section.settings.video_desc | strip
   assign video_url = section.settings.brand_video_url | default: 'https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4'
   
   if section.settings.brand_video_poster != blank
@@ -23,119 +33,207 @@
 -%}
 
 {% if enable_section %}
-<section class="split-cat-video-section page-container enamels-homepage-modular-section" id="homepage-category-video-split" aria-label="Category Selection and Brand Showcase">
+{%- style -%}
+  #shopify-section-{{ section.id }} .split-thumbnails-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumb_width_desktop | default: 140 }}px, 1fr));
+    gap: {{ section.settings.thumb_spacing | default: 12 }}px;
+  }
+  #shopify-section-{{ section.id }} .split-category-tile {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    padding: 0;
+    overflow: hidden;
+  }
+  #shopify-section-{{ section.id }} .split-category-thumb {
+    border-radius: {% if aspect_ratio == 'round' %}50%{% else %}{{ section.settings.card_border_radius | default: 12 }}px {{ section.settings.card_border_radius | default: 12 }}px 0 0{% endif %};
+    {% if aspect_ratio == 'custom' %}
+      height: {{ section.settings.thumb_height_desktop | default: 160 }}px;
+      aspect-ratio: unset;
+    {% elsif aspect_ratio == '1_1' or aspect_ratio == 'round' %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% elsif aspect_ratio == '4_5' %}
+      aspect-ratio: 4 / 5;
+      height: auto;
+    {% elsif aspect_ratio == '16_9' %}
+      aspect-ratio: 16 / 9;
+      height: auto;
+    {% elsif aspect_ratio == 'natural' %}
+      aspect-ratio: auto;
+      height: auto;
+    {% else %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .split-category-tile.is-image-only .split-category-thumb {
+    border-radius: {% if aspect_ratio == 'round' %}50%{% else %}{{ section.settings.card_border_radius | default: 12 }}px{% endif %};
+  }
+  #shopify-section-{{ section.id }} .split-category-img {
+    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
+    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+  }
+  #shopify-section-{{ section.id }} .split-category-info {
+    padding: {{ section.settings.caption_spacing | default: 10 }}px;
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .split-thumbnails-grid {
+      grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumb_width_mobile | default: 110 }}px, 1fr));
+      gap: {{ section.settings.thumb_spacing_mobile | default: 8 }}px;
+    }
+    {% if aspect_ratio == 'custom' %}
+      #shopify-section-{{ section.id }} .split-category-thumb {
+        height: {{ section.settings.thumb_height_mobile | default: 110 }}px;
+      }
+    {% endif %}
+  }
+{%- endstyle -%}
+<section
+  class="split-cat-video-section page-container enamels-homepage-modular-section"
+  id="homepage-category-video-split"
+  aria-label="Category Selection and Brand Showcase"
+  style="background-color: {{ section_bg }}; padding-top: {{ pad_top }}px; padding-bottom: {{ pad_bottom }}px;"
+>
   <div class="split-cat-video-grid">
     <!-- Left: Small Category Thumbnails -->
     <div class="split-thumbnails-column">
-      <div class="split-column-header">
-        {% if col_tag != blank %}<span class="categories-section-tag">{{ col_tag | escape }}</span>{% endif %}
-        {% if col_title != blank %}<h2 class="split-column-title">{{ col_title | escape }}</h2>{% endif %}
-        {% if col_sub != blank %}<p class="split-column-sub">{{ col_sub | escape }}</p>{% endif %}
-      </div>
+      {% if col_tag != blank or col_title != blank or col_sub != blank %}
+        <div class="split-column-header" style="text-align: {{ text_align }};">
+          {% if col_tag != blank %}<span class="categories-section-tag">{{ col_tag | escape }}</span>{% endif %}
+          {% if col_title != blank %}<h2 class="split-column-title" style="color: {{ card_text_color }};">{{ col_title | escape }}</h2>{% endif %}
+          {% if col_sub != blank %}<p class="split-column-sub">{{ col_sub | escape }}</p>{% endif %}
+        </div>
+      {% endif %}
 
       <div class="split-thumbnails-grid">
         {% if section.blocks.size > 0 %}
           {% for block in section.blocks %}
             {% if block.type == 'category' %}
               {%- liquid
-                assign cat_name = block.settings.title | escape
-                assign cat_meta = block.settings.meta | escape
-                assign cat_link = block.settings.link
+                assign is_visible = true
+                if block.settings.visible == false
+                  assign is_visible = false
+                endif
               -%}
-              <a
-                href="{% if cat_link != blank %}{{ cat_link }}{% else %}#category-{{ cat_name | handleize }}{% endif %}"
-                class="split-category-tile"
-                id="shopify-block-{{ block.id }}"
-                aria-label="Shop {{ cat_name }}"
-                {{ block.shopify_attributes }}
-              >
-                <div class="split-category-thumb">
-                  {% if block.settings.image != blank %}
+
+              {% if is_visible %}
+                {%- liquid
+                  assign cat_name = block.settings.title | strip
+                  assign cat_meta = block.settings.meta | strip
+                  assign cat_link = block.settings.link
+                  assign cat_name_lower = cat_name | downcase
+                  assign badge_txt = block.settings.badge_text | strip
+                  assign badge_col = block.settings.badge_color | default: '#008779'
+
+                  assign has_info = false
+                  if cat_name != blank or cat_meta != blank
+                    assign has_info = true
+                  endif
+
+                  # Smart Category Image Fallback
+                  if block.settings.image != blank
+                    assign tile_img_src = block.settings.image | image_url: width: 400
+                  elsif cat_name_lower contains 'women'
+                    assign tile_img_src = 'cat-women-scrubs.jpg' | asset_url
+                  elsif cat_name_lower contains 'men'
+                    assign tile_img_src = 'cat-men-scrubs.jpg' | asset_url
+                  elsif cat_name_lower contains 'lab' or cat_name_lower contains 'coat' or cat_name_lower contains 'white'
+                    assign tile_img_src = 'cat-labcoat.jpg' | asset_url
+                  elsif cat_name_lower contains 'cap' or cat_name_lower contains 'bunfit'
+                    assign tile_img_src = 'cat-caps.jpg' | asset_url
+                  elsif cat_name_lower contains 'access' or cat_name_lower contains 'sleeve' or cat_name_lower contains 'clog' or cat_name_lower contains 'foot'
+                    assign tile_img_src = 'cat-flexfit.jpg' | asset_url
+                  else
+                    assign tile_img_src = 'cat-sprinter.jpg' | asset_url
+                  endif
+
+                  # Smart In-Page View Router
+                  assign cat_onclick = ""
+                  if cat_link contains '#men' or cat_name_lower == 'men'
+                    assign cat_onclick = "if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
+                  elsif cat_link contains '#women' or cat_name_lower == 'women'
+                    assign cat_onclick = "if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
+                  elsif cat_link contains 'scrub' or cat_name_lower contains 'scrub'
+                    assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('scrubs'); return false; }"
+                  elsif cat_link contains 'lab' or cat_name_lower contains 'lab' or cat_name_lower contains 'coat'
+                    assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('lab-coat'); return false; }"
+                  elsif cat_link contains 'cap' or cat_name_lower contains 'cap'
+                    assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('caps'); return false; }"
+                  elsif cat_link contains 'access' or cat_link contains 'sleeve' or cat_name_lower contains 'access' or cat_name_lower contains 'sleeve'
+                    assign cat_onclick = "if (typeof window.navigateToAccessories === 'function') { window.navigateToAccessories(); return false; }"
+                  elsif cat_link contains 'ready-to-wear'
+                    assign cat_onclick = "if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); return false; }"
+                  elsif cat_link contains 'self-service'
+                    assign cat_onclick = "if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); return false; }"
+                  endif
+                -%}
+                <a
+                  href="{% if cat_link != blank %}{{ cat_link }}{% elsif cat_name != blank %}#category-{{ cat_name | handleize }}{% else %}#{% endif %}"
+                  class="split-category-tile{% unless has_info %} is-image-only{% endunless %}"
+                  id="shopify-block-{{ block.id }}"
+                  data-category-name="{{ cat_name | escape }}"
+                  aria-label="{% if cat_name != blank %}Shop {{ cat_name | escape }}{% elsif badge_txt != blank %}{{ badge_txt | escape }}{% else %}Category Thumbnail{% endif %}"
+                  style="background-color: {{ card_bg }}; text-align: {{ text_align }};"
+                  {% if cat_onclick != blank %}onclick="{{ cat_onclick }}"{% endif %}
+                  {{ block.shopify_attributes }}
+                >
+                  <div
+                    class="split-category-thumb"
+                    style="aspect-ratio: {% if aspect_ratio == '4_5' %}4 / 5{% elsif aspect_ratio == '16_9' %}16 / 9{% elsif aspect_ratio == 'round' %}1 / 1; border-radius: 50%; margin: 10px auto; width: 85%;{% else %}1 / 1{% endif %};"
+                  >
+                    {% if badge_txt != blank %}
+                      <span class="customizer-banner-badge" style="background: {{ badge_col }}; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">
+                        {{ badge_txt | escape }}
+                      </span>
+                    {% endif %}
                     <img
-                      src="{{ block.settings.image | image_url: width: 320 }}"
-                      alt="{{ block.settings.image.alt | default: cat_name | escape }}"
-                      width="160"
-                      height="160"
+                      src="{{ tile_img_src }}"
+                      alt="{{ cat_name | default: block.settings.image.alt | default: 'Category Thumbnail' | escape }}"
+                      class="split-category-img"
+                      width="200"
+                      height="200"
                       loading="lazy"
                     />
-                  {% else %}
-                    <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="{{ cat_name }}" width="160" height="160" loading="lazy" />
+                  </div>
+                  {% if has_info %}
+                  <div class="split-category-info" style="text-align: {{ text_align }};">
+                    {% if cat_name != blank %}
+                      <h3 class="split-category-name" style="color: {{ card_text_color }};">{{ cat_name | escape }}</h3>
+                    {% endif %}
+                    {% if cat_meta != blank %}
+                      <span class="split-category-meta" style="color: {{ meta_color }};">{{ cat_meta | escape }}</span>
+                    {% endif %}
+                  </div>
                   {% endif %}
-                </div>
-                <div class="split-category-info">
-                  <h3 class="split-category-name">{{ cat_name }}</h3>
-                  {% if cat_meta != blank %}
-                    <span class="split-category-meta">{{ cat_meta }}</span>
-                  {% endif %}
-                </div>
-              </a>
+                </a>
+              {% endif %}
             {% endif %}
           {% endfor %}
         {% else %}
-          <!-- 1. Men -->
-          <a href="#men" class="split-category-tile" onclick="window.navigateToGender('men'); return false;" aria-label="Shop Men's Medical Scrubs">
-            <div class="split-category-thumb">
-              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men's Scrubs" width="160" height="160" loading="lazy" />
-            </div>
-            <div class="split-category-info">
-              <h3 class="split-category-name">Men</h3>
-              <span class="split-category-meta">12 Styles →</span>
-            </div>
+          <!-- Default Fallback Tiles if no blocks added -->
+          <a href="#men" class="split-category-tile" onclick="window.navigateToGender('men'); return false;" aria-label="Shop Men">
+            <div class="split-category-thumb"><img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men" width="160" height="160" loading="lazy" /></div>
+            <div class="split-category-info"><h3 class="split-category-name">Men</h3><span class="split-category-meta">12 Styles →</span></div>
           </a>
-
-          <!-- 2. Women -->
-          <a href="#women" class="split-category-tile" onclick="window.navigateToGender('women'); return false;" aria-label="Shop Women's Medical Scrubs">
-            <div class="split-category-thumb">
-              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women's Scrubs" width="160" height="160" loading="lazy" />
-            </div>
-            <div class="split-category-info">
-              <h3 class="split-category-name">Women</h3>
-              <span class="split-category-meta">14 Styles →</span>
-            </div>
+          <a href="#women" class="split-category-tile" onclick="window.navigateToGender('women'); return false;" aria-label="Shop Women">
+            <div class="split-category-thumb"><img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women" width="160" height="160" loading="lazy" /></div>
+            <div class="split-category-info"><h3 class="split-category-name">Women</h3><span class="split-category-meta">14 Styles →</span></div>
           </a>
-
-          <!-- 3. Scrubs -->
-          <a href="#category-scrubs" class="split-category-tile" onclick="window.selectProductCategory('scrubs'); return false;" aria-label="Shop Medical Scrubs">
-            <div class="split-category-thumb">
-              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Clinical Scrubs" width="160" height="160" loading="lazy" />
-            </div>
-            <div class="split-category-info">
-              <h3 class="split-category-name">Scrubs</h3>
-              <span class="split-category-meta">All Series →</span>
-            </div>
+          <a href="#category-scrubs" class="split-category-tile" onclick="window.selectProductCategory('scrubs'); return false;" aria-label="Shop Scrubs">
+            <div class="split-category-thumb"><img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Scrubs" width="160" height="160" loading="lazy" /></div>
+            <div class="split-category-info"><h3 class="split-category-name">Scrubs</h3><span class="split-category-meta">All Cuts →</span></div>
           </a>
-
-          <!-- 4. Lab Coats -->
-          <a href="#collection-lab-coats" class="split-category-tile" onclick="window.selectProductCategory('lab-coat'); return false;" aria-label="Shop Medical Lab Coats">
-            <div class="split-category-thumb">
-              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Doctor Lab Coats" width="160" height="160" loading="lazy" />
-            </div>
-            <div class="split-category-info">
-              <h3 class="split-category-name">Lab Coats</h3>
-              <span class="split-category-meta">Helium White →</span>
-            </div>
+          <a href="#collection-lab-coats" class="split-category-tile" onclick="window.selectProductCategory('lab-coat'); return false;" aria-label="Shop Lab Coats">
+            <div class="split-category-thumb"><img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Lab Coats" width="160" height="160" loading="lazy" /></div>
+            <div class="split-category-info"><h3 class="split-category-name">Lab Coats</h3><span class="split-category-meta">Technical White →</span></div>
           </a>
-
-          <!-- 5. Caps -->
-          <a href="#collection-caps" class="split-category-tile" onclick="window.selectProductCategory('caps'); return false;" aria-label="Shop Surgical Scrub Caps">
-            <div class="split-category-thumb">
-              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Surgical Caps" width="160" height="160" loading="lazy" />
-            </div>
-            <div class="split-category-info">
-              <h3 class="split-category-name">Caps</h3>
-              <span class="split-category-meta">BunFit™ Series →</span>
-            </div>
+          <a href="#collection-caps" class="split-category-tile" onclick="window.selectProductCategory('caps'); return false;" aria-label="Shop Caps">
+            <div class="split-category-thumb"><img src="{{ 'cat-caps.jpg' | asset_url }}" alt="Caps" width="160" height="160" loading="lazy" /></div>
+            <div class="split-category-info"><h3 class="split-category-name">Surgical Caps</h3><span class="split-category-meta">BunFit™ Weave →</span></div>
           </a>
-
-          <!-- 6. Accessories -->
-          <a href="#accessories" class="split-category-tile" onclick="window.navigateToAccessories(); return false;" aria-label="Shop Clinical Accessories">
-            <div class="split-category-thumb">
-              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Clinical Accessories" width="160" height="160" loading="lazy" />
-            </div>
-            <div class="split-category-info">
-              <h3 class="split-category-name">Accessories</h3>
-              <span class="split-category-meta">Sleeves & More →</span>
-            </div>
+          <a href="#accessories" class="split-category-tile" onclick="window.navigateToAccessories(); return false;" aria-label="Shop Accessories">
+            <div class="split-category-thumb"><img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Accessories" width="160" height="160" loading="lazy" /></div>
+            <div class="split-category-info"><h3 class="split-category-name">Accessories</h3><span class="split-category-meta">Sleeves & Footwear →</span></div>
           </a>
         {% endif %}
       </div>
@@ -161,17 +259,19 @@
 
           <!-- Video Overlay Card with Controls -->
           <div class="brand-video-overlay-banner">
-            <div class="brand-video-info">
-              {% if video_badge != blank %}
-                <span class="brand-video-badge">{{ video_badge | escape }}</span>
-              {% endif %}
-              {% if video_title != blank %}
-                <h3 class="brand-video-title">{{ video_title | escape }}</h3>
-              {% endif %}
-              {% if video_desc != blank %}
-                <p class="brand-video-desc">{{ video_desc | escape }}</p>
-              {% endif %}
-            </div>
+            {% if video_badge != blank or video_title != blank or video_desc != blank %}
+              <div class="brand-video-info">
+                {% if video_badge != blank %}
+                  <span class="brand-video-badge">{{ video_badge | escape }}</span>
+                {% endif %}
+                {% if video_title != blank %}
+                  <h3 class="brand-video-title">{{ video_title | escape }}</h3>
+                {% endif %}
+                {% if video_desc != blank %}
+                  <p class="brand-video-desc">{{ video_desc | escape }}</p>
+                {% endif %}
+              </div>
+            {% endif %}
             <div class="brand-video-controls">
               <button
                 type="button"
@@ -190,11 +290,43 @@
     </div>
   </div>
 </section>
+
+<!-- Configuration Bridge Exporting Theme Editor Categories to JS -->
+<script id="enamels-categories-config" type="application/json">
+[
+  {% assign exported_count = 0 %}
+  {% for block in section.blocks %}
+    {% if block.type == 'category' %}
+      {% if exported_count > 0 %},{% endif %}
+      {
+        "id": {{ block.id | json }},
+        "name": {{ block.settings.title | json }},
+        "meta": {{ block.settings.meta | json }},
+        "link": {{ block.settings.link | json }},
+        "visible": {% if block.settings.visible == false %}false{% else %}true{% endif %}
+      }
+      {% assign exported_count = exported_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+]
+</script>
+<script>
+  (function() {
+    try {
+      const cfgEl = document.getElementById('enamels-categories-config');
+      if (cfgEl) {
+        window.EnamelsThemeCategories = JSON.parse(cfgEl.textContent || '[]');
+      }
+    } catch (e) {
+      console.warn('[Enamels] Could not parse category configuration bridge:', e);
+    }
+  })();
+</script>
 {% endif %}
 
 {% schema %}
 {
-  "name": "Category & Video Split",
+  "name": "Shop by Category & Video",
   "class": "enamels-category-video-wrapper",
   "settings": [
     {
@@ -210,20 +342,206 @@
     {
       "type": "text",
       "id": "column_tag",
-      "label": "Tag",
+      "label": "Section Header Tag",
       "default": "QUICK CATALOGUE DISCOVERY"
     },
     {
       "type": "text",
       "id": "column_title",
-      "label": "Title",
+      "label": "Section Title",
       "default": "Shop by Category"
     },
     {
       "type": "textarea",
       "id": "column_sub",
-      "label": "Subtitle",
+      "label": "Section Subtitle",
       "default": "Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role."
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Thumbnail Aspect Ratio",
+      "options": [
+        { "value": "custom", "label": "Custom (Height in px)" },
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "4_5", "label": "4:5 Portrait" },
+        { "value": "16_9", "label": "16:9 Widescreen" },
+        { "value": "round", "label": "Circle / Round" },
+        { "value": "natural", "label": "Natural / Auto" }
+      ],
+      "default": "1_1"
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail Pixel Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "thumb_width_desktop",
+      "label": "Thumbnail Width Desktop (px)",
+      "min": 100,
+      "max": 320,
+      "step": 5,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumb_height_desktop",
+      "label": "Thumbnail Height Desktop (px)",
+      "min": 80,
+      "max": 360,
+      "step": 5,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumb_width_mobile",
+      "label": "Thumbnail Width Mobile (px)",
+      "min": 70,
+      "max": 200,
+      "step": 5,
+      "default": 110,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumb_height_mobile",
+      "label": "Thumbnail Height Mobile (px)",
+      "min": 70,
+      "max": 240,
+      "step": 5,
+      "default": 110,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_fit_mode",
+      "label": "Image Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_x",
+      "label": "Horizontal Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_y",
+      "label": "Vertical Image Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumb_spacing",
+      "label": "Spacing Between Cards Desktop (px)",
+      "min": 6,
+      "max": 32,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumb_spacing_mobile",
+      "label": "Spacing Between Cards Mobile (px)",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "caption_spacing",
+      "label": "Spacing Between Image & Caption (px)",
+      "min": 2,
+      "max": 24,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Colors & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Category Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Category Title Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "meta_color",
+      "label": "Meta Link Color",
+      "default": "#008779"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Spacing (px)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Spacing (px)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48
     },
     {
       "type": "header",
@@ -262,77 +580,106 @@
   "blocks": [
     {
       "type": "category",
-      "name": "Category Thumbnail",
+      "name": "Category Card",
       "settings": [
         {
           "type": "text",
           "id": "title",
           "label": "Category Name",
-          "default": "Men"
+          "default": "Scrubs"
         },
         {
           "type": "text",
           "id": "meta",
-          "label": "Meta Text (e.g. 12 Styles →)",
-          "default": "12 Styles →"
+          "label": "Meta Text (e.g. All Series →)",
+          "default": "All Cuts →"
         },
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Thumbnail Image"
+          "label": "Category Image"
         },
         {
           "type": "url",
           "id": "link",
-          "label": "Category Link"
+          "label": "Category Destination Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Visible on Storefront",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Label (Optional)"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "Badge Color",
+          "default": "#008779"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Category & Video Split",
+      "name": "Shop by Category & Video",
       "blocks": [
         {
           "type": "category",
           "settings": {
             "title": "Men",
-            "meta": "12 Styles →"
+            "meta": "12 Styles →",
+            "link": "#men",
+            "visible": true
           }
         },
         {
           "type": "category",
           "settings": {
             "title": "Women",
-            "meta": "14 Styles →"
+            "meta": "14 Styles →",
+            "link": "#women",
+            "visible": true
           }
         },
         {
           "type": "category",
           "settings": {
             "title": "Scrubs",
-            "meta": "All Series →"
+            "meta": "All Cuts →",
+            "link": "#category-scrubs",
+            "visible": true
           }
         },
         {
           "type": "category",
           "settings": {
             "title": "Lab Coats",
-            "meta": "Helium White →"
+            "meta": "Technical White →",
+            "link": "#collection-lab-coats",
+            "visible": true
           }
         },
         {
           "type": "category",
           "settings": {
-            "title": "Caps",
-            "meta": "BunFit™ Series →"
+            "title": "Surgical Caps",
+            "meta": "BunFit™ Weave →",
+            "link": "#collection-caps",
+            "visible": true
           }
         },
         {
           "type": "category",
           "settings": {
             "title": "Accessories",
-            "meta": "Sleeves & More →"
+            "meta": "Sleeves & Footwear →",
+            "link": "#accessories",
+            "visible": true
           }
         }
       ]

@@ -1,6 +1,6 @@
 {% comment %}
   Enamels Modular Live Catalogue Section
-  Renders curated real Shopify products on the homepage with interactive category pills,
+  Renders curated real Shopify products on the homepage with block-driven interactive category pills,
   sort options, responsive grid layout, and clean empty states.
 {% endcomment %}
 
@@ -12,9 +12,73 @@
   assign show_filter_pills = section.settings.show_filter_pills
   assign show_sort = section.settings.show_sort
   assign grid_cols = section.settings.grid_columns | default: 4
+
+  assign filter_blocks_count = 0
+  for block in section.blocks
+    if block.type == 'filter_pill' and block.settings.visible != false
+      assign filter_blocks_count = filter_blocks_count | plus: 1
+    endif
+  endfor
 -%}
 
 {% if enable_section %}
+{%- style -%}
+  #homepage-live-catalogue-section #homepage-live-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_min_width_desktop | default: 260 }}px, 1fr)) !important;
+    gap: {{ section.settings.grid_gap_desktop | default: 24 }}px !important;
+  }
+  #homepage-live-catalogue-section .product-preview-card {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+  }
+  #homepage-live-catalogue-section .card-thumb-wrap {
+    overflow: hidden;
+    border-top-left-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    border-top-right-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    {% if section.settings.thumbnail_aspect_ratio == 'custom' %}
+      height: {{ section.settings.thumbnail_height_desktop | default: 320 }}px;
+      aspect-ratio: unset;
+    {% elsif section.settings.thumbnail_aspect_ratio == '1_1' %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% elsif section.settings.thumbnail_aspect_ratio == '3_4' %}
+      aspect-ratio: 3 / 4;
+      height: auto;
+    {% elsif section.settings.thumbnail_aspect_ratio == '4_3' %}
+      aspect-ratio: 4 / 3;
+      height: auto;
+    {% elsif section.settings.thumbnail_aspect_ratio == '16_9' %}
+      aspect-ratio: 16 / 9;
+      height: auto;
+    {% elsif section.settings.thumbnail_aspect_ratio == 'natural' %}
+      aspect-ratio: auto;
+      height: auto;
+    {% else %}
+      aspect-ratio: 4 / 5;
+      height: auto;
+    {% endif %}
+  }
+  #homepage-live-catalogue-section .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
+    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+  }
+  #homepage-live-catalogue-section .card-body-wrap {
+    padding: {{ section.settings.caption_padding | default: 16 }}px;
+  }
+  @media (max-width: 768px) {
+    #homepage-live-catalogue-section #homepage-live-products-grid {
+      grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_min_width_mobile | default: 160 }}px, 1fr)) !important;
+      gap: {{ section.settings.grid_gap_mobile | default: 12 }}px !important;
+    }
+    {% if section.settings.thumbnail_aspect_ratio == 'custom' %}
+      #homepage-live-catalogue-section .card-thumb-wrap {
+        height: {{ section.settings.thumbnail_height_mobile | default: 220 }}px;
+      }
+    {% endif %}
+  }
+{%- endstyle -%}
 <section class="page-container enamels-homepage-modular-section" style="padding: 56px 0;" id="homepage-live-catalogue-section" aria-label="Curated Live Product Catalogue">
   <div class="categories-section-header">
     {% if tag_text != blank %}
@@ -33,21 +97,40 @@
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 20px 0 28px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
     {% if show_filter_pills %}
     <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="homepage-category-filter-pills">
-      <button type="button" class="filter-pill-btn active" id="hp-filter-all" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('all');">
-        <span class="filter-pill-text">All Products</span>
-      </button>
-      <button type="button" class="filter-pill-btn" id="hp-filter-scrubs" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('scrubs');">
-        <span class="filter-pill-text">Scrubs</span>
-      </button>
-      <button type="button" class="filter-pill-btn" id="hp-filter-labcoat" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('lab-coat');">
-        <span class="filter-pill-text">Lab Coats</span>
-      </button>
-      <button type="button" class="filter-pill-btn" id="hp-filter-caps" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('caps');">
-        <span class="filter-pill-text">Surgical Caps</span>
-      </button>
-      <button type="button" class="filter-pill-btn" id="hp-filter-accessories" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('accessories');">
-        <span class="filter-pill-text">Accessories</span>
-      </button>
+      {% if filter_blocks_count > 0 %}
+        {% assign pill_idx = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'filter_pill' and block.settings.visible != false %}
+            <button
+              type="button"
+              class="filter-pill-btn {% if pill_idx == 0 %}active{% endif %}"
+              id="hp-filter-{{ block.settings.category_key | default: 'all' | handleize }}"
+              data-cat="{{ block.settings.category_key | default: 'all' }}"
+              onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('{{ block.settings.category_key | default: 'all' }}');"
+              {{ block.shopify_attributes }}
+            >
+              <span class="filter-pill-text">{{ block.settings.title | escape }}</span>
+            </button>
+            {% assign pill_idx = pill_idx | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <button type="button" class="filter-pill-btn active" id="hp-filter-all" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('all');">
+          <span class="filter-pill-text">All Products</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-scrubs" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('scrubs');">
+          <span class="filter-pill-text">Scrubs</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-labcoat" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('lab-coat');">
+          <span class="filter-pill-text">Lab Coats</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-caps" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('caps');">
+          <span class="filter-pill-text">Surgical Caps</span>
+        </button>
+        <button type="button" class="filter-pill-btn" id="hp-filter-accessories" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('accessories');">
+          <span class="filter-pill-text">Accessories</span>
+        </button>
+      {% endif %}
     </div>
     {% endif %}
 
@@ -69,7 +152,6 @@
   <div
     class="enamels-products-grid"
     id="homepage-live-products-grid"
-    style="display: grid; grid-template-columns: repeat(auto-fit, minmax({% if grid_cols == 3 %}320px{% elsif grid_cols == 2 %}420px{% else %}260px{% endif %}, 1fr)); gap: 24px;"
   >
     <!-- Populated dynamically via window.renderHomepageLiveGrid() -->
   </div>
@@ -118,18 +200,213 @@
       "default": true
     },
     {
+      "type": "header",
+      "content": "Thumbnail & Product Card Dimensions"
+    },
+    {
       "type": "range",
-      "id": "grid_columns",
-      "label": "Max Columns Desktop",
-      "min": 2,
-      "max": 5,
-      "step": 1,
-      "default": 4
+      "id": "card_min_width_desktop",
+      "label": "Card Min Width Desktop (px)",
+      "min": 180,
+      "max": 450,
+      "step": 10,
+      "default": 260,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_min_width_mobile",
+      "label": "Card Min Width Mobile (px)",
+      "min": 130,
+      "max": 280,
+      "step": 10,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "thumbnail_aspect_ratio",
+      "label": "Card Media Aspect Ratio",
+      "options": [
+        { "value": "4_5", "label": "Tall Portrait (4:5)" },
+        { "value": "3_4", "label": "Standard Portrait (3:4)" },
+        { "value": "1_1", "label": "Square (1:1)" },
+        { "value": "4_3", "label": "Landscape (4:3)" },
+        { "value": "16_9", "label": "Wide (16:9)" },
+        { "value": "custom", "label": "Custom Height (px)" },
+        { "value": "natural", "label": "Natural / Auto" }
+      ],
+      "default": "4_5"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_height_desktop",
+      "label": "Custom Media Height Desktop (px)",
+      "min": 180,
+      "max": 600,
+      "step": 10,
+      "default": 320,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_height_mobile",
+      "label": "Custom Media Height Mobile (px)",
+      "min": 140,
+      "max": 400,
+      "step": 10,
+      "default": 220,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_fit_mode",
+      "label": "Image Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_x",
+      "label": "Horizontal Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_y",
+      "label": "Vertical Image Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "label": "Grid Gap Desktop (px)",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Grid Gap Mobile (px)",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "caption_padding",
+      "label": "Card Body / Caption Padding (px)",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "filter_pill",
+      "name": "Category Filter Pill",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Show Pill",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Filter Pill Label",
+          "default": "All Products"
+        },
+        {
+          "type": "select",
+          "id": "category_key",
+          "label": "Filter Category Target",
+          "options": [
+            { "value": "all", "label": "All Products" },
+            { "value": "scrubs", "label": "Scrubs" },
+            { "value": "lab-coat", "label": "Lab Coats" },
+            { "value": "caps", "label": "Surgical Caps" },
+            { "value": "accessories", "label": "Accessories & Sleeves" },
+            { "value": "sprinter", "label": "Sprinter Series" },
+            { "value": "vilora", "label": "Vilora Series" },
+            { "value": "crown", "label": "Crown Series" }
+          ],
+          "default": "all"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "Live Product Catalogue"
+      "name": "Live Product Catalogue",
+      "blocks": [
+        {
+          "type": "filter_pill",
+          "settings": {
+            "title": "All Products",
+            "category_key": "all"
+          }
+        },
+        {
+          "type": "filter_pill",
+          "settings": {
+            "title": "Scrubs",
+            "category_key": "scrubs"
+          }
+        },
+        {
+          "type": "filter_pill",
+          "settings": {
+            "title": "Lab Coats",
+            "category_key": "lab-coat"
+          }
+        },
+        {
+          "type": "filter_pill",
+          "settings": {
+            "title": "Surgical Caps",
+            "category_key": "caps"
+          }
+        },
+        {
+          "type": "filter_pill",
+          "settings": {
+            "title": "Accessories",
+            "category_key": "accessories"
+          }
+        }
+      ]
     }
   ]
 }

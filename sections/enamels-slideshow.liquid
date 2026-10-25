@@ -1,151 +1,343 @@
 {% comment %}
   Enamels Modular Slideshow Section
-  Provides authentic banner slideshow with customizable slides, drag-and-drop image uploads,
-  mobile image overrides, titles, links, autoplay, arrows, and navigation dots.
+  Provides authentic banner slideshow with responsive image sizing, automatic caption layout,
+  touch swipe gestures, Theme Editor live integration, and rock-solid height stability.
 {% endcomment %}
 
 {%- liquid
   assign enable_slideshow = section.settings.enable_slideshow
+  assign aspect_desktop = section.settings.banner_aspect_ratio_desktop | default: 'natural'
+  assign aspect_mobile = section.settings.banner_aspect_ratio_mobile | default: 'natural'
   assign show_arrows = section.settings.show_slideshow_arrows
   assign show_dots = section.settings.show_slideshow_dots
-  assign slide_blocks_count = section.blocks.size
+  assign autoplay = section.settings.autoplay
+  assign autoplay_speed = section.settings.autoplay_speed | default: 6
+
+  assign valid_slide_count = 0
+  for block in section.blocks
+    if block.type == 'slide'
+      if block.settings.visible != false
+        assign valid_slide_count = valid_slide_count | plus: 1
+      endif
+    endif
+  endfor
 -%}
 
 {% if enable_slideshow %}
-<section class="enamels-slideshow-container enamels-homepage-modular-section" id="enamels-hero-slideshow" aria-label="Official Enamels Slideshow">
+<section
+  class="enamels-slideshow-container enamels-homepage-modular-section"
+  id="enamels-hero-slideshow"
+  aria-label="Official Enamels Slideshow"
+  data-autoplay="{{ autoplay }}"
+  data-autoplay-speed="{{ autoplay_speed }}"
+  style="
+    --slideshow-aspect-desktop: {% case aspect_desktop %}{% when '16_9' %}16 / 9{% when '21_9' %}21 / 9{% when 'fixed_520' %}auto{% when 'fixed_600' %}auto{% else %}1500 / 575{% endcase %};
+    --slideshow-height-desktop: {% case aspect_desktop %}{% when 'fixed_520' %}520px{% when 'fixed_600' %}600px{% else %}auto{% endcase %};
+    --slideshow-aspect-mobile: {% case aspect_mobile %}{% when '16_9' %}16 / 9{% when '4_3' %}4 / 3{% when '1_1' %}1 / 1{% when 'fixed_360' %}auto{% else %}1500 / 700{% endcase %};
+    --slideshow-height-mobile: {% case aspect_mobile %}{% when 'fixed_360' %}360px{% else %}auto{% endcase %};
+  "
+>
   <div class="slideshow-track" id="enamels-slideshow-track">
-    {% if slide_blocks_count > 0 %}
+    {% if valid_slide_count > 0 %}
       {% for block in section.blocks %}
-        {% if block.type == 'slide' %}
-          <a
-            href="{{ block.settings.link | default: '#collection-sprinter' }}"
+        {% if block.type == 'slide' and block.settings.visible != false %}
+          {%- liquid
+            assign slide_title = block.settings.title | strip
+            assign slide_sub = block.settings.subtitle | strip
+            assign slide_btn = block.settings.button_label | strip
+
+            assign has_title = false
+            if slide_title != blank
+              assign has_title = true
+            endif
+
+            assign has_caption = false
+            if slide_sub != blank
+              assign has_caption = true
+            endif
+
+            assign has_button = false
+            if slide_btn != blank
+              assign has_button = true
+            endif
+
+            assign has_content = false
+            if has_title or has_caption or has_button
+              assign has_content = true
+            endif
+
+            assign slide_link = block.settings.link | default: block.settings.button_link | default: '#collection-sprinter'
+            assign button_target = block.settings.button_link | default: block.settings.link | default: '#collection-sprinter'
+            assign focal_point = block.settings.image_focal_point | default: 'center'
+            assign caption_pos_desk = block.settings.caption_position | default: 'center_left'
+            assign caption_pos_mob = block.settings.caption_position_mobile | default: 'bottom'
+            assign text_align = block.settings.text_align | default: 'left'
+            assign caption_style = block.settings.caption_style | default: 'subtle_glass'
+            assign text_color = block.settings.text_color | default: '#ffffff'
+            assign button_style = block.settings.button_style | default: 'primary_teal'
+            assign alt_text = block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape
+          -%}
+
+          <div
             class="slide-panel"
             id="shopify-block-{{ block.id }}"
+            data-slide-index="{{ forloop.index0 }}"
             {{ block.shopify_attributes }}
           >
-            {% if block.settings.image != blank %}
-              <picture>
-                {% if block.settings.image_mobile != blank %}
-                  <source media="(max-width: 640px)" srcset="{{ block.settings.image_mobile | image_url: width: 800 }}">
-                {% endif %}
-                <img
-                  src="{{ block.settings.image | image_url: width: 1600 }}"
-                  alt="{{ block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape }}"
-                  class="slide-img-full"
-                  width="{{ block.settings.image.width }}"
-                  height="{{ block.settings.image.height }}"
-                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                />
-              </picture>
-            {% else %}
-              <img
-                src="{{ 'banner-autumn.jpg' | asset_url }}"
-                alt="{{ block.settings.alt | default: 'Enamels Medical Apparel' | escape }}"
-                class="slide-img-full"
-                width="1500"
-                height="575"
-                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-              />
-            {% endif %}
-            {% if block.settings.title != blank or block.settings.subtitle != blank %}
-              <div class="slide-caption-overlay">
-                {% if block.settings.title != blank %}<h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>{% endif %}
-                {% if block.settings.subtitle != blank %}<p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>{% endif %}
-              </div>
-            {% endif %}
-          </a>
+            <!-- Media Wrap with stable aspect ratio / height -->
+            <div class="slide-media-wrap">
+              {% if slide_link != blank and has_button == false %}
+                <a href="{{ slide_link }}" class="slide-media-link" aria-label="{{ alt_text }}">
+              {% endif %}
+
+              {% if block.settings.image != blank %}
+                <picture class="slide-picture">
+                  {% if block.settings.image_mobile != blank %}
+                    <source media="(max-width: 767px)" srcset="{{ block.settings.image_mobile | image_url: width: 900 }}">
+                  {% endif %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 1800 }}"
+                    alt="{{ alt_text }}"
+                    class="slide-img-full"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                    style="object-position: {{ focal_point }};"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  />
+                </picture>
+              {% else %}
+                <picture class="slide-picture">
+                  <img
+                    src="{{ 'banner-autumn.jpg' | asset_url }}"
+                    alt="{{ alt_text }}"
+                    class="slide-img-full"
+                    width="1500"
+                    height="575"
+                    style="object-position: {{ focal_point }};"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  />
+                </picture>
+              {% endif %}
+
+              {% if slide_link != blank and has_button == false %}
+                </a>
+              {% endif %}
+
+              {% comment %}
+                Automatic Caption Overlay:
+                Rendered ONLY if title, caption, or button text is actually provided.
+                If empty, zero HTML is outputted, reserving zero space and causing zero layout shift.
+              {% endcomment %}
+              {% if has_content %}
+                <div class="slide-caption-overlay pos-{{ caption_pos_desk }} mpos-{{ caption_pos_mob }}">
+                  <div
+                    class="slide-caption-card style-{{ caption_style }} align-{{ text_align }}"
+                    style="--slide-text-color: {{ text_color }};"
+                  >
+                    {% if has_title %}
+                      <h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>
+                    {% endif %}
+                    {% if has_caption %}
+                      <p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>
+                    {% endif %}
+                    {% if has_button %}
+                      <a
+                        href="{{ button_target }}"
+                        class="slide-caption-btn btn-{{ button_style }}"
+                      >
+                        {{ block.settings.button_label | escape }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
         {% endif %}
       {% endfor %}
     {% else %}
-      <!-- Slide 1: Sprinter Autumn Edition -->
-      <a href="#collection-sprinter" class="slide-panel" onclick="window.navigateToCollection('Sprinter'); return false;">
-        <img
-          src="{{ 'banner-autumn.jpg' | asset_url }}"
-          alt="Enamels Sprinter Autumn Edition"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="eager"
-        />
-      </a>
+      <!-- Fallback Default Slides (Preserving Enamels Signatures) -->
+      <div class="slide-panel">
+        <div class="slide-media-wrap">
+          <a href="#collection-sprinter" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('Sprinter'); return false;">
+            <img src="{{ 'banner-autumn.jpg' | asset_url }}" alt="Enamels Sprinter Autumn Edition" class="slide-img-full" width="1500" height="575" loading="eager" />
+          </a>
+        </div>
+      </div>
 
-      <!-- Slide 2: Clinical Clogs & Footwear -->
-      <a href="#collection-clogs" class="slide-panel" onclick="window.navigateToCollection('clogs', 'category'); return false;">
-        <img
-          src="{{ 'banner-clogs.jpg' | asset_url }}"
-          alt="Enamels Clinical Clogs & Footwear"
-          class="slide-img-full"
-          width="1500"
-          height="625"
-          loading="lazy"
-        />
-      </a>
+      <div class="slide-panel">
+        <div class="slide-media-wrap">
+          <a href="#collection-clogs" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('clogs', 'category'); return false;">
+            <img src="{{ 'banner-clogs.jpg' | asset_url }}" alt="Enamels Clinical Clogs & Footwear" class="slide-img-full" width="1500" height="625" loading="lazy" />
+          </a>
+        </div>
+      </div>
 
-      <!-- Slide 3: New Arrivals / Abbotabad Banner -->
-      <a href="#collection-new-arrivals" class="slide-panel" onclick="window.navigateToCollection('all', 'category'); return false;">
-        <img
-          src="{{ 'banner-abbotabad.jpg' | asset_url }}"
-          alt="Enamels New Arrivals 2026"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="lazy"
-        />
-      </a>
+      <div class="slide-panel">
+        <div class="slide-media-wrap">
+          <a href="#collection-new-arrivals" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('all', 'category'); return false;">
+            <img src="{{ 'banner-abbotabad.jpg' | asset_url }}" alt="Enamels New Arrivals 2026" class="slide-img-full" width="1500" height="575" loading="lazy" />
+          </a>
+        </div>
+      </div>
 
-      <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
-      <a href="#collection-caps" class="slide-panel" onclick="window.navigateToCollection('caps', 'category'); return false;">
-        <img
-          src="{{ 'banner-caps.jpg' | asset_url }}"
-          alt="Enamels BunFit Surgical Caps"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="lazy"
-        />
-      </a>
+      <div class="slide-panel">
+        <div class="slide-media-wrap">
+          <a href="#collection-caps" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('caps', 'category'); return false;">
+            <img src="{{ 'banner-caps.jpg' | asset_url }}" alt="Enamels BunFit Surgical Caps" class="slide-img-full" width="1500" height="575" loading="lazy" />
+          </a>
+        </div>
+      </div>
 
-      <!-- Slide 5: Velora By Enamels -->
-      <a href="#collection-velora" class="slide-panel" onclick="window.navigateToCollection('Velora'); return false;">
-        <img
-          src="{{ 'banner-velora.jpg' | asset_url }}"
-          alt="Velora Luxury Micro-Drape By Enamels"
-          class="slide-img-full"
-          width="1500"
-          height="575"
-          loading="lazy"
-        />
-      </a>
+      <div class="slide-panel">
+        <div class="slide-media-wrap">
+          <a href="#collection-velora" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('Velora'); return false;">
+            <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Velora Luxury Micro-Drape By Enamels" class="slide-img-full" width="1500" height="575" loading="lazy" />
+          </a>
+        </div>
+      </div>
     {% endif %}
   </div>
 
   {% if show_arrows %}
-  <!-- Navigation Controls -->
-  <button type="button" class="slideshow-arrow prev" onclick="window.stepBannerSlide(-1)" aria-label="Previous Slide">‹</button>
-  <button type="button" class="slideshow-arrow next" onclick="window.stepBannerSlide(1)" aria-label="Next Slide">›</button>
+    <button type="button" class="slideshow-arrow prev" onclick="window.stepBannerSlide(-1)" aria-label="Previous Slide">‹</button>
+    <button type="button" class="slideshow-arrow next" onclick="window.stepBannerSlide(1)" aria-label="Next Slide">›</button>
   {% endif %}
 
   {% if show_dots %}
-  <!-- Pagination Dots -->
-  <div class="slideshow-dots-bar" id="slideshow-dots-bar">
-    {% if slide_blocks_count > 0 %}
-      {% assign dot_index = 0 %}
-      {% for block in section.blocks %}
-        {% if block.type == 'slide' %}
-          <button type="button" class="slideshow-dot {% if dot_index == 0 %}active{% endif %}" onclick="window.jumpToBannerSlide({{ dot_index }})" aria-label="Slide {{ dot_index | plus: 1 }}"></button>
-          {% assign dot_index = dot_index | plus: 1 %}
-        {% endif %}
-      {% endfor %}
-    {% else %}
-      <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
-      <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
-    {% endif %}
-  </div>
+    <div class="slideshow-dots-bar" id="slideshow-dots-bar">
+      {% if valid_slide_count > 0 %}
+        {% assign dot_index = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'slide' and block.settings.visible != false %}
+            <button
+              type="button"
+              class="slideshow-dot {% if dot_index == 0 %}active{% endif %}"
+              onclick="window.jumpToBannerSlide({{ dot_index }})"
+              aria-label="Slide {{ dot_index | plus: 1 }}"
+              data-dot-index="{{ dot_index }}"
+            ></button>
+            {% assign dot_index = dot_index | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
+        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
+      {% endif %}
+    </div>
   {% endif %}
 </section>
+
+<script>
+  (function() {
+    function initEnamelsSlideshow() {
+      const container = document.getElementById('enamels-hero-slideshow');
+      const track = document.getElementById('enamels-slideshow-track');
+      if (!container || !track) return;
+
+      const panels = track.querySelectorAll('.slide-panel');
+      const count = panels.length;
+      if (count <= 1) return;
+
+      let currentIndex = 0;
+      let autoplayTimer = null;
+      let isPaused = false;
+      const autoplayEnabled = container.getAttribute('data-autoplay') === 'true';
+      const speedSec = parseFloat(container.getAttribute('data-autoplay-speed')) || 6;
+      const delayMs = Math.max(2, speedSec) * 1000;
+
+      function updateSlide(idx) {
+        currentIndex = (idx + count) % count;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        const dots = container.querySelectorAll('.slideshow-dot');
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === currentIndex);
+        });
+      }
+
+      window.stepBannerSlide = function(dir) {
+        updateSlide(currentIndex + dir);
+        resetAutoplay();
+      };
+
+      window.jumpToBannerSlide = function(idx) {
+        updateSlide(idx);
+        resetAutoplay();
+      };
+
+      function startAutoplay() {
+        if (!autoplayEnabled || autoplayTimer) return;
+        autoplayTimer = setInterval(() => {
+          if (!isPaused) {
+            updateSlide(currentIndex + 1);
+          }
+        }, delayMs);
+      }
+
+      function stopAutoplay() {
+        if (autoplayTimer) {
+          clearInterval(autoplayTimer);
+          autoplayTimer = null;
+        }
+      }
+
+      function resetAutoplay() {
+        stopAutoplay();
+        startAutoplay();
+      }
+
+      container.addEventListener('mouseenter', () => { isPaused = true; });
+      container.addEventListener('mouseleave', () => { isPaused = false; });
+      container.addEventListener('focusin', () => { isPaused = true; });
+      container.addEventListener('focusout', () => { isPaused = false; });
+
+      // Touch swipe gestures for mobile
+      let touchStartX = 0;
+      let touchEndX = 0;
+      track.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        isPaused = true;
+      }, { passive: true });
+
+      track.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 45) {
+          if (diff > 0) {
+            window.stepBannerSlide(1);
+          } else {
+            window.stepBannerSlide(-1);
+          }
+        }
+        isPaused = false;
+      }, { passive: true });
+
+      startAutoplay();
+
+      // Shopify Theme Editor live select synchronization
+      document.addEventListener('shopify:block:select', (event) => {
+        const blockId = event.detail.blockId;
+        const targetPanel = document.getElementById(`shopify-block-${blockId}`);
+        if (targetPanel) {
+          const idx = parseInt(targetPanel.getAttribute('data-slide-index'), 10);
+          if (!isNaN(idx)) {
+            window.jumpToBannerSlide(idx);
+          }
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initEnamelsSlideshow);
+    } else {
+      initEnamelsSlideshow();
+    }
+  })();
+</script>
 {% endif %}
 
 {% schema %}
@@ -160,6 +352,32 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "banner_aspect_ratio_desktop",
+      "label": "Desktop Banner Dimensions / Ratio",
+      "options": [
+        { "value": "natural", "label": "Natural Aspect Ratio (Adapt to Banner Image)" },
+        { "value": "16_9", "label": "16:9 Widescreen" },
+        { "value": "21_9", "label": "21:9 Ultra-Wide Cinematic" },
+        { "value": "fixed_520", "label": "Fixed Height: 520px" },
+        { "value": "fixed_600", "label": "Fixed Height: 600px" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "select",
+      "id": "banner_aspect_ratio_mobile",
+      "label": "Mobile Banner Dimensions / Ratio",
+      "options": [
+        { "value": "natural", "label": "Natural Aspect Ratio" },
+        { "value": "16_9", "label": "16:9 Landscape" },
+        { "value": "4_3", "label": "4:3 Standard" },
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "fixed_360", "label": "Fixed Height: 360px" }
+      ],
+      "default": "natural"
+    },
+    {
       "type": "checkbox",
       "id": "show_slideshow_arrows",
       "label": "Show Arrow Navigation",
@@ -169,6 +387,12 @@
       "type": "checkbox",
       "id": "show_slideshow_dots",
       "label": "Show Dot Pagination",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable Autoplay",
       "default": true
     },
     {
@@ -187,6 +411,12 @@
       "name": "Banner Slide",
       "settings": [
         {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Show Slide",
+          "default": true
+        },
+        {
           "type": "image_picker",
           "id": "image",
           "label": "Desktop Banner Image"
@@ -197,19 +427,118 @@
           "label": "Mobile Banner Image (Optional)"
         },
         {
-          "type": "text",
-          "id": "title",
-          "label": "Caption Title (Optional)"
+          "type": "select",
+          "id": "image_focal_point",
+          "label": "Image Focal Point / Position",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "header",
+          "content": "Caption & Content (Optional)"
         },
         {
           "type": "text",
+          "id": "title",
+          "label": "Caption Heading (Leave blank for no heading)"
+        },
+        {
+          "type": "textarea",
           "id": "subtitle",
-          "label": "Caption Subtitle (Optional)"
+          "label": "Caption Description (Leave blank for no text)"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label (Leave blank for no button)"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
         },
         {
           "type": "url",
           "id": "link",
-          "label": "Slide Target Link"
+          "label": "Slide Direct Link (Active when button is blank)"
+        },
+        {
+          "type": "header",
+          "content": "Caption Layout & Styling"
+        },
+        {
+          "type": "select",
+          "id": "caption_position",
+          "label": "Desktop Caption Position",
+          "options": [
+            { "value": "center_left", "label": "Center Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "center_right", "label": "Center Right" },
+            { "value": "bottom_left", "label": "Bottom Left" },
+            { "value": "bottom_center", "label": "Bottom Center" },
+            { "value": "bottom_right", "label": "Bottom Right" },
+            { "value": "top_left", "label": "Top Left" }
+          ],
+          "default": "center_left"
+        },
+        {
+          "type": "select",
+          "id": "caption_position_mobile",
+          "label": "Mobile Caption Position",
+          "options": [
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "center", "label": "Center" },
+            { "value": "top", "label": "Top" }
+          ],
+          "default": "bottom"
+        },
+        {
+          "type": "select",
+          "id": "text_align",
+          "label": "Text Alignment",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "select",
+          "id": "caption_style",
+          "label": "Caption Backdrop Style",
+          "options": [
+            { "value": "subtle_glass", "label": "Subtle Glass Card (Recommended)" },
+            { "value": "dark_card", "label": "Dark Solid Card" },
+            { "value": "light_card", "label": "Light Crisp Card" },
+            { "value": "gradient_overlay", "label": "Soft Gradient Vignette" },
+            { "value": "none", "label": "No Card (Text Directly Over Image)" }
+          ],
+          "default": "subtle_glass"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button Style",
+          "options": [
+            { "value": "primary_teal", "label": "Enamels Teal" },
+            { "value": "solid_white", "label": "Solid White" },
+            { "value": "navy", "label": "Deep Navy" },
+            { "value": "outline_white", "label": "White Outline" }
+          ],
+          "default": "primary_teal"
         },
         {
           "type": "text",
@@ -228,21 +557,33 @@
           "type": "slide",
           "settings": {
             "title": "Sprinter Autumn Edition",
-            "subtitle": "Athletic 4-Way Stretch Twill"
+            "subtitle": "Athletic 4-Way Stretch Twill Engineered for High Mobility",
+            "button_label": "Shop Sprinter →",
+            "button_link": "#collection-sprinter",
+            "caption_position": "center_left",
+            "caption_style": "subtle_glass"
           }
         },
         {
           "type": "slide",
           "settings": {
-            "title": "Clinical Footwear",
-            "subtitle": "Ergonomic Hospital Clogs"
+            "title": "Clinical Clogs & Footwear",
+            "subtitle": "Ergonomic Hospital Shock Absorption & Fluid Resistance",
+            "button_label": "Explore Footwear →",
+            "button_link": "#collection-clogs",
+            "caption_position": "center_left",
+            "caption_style": "subtle_glass"
           }
         },
         {
           "type": "slide",
           "settings": {
             "title": "BunFit™ Surgical Caps",
-            "subtitle": "Breathable Elastic Adjuster"
+            "subtitle": "Breathable Elastic Adjuster Designed for Theatre Teams",
+            "button_label": "Discover Caps →",
+            "button_link": "#collection-caps",
+            "caption_position": "center_left",
+            "caption_style": "subtle_glass"
           }
         }
       ]

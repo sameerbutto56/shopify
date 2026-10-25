@@ -11,7 +11,7 @@
   assign title_text = section.settings.title | default: 'Home Service — At Your Convenience'
   assign desc_text = section.settings.description | default: 'Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.'
   assign button_label = section.settings.button_label | default: 'Book a Representative Visit →'
-  assign notice_text = section.settings.fee_notice | default: 'Rs. 500 consultation fee • Fully credited towards your order'
+  assign notice_text = section.settings.fee_notice | default: 'Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only'
 -%}
 
 {% if enable_section %}
@@ -43,7 +43,7 @@
           <span>{{ section.settings.hl3_text | default: '🪡 Embroidery & Logo Setup' | escape }}</span>
         </div>
         <div class="home-service-hl-item">
-          <span>{{ section.settings.hl4_text | default: '💵 Nominal Rs. 500 Visit Fee (100% Adjustable Against Order)' | escape }}</span>
+          <span>{{ section.settings.hl4_text | default: '💵 PKR 3,000 Advance (Adjustable Against PKR 25,000 Min. Order)' | escape }}</span>
         </div>
       </div>
       <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
@@ -57,6 +57,8 @@
         </button>
         {% if notice_text != blank %}
           <span style="font-size: 12px; color: #64748b;">{{ notice_text | escape }}</span>
+        {% else %}
+          <span style="font-size: 12px; color: #64748b;">Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only</span>
         {% endif %}
       </div>
     </div>
@@ -127,7 +129,7 @@
       "type": "text",
       "id": "fee_notice",
       "label": "Fee Notice Text",
-      "default": "Rs. 500 consultation fee • Fully credited towards your order"
+      "default": "Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only"
     },
     {
       "type": "header",
@@ -155,7 +157,7 @@
       "type": "text",
       "id": "hl4_text",
       "label": "Highlight 4",
-      "default": "💵 Nominal Rs. 500 Visit Fee (100% Adjustable Against Order)"
+      "default": "💵 PKR 3,000 Advance (Adjustable Against PKR 25,000 Min. Order)"
     }
   ],
   "presets": [

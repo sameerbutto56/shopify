@@ -213,7 +213,15 @@
         "foreground": "#000000",
         "color1": "#333333",
         "color2": "#DFDFDF"
-      }
+      },
+      "enamels_primary_teal": "#008779",
+      "enamels_navy_color": "#102a43",
+      "enamels_surface_bg": "#f8fafc",
+      "enamels_button_radius": 6,
+      "enamels_card_radius": 8,
+      "enamels_content_max_width": 1320,
+      "enamels_min_order_value": 25000,
+      "enamels_advance_amount": 3000
     }
   }
 }

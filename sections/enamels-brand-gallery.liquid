@@ -13,6 +13,59 @@
 -%}
 
 {% if enable_section %}
+{%- style -%}
+  #shopify-section-{{ section.id }} .frubs-brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumbnail_width_desktop | default: 240 }}px, 1fr));
+    gap: {{ section.settings.thumbnail_spacing | default: 18 }}px;
+  }
+  #shopify-section-{{ section.id }} .frubs-brand-tile {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+  }
+  #shopify-section-{{ section.id }} .frubs-brand-tile-media {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px {{ section.settings.card_border_radius | default: 12 }}px 0 0;
+    {% if section.settings.image_aspect_ratio == 'custom' %}
+      height: {{ section.settings.thumbnail_height_desktop | default: 320 }}px;
+      aspect-ratio: unset;
+    {% elsif section.settings.image_aspect_ratio == '1_1' %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == '4_3' %}
+      aspect-ratio: 4 / 3;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == '16_9' %}
+      aspect-ratio: 16 / 9;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == 'natural' %}
+      aspect-ratio: auto;
+      height: auto;
+    {% else %}
+      aspect-ratio: 3 / 4;
+      height: auto;
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .frubs-brand-tile.is-image-only .frubs-brand-tile-media {
+    border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+  }
+  #shopify-section-{{ section.id }} .frubs-brand-tile-media img {
+    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
+    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+  }
+  #shopify-section-{{ section.id }} .frubs-brand-tile-body {
+    padding: {{ section.settings.caption_spacing | default: 14 }}px;
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .frubs-brands-grid {
+      grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumbnail_width_mobile | default: 160 }}px, 1fr));
+      gap: {{ section.settings.thumbnail_spacing_mobile | default: 12 }}px;
+    }
+    {% if section.settings.image_aspect_ratio == 'custom' %}
+      #shopify-section-{{ section.id }} .frubs-brand-tile-media {
+        height: {{ section.settings.thumbnail_height_mobile | default: 210 }}px;
+      }
+    {% endif %}
+  }
+{%- endstyle -%}
 <section class="frubs-brands-section page-container enamels-homepage-modular-section" id="homepage-featured-articles" aria-label="Explore Our Brands and Signature Articles">
   <div class="categories-section-header" style="margin-bottom: 12px;">
     {% if tag_text != blank %}
@@ -30,52 +83,70 @@
     {% if blocks_count > 0 %}
       {% for block in section.blocks %}
         {%- liquid
-          assign brand_name = block.settings.title | escape
-          assign badge_text = block.settings.badge | escape
+          assign brand_name = block.settings.title | strip
+          assign badge_text = block.settings.badge | strip
           assign badge_bg = block.settings.badge_bg | default: '#102a43'
           assign badge_color = block.settings.badge_color | default: '#ffffff'
-          assign brand_desc = block.settings.description | escape
-          assign cta_text = block.settings.cta_text | default: 'Explore Series →' | escape
+          assign brand_desc = block.settings.description | strip
+          assign cta_text = block.settings.cta_text | strip
           assign brand_link = block.settings.link
+          assign block_ratio = block.settings.image_aspect_ratio_override | default: 'inherit'
+          assign block_height = block.settings.custom_height | default: 0
+
+          assign has_body = false
+          if brand_name != blank or brand_desc != blank or cta_text != blank
+            assign has_body = true
+          endif
         -%}
         <a
-          href="{% if brand_link != blank %}{{ brand_link }}{% else %}#collection-{{ brand_name | handleize }}{% endif %}"
-          class="frubs-brand-tile"
+          href="{% if brand_link != blank %}{{ brand_link }}{% elsif brand_name != blank %}#collection-{{ brand_name | handleize }}{% else %}#{% endif %}"
+          class="frubs-brand-tile{% unless has_body %} is-image-only{% endunless %}"
           id="shopify-block-{{ block.id }}"
-          onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('{{ brand_name }}'); return false; }"
-          aria-label="Explore {{ brand_name }}"
+          {% if brand_name != blank %}onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('{{ brand_name | escape }}'); return false; }"{% endif %}
+          aria-label="{% if brand_name != blank %}Explore {{ brand_name | escape }}{% elsif badge_text != blank %}{{ badge_text | escape }}{% else %}Brand Thumbnail{% endif %}"
           {{ block.shopify_attributes }}
         >
-          <div class="frubs-brand-tile-media">
+          <div
+            class="frubs-brand-tile-media"
+            {% if block_ratio != 'inherit' and block_ratio != blank %}
+              style="{% if block_ratio == 'custom' and block_height > 0 %}height: {{ block_height }}px; aspect-ratio: unset;{% elsif block_ratio == '1_1' %}aspect-ratio: 1 / 1; height: auto;{% elsif block_ratio == '3_4' %}aspect-ratio: 3 / 4; height: auto;{% elsif block_ratio == '4_3' %}aspect-ratio: 4 / 3; height: auto;{% elsif block_ratio == '16_9' %}aspect-ratio: 16 / 9; height: auto;{% elsif block_ratio == 'natural' %}aspect-ratio: auto; height: auto;{% endif %}"
+            {% endif %}
+          >
             {% if badge_text != blank %}
               <span class="frubs-brand-tile-badge" style="background: {{ badge_bg }}; color: {{ badge_color }};">
-                {{ badge_text }}
+                {{ badge_text | escape }}
               </span>
             {% endif %}
             {% if block.settings.image != blank %}
               <img
                 src="{{ block.settings.image | image_url: width: 600 }}"
-                alt="{{ block.settings.image.alt | default: brand_name | escape }}"
+                alt="{{ block.settings.image.alt | default: brand_name | default: 'Brand Thumbnail' | escape }}"
                 width="{{ block.settings.image.width }}"
                 height="{{ block.settings.image.height }}"
                 loading="lazy"
               />
             {% else %}
-              <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="{{ brand_name }}" width="300" height="400" loading="lazy" />
+              <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="{{ brand_name | default: 'Brand Thumbnail' | escape }}" width="300" height="400" loading="lazy" />
             {% endif %}
           </div>
+          {% if has_body %}
           <div class="frubs-brand-tile-body">
-            <h3 class="frubs-brand-tile-title">{{ brand_name }}</h3>
-            {% if brand_desc != blank %}
-              <p class="frubs-brand-tile-sub">{{ brand_desc }}</p>
+            {% if brand_name != blank %}
+              <h3 class="frubs-brand-tile-title">{{ brand_name | escape }}</h3>
             {% endif %}
-            <span class="frubs-brand-tile-cta">{{ cta_text }}</span>
+            {% if brand_desc != blank %}
+              <p class="frubs-brand-tile-sub">{{ brand_desc | escape }}</p>
+            {% endif %}
+            {% if cta_text != blank %}
+              <span class="frubs-brand-tile-cta">{{ cta_text | escape }}</span>
+            {% endif %}
           </div>
+          {% endif %}
         </a>
       {% endfor %}
     {% else %}
       <!-- 1. Vilora -->
-      <a href="#collection-vilora" class="frubs-brand-tile" onclick="window.navigateToBrand('Velora'); return false;" aria-label="Explore Vilora Series">
+      <a href="#collection-vilora" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('women', 'scrubs', 'Vilora'); return false;" aria-label="Explore Vilora Series">
         <div class="frubs-brand-tile-media">
           <span class="frubs-brand-tile-badge" style="background: #be185d; color: #ffffff;">MICRO-DRAPE</span>
           <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Vilora Luxury Medical Scrubs" width="300" height="400" loading="eager" />
@@ -87,47 +158,47 @@
         </div>
       </a>
 
-      <!-- 2. Splender -->
-      <a href="#collection-splender" class="frubs-brand-tile" onclick="window.navigateToBrand('Sprinter'); return false;" aria-label="Explore Splender Series">
+      <!-- 2. Sprinter -->
+      <a href="#collection-sprinter" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'scrubs', 'Sprinter'); return false;" aria-label="Explore Sprinter Series">
         <div class="frubs-brand-tile-media">
           <span class="frubs-brand-tile-badge" style="background: #102a43; color: #ffffff;">4-WAY STRETCH</span>
-          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Splender Athletic Scrub Series" width="300" height="400" loading="eager" />
+          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Sprinter Athletic Scrub Series" width="300" height="400" loading="eager" />
         </div>
         <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">Splender Series</h3>
+          <h3 class="frubs-brand-tile-title">Sprinter Series</h3>
           <p class="frubs-brand-tile-sub">Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers.</p>
-          <span class="frubs-brand-tile-cta">Explore Splender →</span>
+          <span class="frubs-brand-tile-cta">Explore Sprinter →</span>
         </div>
       </a>
 
-      <!-- 3. Ground -->
-      <a href="#collection-ground" class="frubs-brand-tile" onclick="window.navigateToBrand('Crown'); return false;" aria-label="Explore Ground Series">
+      <!-- 3. Crown -->
+      <a href="#collection-crown" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'scrubs', 'Crown'); return false;" aria-label="Explore Crown Series">
         <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #b45309; color: #ffffff;">EXECUTIVE CUT</span>
-          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Ground Executive Mandarin Scrubs" width="300" height="400" loading="eager" />
+          <span class="frubs-brand-tile-badge" style="background: #b45309; color: #ffffff;">EXECUTIVE MANDARIN</span>
+          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Crown Executive Mandarin Scrubs" width="300" height="400" loading="eager" />
+        </div>
+        <div class="frubs-brand-tile-body">
+          <h3 class="frubs-brand-tile-title">Crown Series</h3>
+          <p class="frubs-brand-tile-sub">Distinctive standing mandarin collar with concealed front placket tailored for senior consultant rounds.</p>
+          <span class="frubs-brand-tile-cta">Explore Crown →</span>
+        </div>
+      </a>
+
+      <!-- 4. Ground -->
+      <a href="#collection-ground" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'scrubs', 'Ground'); return false;" aria-label="Explore Ground Series">
+        <div class="frubs-brand-tile-media">
+          <span class="frubs-brand-tile-badge" style="background: #1e293b; color: #ffffff;">HEAVY-DUTY TWILL</span>
+          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Ground Heavy-Duty Tactical Scrubs" width="300" height="400" loading="lazy" />
         </div>
         <div class="frubs-brand-tile-body">
           <h3 class="frubs-brand-tile-title">Ground Series</h3>
-          <p class="frubs-brand-tile-sub">Distinctive standing mandarin collar with concealed front placket tailored for senior consultant rounds.</p>
+          <p class="frubs-brand-tile-sub">High-density tactical weave engineered for emergency room resilience and intense clinical duty.</p>
           <span class="frubs-brand-tile-cta">Explore Ground →</span>
         </div>
       </a>
 
-      <!-- 4. FlexFit -->
-      <a href="#collection-flexfit" class="frubs-brand-tile" onclick="window.navigateToBrand('Flexwell'); return false;" aria-label="Explore FlexFit Series">
-        <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #0f766e; color: #ffffff;">ALL-DAY FLEX</span>
-          <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="FlexFit Clinical Comfort" width="300" height="400" loading="lazy" />
-        </div>
-        <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">FlexFit Series</h3>
-          <p class="frubs-brand-tile-sub">Reinforced stretch seams and deep multi-pocket storage engineered for high-activity ward rotations.</p>
-          <span class="frubs-brand-tile-cta">Explore FlexFit →</span>
-        </div>
-      </a>
-
       <!-- 5. Helium -->
-      <a href="#collection-helium" class="frubs-brand-tile" onclick="window.navigateToBrand('Helium'); return false;" aria-label="Explore Helium Series">
+      <a href="#collection-helium" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'lab-coat', 'Helium'); return false;" aria-label="Explore Helium Series">
         <div class="frubs-brand-tile-media">
           <span class="frubs-brand-tile-badge" style="background: #0369a1; color: #ffffff;">LAB COATS</span>
           <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Helium Technical White Lab Coats" width="300" height="400" loading="lazy" />
@@ -171,6 +242,136 @@
       "id": "brands_subtitle",
       "label": "Section Subtitle",
       "default": "Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes."
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail & Card Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_width_desktop",
+      "label": "Thumbnail Width Desktop (px)",
+      "min": 160,
+      "max": 450,
+      "step": 5,
+      "default": 240,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_height_desktop",
+      "label": "Thumbnail Height Desktop (px)",
+      "min": 160,
+      "max": 550,
+      "step": 5,
+      "default": 320,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_width_mobile",
+      "label": "Thumbnail Width Mobile (px)",
+      "min": 120,
+      "max": 300,
+      "step": 5,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_height_mobile",
+      "label": "Thumbnail Height Mobile (px)",
+      "min": 120,
+      "max": 400,
+      "step": 5,
+      "default": 210,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "custom", "label": "Custom (Height in px)" },
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "3_4", "label": "3:4 Portrait" },
+        { "value": "4_3", "label": "4:3 Classic" },
+        { "value": "16_9", "label": "16:9 Widescreen" },
+        { "value": "natural", "label": "Natural / Auto" }
+      ],
+      "default": "3_4"
+    },
+    {
+      "type": "select",
+      "id": "image_fit_mode",
+      "label": "Image Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill Container)" },
+        { "value": "contain", "label": "Contain (Preserve Full Image)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_x",
+      "label": "Horizontal Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_y",
+      "label": "Vertical Image Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Thumbnail Border Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_spacing",
+      "label": "Spacing Between Thumbnails Desktop (px)",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_spacing_mobile",
+      "label": "Spacing Between Thumbnails Mobile (px)",
+      "min": 6,
+      "max": 28,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "caption_spacing",
+      "label": "Spacing Between Image and Caption (px)",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
     }
   ],
   "blocks": [
@@ -188,6 +389,31 @@
           "type": "image_picker",
           "id": "image",
           "label": "Card Thumbnail Image"
+        },
+        {
+          "type": "select",
+          "id": "image_aspect_ratio_override",
+          "label": "Aspect Ratio Override",
+          "options": [
+            { "value": "inherit", "label": "Inherit Section Default" },
+            { "value": "custom", "label": "Custom (Use Height Below)" },
+            { "value": "1_1", "label": "1:1 Square" },
+            { "value": "3_4", "label": "3:4 Portrait" },
+            { "value": "4_3", "label": "4:3 Classic" },
+            { "value": "16_9", "label": "16:9 Widescreen" },
+            { "value": "natural", "label": "Natural / Auto" }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "range",
+          "id": "custom_height",
+          "label": "Block Custom Height (px)",
+          "min": 0,
+          "max": 600,
+          "step": 10,
+          "default": 0,
+          "info": "Set to 0 to use section height"
         },
         {
           "type": "text",

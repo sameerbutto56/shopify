@@ -1,55 +1,137 @@
-# Enamels Implementation Task Tracker — Final Implementation Brief
+# Enamels Implementation Task Tracker — Final Combined Implementation Brief
 
-## Milestone 1: Safety, Backups & Environment
-- [x] Tagged local git `pre-modularization-backup` and created branch `feature-full-theme-modularization-and-studio`
-- [x] Pushed remote backup theme `Horizon - Pre-Modularization Backup` (#192819396896) to Shopify store
-- [x] Target staging theme confirmed: `Horizon` [unpublished] (#192352092448) (Live theme #192354877728 protected)
+## Milestone 1: Catalogue Data Mapping & Integrity
+- [x] Inspect existing catalogue data structure (`window.ShopifyLiveProducts`, `window.EnamelsCatalogue`, CSV import).
+- [x] Ensure strict field mapping: Gender (`men` | `women` | `unisex`), Category (`scrubs` | `lab-coat` | `accessories` | `caps` | `sleeves`), Brand/Series (`Sprinter` | `Crown` | `Ground` | `Vilora` | `Helium` | `Suiting` | `BunFit`), Fabric/Range, Colour Swatches, Sizes, and Variant-specific Images.
+- [x] Prevent cross-contamination: Products from different brands or genders must never leak into mismatched filters. (Crown and Ground completely decoupled; separate articles created for each collection).
 
-## Milestone 2: Remove All Fake / Demo Content
-- [x] Removed `{% render 'enamels-demo-mode' %}` from `layout/theme.liquid` (removes QA pill, modal, simulated responses)
-- [x] Cleared hardcoded `DEMO — ...` products and fake catalog fallback from `assets/enamels-catalogue-data.js` (`window.EnamelsCatalogue = []`)
-- [x] Ensure storefront relies exclusively on real Shopify products (`window.ShopifyLiveProducts`) and real store collections
-- [x] Provided neutral, clean empty states when no products match filters or when a category has no live products (zero fake replacements)
-- [x] Removed hardcoded fake doctor reviews from default content and made reviews optional blocks that cleanly hide when empty
-- [x] Verified zero fake titles ("DEMO — ..."), fake prices, or placeholder reviews appear on the storefront
+## Milestone 2: Multi-Level Navigation Hierarchy
+- [x] **Step 1: Gender Selection** (Men / Women). Clear gender isolation with Dedicated Landing Subview (`#subview-category-landing`).
+- [x] **Step 2: Product Categories** (Scrubs, Lab Coats, Accessories, Caps, Sleeves). Display visual category cards tailored to selected gender with accurate live product counts.
+- [x] **Step 3: Brands / Collections per Category**. Dedicated Brand Selection Subview (`#subview-brand-selection`). Dynamically shows only the brands/ranges that have matching products in that category & gender (e.g., Men → Scrubs shows Sprinter, Crown, Ground; Men → Lab Coats shows Helium, Suiting; Men → Accessories shows Caps, Sleeves).
+- [x] **Step 4: Articles within Selected Brand**. Entering a brand displays only its articles in `#subview-product-listing`, with dynamic breadcrumbs (`Men / Clinical Scrubs / Crown Series`) and working Back navigation.
+- [x] **Step 5: Article Selection & Clear Incompatible State**. Switching category or brand resets child filters cleanly via centralized routing and state management.
 
-## Milestone 3: Modularize Homepage into Native OS 2.0 Sections
-- [x] Built `sections/enamels-announcement-bar.liquid` with message blocks, speed, and color settings
-- [x] Built `sections/enamels-header.liquid` with logo picker, nav links, support phone, search
-- [x] Built `sections/enamels-slideshow.liquid` with slide blocks, drag-and-drop image uploads, headings, links
-- [x] Built `sections/enamels-brand-gallery.liquid` with brand blocks, drag-and-drop thumbnail uploads, collection links
-- [x] Built `sections/enamels-category-video.liquid` with Men, Women, Scrubs, Lab Coats, Caps, Accessories 3D tiles & brand video
-- [x] Built `sections/enamels-live-catalogue.liquid` connected to real Shopify products, filter pills, sorting, and grid layout
-- [x] Built `sections/enamels-customizer-banner.liquid` for Make Your Own Scrubs promotional card
-- [x] Built `sections/enamels-home-service-banner.liquid` for Lahore Home Service / Concierge visit booking banner
-- [x] Built `sections/enamels-seasonal-collections.liquid` with Summer vs Winter seasonal card blocks
-- [x] Built `sections/enamels-signature-series.liquid` with series card blocks and badges
-- [x] Built `sections/enamels-hospital-shades.liquid` with hospital color swatch blocks
-- [x] Built `sections/enamels-testimonials.liquid` with review blocks and automatic empty-state hiding
-- [x] Built `sections/enamels-trust-badges.liquid` with value proposition perk blocks
-- [x] Updated `templates/index.json` to compose all modular sections in exact default visual order
-- [x] Enabled section drag-and-drop, add/remove, hide/show, and block reordering in Theme Editor
+## Milestone 3: Redesign the Hanging-Product Experience
+- [x] **Natural Page Scrolling**: Removed `e.preventDefault()` on vertical wheel events; converted to passive listeners (`{ passive: true }`) so customers can scroll past the rail without getting trapped.
+- [x] **Clear Visual Selected State**: Visually distinguishes the currently active garment on the rail with `.is-selected` elevated hook, drop shadow, turquoise halo glow, and boutique tag.
+- [x] **Intuitive Navigation Controls**: Refined Previous / Next buttons (`window.stepSelectedHanger(direction)`), touch/swipe support on mobile, and direct garment click selection.
+- [x] **Article-Specific Colour Swatches**: Display ONLY colours available for the active article directly within the Interactive Hanging Selection Dock (`#enamels-rail-selection-dock`).
+- [x] **Dynamic Garment Image Updates**: Switching colour swatches immediately updates the hanging garment preview without reloading (`window.setRailHangerColor()`).
 
-## Milestone 4: Modularize Collection & Product Pages
-- [x] Built `sections/enamels-collection-template.liquid` for `templates/collection.json`, `page.men.json`, `page.women.json`
-- [x] Built `sections/enamels-product-template.liquid` for `templates/product.json` (preserving full customizer, size auto-fill, C (Custom) fit, line items)
-- [x] Built `sections/enamels-ready-to-wear-section.liquid` for `templates/page.customizer.json`
-- [x] Built `sections/enamels-self-service-section.liquid` for `templates/page.home-service.json`
+## Milestone 4: Product Configuration & Cart Integration
+- [x] Synchronize selected garment & colour with Product Details Drawer / PDP Studio.
+- [x] Pass correct Shopify product ID, variant ID (`67718805684512`), size, quantity, and custom embroidery/measurement options to real Shopify cart (`/cart/add.js`).
+- [x] Maintain independent line items in the cart drawer with distinct custom properties.
 
-## Milestone 5: Build Easy Drag-and-Drop Studio Panel
-- [x] Created `snippets/enamels-studio-panel.liquid`, `assets/enamels-studio.css`, and `assets/enamels-studio.js`:
-  - Homepage Content Manager (headings, drag-and-drop images, buttons, visibility)
-  - Brand and Article Manager (brand name, drag-and-drop thumbnail, collection link, order)
-  - Category Manager (categories, ordering, images, visibility)
-  - Banner and Video Manager (banner image upload, text, link, video source, poster)
-  - Page and Section Manager (select page, view/reorder sections, edit settings)
-  - Drag-and-Drop Image Uploader with file validation, preview, replace, remove, persistent storage
-  - Fine-grained controls (typography, colors, padding, aspect ratio, border radius, animations)
-- [x] Wired Studio panel seamlessly with persistent store/theme settings and live storefront preview
-- [x] Keyboard shortcut `Shift + S` and URL parameter `?studio=true` support
+## Milestone 5: UX Polish & Performance Optimization
+- [x] Eliminate unnecessary continuous animations, lag, and heavy DOM recalculations.
+- [x] Implement responsive image fallbacks and reserved dimensions to eliminate layout shifts.
+- [x] Provide elegant empty states when a brand/category combination has no items.
 
-## Milestone 6: Verification, Testing & Staging Deployment
-- [ ] Automated verification of all 17 mandatory acceptance tests from the brief
-- [ ] Theme Check verification (ensure zero schema/liquid errors)
-- [ ] Deploy to Staging Theme `#192352092448`
-- [ ] Provide final comprehensive delivery report
+## Milestone 6: Automated Browser Verification & Deployment
+- [x] Verified complete browsing flow in headless Chrome (10/10 Test Suites Passed with 0 errors):
+  - Men → Scrubs → Crown → Crown articles only (Verified)
+  - Men → Scrubs → Sprinter → Sprinter articles only (Verified)
+  - Women → Scrubs → Vilora → Vilora articles only (Verified)
+  - Men → Lab Coats → Helium / matching coats only (Verified)
+  - Men → Accessories → Caps → Caps only (Verified)
+  - Back Button Navigation: Level 3 → Level 2 Brand Selection (Verified)
+  - Hanging Dock swatch click updates hanger preview immediately without page reload (Verified)
+  - Previous / Next Rail navigation controls (Verified)
+  - PDP Drawer configuration & `/cart/add.js` checkout payload with variant ID and custom properties (Verified)
+  - Natural vertical page scroll without hijacking (Verified)
+- [x] Pushed all changes to Staging Theme `#192352092448` (`Horizon`). Production theme `#192354877728` untouched.
+- [x] Deliver final comprehensive report.
+
+## Milestone 7: Pure Home Service Booking Flow (No Online Product Selection)
+- [x] **Completely Removed Product Selection**: Removed all product cards, quantity selectors, sizes, fabrics, colours, customization checkboxes, and cart-like subtotals from `#view-self-service`.
+- [x] **Customer Information Form**: Clinician Full Name & Title (required), Mobile (required), WhatsApp Number (optional with sync toggle), Email (optional), Preferred Contact Method (WhatsApp / Phone Call).
+- [x] **Service Location Selection**: Approved list of 8 Lahore healthcare zones (Services Hospital, Mayo/KEMU, Jinnah/AIMC, Shalamar, Gulberg Clinics, DHA Clinics, Fatima Memorial, General Hospital/Ferozepur Rd) with immutable address snapshot. Optional landmark/ward instruction field.
+- [x] **Visit Preferences & Special Notes**: Preferred visit window (Flexible, Morning, Afternoon, Evening), optional specific date, and clinician notes preserved and displayed in review recap.
+- [x] **Clear Pricing Policy (No Fabricated Subtotals)**: Minimum order value PKR 25,000; advance booking deposit PKR 3,000 (100% adjustable against final order, not an extra fee); Lahore only; next step coordination. Eventual product order value clearly displayed as "To be determined during visit" (no fabricated total).
+- [x] **Adjustable PKR 3,000 Booking Deposit**: Handled as dedicated Home Service booking deposit with pending payment status (`Awaiting Advance Payment Verification`). No false paid confirmation.
+- [x] **Submission Confirmation**: Renders exact mandated customer greeting and explanation with unique booking reference (`HS-ENM-2026-XXXX`).
+- [x] **Admin Home Service Management Portal**:
+  - Dedicated "HOME SERVICE" queue with search and status filters.
+  - 10-stage lifecycle: `New Request`, `Awaiting Advance Payment`, `Advance Paid`, `Awaiting Customer Care`, `Contacted`, `Visit Scheduled`, `Visit Completed`, `Requirements Collected`, `Final Order Created`, `Cancelled`.
+  - Order Detail Drawer: Displays customer details, immutable address snapshot, visit window, customer notes, and deposit status.
+  - In-person visit editor: Representative assigned, visit scheduled/completed time, in-person requirements and measurements recorded by staff.
+  - Confirmed final order value input (PKR) and linked final Shopify order reference (`#ENM-XXXX`).
+  - Accounting formula: Remaining Balance Due = Confirmed Final Order Total - Verified Advance Payment Received (PKR 3,000 credited exactly once).
+  - Notes audit log with author and timestamp.
+- [x] **Preserved Existing Site**: Make Your Own Scrubs, catalogue, and ordinary cart checkout unaffected.
+- [x] **Automated Acceptance Verification**: 12/12 Automated Acceptance Tests Passed on Staging Preview Theme `#192352092448`. Live theme `#192354877728` untouched.
+
+## Milestone 8: Native Shopify Theme Editor Integration (Theme Studio)
+- [x] **Audit & Setting Connection**: Refactored existing theme architecture so all website content, design settings, homepage sections, Hanging Mode physics, and Home Service configuration are fully editable in Shopify's native Theme Editor (`Online Store → Themes → Customize`).
+- [x] **Zero Inert Settings**: Every exposed control is directly bound to storefront output (HTML markup, CSS custom properties, or runtime JS configuration).
+- [x] **Header & Navigation**: Connected native Shopify `link_list` menus with dropdown submenus, sticky header toggle, live search toggle, customer account link, wishlist toggle, and custom colors in [`sections/enamels-header.liquid`](file:///Users/apple/Desktop/shopify/sections/enamels-header.liquid).
+- [x] **Boutique Hanging Rail**: Complete dedicated settings group for collection, product limits (4-16), tilt angle (-35° to -10°), hover lift (0 to -30px), animation speed (0.2s - 1.0s), spacing (16-60px), finish (`silver`/`black`/`gold`), and display toggles in [`sections/enamels-hanging-rail.liquid`](file:///Users/apple/Desktop/shopify/sections/enamels-hanging-rail.liquid).
+- [x] **Home Service Concierge**: Complete settings schema in [`sections/enamels-self-service-section.liquid`](file:///Users/apple/Desktop/shopify/sections/enamels-self-service-section.liquid) and bridge in [`snippets/enamels-self-service.liquid`](file:///Users/apple/Desktop/shopify/snippets/enamels-self-service.liquid) for minimum order (PKR 25,000), advance deposit (PKR 3,000), adjustment policy, confirmation messages, and repeatable `approved_address` blocks for Lahore healthcare zones.
+- [x] **Global Tokens & Presets**: Configured global typography, branding, teal/navy palette, button radius, and max-width tokens in [`config/settings_schema.json`](file:///Users/apple/Desktop/shopify/config/settings_schema.json) and injected via `:root` CSS in [`layout/theme.liquid`](file:///Users/apple/Desktop/shopify/layout/theme.liquid).
+- [x] **Modular Homepage Sections**: Populated default repeatable blocks in [`templates/index.json`](file:///Users/apple/Desktop/shopify/templates/index.json) for slideshow (5 slides), brand gallery (5 series), category discovery (6 categories), hospital shades (10 swatches), testimonials, and trust badges.
+- [x] **Automated Verification**: End-to-end browser audit script executed successfully with all 6 visual screenshots captured, 0 fatal console errors, and verified live on Staging Theme `#192352092448`. Live theme `#192354877728` untouched.
+
+## Milestone 9: Empty Thumbnail Captions & Blank Space Removal
+- [x] **Root Cause Diagnosis**:
+  - Unconditional rendering of caption containers (`.frubs-brand-tile-body`, `.split-category-info`, `.series-card-body`, `.collection-card__content`) with fixed padding, border, and light/white backgrounds even when text was empty.
+  - Fallback filters (`| default: 'Explore Series →'`, `| default: 'Category'`) that forced default placeholder text when merchant cleared fields in Theme Editor.
+  - Flex gaps (`--gap`) in parent inner wrappers that preserved vertical layout space even with empty text elements.
+  - Rich-text editor outputs containing empty HTML tags (`<p></p>`) which evaluated as non-blank.
+- [x] **Hide Empty Text Containers**:
+  - Implemented `strip` and `visible_text` checks on all text fields across `snippets/text.liquid`, `snippets/button.liquid`, `snippets/collection-card.liquid`, `blocks/_card.liquid`, `sections/enamels-brand-gallery.liquid`, `sections/enamels-category-video.liquid`, `sections/shop-by-series.liquid`, `sections/enamels-signature-series.liquid`, and `sections/enamels-slideshow.liquid`.
+  - Zero empty containers, blank boxes, or placeholder text outputted when cleared in Theme Editor.
+- [x] **Image-Only Thumbnail Layout**:
+  - When all text fields are cleared, `.is-image-only` class is applied and text containers are completely omitted.
+  - Added CSS rules in `assets/enamels-white-theme.css`: image-only cards collapse with `height: fit-content`, `gap: 0`, and zero bottom padding/margin.
+  - Preserved image aspect ratios (1:1, 4:3, 3:4), border-radius, object-fit: cover, and visual styling.
+- [x] **Partially Populated Thumbnails**:
+  - Independently checks each optional element (heading, label/badge, description, CTA button).
+  - Empty fields do not leave reserved gaps or blank containers when companion fields are populated.
+- [x] **Theme Editor Compatibility**:
+  - All existing Theme Editor settings remain fully editable and reactive without requiring block deletion.
+- [x] **Automated Browser Verification**:
+  - Automated Puppeteer test suite executed against live preview `#192352092448`:
+    - Scenario 1 (Image only): Card height matches media height exactly (+2px border), zero blank box, 0px bottom padding.
+    - Scenario 2 (Image + Heading only): Verified heading rendered, description and button omitted.
+    - Scenario 3 (Image + Description only): Verified description rendered, heading and button omitted.
+    - Scenario 4 (Image + Label/Badge only): Verified badge rendered over image, zero body box.
+    - Scenario 5 (Image + Heading & Description): Verified both rendered, button omitted.
+    - Scenario 6 (Responsive layouts): 0 layout issues on desktop (1440px), tablet (768px), and mobile (375px).
+- [x] **Deployment**: Pushed directly to unpublished Staging Theme `#192352092448`. Live theme `#192354877728` untouched.
+
+## Milestone 10: Master Customization Brief — Editable Thumbnail Dimensions, Easy Tagging & Complete Portability
+- [x] **Pixel-Level Editable Thumbnail Dimensions in Theme Editor**:
+  - Implemented responsive pixel dimension controls across:
+    - `sections/enamels-brand-gallery.liquid`: thumbnail width desktop/mobile, height, aspect ratio (`custom`, `1_1`, `3_4`, `4_3`, `16_9`, `natural`), fit mode, object-position X/Y, card border radius, thumbnail gap desktop/mobile, caption spacing.
+    - `sections/enamels-category-video.liquid`: video/media width desktop/mobile, height, aspect ratio, fit mode, alignment, border radius, spacing.
+    - `sections/shop-by-series.liquid`: card min width desktop/mobile, media height desktop/mobile, aspect ratio, fit mode, position X/Y, border radius, grid gap desktop/mobile, body padding.
+    - `sections/enamels-signature-series.liquid`: thumbnail width/height, fit mode, position, border radius, and aspect ratios.
+    - `sections/enamels-category-scrubs.liquid`: image max width desktop/mobile, height, aspect ratio, fit mode, position X/Y, border radius.
+    - `sections/enamels-category-labcoats.liquid`: image max width desktop/mobile, height, aspect ratio, fit mode, position X/Y, border radius.
+    - `sections/enamels-category-caps.liquid`: image max width desktop/mobile, height, aspect ratio, fit mode, position X/Y, border radius.
+    - `sections/enamels-category-sleeves.liquid`: image max width desktop/mobile, height, aspect ratio, fit mode, position X/Y, border radius.
+    - `sections/enamels-category-accessories.liquid`: image max width desktop/mobile, height, aspect ratio, fit mode, position X/Y, border radius.
+    - `sections/enamels-category-spotlight.liquid`: image max width desktop/mobile, height, aspect ratio, fit mode, position X/Y, border radius.
+    - `sections/enamels-live-catalogue.liquid`: card min width desktop/mobile, thumbnail height desktop/mobile, aspect ratio (`4_5`, `3_4`, `1_1`, `4_3`, `16_9`, `custom`, `natural`), fit mode, position X/Y, border radius, grid gap desktop/mobile, caption padding.
+- [x] **Universal Empty Caption & Text Collapse**:
+  - Completely omitted empty containers, blank boxes, and flex gaps across all thumbnail sections when title, tag, or description is blank.
+  - Added `.category-showcase-layout.is-image-only` to `assets/enamels-white-theme.css` to collapse grids to single column `1fr !important` with `gap: 0 !important` and zero empty text column.
+  - Added universal `:empty` collapse rules in `assets/enamels-white-theme.css` for `.card-series-tag:empty`, `.card-pill-tag:empty`, `.card-title-text:empty`, `.card-pricing-row:empty`, `.card-active-color-label:empty`, `.category-showcase-title:empty`, `.category-showcase-desc:empty`, `.brand-gallery-title:empty`, and `.series-tag-badge:empty`.
+- [x] **Easy Shopify Product Tagging Engine**:
+  - Modernized `adaptShopifyProduct` in `sections/enamels-chromatic-lab.liquid` with structured tag parsing.
+  - Full support for colon tags: `category:scrubs`, `category:lab-coats`, `category:caps`, `category:sleeves`, `category:accessories`; `gender:men`, `gender:women`, `gender:unisex`; `brand:sprinter`, `brand:vilora`, `brand:crown`, `brand:ground`, `brand:helium`, `brand:bunfit`, `brand:flexfit`, `brand:suiting`; `fabric:*`, `feature:*`, `badge:*`, and `customizable:true`.
+  - Full support for native Shopify fields (`sp.product_type`, `sp.vendor`).
+  - Seamless backwards compatibility with simple tags and title keywords.
+  - Authored comprehensive [PRODUCT_TAGGING_GUIDE.md](file:///Users/apple/Desktop/shopify/PRODUCT_TAGGING_GUIDE.md).
+- [x] **Complete Theme Portability**:
+  - Audited theme assets: zero dev-only URLs, zero localhost references, zero build locks.
+  - Authored comprehensive [THEME_PORTABILITY_GUIDE.md](file:///Users/apple/Desktop/shopify/THEME_PORTABILITY_GUIDE.md) detailing theme inventory, export instructions, target store import steps, and setup checklists.
+- [x] **Theme Quality & Deployment Verification**:
+  - `theme check`: 411 files inspected, **0 errors**.
+  - Node.js master verification suite: 14/14 files present, 4/4 tagging test cases passed, CSS collapse rules passed.
+  - Pushed to unpublished Staging Theme `#192352092448` (`Horizon`). Production theme `#192354877728` untouched.
+
+
+

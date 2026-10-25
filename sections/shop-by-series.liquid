@@ -27,11 +27,26 @@
 
     <div class="series-cards-grid">
       {% for block in section.blocks %}
-        <div class="series-card enamels-3d-card" {{ block.shopify_attributes }}>
+        {%- liquid
+          assign card_title = block.settings.title | strip
+          assign card_subtitle = block.settings.subtitle | strip
+          assign card_price = block.settings.price_text | strip
+          assign card_desc = block.settings.description | strip
+          assign card_features = block.settings.features | strip
+          assign card_colors = block.settings.colors | strip
+          assign card_btn_label = block.settings.button_label | strip
+          assign card_link = block.settings.link
+
+          assign has_series_body = false
+          if card_title != blank or card_subtitle != blank or card_price != blank or card_desc != blank or card_features != blank or card_colors != blank or card_btn_label != blank
+            assign has_series_body = true
+          endif
+        -%}
+        <div class="series-card enamels-3d-card{% unless has_series_body %} is-image-only{% endunless %}" {{ block.shopify_attributes }}>
           <div class="series-card-inner">
             <div class="series-card-media-wrapper">
               {% if block.settings.image != blank %}
-                {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'series-card-img', alt: block.settings.title }}
+                {{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'series-card-img', alt: card_title }}
               {% else %}
                 <div class="series-card-placeholder-bg" style="background: linear-gradient(135deg, {{ block.settings.accent_color | default: '#0f172a' }} 0%, #1e293b 100%);">
                   <div class="series-placeholder-icon">
@@ -49,58 +64,76 @@
               {% endif %}
             </div>
 
+            {% if has_series_body %}
             <div class="series-card-body">
+              {% if card_title != blank or card_subtitle != blank or card_price != blank %}
               <div class="series-card-header-row">
                 <div>
-                  <h3 class="series-card-title">{{ block.settings.title | escape }}</h3>
-                  <span class="series-card-type">{{ block.settings.subtitle | escape }}</span>
+                  {% if card_title != blank %}
+                    <h3 class="series-card-title">{{ card_title | escape }}</h3>
+                  {% endif %}
+                  {% if card_subtitle != blank %}
+                    <span class="series-card-type">{{ card_subtitle | escape }}</span>
+                  {% endif %}
                 </div>
-                {% if block.settings.price_text != blank %}
+                {% if card_price != blank %}
                   <div class="series-card-price-pill">
-                    {{ block.settings.price_text | escape }}
+                    {{ card_price | escape }}
                   </div>
                 {% endif %}
               </div>
+              {% endif %}
 
-              <p class="series-card-desc">{{ block.settings.description | escape }}</p>
+              {% if card_desc != blank %}
+                <p class="series-card-desc">{{ card_desc | escape }}</p>
+              {% endif %}
 
-              {% if block.settings.features != blank %}
+              {% if card_features != blank %}
                 <div class="series-card-features">
-                  {% assign feature_list = block.settings.features | split: '•' %}
+                  {% assign feature_list = card_features | split: '•' %}
                   {% for feat in feature_list %}
-                    <span class="series-feature-chip">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="3">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      {{ feat | strip }}
-                    </span>
+                    {% assign feat_clean = feat | strip %}
+                    {% if feat_clean != blank %}
+                      <span class="series-feature-chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="3">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        {{ feat_clean }}
+                      </span>
+                    {% endif %}
                   {% endfor %}
                 </div>
               {% endif %}
 
               <!-- Color Palette Dots Preview -->
-              {% if block.settings.colors != blank %}
+              {% if card_colors != blank %}
                 <div class="series-swatches-preview">
                   <span class="series-swatch-label">Available Colors:</span>
                   <div class="series-swatch-dots">
-                    {% assign color_list = block.settings.colors | split: ',' %}
+                    {% assign color_list = card_colors | split: ',' %}
                     {% for hex in color_list %}
-                      <span class="series-swatch-dot" style="background-color: {{ hex | strip }};" title="{{ hex | strip }}"></span>
+                      {% assign hex_clean = hex | strip %}
+                      {% if hex_clean != blank %}
+                        <span class="series-swatch-dot" style="background-color: {{ hex_clean }};" title="{{ hex_clean }}"></span>
+                      {% endif %}
                     {% endfor %}
                   </div>
                 </div>
               {% endif %}
 
+              {% if card_btn_label != blank %}
               <div class="series-card-footer">
-                <a href="{{ block.settings.link | default: '/collections/all' }}" class="series-explore-btn">
-                  <span>{{ block.settings.button_label | default: 'Explore Series' }}</span>
+                <a href="{{ card_link | default: '/collections/all' }}" class="series-explore-btn">
+                  <span>{{ card_btn_label | escape }}</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
                   </svg>
                 </a>
               </div>
+              {% endif %}
             </div>
+            {% endif %}
           </div>
         </div>
       {% endfor %}
@@ -109,15 +142,28 @@
 </div>
 
 <style>
-  .series-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 28px;
+  .series-card.is-image-only {
+    height: fit-content;
+  }
+  .series-card.is-image-only .series-card-inner {
+    height: auto;
+  }
+  .series-card.is-image-only .series-card-body,
+  .series-card-body:empty {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  .series-card {
+  #shopify-section-{{ section.id }} .series-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_width_desktop | default: 280 }}px, 1fr));
+    gap: {{ section.settings.grid_gap_desktop | default: 28 }}px;
+  }
+
+  #shopify-section-{{ section.id }} .series-card {
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: {{ section.settings.card_border_radius | default: 16 }}px;
     overflow: hidden;
     border: 1px solid #e2e8f0;
     display: flex;
@@ -125,25 +171,65 @@
     box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
   }
 
-  .series-card-inner {
+  #shopify-section-{{ section.id }} .series-card-inner {
     display: flex;
     flex-direction: column;
     height: 100%;
   }
 
-  .series-card-media-wrapper {
+  #shopify-section-{{ section.id }} .series-card-media-wrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 3;
+    border-radius: {{ section.settings.card_border_radius | default: 16 }}px {{ section.settings.card_border_radius | default: 16 }}px 0 0;
     overflow: hidden;
     background: #f1f5f9;
+    {% if section.settings.image_aspect_ratio == 'custom' %}
+      height: {{ section.settings.media_height_desktop | default: 300 }}px;
+      aspect-ratio: unset;
+    {% elsif section.settings.image_aspect_ratio == '1_1' %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == '3_4' %}
+      aspect-ratio: 3 / 4;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == '16_9' %}
+      aspect-ratio: 16 / 9;
+      height: auto;
+    {% elsif section.settings.image_aspect_ratio == 'natural' %}
+      aspect-ratio: auto;
+      height: auto;
+    {% else %}
+      aspect-ratio: 4 / 3;
+      height: auto;
+    {% endif %}
   }
 
-  .series-card-img {
+  #shopify-section-{{ section.id }} .series-card.is-image-only .series-card-media-wrapper {
+    border-radius: {{ section.settings.card_border_radius | default: 16 }}px;
+  }
+
+  #shopify-section-{{ section.id }} .series-card-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
+    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
     transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  #shopify-section-{{ section.id }} .series-card-body {
+    padding: {{ section.settings.body_padding | default: 24 }}px;
+  }
+
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .series-cards-grid {
+      grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_width_mobile | default: 240 }}px, 1fr));
+      gap: {{ section.settings.grid_gap_mobile | default: 16 }}px;
+    }
+    {% if section.settings.image_aspect_ratio == 'custom' %}
+      #shopify-section-{{ section.id }} .series-card-media-wrapper {
+        height: {{ section.settings.media_height_mobile | default: 220 }}px;
+      }
+    {% endif %}
   }
 
   .series-card:hover .series-card-img {
@@ -355,6 +441,136 @@
       "step": 4,
       "unit": "px",
       "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail & Card Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "card_width_desktop",
+      "label": "Card Min Width Desktop (px)",
+      "min": 200,
+      "max": 450,
+      "step": 5,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card Min Width Mobile (px)",
+      "min": 150,
+      "max": 320,
+      "step": 5,
+      "default": 240,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "media_height_desktop",
+      "label": "Media Height Desktop (px)",
+      "min": 160,
+      "max": 550,
+      "step": 5,
+      "default": 300,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "media_height_mobile",
+      "label": "Media Height Mobile (px)",
+      "min": 140,
+      "max": 380,
+      "step": 5,
+      "default": 220,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "custom", "label": "Custom (Use Height Above)" },
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "4_3", "label": "4:3 Classic" },
+        { "value": "3_4", "label": "3:4 Portrait" },
+        { "value": "16_9", "label": "16:9 Widescreen" },
+        { "value": "natural", "label": "Natural / Auto" }
+      ],
+      "default": "4_3"
+    },
+    {
+      "type": "select",
+      "id": "image_fit_mode",
+      "label": "Image Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_x",
+      "label": "Horizontal Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_pos_y",
+      "label": "Vertical Image Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card Border Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "label": "Grid Gap Desktop (px)",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Grid Gap Mobile (px)",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "body_padding",
+      "label": "Card Body Padding (px)",
+      "min": 10,
+      "max": 36,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
     }
   ],
   "blocks": [

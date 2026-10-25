@@ -42,9 +42,9 @@
           <a href="#category-scrubs" onclick="window.returnToArticleListing(); return false;" class="pdp-back-btn-pill" style="font-size: 11px; font-weight: 700; color: #102a43; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
             ← Back to Articles
           </a>
-          <!-- Quick Anchor to Representative Visit -->
-          <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 4px 10px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-            📍 Prefer Sizing at Your Clinic? Request Lahore Visit ↓
+          <!-- Quick Anchor to Dedicated Home Service -->
+          <a href="#" onclick="window.navigateToView('self-service'); return false;" style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 4px 10px; border-radius: 999px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+            📍 Prefer Sizing at Your Clinic? Book Lahore Home Service →
           </a>
         </div>
       </div>
@@ -75,9 +75,9 @@
           <span class="pdp-step-circle">6</span>
           <span>Summary</span>
         </a>
-        <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" class="pdp-step-indicator" id="stepper-step-7" style="text-decoration: none; cursor: pointer; color: #008779;">
+        <a href="#" onclick="window.navigateToView('self-service'); return false;" class="pdp-step-indicator" id="stepper-step-7" style="text-decoration: none; cursor: pointer; color: #008779;">
           <span class="pdp-step-circle" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">7</span>
-          <span>Lahore Visit</span>
+          <span>Home Service</span>
         </a>
       </div>
 
@@ -138,8 +138,8 @@
           <p style="font-size: 12px; color: #475569; margin: 0 0 10px; line-height: 1.4;">
             An Enamels representative visits your hospital or clinic with genuine fabric swatches & physical sizing samples.
           </p>
-          <a href="#representative-visit-section" onclick="window.scrollToRepVisitSection(); return false;" class="btn-step-prev" style="width: 100%; text-align: center; justify-content: center; text-decoration: none; font-size: 12px; font-weight: 700; color: #008779; background: #f0fdfa; border-color: #99f6e4;">
-            📅 Request Lahore Visit on this Page ↓
+          <a href="#" onclick="window.navigateToView('self-service'); return false;" class="btn-step-prev" style="width: 100%; text-align: center; justify-content: center; text-decoration: none; font-size: 12px; font-weight: 700; color: #008779; background: #f0fdfa; border-color: #99f6e4;">
+            📅 Book Lahore Home Service →
           </a>
         </div>
       </div>
@@ -695,15 +695,20 @@
             <div style="flex: 1;">
               <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
                 <strong style="color: #102a43; font-size: 13px; text-transform: uppercase;">
-                  Representative Visit Service Fee: <span style="color: #00b8a9; font-size: 15px;">Rs. 500</span>
+                  Home Service Advance Deposit: <span style="color: #008779; font-size: 15px;">PKR 3,000</span>
                 </strong>
                 <span style="font-size: 11px; background: #e6fffa; color: #008779; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
-                  100% ADJUSTABLE AGAINST ORDER
+                  100% ADJUSTABLE AGAINST FINAL ORDER TOTAL
                 </span>
               </div>
               <p style="font-size: 12px; color: #475569; margin: 4px 0 0; line-height: 1.4;">
-                A nominal Rs. 500 consultation fee applies for in-person representative travel and sizing in Lahore. This fee is <strong>fully adjustable (deducted)</strong> from your uniform purchase when placing an order of Rs. 10,000 or more. Payable during the visit or via advance Bank Transfer. Garments and customizations are billed separately based on selected items.
+                A PKR 3,000 advance payment applies for personalized in-person sizing in Lahore. This advance is <strong>100% adjustable against your final order total</strong> (Min. qualifying order PKR 25,000). It is not an additional service charge. Service available exclusively in approved Lahore medical sectors.
               </p>
+              <div style="margin-top: 10px;">
+                <button type="button" class="btn-card-action" onclick="window.navigateToView('self-service')" style="width: auto; padding: 8px 18px; font-size: 12px; font-weight: 700; background: #008779; color: #ffffff;">
+                  Open Dedicated Home Service Booking Portal (Lahore) →
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1053,123 +1058,6 @@
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- ADMINISTRATIVE MANAGEMENT MODAL (FOR VISIT BOOKING AUDITING) -->
-<!-- ============================================================ -->
-<div class="enamels-modal-backdrop" id="self-service-admin-modal" onclick="window.closeSelfServiceAdminModal()">
-  <div class="enamels-modal-card" style="max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
-    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
-      <div>
-        <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 4px;">
-          Enamels Representative Visit Management Portal
-        </h3>
-        <p style="font-size: 12px; color: #64748b; margin: 0;">
-          Review customer requests, confirm appointments, assign representatives, and link Shopify orders.
-        </p>
-      </div>
-      <button type="button" class="modal-close-trigger" onclick="window.closeSelfServiceAdminModal()" style="position: static;">✕</button>
-    </div>
 
-    <!-- Admin Search & Filter Bar -->
-    <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
-      <input
-        type="search"
-        id="admin-booking-search"
-        placeholder="Search by customer name, phone, ref ID, or Lahore area..."
-        oninput="window.renderAdminBookingList()"
-        style="flex: 1; min-width: 240px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px;"
-      />
-      <select
-        id="admin-booking-status-filter"
-        onchange="window.renderAdminBookingList()"
-        style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; background: #ffffff;"
-      >
-        <option value="all">All Request Statuses</option>
-        <option value="Pending Review">Pending Review</option>
-        <option value="Confirmed">Confirmed</option>
-        <option value="Representative Assigned">Representative Assigned</option>
-        <option value="Completed">Completed</option>
-        <option value="Order Linked">Order Linked</option>
-        <option value="Cancelled">Cancelled</option>
-      </select>
-    </div>
+<!-- Legacy modal removed: Enamels Home Service Order Management is owned by snippets/enamels-self-service.liquid -->
 
-    <!-- Bookings Table Container -->
-    <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow-x: auto; margin-bottom: 16px;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
-        <thead style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #64748b; font-weight: 700;">
-          <tr>
-            <th style="padding: 10px 12px;">Ref ID</th>
-            <th style="padding: 10px 12px;">Customer</th>
-            <th style="padding: 10px 12px;">Lahore Area</th>
-            <th style="padding: 10px 12px;">Preferred Time</th>
-            <th style="padding: 10px 12px;">Status</th>
-            <th style="padding: 10px 12px; text-align: right;">Action</th>
-          </tr>
-        </thead>
-        <tbody id="admin-bookings-table-body">
-          <!-- Dynamically populated from stored bookings -->
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Booking Inspection & Management Drawer -->
-    <div id="admin-booking-detail-panel" style="display: none; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 18px; margin-top: 16px;">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-        <h4 style="font-size: 15px; font-weight: 700; color: #102a43; margin: 0;" id="admin-detail-title">
-          Booking Details: ENM-VISIT-2026-XXXX
-        </h4>
-        <button type="button" onclick="document.getElementById('admin-booking-detail-panel').style.display='none'" style="background: none; border: none; font-size: 12px; color: #64748b; cursor: pointer;">✕ Close Details</button>
-      </div>
-
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px;">
-        <div style="font-size: 12px; color: #334155; line-height: 1.6;">
-          <div><strong>Customer Name:</strong> <span id="admin-detail-name">-</span></div>
-          <div><strong>Phone:</strong> <span id="admin-detail-phone">-</span></div>
-          <div><strong>WhatsApp:</strong> <span id="admin-detail-whatsapp">-</span></div>
-          <div><strong>Email:</strong> <span id="admin-detail-email">-</span></div>
-          <div><strong>Address:</strong> <span id="admin-detail-address">-</span></div>
-        </div>
-
-        <div style="font-size: 12px; color: #334155; line-height: 1.6;">
-          <div><strong>Requested Products:</strong> <span id="admin-detail-products">-</span></div>
-          <div><strong>Customization Notes:</strong> <span id="admin-detail-notes">-</span></div>
-          <div><strong>Preferred Timing:</strong> <span id="admin-detail-timing">-</span></div>
-          <div><strong>Submission Time:</strong> <span id="admin-detail-created">-</span></div>
-          <div><strong>Visit Fee:</strong> Rs. 500 (100% adjustable against orders >= Rs. 10,000)</div>
-        </div>
-      </div>
-
-      <!-- Action Form -->
-      <div style="border-top: 1px solid #e2e8f0; padding-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: flex-end;">
-        <div>
-          <label style="font-size: 11px; font-weight: 600; color: #102a43; display: block; margin-bottom: 4px;">Update Status:</label>
-          <select id="admin-detail-status-select" style="width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; background: #ffffff;">
-            <option value="Pending Review">Pending Review</option>
-            <option value="Confirmed">Confirmed</option>
-            <option value="Representative Assigned">Representative Assigned</option>
-            <option value="Completed">Completed</option>
-            <option value="Order Linked">Order Linked</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
-
-        <div>
-          <label style="font-size: 11px; font-weight: 600; color: #102a43; display: block; margin-bottom: 4px;">Assign Representative:</label>
-          <input type="text" id="admin-detail-rep-input" placeholder="e.g. Farhan Ali (Senior Fitter)" style="width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px;" />
-        </div>
-
-        <div>
-          <label style="font-size: 11px; font-weight: 600; color: #102a43; display: block; margin-bottom: 4px;">Link Shopify Order #:</label>
-          <input type="text" id="admin-detail-order-input" placeholder="e.g. #ENM-1082" style="width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px;" />
-        </div>
-      </div>
-
-      <div style="margin-top: 12px; display: flex; justify-content: flex-end; gap: 8px;">
-        <button type="button" class="btn-proceed-checkout" onclick="window.saveAdminBookingChanges()" style="padding: 8px 16px; font-size: 12px;">
-          Save Booking Changes
-        </button>
-      </div>
-    </div>
-  </div>
-</div>

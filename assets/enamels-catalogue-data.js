@@ -21,16 +21,16 @@ window.EnamelsCatalogue = [
     badge: '4-WAY STRETCH',
     fabric: 'Flexi-Tech AeroStretch Twill (72% Poly, 21% Rayon, 7% Spandex)',
     description: 'Purpose-built athletic scrub set featuring 4-way mechanical stretch twill, ergonomic raglan sleeves for surgical freedom, and 6-pocket cargo jogger trousers with secure zippered phone stash.',
-    image: 'cat-sprinter.jpg',
+    image: 'demo-hang-scrub-navy.png',
     images: [
-      { src: 'cat-sprinter.jpg', alt: 'Men’s Sprinter Athletic Scrub Set Front View' },
-      { src: 'demo-sprinter-navy.jpg', alt: 'Men’s Sprinter Athletic Scrub Set Clinical View' }
+      { src: 'demo-hang-scrub-navy.png', alt: 'Men’s Sprinter Athletic Scrub Set Front View' },
+      { src: 'demo-hang-scrub-olive.png', alt: 'Men’s Sprinter Athletic Scrub Set Olive View' }
     ],
     colors: [
-      { name: 'Deep Navy', hex: '#102A43', image: 'cat-sprinter.jpg' },
-      { name: 'Hunter Green', hex: '#14532D', image: 'cat-sprinter.jpg' },
-      { name: 'Ceil Blue', hex: '#6BA4B8', image: 'cat-sprinter.jpg' },
-      { name: 'Obsidian Black', hex: '#18181B', image: 'cat-sprinter.jpg' }
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Hunter Green', hex: '#14532D', image: 'demo-hang-scrub-olive.png' },
+      { name: 'Ceil Blue', hex: '#6BA4B8', image: 'demo-hang-scrub-teal.png' },
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
     variantId: 67718805684512,
@@ -39,13 +39,13 @@ window.EnamelsCatalogue = [
     companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
   },
 
-  // 2. Men → Scrubs → Ground
+  // 2. Men → Scrubs → Crown
   {
-    id: 'preview-men-ground-mandarin-scrub-set',
-    handle: 'men-ground-executive-mandarin-scrub-set',
-    sku: 'ENM-GRD-M-02',
-    title: 'Men’s Ground Executive Mandarin Collar Scrub Set (Preview)',
-    cleanTitle: 'Men’s Ground Mandarin Scrub Set',
+    id: 'preview-men-crown-mandarin-scrub-set',
+    handle: 'men-crown-executive-mandarin-scrub-set',
+    sku: 'ENM-CRW-M-02',
+    title: 'Men’s Crown Executive Mandarin Collar Scrub Set (Preview)',
+    cleanTitle: 'Men’s Crown Mandarin Scrub Set',
     category: 'scrub-set',
     gender: 'men',
     series: 'Crown',
@@ -54,16 +54,47 @@ window.EnamelsCatalogue = [
     badge: 'EXECUTIVE MANDARIN',
     fabric: 'Executive High-Density Antimicrobial Micro-Twill with Fluid Barrier',
     description: 'Sophisticated standing mandarin collar with concealed front button placket. Tailored for department heads, senior surgical consultants, and clinical rounds.',
-    image: 'cat-crown.jpg',
+    image: 'demo-hang-scrub-burgundy.png',
     images: [
-      { src: 'cat-crown.jpg', alt: 'Men’s Ground Executive Mandarin Scrub Set Front View' },
-      { src: 'demo-crown-burgundy.jpg', alt: 'Men’s Ground Mandarin Detail' }
+      { src: 'demo-hang-scrub-burgundy.png', alt: 'Men’s Crown Executive Mandarin Scrub Set Front View' },
+      { src: 'demo-hang-scrub-navy.png', alt: 'Men’s Crown Mandarin Navy View' }
     ],
     colors: [
-      { name: 'Deep Navy', hex: '#102A43', image: 'cat-crown.jpg' },
-      { name: 'Burgundy Maroon', hex: '#581C87', image: 'cat-crown.jpg' },
-      { name: 'Olive Shine', hex: '#3F4E3B', image: 'cat-crown.jpg' },
-      { name: 'Obsidian Black', hex: '#18181B', image: 'cat-crown.jpg' }
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Burgundy Maroon', hex: '#581C87', image: 'demo-hang-scrub-burgundy.png' },
+      { name: 'Olive Shine', hex: '#3F4E3B', image: 'demo-hang-scrub-olive.png' },
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' }
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
+    variantId: 67718805684512,
+    isPreview: true,
+    supportsCustomization: true,
+    companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
+  },
+
+  // 2B. Men → Scrubs → Ground
+  {
+    id: 'preview-men-ground-tactical-scrub-set',
+    handle: 'men-ground-heavy-duty-scrub-set',
+    sku: 'ENM-GRD-M-02B',
+    title: 'Men’s Ground Heavy-Duty Tactical Scrub Set (Preview)',
+    cleanTitle: 'Men’s Ground Tactical Scrub Set',
+    category: 'scrub-set',
+    gender: 'men',
+    series: 'Ground',
+    basePrice: 6650,
+    comparePrice: 7600,
+    badge: 'HEAVY-DUTY TWILL',
+    fabric: 'Reinforced High-Density Tactical Gabardine with Fluid-Shield Barrier',
+    description: 'Heavy-duty clinical scrub set engineered for high-intensity emergency room resilience. Deep cargo utility pockets and reinforced stress points.',
+    image: 'demo-hang-scrub-black.png',
+    images: [
+      { src: 'demo-hang-scrub-black.png', alt: 'Men’s Ground Tactical Scrub Set' }
+    ],
+    colors: [
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' },
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Hunter Green', hex: '#14532D', image: 'demo-hang-scrub-olive.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
     variantId: 67718805684512,
@@ -87,16 +118,16 @@ window.EnamelsCatalogue = [
     badge: '4-WAY STRETCH',
     fabric: 'Flexi-Tech AeroStretch Twill (72% Poly, 21% Rayon, 7% Spandex)',
     description: 'Feminine contour cut with princess seams, 4-way mechanical stretch, reinforced double-needle stitching, and multi-pocket high-waisted comfort waistband joggers.',
-    image: 'cat-sprinter.jpg',
+    image: 'demo-hang-scrub-navy.png',
     images: [
-      { src: 'cat-sprinter.jpg', alt: 'Women’s Sprinter Scrub Set' },
-      { src: 'cat-women-scrubs.jpg', alt: 'Women’s Scrub Styling' }
+      { src: 'demo-hang-scrub-navy.png', alt: 'Women’s Sprinter Scrub Set' },
+      { src: 'demo-hang-scrub-teal.png', alt: 'Women’s Scrub Styling' }
     ],
     colors: [
-      { name: 'Deep Navy', hex: '#102A43', image: 'cat-sprinter.jpg' },
-      { name: 'Clinical Teal', hex: '#00B8A9', image: 'cat-sprinter.jpg' },
-      { name: 'Ceil Blue', hex: '#6BA4B8', image: 'cat-sprinter.jpg' },
-      { name: 'Lilac Lavender', hex: '#A855F7', image: 'cat-sprinter.jpg' }
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Clinical Teal', hex: '#00B8A9', image: 'demo-hang-scrub-teal.png' },
+      { name: 'Ceil Blue', hex: '#6BA4B8', image: 'demo-hang-scrub-teal.png' },
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
     variantId: 67718805684512,
@@ -105,13 +136,13 @@ window.EnamelsCatalogue = [
     companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
   },
 
-  // 4. Women → Scrubs → Ground
+  // 4. Women → Scrubs → Crown
   {
-    id: 'preview-women-ground-mandarin-scrub-set',
-    handle: 'women-ground-executive-mandarin-scrub-set',
-    sku: 'ENM-GRD-W-04',
-    title: 'Women’s Ground Executive Mandarin Collar Scrub Set (Preview)',
-    cleanTitle: 'Women’s Ground Mandarin Scrub Set',
+    id: 'preview-women-crown-mandarin-scrub-set',
+    handle: 'women-crown-executive-mandarin-scrub-set',
+    sku: 'ENM-CRW-W-04',
+    title: 'Women’s Crown Executive Mandarin Collar Scrub Set (Preview)',
+    cleanTitle: 'Women’s Crown Mandarin Scrub Set',
     category: 'scrub-set',
     gender: 'women',
     series: 'Crown',
@@ -120,16 +151,47 @@ window.EnamelsCatalogue = [
     badge: 'EXECUTIVE CUT',
     fabric: 'Executive High-Density Antimicrobial Micro-Twill with Fluid Barrier',
     description: 'Precision mandarin collar tailored specifically for female physicians and specialists. Concealed placket, tapered silhouette, and wrinkle-defying clinical performance.',
-    image: 'cat-crown.jpg',
+    image: 'demo-hang-scrub-burgundy.png',
     images: [
-      { src: 'cat-crown.jpg', alt: 'Women’s Ground Scrub Set' },
-      { src: 'demo-crown-burgundy.jpg', alt: 'Women’s Mandarin Detail' }
+      { src: 'demo-hang-scrub-burgundy.png', alt: 'Women’s Crown Scrub Set' },
+      { src: 'demo-hang-scrub-navy.png', alt: 'Women’s Mandarin Detail' }
     ],
     colors: [
-      { name: 'Deep Navy', hex: '#102A43', image: 'cat-crown.jpg' },
-      { name: 'Burgundy Maroon', hex: '#581C87', image: 'cat-crown.jpg' },
-      { name: 'Hunter Green', hex: '#14532D', image: 'cat-crown.jpg' },
-      { name: 'Heather Grey', hex: '#64748B', image: 'cat-crown.jpg' }
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Burgundy Maroon', hex: '#581C87', image: 'demo-hang-scrub-burgundy.png' },
+      { name: 'Hunter Green', hex: '#14532D', image: 'demo-hang-scrub-olive.png' },
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' }
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
+    variantId: 67718805684512,
+    isPreview: true,
+    supportsCustomization: true,
+    companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
+  },
+
+  // 4B. Women → Scrubs → Ground
+  {
+    id: 'preview-women-ground-tactical-scrub-set',
+    handle: 'women-ground-heavy-duty-scrub-set',
+    sku: 'ENM-GRD-W-04B',
+    title: 'Women’s Ground Heavy-Duty Performance Scrub Set (Preview)',
+    cleanTitle: 'Women’s Ground Performance Scrub Set',
+    category: 'scrub-set',
+    gender: 'women',
+    series: 'Ground',
+    basePrice: 6650,
+    comparePrice: 7600,
+    badge: 'HEAVY-DUTY TWILL',
+    fabric: 'Reinforced Antimicrobial Tactical Twill with Liquid Barrier',
+    description: 'Robust clinical performance scrub tailored for intensive nursing rounds, triage, and operating duty.',
+    image: 'demo-hang-scrub-black.png',
+    images: [
+      { src: 'demo-hang-scrub-black.png', alt: 'Women’s Ground Performance Scrub Set' }
+    ],
+    colors: [
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' },
+      { name: 'Clinical Teal', hex: '#00B8A9', image: 'demo-hang-scrub-teal.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
     variantId: 67718805684512,
@@ -147,22 +209,22 @@ window.EnamelsCatalogue = [
     cleanTitle: 'Women’s Vilora Micro-Drape Scrub Set',
     category: 'scrub-set',
     gender: 'women',
-    series: 'Velora',
+    series: 'Vilora',
     basePrice: 6500,
     comparePrice: 7500,
     badge: 'MICRO-DRAPE',
     fabric: 'Liquid-Soft Micro-Drape (Fluid-Repellent & 24hr Wrinkle-Free)',
     description: 'Liquid-soft touch with graceful fluid drape. Infused with silver-ion antimicrobial barrier and wrinkle-release weave that stays impeccable through emergency calls.',
-    image: 'cat-velora.jpg',
+    image: 'demo-hang-scrub-teal.png',
     images: [
-      { src: 'cat-velora.jpg', alt: 'Women’s Vilora Scrub Set' },
-      { src: 'demo-velora-teal.jpg', alt: 'Vilora Tailored Detail' }
+      { src: 'demo-hang-scrub-teal.png', alt: 'Women’s Vilora Scrub Set' },
+      { src: 'demo-hang-scrub-navy.png', alt: 'Vilora Tailored Detail' }
     ],
     colors: [
-      { name: 'Clinical Teal', hex: '#00B8A9', image: 'cat-velora.jpg' },
-      { name: 'Deep Navy', hex: '#102A43', image: 'cat-velora.jpg' },
-      { name: 'Lilac Lavender', hex: '#A855F7', image: 'cat-velora.jpg' },
-      { name: 'Ceil Blue', hex: '#6BA4B8', image: 'cat-velora.jpg' }
+      { name: 'Clinical Teal', hex: '#00B8A9', image: 'demo-hang-scrub-teal.png' },
+      { name: 'Deep Navy', hex: '#102A43', image: 'demo-hang-scrub-navy.png' },
+      { name: 'Burgundy Maroon', hex: '#581C87', image: 'demo-hang-scrub-burgundy.png' },
+      { name: 'Obsidian Black', hex: '#18181B', image: 'demo-hang-scrub-black.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
     variantId: 67718805684512,
@@ -171,7 +233,7 @@ window.EnamelsCatalogue = [
     companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
   },
 
-  // 6. Men → Lab Coats (Helium)
+  // 6. Men → Lab Coats (Helium / Wrinkle-Free)
   {
     id: 'preview-men-helium-lab-coat',
     handle: 'men-helium-technical-white-lab-coat',
@@ -183,15 +245,15 @@ window.EnamelsCatalogue = [
     series: 'Helium',
     basePrice: 7500,
     comparePrice: 8500,
-    badge: 'LAB COAT',
+    badge: 'WRINKLE-FREE',
     fabric: 'Shield-Barrier Antimicrobial Optical White Cotton-Blend',
     description: 'Crisp optical white technical doctor coat featuring reinforced stethoscope collar loop, dual oversized iPad/tablet pocket, pass-through side slits, and French-cuff finish.',
-    image: 'cat-labcoat.jpg',
+    image: 'demo-hang-labcoat-white.png',
     images: [
-      { src: 'cat-labcoat.jpg', alt: 'Men’s Helium Technical Lab Coat' }
+      { src: 'demo-hang-labcoat-white.png', alt: 'Men’s Helium Technical Lab Coat' }
     ],
     colors: [
-      { name: 'Optical White', hex: '#FFFFFF', image: 'cat-labcoat.jpg' }
+      { name: 'Optical White', hex: '#FFFFFF', image: 'demo-hang-labcoat-white.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
     variantId: 67718805684512,
@@ -200,7 +262,36 @@ window.EnamelsCatalogue = [
     companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
   },
 
-  // 7. Women → Lab Coats (Helium)
+  // 6B. Men → Lab Coats (Suiting Range)
+  {
+    id: 'preview-men-suiting-lab-coat',
+    handle: 'men-suiting-executive-consultant-lab-coat',
+    sku: 'ENM-SUT-M-06B',
+    title: 'Men’s Suiting Executive Consultant Lab Coat (Preview)',
+    cleanTitle: 'Men’s Suiting Executive Lab Coat',
+    category: 'lab-coat',
+    gender: 'men',
+    series: 'Suiting',
+    basePrice: 8500,
+    comparePrice: 9500,
+    badge: 'EXECUTIVE SUITING',
+    fabric: 'Dense Structured Gabardine Twill with Teflon Stain-Defend',
+    description: 'Bespoke structured consultant coat featuring notched lapels, chest welt pocket, and vented back pleating tailored for senior clinical leaders.',
+    image: 'demo-hang-labcoat-white.png',
+    images: [
+      { src: 'demo-hang-labcoat-white.png', alt: 'Men’s Suiting Executive Lab Coat' }
+    ],
+    colors: [
+      { name: 'Optical White', hex: '#FFFFFF', image: 'demo-hang-labcoat-white.png' }
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'],
+    variantId: 67718805684512,
+    isPreview: true,
+    supportsCustomization: true,
+    companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
+  },
+
+  // 7. Women → Lab Coats (Helium / Wrinkle-Free)
   {
     id: 'preview-women-helium-lab-coat',
     handle: 'women-helium-technical-white-lab-coat',
@@ -212,15 +303,44 @@ window.EnamelsCatalogue = [
     series: 'Helium',
     basePrice: 7500,
     comparePrice: 8500,
-    badge: 'LAB COAT',
+    badge: 'WRINKLE-FREE',
     fabric: 'Shield-Barrier Antimicrobial Optical White Cotton-Blend',
     description: 'Elegantly tailored consultant coat with back pleating, ergonomic lapels, tablet-sized pockets, and stain-resistant Teflon shield engineered for clinical leadership.',
-    image: 'cat-labcoat.jpg',
+    image: 'demo-hang-labcoat-white.png',
     images: [
-      { src: 'cat-labcoat.jpg', alt: 'Women’s Helium Technical Lab Coat' }
+      { src: 'demo-hang-labcoat-white.png', alt: 'Women’s Helium Technical Lab Coat' }
     ],
     colors: [
-      { name: 'Optical White', hex: '#FFFFFF', image: 'cat-labcoat.jpg' }
+      { name: 'Optical White', hex: '#FFFFFF', image: 'demo-hang-labcoat-white.png' }
+    ],
+    sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
+    variantId: 67718805684512,
+    isPreview: true,
+    supportsCustomization: true,
+    companionIds: ['preview-bunfit-cap-navy', 'preview-compression-sleeves']
+  },
+
+  // 7B. Women → Lab Coats (Suiting Range)
+  {
+    id: 'preview-women-suiting-lab-coat',
+    handle: 'women-suiting-tailored-consultant-lab-coat',
+    sku: 'ENM-SUT-W-07B',
+    title: 'Women’s Suiting Tailored Executive Lab Coat (Preview)',
+    cleanTitle: 'Women’s Suiting Tailored Lab Coat',
+    category: 'lab-coat',
+    gender: 'women',
+    series: 'Suiting',
+    basePrice: 8500,
+    comparePrice: 9500,
+    badge: 'EXECUTIVE SUITING',
+    fabric: 'Dense Structured Gabardine Twill with Teflon Stain-Defend',
+    description: 'Tailored feminine silhouette with contoured waist seam, notched lapels, hidden tablet pockets, and optical white finish.',
+    image: 'demo-hang-labcoat-white.png',
+    images: [
+      { src: 'demo-hang-labcoat-white.png', alt: 'Women’s Suiting Tailored Lab Coat' }
+    ],
+    colors: [
+      { name: 'Optical White', hex: '#FFFFFF', image: 'demo-hang-labcoat-white.png' }
     ],
     sizes: ['XS', 'S', 'M', 'L', 'XL', '2XL'],
     variantId: 67718805684512,

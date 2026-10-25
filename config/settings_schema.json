@@ -2160,6 +2160,69 @@
     ]
   },
   {
+    "name": "Enamels Design System & Tokens",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Signature Enamels Colors"
+      },
+      {
+        "type": "color",
+        "id": "enamels_primary_teal",
+        "label": "Primary Clinical Teal",
+        "default": "#008779",
+        "info": "Used on primary action buttons, badges, highlights, and active states."
+      },
+      {
+        "type": "color",
+        "id": "enamels_navy_color",
+        "label": "Deep Midnight Navy",
+        "default": "#102a43",
+        "info": "Used on typography headers, navigation bar, and dark elements."
+      },
+      {
+        "type": "color",
+        "id": "enamels_surface_bg",
+        "label": "Surface & Card Tint Background",
+        "default": "#f8fafc"
+      },
+      {
+        "type": "header",
+        "content": "Corner Radii & Geometry"
+      },
+      {
+        "type": "range",
+        "id": "enamels_button_radius",
+        "min": 0,
+        "max": 30,
+        "step": 2,
+        "unit": "px",
+        "label": "Button Corner Radius",
+        "default": 6
+      },
+      {
+        "type": "range",
+        "id": "enamels_card_radius",
+        "min": 0,
+        "max": 30,
+        "step": 2,
+        "unit": "px",
+        "label": "Card Corner Radius",
+        "default": 8
+      },
+      {
+        "type": "range",
+        "id": "enamels_content_max_width",
+        "min": 1000,
+        "max": 1600,
+        "step": 20,
+        "unit": "px",
+        "label": "Storefront Content Max Width",
+        "default": 1320
+      }
+    ]
+  },
+  {
     "name": "Enamels Brand & Concierge",
     "settings": [
       {
@@ -2168,6 +2231,22 @@
         "label": "Official Support Telephone",
         "default": "+92 301 13 31 133",
         "info": "Displayed in the top navigation bar and customer care channels."
+      },
+      {
+        "type": "header",
+        "content": "Home Service Policies Default"
+      },
+      {
+        "type": "number",
+        "id": "enamels_min_order_value",
+        "label": "Default Minimum Order Value (PKR)",
+        "default": 25000
+      },
+      {
+        "type": "number",
+        "id": "enamels_advance_amount",
+        "label": "Default Advance Deposit (PKR)",
+        "default": 3000
       },
       {
         "type": "header",

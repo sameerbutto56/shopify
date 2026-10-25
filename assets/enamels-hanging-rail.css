@@ -7,10 +7,13 @@
   --rail-finish-silver: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 22%, #94a3b8 55%, #64748b 85%, #334155 100%);
   --rail-finish-black: linear-gradient(180deg, #475569 0%, #1e293b 25%, #0f172a 60%, #020617 100%);
   --rail-finish-gold: linear-gradient(180deg, #fef9c3 0%, #eab308 28%, #ca8a04 65%, #854d0e 95%);
-  --rail-tilt-angle: -22deg;
+  --rail-tilt-angle: -24deg;
   --rail-lift-distance: -14px;
-  --rail-item-width: 260px;
-  --rail-item-gap: 24px;
+  --rail-hover-rotate: 0deg;
+  --rail-anim-speed: 0.45s;
+  --rail-item-width: 320px;
+  --rail-item-gap: 36px;
+  --garment-height: 480px;
   --rail-accent: #00b8a9;
   --rail-navy: #102a43;
 }
@@ -21,8 +24,8 @@
 .enamels-hanging-rail-section {
   position: relative;
   width: 100%;
-  background: #ffffff;
-  padding: 36px 0 60px 0;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfa 20%, #f3f2ec 60%, #eae8e0 100%);
+  padding: 30px 0 60px 0;
   overflow: hidden;
   user-select: none;
 }
@@ -113,7 +116,7 @@
 .enamels-rail-stage {
   position: relative;
   width: 100%;
-  padding-top: 50px;
+  padding-top: 0;
   padding-bottom: 20px;
   perspective: 1400px;
   overflow: visible;
@@ -122,10 +125,10 @@
 /* Ceiling / Wall mounting brackets */
 .enamels-rail-brackets {
   position: absolute;
-  top: 14px;
+  top: 10px;
   left: 0;
   right: 0;
-  height: 40px;
+  height: 38px;
   pointer-events: none;
   z-index: 2;
   display: flex;
@@ -135,7 +138,7 @@
 
 .enamels-rail-bracket {
   width: 16px;
-  height: 44px;
+  height: 38px;
   background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 50%, #64748b 100%);
   border-radius: 4px 4px 0 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -156,14 +159,14 @@
 /* The physical horizontal metal rail bar */
 .enamels-rail-bar {
   position: absolute;
-  top: 48px;
+  top: 44px;
   left: 0;
   right: 0;
   height: 14px;
   background: var(--rail-finish-silver);
   border-radius: 7px;
   box-shadow: 0 6px 14px rgba(16, 42, 67, 0.18), inset 0 2px 2px rgba(255, 255, 255, 0.8), inset 0 -2px 3px rgba(0, 0, 0, 0.35);
-  z-index: 5;
+  z-index: 4;
   pointer-events: none;
 }
 
@@ -193,7 +196,7 @@
 .enamels-rail-bar::after { right: -8px; }
 
 /* ------------------------------------------------------------
-   3. HORIZONTAL SCROLLING TRACK & HANGER ITEMS
+   3. HORIZONTAL SCROLLING TRACK & HANGER ITEMS (FULL-GARMENT HERO)
    ------------------------------------------------------------ */
 .enamels-rail-track-wrap {
   position: relative;
@@ -204,8 +207,9 @@
 .enamels-rail-track {
   display: flex;
   align-items: flex-start;
+  justify-content: safe center;
   gap: var(--rail-item-gap);
-  padding: 48px 60px 40px 60px;
+  padding: 10px 60px 32px 60px;
   overflow-x: auto;
   overflow-y: visible;
   scroll-behavior: smooth;
@@ -223,7 +227,7 @@
   cursor: grabbing;
 }
 
-/* Each Garment Item on the Rail */
+/* Each Garment Item on the Rail — Pure Full Garment Presentation */
 .enamels-hanger-item {
   flex: 0 0 var(--rail-item-width);
   width: var(--rail-item-width);
@@ -232,205 +236,150 @@
   flex-direction: column;
   align-items: center;
   scroll-snap-align: center;
-  perspective: 1200px;
-  transform-style: preserve-3d;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
   cursor: pointer;
+  user-select: none;
+  outline: none;
+  perspective: 1200px;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-/* Angled side-on presentation at rest, rotating to front-facing on hover/active */
-.enamels-hanger-card {
+/* The Clean Hanging Stage (Anchored to top rail) */
+.enamels-hanger-garment-stage {
   position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform-origin: top center;
-  transform: rotateY(var(--rail-tilt-angle)) translateZ(-8px);
-  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.3s ease;
-  will-change: transform;
-}
-
-/* Hover or Active State: Garment faces shopper & lifts off rail slightly */
-.enamels-hanger-item:hover .enamels-hanger-card,
-.enamels-hanger-item.is-focused .enamels-hanger-card {
-  transform: rotateY(0deg) translateZ(28px) translateY(var(--rail-lift-distance));
-}
-
-/* When clicked, subtle lift-off transition before opening drawer */
-.enamels-hanger-item.lifting .enamels-hanger-card {
-  transform: rotateY(0deg) translateZ(40px) translateY(-40px) scale(1.04);
-  transition: transform 0.25s ease-out;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform-style: preserve-3d;
 }
 
 /* ------------------------------------------------------------
-   4. THE HANGER ASSEMBLY (HOOK & SHOULDER)
+   4. THE HANGER HOOK (CONNECTS DIRECTLY TO OVERHEAD RAIL)
    ------------------------------------------------------------ */
 .enamels-hanger-hook-wrap {
-  position: relative;
-  width: 32px;
-  height: 38px;
-  margin-bottom: -4px;
-  z-index: 10;
-}
-
-.enamels-hanger-hook-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
-}
-
-.enamels-hanger-shoulders {
-  position: relative;
-  width: 190px;
-  height: 22px;
-  background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
-  border-radius: 12px 12px 4px 4px;
-  box-shadow: 0 4px 8px rgba(16, 42, 67, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.7);
-  z-index: 8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.enamels-hanger-shoulders::after {
-  content: 'ENAMELS';
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  color: #475569;
-  opacity: 0.75;
+  display: none !important;
 }
 
 /* ------------------------------------------------------------
-   5. GARMENT IMAGE CONTAINER & FABRIC SHADOWS
+   5. FULL-GARMENT FIGURE CONTAINER & WARDROBE 3D PERSPECTIVE
    ------------------------------------------------------------ */
-.enamels-hanger-garment-wrap {
+.enamels-hanger-figure-wrap {
   position: relative;
   width: 100%;
-  height: 340px;
+  height: var(--garment-height, 480px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  margin-top: -8px;
+  margin: 0;
   z-index: 6;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  overflow: visible;
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  /* Initial Wardrobe View: Tasteful side-facing/angled profile inside cupboard */
+  transform: perspective(1000px) rotateY(var(--rail-tilt-angle, -24deg)) scale(0.96);
+  transition: transform var(--rail-anim-speed, 0.45s) cubic-bezier(0.22, 1, 0.36, 1), filter var(--rail-anim-speed, 0.45s) ease;
+  will-change: transform, filter;
 }
 
+/* Hover / Focus / Active: Smoothly rotates to reveal full front-facing view */
+.enamels-hanger-item:hover .enamels-hanger-figure-wrap,
+.enamels-hanger-item:focus-visible .enamels-hanger-figure-wrap,
+.enamels-hanger-item.is-hovered .enamels-hanger-figure-wrap {
+  transform: perspective(1000px) rotateY(var(--rail-hover-rotate, 0deg)) translateY(var(--rail-lift-distance, -14px)) scale(1.02);
+  z-index: 15;
+}
+
+/* Garment Photography with Wardrobe Side Lighting & Frontal Hover Spotlight */
 .enamels-hanger-garment-img {
-  max-width: 95%;
-  max-height: 100%;
+  width: auto;
+  max-width: 100%;
+  height: var(--garment-height, 480px);
   object-fit: contain;
-  filter: drop-shadow(0 14px 20px rgba(16, 42, 67, 0.16));
-  transition: transform 0.35s ease, filter 0.35s ease;
+  object-position: top center;
   pointer-events: none;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  /* Side lighting in angled wardrobe position */
+  filter: drop-shadow(-8px 14px 24px rgba(16, 42, 67, 0.16)) brightness(0.97);
+  transition: filter 0.45s ease;
 }
 
 .enamels-hanger-item:hover .enamels-hanger-garment-img,
-.enamels-hanger-item.is-focused .enamels-hanger-garment-img {
-  filter: drop-shadow(0 22px 28px rgba(16, 42, 67, 0.22));
+.enamels-hanger-item:focus-visible .enamels-hanger-garment-img,
+.enamels-hanger-item.is-hovered .enamels-hanger-garment-img {
+  /* Frontal studio lighting when rotated to full front view */
+  filter: drop-shadow(0 20px 38px rgba(16, 42, 67, 0.22)) brightness(1.0);
 }
 
-/* Floor shadow underneath hanging garment */
+/* Subtle Interactive Wardrobe Hint Pill (fades in on hover) */
+.enamels-wardrobe-hint-pill {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(16, 42, 67, 0.88);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.28);
+  z-index: 20;
+  white-space: nowrap;
+}
+
+.enamels-hanger-item:hover .enamels-wardrobe-hint-pill,
+.enamels-hanger-item:focus-visible .enamels-wardrobe-hint-pill,
+.enamels-hanger-item.is-hovered .enamels-wardrobe-hint-pill {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Soft Studio Floor Shadow underneath hanging garment hem */
 .enamels-hanger-floor-shadow {
   position: absolute;
-  bottom: -18px;
+  bottom: -14px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 16px;
-  background: radial-gradient(ellipse at center, rgba(16, 42, 67, 0.24) 0%, rgba(16, 42, 67, 0.06) 55%, transparent 75%);
+  transform: translateX(-50%) rotate(-4deg) scale(0.92);
+  width: 180px;
+  height: 18px;
+  background: radial-gradient(ellipse at center, rgba(16, 42, 67, 0.20) 0%, rgba(16, 42, 67, 0.05) 55%, transparent 75%);
   border-radius: 50%;
-  transition: transform 0.4s ease, opacity 0.4s ease, width 0.4s ease;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, width 0.45s ease;
   pointer-events: none;
   z-index: 1;
+  opacity: 0.72;
 }
 
 .enamels-hanger-item:hover .enamels-hanger-floor-shadow,
-.enamels-hanger-item.is-focused .enamels-hanger-floor-shadow {
-  transform: translateX(-50%) scale(1.15);
-  opacity: 0.85;
-  width: 170px;
+.enamels-hanger-item:focus-visible .enamels-hanger-floor-shadow,
+.enamels-hanger-item.is-hovered .enamels-hanger-floor-shadow {
+  transform: translateX(-50%) rotate(0deg) scale(1.15);
+  opacity: 0.95;
+  width: 210px;
 }
 
-/* ------------------------------------------------------------
-   6. HANGING BOUTIQUE PRICE & ARTICLE TAG
-   ------------------------------------------------------------ */
-.enamels-hanger-tag {
-  position: absolute;
-  top: 14px;
-  right: 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 8px 12px;
-  box-shadow: 0 4px 14px rgba(16, 42, 67, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  z-index: 9;
-  text-align: left;
-  transform: rotate(3deg);
-  transform-origin: top right;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  pointer-events: auto;
-}
-
-/* Fine cord connecting tag to hanger */
-.enamels-hanger-tag::before {
-  content: '';
-  position: absolute;
-  top: -12px;
-  right: 14px;
-  width: 1px;
-  height: 12px;
-  background: #cbd5e1;
-}
-
-.enamels-hanger-item:hover .enamels-hanger-tag {
-  transform: rotate(0deg) scale(1.02);
-  box-shadow: 0 6px 18px rgba(16, 42, 67, 0.16);
-}
-
-.enamels-hanger-tag-series {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--rail-accent);
-}
-
-.enamels-hanger-tag-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--rail-navy);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 110px;
-  margin: 0;
-}
-
-.enamels-hanger-tag-price {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--rail-navy);
-}
-
-/* Live colour swatches on hanger */
-.enamels-hanger-color-dots {
-  display: flex;
-  gap: 4px;
-  margin-top: 4px;
-}
-
-.enamels-hanger-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1.5px solid #ffffff;
-  box-shadow: 0 0 0 1px #cbd5e1;
-  cursor: pointer;
-  transition: transform 0.15s ease;
+/* Explicitly eliminate any floating tags or overlaid buttons on hanging garments */
+.enamels-hanger-tag,
+.enamels-hanger-select-btn,
+.enamels-hanger-shoulders {
+  display: none !important;
 }
 
 .enamels-hanger-dot:hover {
@@ -520,6 +469,248 @@
   border-radius: 2px;
   width: 30%;
   transition: transform 0.1s linear, width 0.2s ease;
+}
+
+/* ------------------------------------------------------------
+   7b. INTERACTIVE HANGING GARMENT DOCK & COLOUR SELECTOR
+   ------------------------------------------------------------ */
+.enamels-rail-selection-dock {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin: 24px auto 0 auto;
+  max-width: 1040px;
+  box-shadow: 0 8px 24px rgba(16, 42, 67, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.rail-dock-article-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 240px;
+  flex: 1.2;
+}
+
+.rail-dock-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rail-dock-series-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #008779;
+  background: #e6fffa;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.rail-dock-counter-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.rail-dock-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #102a43;
+  margin: 2px 0 0;
+  line-height: 1.35;
+}
+
+.rail-dock-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.rail-dock-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: #102a43;
+}
+
+.rail-dock-compare {
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.rail-dock-color-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1.2;
+  min-width: 220px;
+}
+
+.rail-dock-color-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.rail-dock-active-color {
+  color: #102a43;
+  font-weight: 700;
+}
+
+.rail-dock-color-swatches {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rail-dock-swatch-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 8px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  transition: all 0.2s ease;
+}
+
+.rail-dock-swatch-btn:hover {
+  border-color: #008779;
+  transform: translateY(-1px);
+}
+
+.rail-dock-swatch-btn.active {
+  border-color: #008779;
+  background: #e6fffa;
+  color: #008779;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(0, 184, 169, 0.2);
+}
+
+.rail-dock-swatch-circle {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.rail-dock-sizes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 140px;
+}
+
+.rail-dock-sizes-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.rail-dock-sizes-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.rail-dock-size-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+}
+
+.rail-dock-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rail-dock-nav-arrows {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rail-dock-arrow-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #102a43;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rail-dock-arrow-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.rail-dock-cta-btn {
+  min-width: 190px;
+  padding: 11px 22px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #008779;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 135, 121, 0.25);
+  transition: all 0.2s ease;
+}
+
+.rail-dock-cta-btn:hover {
+  background: #007064;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 135, 121, 0.35);
+}
+
+@media (max-width: 768px) {
+  .enamels-rail-selection-dock {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+  .rail-dock-actions-row {
+    flex-direction: column;
+    width: 100%;
+  }
+  .rail-dock-cta-btn {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* ------------------------------------------------------------
@@ -904,14 +1095,70 @@
   box-shadow: none;
 }
 
+/* Product Description, Fabric Specs & Stock Status in Drawer */
+.enamels-drawer-info-block {
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.enamels-drawer-fabric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f766e;
+  background: #e6fffa;
+  padding: 4px 10px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.enamels-drawer-description-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #475569;
+  margin: 0;
+}
+
+.enamels-drawer-stock-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #15803d;
+  margin-top: 2px;
+}
+
+.stock-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+  display: inline-block;
+  animation: stockPulse 2s infinite ease-in-out;
+}
+
+@keyframes stockPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
 /* ------------------------------------------------------------
    9. MOBILE & REDUCED MOTION BREAKPOINTS
    ------------------------------------------------------------ */
 @media (max-width: 768px) {
   :root {
-    --rail-item-width: 210px;
+    --rail-item-width: 240px;
     --rail-item-gap: 16px;
-    --rail-tilt-angle: -14deg;
+    --rail-tilt-angle: 0deg;
   }
 
   .enamels-hanging-rail-section {
@@ -919,22 +1166,15 @@
   }
 
   .enamels-rail-track {
-    padding: 40px 24px 30px 24px;
+    padding: 30px 20px 20px 20px;
   }
 
-  .enamels-hanger-garment-wrap {
-    height: 270px;
+  .enamels-hanger-figure-wrap {
+    height: 360px;
   }
 
-  .enamels-hanger-tag {
-    padding: 6px 8px;
-    top: 8px;
-    right: 6px;
-  }
-
-  .enamels-hanger-tag-title {
-    max-width: 80px;
-    font-size: 10px;
+  .enamels-hanger-garment-img {
+    max-height: 360px;
   }
 
   .enamels-rail-nav-btn {
@@ -949,11 +1189,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .enamels-hanger-card {
+  .enamels-hanger-item,
+  .enamels-hanger-garment-stage,
+  .enamels-hanger-figure-wrap,
+  .enamels-hanger-floor-shadow {
     transform: none !important;
     transition: opacity 0.2s ease !important;
-  }
-  .enamels-hanger-item:hover .enamels-hanger-card {
-    transform: none !important;
   }
 }

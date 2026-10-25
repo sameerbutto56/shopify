@@ -144,96 +144,133 @@
 
   <!-- Navigation Menu Bar with Dropdowns (Fully Restored) -->
   <nav class="enamels-nav-bar" id="enamels-desktop-navbar" aria-label="Main Store Navigation">
-    <div class="page-container">
+    <div class="page-container enamels-nav-container">
       <ul class="enamels-nav-list">
-        <!-- 1. Scrubs with Dropdown Menu -->
+        <!-- 1. SCRUBS (with Series Dropdown) -->
         <li class="enamels-nav-item has-dropdown" id="nav-item-scrubs">
-          <a href="#category-scrubs" class="enamels-nav-link" onclick="window.navigateToView('category-scrubs'); return false;">
-            <span>Scrubs</span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="nav-arrow-icon">
+          <a
+            href="#category-scrubs"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('category-scrubs'); return false; }"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            <span class="nav-link-text">Scrubs</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="nav-arrow-icon" aria-hidden="true">
               <path d="M6 9l6 6 6-6"/>
             </svg>
           </a>
-          <div class="nav-dropdown-menu">
-            <a href="#collection-sprinter" class="dropdown-item-link" onclick="window.navigateToCollection('Sprinter'); return false;">
+          <div class="nav-dropdown-menu" role="menu">
+            <a href="#collection-sprinter" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Sprinter'); return false; }">
               <strong>Sprinter Series</strong>
               <span>4-Way Athletic Mechanical Stretch</span>
             </a>
-            <a href="#collection-velora" class="dropdown-item-link" onclick="window.navigateToCollection('Velora'); return false;">
+            <a href="#collection-velora" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Velora'); return false; }">
               <strong>Velora Series</strong>
               <span>Luxury Tailored Micro-Drape</span>
             </a>
-            <a href="#collection-crown" class="dropdown-item-link" onclick="window.navigateToCollection('Crown'); return false;">
+            <a href="#collection-crown" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Crown'); return false; }">
               <strong>Crown Series</strong>
               <span>Executive Structured Mandarin Collar</span>
             </a>
-            <a href="#collection-flexwell" class="dropdown-item-link" onclick="window.navigateToCollection('Flexwell'); return false;">
+            <a href="#collection-flexwell" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Flexwell'); return false; }">
               <strong>Flexwell Series</strong>
               <span>Antimicrobial Laser-Perforated Aerocool</span>
             </a>
-            <div style="height: 1px; background: #e2e8f0; margin: 6px 0;"></div>
-            <a href="#category-scrubs" class="dropdown-item-link" onclick="window.navigateToView('category-scrubs'); return false;" style="color: #00b8a9; font-weight: 700;">
+            <div class="nav-dropdown-divider"></div>
+            <a href="#category-scrubs" class="dropdown-item-link dropdown-item-all" onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('category-scrubs'); return false; }">
               View All Scrubs Categories →
             </a>
           </div>
         </li>
 
-        <!-- Men -->
+        <!-- 2. MEN -->
         <li class="enamels-nav-item" id="nav-item-men">
-          <a href="#men" class="enamels-nav-link" onclick="window.navigateToGender('men'); return false;">
-            <span>Men</span>
+          <a
+            href="#men"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
+          >
+            <span class="nav-link-text">Men</span>
           </a>
         </li>
 
-        <!-- Women -->
+        <!-- 3. WOMEN -->
         <li class="enamels-nav-item" id="nav-item-women">
-          <a href="#women" class="enamels-nav-link" onclick="window.navigateToGender('women'); return false;">
-            <span>Women</span>
+          <a
+            href="#women"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
+          >
+            <span class="nav-link-text">Women</span>
           </a>
         </li>
 
-        <!-- 2. Lab Coats -->
+        <!-- 4. LAB COATS -->
         <li class="enamels-nav-item" id="nav-item-lab-coats">
-          <a href="#collection-lab-coats" class="enamels-nav-link" onclick="window.navigateToCollection('lab-coat', 'category'); return false;">
-            <span>Lab Coats</span>
+          <a
+            href="#collection-lab-coats"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('lab-coat', 'category'); return false; }"
+          >
+            <span class="nav-link-text">Lab Coats</span>
           </a>
         </li>
 
-        <!-- 3. Caps -->
+        <!-- 5. CAPS -->
         <li class="enamels-nav-item" id="nav-item-caps">
-          <a href="#collection-caps" class="enamels-nav-link" onclick="window.navigateToCollection('caps', 'category'); return false;">
-            <span>Caps</span>
-            <span class="nav-tag-badge">BunFit™</span>
+          <a
+            href="#collection-caps"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('caps', 'category'); return false; }"
+          >
+            <span class="nav-link-text">Caps</span>
           </a>
         </li>
 
-        <!-- 4. Sleeves -->
+        <!-- 6. SLEEVES -->
         <li class="enamels-nav-item" id="nav-item-sleeves">
-          <a href="#collection-sleeves" class="enamels-nav-link" onclick="window.navigateToCollection('sleeves', 'feature'); return false;">
-            <span>Sleeves</span>
+          <a
+            href="#collection-sleeves"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('sleeves', 'feature'); return false; }"
+          >
+            <span class="nav-link-text">Sleeves</span>
           </a>
         </li>
 
-        <!-- 5. Accessories -->
+        <!-- 7. ACCESSORIES -->
         <li class="enamels-nav-item" id="nav-item-accessories">
-          <a href="#accessories" class="enamels-nav-link" onclick="window.navigateToAccessories(); return false;">
-            <span>Accessories</span>
+          <a
+            href="#accessories"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToAccessories === 'function') { window.navigateToAccessories(); return false; }"
+          >
+            <span class="nav-link-text">Accessories</span>
           </a>
         </li>
 
-        <!-- 6. Ready to Wear / Make Your Own Scrub -->
+        <!-- 8. DESIGN YOUR OWN SCRUBS — STUDIO -->
         <li class="enamels-nav-item" id="nav-item-ready-to-wear">
-          <a href="#ready-to-wear" class="enamels-nav-link" onclick="window.navigateToView('ready-to-wear'); return false;" style="color: #102a43; font-weight: 700;">
-            <span>Ready to Wear / Make Your Own Scrub</span>
-            <span class="nav-tag-highlight">STUDIO</span>
+          <a
+            href="#ready-to-wear"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); return false; }"
+          >
+            <span class="nav-link-text">DESIGN YOUR OWN SCRUBS</span>
+            <span class="nav-badge-pill badge-studio">STUDIO</span>
           </a>
         </li>
 
-        <!-- 7. Home Service / Representative Visit -->
+        <!-- 9. BOOK A HOME FITTING — LAHORE ONLY -->
         <li class="enamels-nav-item" id="nav-item-home-service">
-          <a href="#self-service" class="enamels-nav-link" onclick="window.navigateToView('self-service'); return false;" style="color: #00b8a9; font-weight: 700;">
-            <span>Home Service</span>
-            <span class="nav-tag-badge" style="background: #e6fffa; color: #008779; border-color: #99f6e4;">LAHORE VISIT</span>
+          <a
+            href="#self-service"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); return false; }"
+          >
+            <span class="nav-link-text">BOOK A HOME FITTING</span>
+            <span class="nav-badge-pill badge-lahore">LAHORE ONLY</span>
           </a>
         </li>
       </ul>
@@ -242,72 +279,99 @@
 </header>
 
 <!-- Mobile Navigation Drawer -->
-<div class="enamels-modal-backdrop" id="mobile-nav-backdrop" onclick="window.toggleMobileNavDrawer()">
-  <div class="enamels-modal-card" style="max-width: 340px; margin-left: 0; height: 100vh; max-height: 100vh; border-radius: 0;" onclick="event.stopPropagation()">
-    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
-      <img src="{{ 'enamels-logo.png' | asset_url }}" alt="Enamels" width="75" height="36" />
-      <button type="button" class="modal-close-trigger" onclick="window.toggleMobileNavDrawer()" style="position: static;">✕</button>
+<div class="enamels-modal-backdrop" id="mobile-nav-backdrop" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();">
+  <div class="enamels-modal-card mobile-nav-drawer-card" id="mobile-nav-drawer" onclick="event.stopPropagation()">
+    <div class="mobile-nav-header">
+      <img src="{{ 'enamels-logo.png' | asset_url }}" alt="Enamels" class="mobile-nav-logo" width="85" height="40" loading="eager" />
+      <button type="button" class="modal-close-trigger" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" aria-label="Close Navigation Menu">✕</button>
     </div>
-    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;">
-      <li>
-        <a href="#men" onclick="window.navigateToGender('men'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43;">
-          👔 Shop Men's Scrubs
-        </a>
-      </li>
-      <li>
-        <a href="#women" onclick="window.navigateToGender('women'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #008779;">
-          👗 Shop Women's Scrubs
-        </a>
-      </li>
-      <li>
-        <a href="#category-scrubs" onclick="window.navigateToView('category-scrubs'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          1. Scrubs Collection
-        </a>
-        <div style="padding-left: 14px; display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
-          <a href="#sprinter" onclick="window.navigateToBrand('Sprinter'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Splender / Sprinter Series</a>
-          <a href="#velora" onclick="window.navigateToBrand('Velora'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Vilora / Velora Series</a>
-          <a href="#crown" onclick="window.navigateToBrand('Crown'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ Ground / Crown Series</a>
-          <a href="#flexwell" onclick="window.navigateToBrand('Flexwell'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 12px;">↳ FlexFit / Flexwell Series</a>
-        </div>
-      </li>
-      <li>
-        <a href="#lab-coats" onclick="window.navigateToCollection('lab-coat', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          2. Lab Coats (Helium)
-        </a>
-      </li>
-      <li>
-        <a href="#caps" onclick="window.navigateToCollection('caps', 'category'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          3. Caps (BunFit™)
-        </a>
-      </li>
-      <li>
-        <a href="#accessories" onclick="window.navigateToAccessories(); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700;">
-          4. Accessories Hub (Sleeves, Caps, Clogs)
-        </a>
-      </li>
-      <li>
-        <a href="#ready-to-wear" onclick="window.navigateToView('ready-to-wear'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #102a43; background: #f8fafc;">
-          5. Make Your Own Scrubs (Bespoke Studio) ✨
-        </a>
-      </li>
-      <li>
-        <a href="#self-service" onclick="window.navigateToView('self-service'); window.toggleMobileNavDrawer(); return false;" class="dropdown-item-link" style="font-size: 14px; font-weight: 700; color: #008779; background: #f0fdfa;">
-          6. Home Service (Representative Visit) 📍
-        </a>
-      </li>
-    </ul>
 
-    <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-      <p style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Direct Support:</p>
-      <a href="tel:+923011331133" style="font-size: 13px; font-weight: 700; color: #102a43; text-decoration: none; display: flex; align-items: center; gap: 6px;">
-        📞 +92 301 13 31 133
+    <nav class="mobile-nav-body" aria-label="Mobile Navigation">
+      <ul class="mobile-nav-list">
+        <!-- 1. Scrubs -->
+        <li class="mobile-nav-item">
+          <a href="#category-scrubs" onclick="if(typeof window.navigateToView==='function') window.navigateToView('category-scrubs'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Scrubs Collection</span>
+          </a>
+          <div class="mobile-nav-sublist">
+            <a href="#sprinter" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Sprinter'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Sprinter Series (4-Way Stretch)</a>
+            <a href="#velora" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Velora'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Velora Series (Micro-Drape)</a>
+            <a href="#crown" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Crown'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Crown Series (Mandarin Collar)</a>
+            <a href="#flexwell" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Flexwell'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Flexwell Series (Aerocool Flex)</a>
+          </div>
+        </li>
+
+        <!-- 2. Men -->
+        <li class="mobile-nav-item">
+          <a href="#men" onclick="if(typeof window.navigateToGender==='function') window.navigateToGender('men'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Men</span>
+          </a>
+        </li>
+
+        <!-- 3. Women -->
+        <li class="mobile-nav-item">
+          <a href="#women" onclick="if(typeof window.navigateToGender==='function') window.navigateToGender('women'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Women</span>
+          </a>
+        </li>
+
+        <!-- 4. Lab Coats -->
+        <li class="mobile-nav-item">
+          <a href="#lab-coats" onclick="if(typeof window.navigateToCollection==='function') window.navigateToCollection('lab-coat', 'category'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Lab Coats</span>
+          </a>
+        </li>
+
+        <!-- 5. Caps -->
+        <li class="mobile-nav-item">
+          <a href="#caps" onclick="if(typeof window.navigateToCollection==='function') window.navigateToCollection('caps', 'category'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Caps</span>
+          </a>
+        </li>
+
+        <!-- 6. Sleeves -->
+        <li class="mobile-nav-item">
+          <a href="#sleeves" onclick="if(typeof window.navigateToCollection==='function') window.navigateToCollection('sleeves', 'feature'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Sleeves</span>
+          </a>
+        </li>
+
+        <!-- 7. Accessories -->
+        <li class="mobile-nav-item">
+          <a href="#accessories" onclick="if(typeof window.navigateToAccessories==='function') window.navigateToAccessories(); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Accessories</span>
+          </a>
+        </li>
+
+        <li class="mobile-nav-divider"></li>
+
+        <!-- 8. Design Your Own Scrubs -->
+        <li class="mobile-nav-item">
+          <a href="#ready-to-wear" onclick="if(typeof window.navigateToView==='function') window.navigateToView('ready-to-wear'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
+            <span>DESIGN YOUR OWN SCRUBS</span>
+            <span class="nav-badge-pill badge-studio">STUDIO</span>
+          </a>
+        </li>
+
+        <!-- 9. Book a Home Fitting -->
+        <li class="mobile-nav-item">
+          <a href="#self-service" onclick="if(typeof window.navigateToView==='function') window.navigateToView('self-service'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
+            <span>BOOK A HOME FITTING</span>
+            <span class="nav-badge-pill badge-lahore">LAHORE ONLY</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="mobile-nav-footer">
+      <p class="mobile-support-title">Direct Support:</p>
+      <a href="tel:{{ phone_tel | default: '+923011331133' }}" class="mobile-support-tel">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>{{ phone_number | default: '+92 301 13 31 133' | escape }}</span>
       </a>
-      <a href="https://wa.me/923011331133" target="_blank" rel="noopener" style="display: block; margin-top: 12px; background: #25d366; color: #ffffff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700;">
-        Chat on WhatsApp
+      <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="mobile-whatsapp-btn">
+        💬 WhatsApp Official Support
       </a>
-      <button type="button" onclick="window.openSelfServiceAdminModal(); window.toggleMobileNavDrawer();" style="width: 100%; margin-top: 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 8px 12px; font-size: 11px; font-weight: 600; color: #475569; cursor: pointer; text-align: center;">
-        🔒 Representative Management Portal
-      </button>
     </div>
   </div>
 </div>

@@ -22,15 +22,41 @@
     {{ 'enamels-white-theme.css' | asset_url | stylesheet_tag }}
     {{ 'enamels-3d-tilt.css' | asset_url | stylesheet_tag }}
     {{ 'enamels-studio.css' | asset_url | stylesheet_tag }}
-    {{ 'enamels-hanging-rail.css' | asset_url | stylesheet_tag }}
+    <link rel="stylesheet" href="{{ 'enamels-hanging-rail.css' | asset_url }}&v=wardrobe-anim-v3">
     <link rel="stylesheet" href="{{ 'enamels-rtl.css' | asset_url }}" id="enamels-rtl-stylesheet">
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}
-    <script src="{{ 'enamels-catalogue-data.js' | asset_url }}" defer></script>
+    <script src="{{ 'enamels-catalogue-data.js' | asset_url }}&v=wardrobe-anim-v3" defer></script>
     <script src="{{ 'enamels-studio.js' | asset_url }}" defer></script>
-    <script src="{{ 'enamels-hanging-rail.js' | asset_url }}" defer></script>
+    <script src="{{ 'enamels-hanging-rail.js' | asset_url }}&v=wardrobe-anim-v3" defer></script>
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-palette' -%}
+
+    <style id="enamels-global-theme-tokens">
+      :root {
+        {% if settings.enamels_primary_teal != blank %}
+          --color-primary: {{ settings.enamels_primary_teal }};
+          --color-teal: {{ settings.enamels_primary_teal }};
+          --rail-accent: {{ settings.enamels_primary_teal }};
+        {% endif %}
+        {% if settings.enamels_navy_color != blank %}
+          --color-navy: {{ settings.enamels_navy_color }};
+          --rail-navy: {{ settings.enamels_navy_color }};
+        {% endif %}
+        {% if settings.enamels_surface_bg != blank %}
+          --color-surface: {{ settings.enamels_surface_bg }};
+        {% endif %}
+        {% if settings.enamels_button_radius != blank %}
+          --btn-radius: {{ settings.enamels_button_radius }}px;
+        {% endif %}
+        {% if settings.enamels_card_radius != blank %}
+          --card-radius: {{ settings.enamels_card_radius }}px;
+        {% endif %}
+        {% if settings.enamels_content_max_width != blank %}
+          --page-content-max-width: {{ settings.enamels_content_max_width }}px;
+        {% endif %}
+      }
+    </style>
 
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
