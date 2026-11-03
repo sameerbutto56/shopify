@@ -314,7 +314,7 @@
       // 4. Series / Brand classification: supports brand:tag, series:tag, sp.vendor, simple tags, and title keywords
       const brandTag = tagKeyMap['brand'] || tagKeyMap['series'] || '';
       const rawVendor = (sp.vendor || '').toLowerCase();
-      let series = 'Sprinter';
+      let series = sp.vendor || 'Enamels';
       if (brandTag.includes('vilora') || brandTag.includes('velora') || rawVendor.includes('vilora') || tagsLower.includes('velora') || cleanTitle.toLowerCase().includes('velora') || tagsLower.includes('vilora') || cleanTitle.toLowerCase().includes('vilora')) series = 'Vilora';
       else if (brandTag.includes('crown') || rawVendor.includes('crown') || tagsLower.includes('crown') || cleanTitle.toLowerCase().includes('crown')) series = 'Crown';
       else if (brandTag.includes('ground') || rawVendor.includes('ground') || tagsLower.includes('ground') || cleanTitle.toLowerCase().includes('ground')) series = 'Ground';
@@ -329,13 +329,13 @@
 
       // 5. Article & Fabric & Features
       const fabricTag = tagKeyMap['fabric'] || '';
-      const customFabric = fabricTag ? fabricTag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : (tagsLower.find(t => t.includes('stretch') || t.includes('twill') || t.includes('poly')) || 'Flexi-Tech Performance (72% Poly, 21% Rayon, 7% Spandex)');
+      const customFabric = fabricTag ? fabricTag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : (tagsLower.find(t => t.includes('stretch') || t.includes('twill') || t.includes('poly')) || '');
 
       const featureTag = tagKeyMap['feature'] || tagKeyMap['badge'] || '';
       let badge = '';
       if (featureTag.includes('best') || tagsLower.includes('best seller') || tagsLower.includes('bestseller')) badge = 'BEST SELLER';
       else if (featureTag.includes('new') || tagsLower.includes('new arrival') || tagsLower.includes('new')) badge = 'NEW ARRIVAL';
-      else if (featureTag.includes('stretch') || category === 'scrub-set') badge = '4-WAY STRETCH';
+      else if (featureTag.includes('stretch')) badge = '4-WAY STRETCH';
 
       const isCustomizable = tagKeyMap['customizable'] === 'true' || tagKeyMap['feature'] === 'customizable' || tagsLower.includes('customizable') || category === 'scrub-set' || category === 'scrub-top' || category === 'lab-coat';
 
@@ -373,9 +373,9 @@
         }
       });
 
-      const colors = colorsMap.size ? Array.from(colorsMap.values()) : [
-        { name: 'Deep Navy', hex: '#102A43', image: primaryImg, images: images.map(i => i.src) }
-      ];
+      const colors = colorsMap.size ? Array.from(colorsMap.values()) : (
+        primaryImg ? [{ name: 'Default', hex: '#1e293b', image: primaryImg, images: images.map(i => i.src) }] : []
+      );
 
       const sizesSet = new Set();
       variants.forEach(v => {
@@ -387,7 +387,7 @@
           });
         }
       });
-      const sizes = sizesSet.size ? Array.from(sizesSet) : ['XS', 'S', 'M', 'L', 'XL', '2XL'];
+      const sizes = Array.from(sizesSet);
 
       return {
         id: id,
@@ -402,37 +402,22 @@
         comparePrice: comparePrice,
         badge: badge,
         fabric: customFabric,
-        description: sp.description || sp.body_html?.replace(/<[^>]+>/g, '') || 'Enamels premium medical uniform engineered for peak clinical performance.',
+        description: sp.description || sp.body_html?.replace(/<[^>]+>/g, '') || '',
         image: primaryImg,
         images: images,
         colors: colors,
         sizes: sizes,
         variants: variants,
-        variantId: variants[0]?.id || 67718805684512,
+        variantId: variants[0]?.id || null,
         supportsCustomization: isCustomizable,
-        companionIds: ['demo-cap-bunfit-navy', 'demo-acc-sleeves-black']
+        companionIds: []
       };
     }
 
     window.getStorefrontCatalogue = function() {
-      const rawDemo = window.EnamelsCatalogue || [];
       const rawLive = window.ShopifyLiveProducts || [];
       const liveAdapted = rawLive.map(adaptShopifyProduct).filter(Boolean);
-
-      const merged = [...liveAdapted];
-      const seenIds = new Set(liveAdapted.map(p => String(p.id)));
-      const seenHandles = new Set(liveAdapted.map(p => String(p.handle)));
-
-      rawDemo.forEach(item => {
-        if (!seenIds.has(String(item.id)) && !seenHandles.has(String(item.id))) {
-          if (!item.images) {
-            item.images = (item.colors && item.colors[0]?.image) ? [{ src: item.colors[0].image, alt: item.title }] : [{ src: item.image, alt: item.title }];
-          }
-          merged.push(item);
-        }
-      });
-
-      return merged;
+      return liveAdapted;
     };
 
     window.syncLiveShopifyProducts = function() {
@@ -1871,6 +1856,11 @@
         backBtnLabel.textContent = `Back to ${catTitle} Brands`;
       }
 
+      const menBtn = document.getElementById('listing-gender-men');
+      const womenBtn = document.getElementById('listing-gender-women');
+      if (menBtn) menBtn.classList.toggle('active', gender === 'men');
+      if (womenBtn) womenBtn.classList.toggle('active', gender === 'women');
+
       const listingCatTag = document.getElementById('listing-category-tag');
       const listingLevelTag = document.getElementById('listing-level-tag');
       const listingMainHeading = document.getElementById('listing-main-heading');
@@ -2709,6 +2699,10 @@
       const catalogue = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
       const trending = catalogue.filter(item => item.category === 'scrubs' || getTopCategory(item) === 'scrubs').slice(0, 4);
       const itemsToRender = trending.length ? trending : catalogue.slice(0, 4);
+      if (!itemsToRender.length) {
+        grid.innerHTML = '<p class="homepage-trending-empty" style="grid-column: 1 / -1; text-align: center; color: var(--color-foreground-muted, #71717a); padding: 40px 0;">No featured products available at this time.</p>';
+        return;
+      }
       grid.innerHTML = itemsToRender.map((item, idx) => window.renderProductCardHtml(item, idx)).join('');
     };
 
@@ -3344,9 +3338,9 @@
       const p2 = document.getElementById('pocket-doctor-dept');
       const p3 = document.getElementById('pocket-doctor-sub');
 
-      if (p1) p1.textContent = line1.trim() || 'DR. YOUR NAME';
-      if (p2) p2.textContent = line2.trim() || 'DEPARTMENT';
-      if (p3) p3.textContent = line3.trim() || 'HOSPITAL / CLINIC';
+      if (p1) p1.textContent = line1.trim() || '';
+      if (p2) p2.textContent = line2.trim() || '';
+      if (p3) p3.textContent = line3.trim() || '';
 
       updateRepCustomOptionsPreview();
     };
@@ -3592,17 +3586,19 @@
 
         // Add companion add-ons
         STATE.pdpCompanionAddons.forEach((addon, idx) => {
+          const addonQty = addon.quantity || 1;
           cart.push({
-            id: `companion-${Date.now()}-${idx}`,
-            productId: 'companion-addon',
+            id: addon.variantId ? `companion-${addon.variantId}-${Date.now()}-${idx}` : `companion-${Date.now()}-${idx}`,
+            productId: addon.variantId ? String(addon.variantId) : (addon.id ? String(addon.id) : 'companion-addon'),
+            variantId: addon.variantId || null,
             title: addon.title,
-            series: 'Addon',
-            image: 'cat-caps.jpg',
-            color: 'Standard',
-            size: 'Standard',
-            quantity: 1,
+            series: addon.category || 'Addon',
+            image: addon.image || 'cat-caps.jpg',
+            color: addon.color || 'Standard',
+            size: addon.size || 'Standard',
+            quantity: addonQty,
             unitPrice: addon.price,
-            lineTotal: addon.price,
+            lineTotal: addon.price * addonQty,
             requiresAdvancePayment: false
           });
         });
@@ -3910,8 +3906,8 @@
       const line3 = document.getElementById('rtw-sim-line-3');
       const garmentLine = document.getElementById('rtw-garment-sim-line');
 
-      if (line1) line1.textContent = nameVal ? nameVal.toUpperCase() : 'DR. AYESHA MALIK';
-      if (line2) line2.textContent = deptVal ? deptVal.toUpperCase() : 'CARDIOLOGY';
+      if (line1) line1.textContent = nameVal ? nameVal.toUpperCase() : '';
+      if (line2) line2.textContent = deptVal ? deptVal.toUpperCase() : '';
       if (line3) {
         if (hospVal) {
           line3.textContent = hospVal.toUpperCase();
@@ -3920,7 +3916,7 @@
           line3.style.display = 'none';
         }
       }
-      if (garmentLine) garmentLine.textContent = nameVal ? nameVal.toUpperCase() : 'DR. AYESHA MALIK';
+      if (garmentLine) garmentLine.textContent = nameVal ? nameVal.toUpperCase() : '';
 
       // Update Hospital Crest
       const emblem = document.getElementById('rtw-crest-emblem');
@@ -4328,6 +4324,11 @@
           ? '🎉 Free Shipping Unlocked!'
           : `Rs. ${remaining.toLocaleString()} remaining`;
       }
+
+      // Recompute and synchronize shipping calculations
+      if (typeof window.updateAllShippingCalculators === 'function') {
+        window.updateAllShippingCalculators();
+      }
     }
 
     window.updateCartItemQty = function(idx, delta) {
@@ -4366,11 +4367,13 @@
 
       window.closeCartDrawer();
       const modal = document.getElementById('checkout-options-modal');
+      const codView = document.getElementById('checkout-view-cod');
       const bankView = document.getElementById('checkout-view-bank');
       const repView = document.getElementById('checkout-view-rep');
       const confView = document.getElementById('checkout-view-confirmation');
 
       if (modal) modal.style.display = 'flex';
+      if (codView) codView.style.display = mode === 'cod' ? 'block' : 'none';
       if (bankView) bankView.style.display = mode === 'bank' ? 'block' : 'none';
       if (repView) repView.style.display = mode === 'rep' ? 'block' : 'none';
       if (confView) confView.style.display = 'none';
@@ -4400,7 +4403,7 @@
         await fetch('/cart/clear.js', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
 
         // Build item payloads with customizer line-item properties
-        const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || 67718805684512;
+        const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || null;
         const itemsPayload = cart.map(item => {
           const props = { ...(item.properties || {}) };
           if (!props['Article']) props['Article'] = item.title;
@@ -4411,12 +4414,18 @@
           }
 
           const variantId = item.variantId || item.variant_id || fallbackVariantId;
+          if (!variantId) return null;
           return {
             id: variantId,
             quantity: item.quantity || 1,
             properties: props
           };
-        });
+        }).filter(Boolean);
+
+        if (!itemsPayload.length) {
+          alert('No valid product variant selected. Please choose an in-stock variant.');
+          return;
+        }
 
         const addRes = await fetch('/cart/add.js', {
           method: 'POST',
@@ -4426,6 +4435,38 @@
 
         if (!addRes.ok) {
           throw new Error(`Cart add failed with status ${addRes.status}`);
+        }
+
+        // Synchronize destination and shipping rate attributes before redirecting
+        if (typeof window.calculateShippingCharges === 'function') {
+          try {
+            const destCountry = (typeof window.getActiveShippingCountry === 'function')
+              ? window.getActiveShippingCountry()
+              : (localStorage.getItem('enamels_delivery_country') || 'Pakistan');
+            const subtotal = cart.reduce((sum, it) => sum + ((it.unitPrice || it.price || 0) * (it.quantity || 1)), 0);
+            const comp = typeof window.analyzeCartComposition === 'function'
+              ? window.analyzeCartComposition(cart)
+              : { Q: cart.length, A: 0 };
+            const shipResult = window.calculateShippingCharges(destCountry, subtotal, cart);
+            const isDom = !destCountry || destCountry.toLowerCase() === 'pk' || destCountry.toLowerCase().includes('pak');
+
+            await fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                attributes: {
+                  'Delivery Country Code': isDom ? 'PK' : destCountry,
+                  'Delivery Destination': isDom ? 'Pakistan' : destCountry,
+                  'Scrub Units (Q)': comp.Q,
+                  'Chargeable Add-on Units (A)': comp.A,
+                  'Estimated Shipping (PKR)': shipResult.shippingFee,
+                  'Shipping Rate Calculation': shipResult.formulaText
+                }
+              })
+            });
+          } catch (shipErr) {
+            console.warn('Shipping attributes sync warning:', shipErr);
+          }
         }
 
         window.location.href = '/checkout';
@@ -4458,22 +4499,49 @@
           const cart = getStoredCart();
           if (cart && cart.length) {
             await fetch('/cart/clear.js', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-            const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || 67718805684512;
-            const itemsPayload = cart.map(item => ({
-              id: item.variantId || item.variant_id || fallbackVariantId,
-              quantity: item.quantity || 1,
-              properties: {
-                ...(item.properties || {}),
-                'Order Reference': refNumber,
-                'Customer Name': name,
-                'Customer Phone': phone
-              }
-            }));
-            await fetch('/cart/add.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ items: itemsPayload })
-            });
+            const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || null;
+            const itemsPayload = cart.map(item => {
+              const variantId = item.variantId || item.variant_id || fallbackVariantId;
+              if (!variantId) return null;
+              return {
+                id: variantId,
+                quantity: item.quantity || 1,
+                properties: {
+                  ...(item.properties || {}),
+                  'Order Reference': refNumber,
+                  'Customer Name': name,
+                  'Customer Phone': phone
+                }
+              };
+            }).filter(Boolean);
+            if (itemsPayload.length) {
+              await fetch('/cart/add.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: itemsPayload })
+              });
+            }
+            let shippingAttrs = {};
+            if (typeof window.calculateShippingCharges === 'function') {
+              try {
+                const destCountry = (typeof window.getActiveShippingCountry === 'function')
+                  ? window.getActiveShippingCountry()
+                  : (localStorage.getItem('enamels_delivery_country') || 'Pakistan');
+                const isDom = !destCountry || destCountry.toLowerCase() === 'pk' || destCountry.toLowerCase().includes('pak');
+                const subtotal = cart.reduce((sum, it) => sum + ((it.unitPrice || it.price || 0) * (it.quantity || 1)), 0);
+                const comp = typeof window.analyzeCartComposition === 'function' ? window.analyzeCartComposition(cart) : { Q: cart.length, A: 0 };
+                const shipResult = window.calculateShippingCharges(destCountry, subtotal, cart);
+                shippingAttrs = {
+                  'Delivery Country Code': isDom ? 'PK' : destCountry,
+                  'Delivery Destination': isDom ? 'Pakistan' : destCountry,
+                  'Scrub Units (Q)': comp.Q,
+                  'Chargeable Add-on Units (A)': comp.A,
+                  'Estimated Shipping (PKR)': shipResult.shippingFee,
+                  'Shipping Rate Calculation': shipResult.formulaText
+                };
+              } catch (e) {}
+            }
+
             await fetch('/cart/update.js', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -4484,7 +4552,8 @@
                   'Customer Name': name,
                   'Customer Phone': phone,
                   'Delivery Address': addr,
-                  'Payment Method': 'Direct Bank Transfer (Meezan Bank)'
+                  'Payment Method': 'Direct Bank Transfer (Meezan Bank)',
+                  ...shippingAttrs
                 }
               })
             });
@@ -4494,6 +4563,87 @@
         }
 
         showOrderConfirmation(refNumber, 'Payment Pending Verification (Unpaid)', 'Direct Manual Bank Transfer (Meezan Bank)');
+      });
+    };
+
+    window.submitCodOrder = async function() {
+      withCartDebounce(async () => {
+        const name = document.getElementById('cod-order-name')?.value;
+        const phone = document.getElementById('cod-order-phone')?.value;
+        const city = document.getElementById('cod-order-city')?.value;
+        const addr = document.getElementById('cod-order-address')?.value;
+        const notes = document.getElementById('cod-order-notes')?.value || '';
+
+        if (!name || !phone || !addr || !city) {
+          alert('Please enter your Full Name, Phone / WhatsApp, City, and Delivery Address for Cash on Delivery.');
+          return;
+        }
+
+        const refNumber = `ENM-COD-${Math.floor(10000 + Math.random() * 90000)}`;
+
+        try {
+          const cart = getStoredCart();
+          if (cart && cart.length) {
+            await fetch('/cart/clear.js', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || null;
+            const itemsPayload = cart.map(item => {
+              const variantId = item.variantId || item.variant_id || fallbackVariantId;
+              if (!variantId) return null;
+              return {
+                id: variantId,
+                quantity: item.quantity || 1,
+                properties: {
+                  ...(item.properties || {}),
+                  'Payment Method': 'Cash on Delivery (COD)',
+                  'Order Reference': refNumber,
+                  'Customer Name': name,
+                  'Customer Phone': phone,
+                  'Delivery City': city
+                }
+              };
+            }).filter(Boolean);
+            if (itemsPayload.length) {
+              await fetch('/cart/add.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: itemsPayload })
+              });
+            }
+
+            const subtotal = cart.reduce((sum, it) => sum + ((it.unitPrice || it.price || 0) * (it.quantity || 1)), 0);
+            const comp = typeof window.analyzeCartComposition === 'function' ? window.analyzeCartComposition(cart) : { Q: cart.length, A: 0 };
+            const shipResult = typeof window.calculateShippingCharges === 'function'
+              ? window.calculateShippingCharges('Pakistan', subtotal, cart)
+              : { shippingFee: subtotal > 7000 ? 0 : 250, formulaText: subtotal > 7000 ? 'Free Nationwide Delivery (Order > PKR 7,000)' : 'Standard Courier (PKR 250)' };
+
+            await fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                note: `COD Order ${refNumber} - ${name} (${phone}) - ${city} - Address: ${addr} ${notes ? '(' + notes + ')' : ''}`,
+                attributes: {
+                  'Enamels Reference': refNumber,
+                  'Customer Name': name,
+                  'Customer Phone': phone,
+                  'Delivery City': city,
+                  'Delivery Address': addr,
+                  'Delivery Destination': 'Pakistan',
+                  'Delivery Country Code': 'PK',
+                  'Payment Method': 'Cash on Delivery (COD)',
+                  'Payment Status': 'Pending Cash Collection on Delivery (Unpaid)',
+                  'Scrub Units (Q)': comp.Q,
+                  'Chargeable Add-on Units (A)': comp.A,
+                  'Estimated Shipping (PKR)': shipResult.shippingFee,
+                  'Shipping Rate Calculation': shipResult.formulaText
+                }
+              })
+            });
+          }
+        } catch (e) {
+          console.warn('COD order cart sync error:', e);
+        }
+
+        showOrderConfirmation(refNumber, 'Pending Cash Collection on Delivery (Unpaid)', 'Cash on Delivery (COD - TCS / Trax)');
       });
     };
 
@@ -4514,22 +4664,28 @@
           const cart = getStoredCart();
           if (cart && cart.length) {
             await fetch('/cart/clear.js', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-            const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || 67718805684512;
-            const itemsPayload = cart.map(item => ({
-              id: item.variantId || item.variant_id || fallbackVariantId,
-              quantity: item.quantity || 1,
-              properties: {
-                ...(item.properties || {}),
-                'Concierge Reference': refNumber,
-                'Customer Name': name,
-                'Customer Phone': phone
-              }
-            }));
-            await fetch('/cart/add.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ items: itemsPayload })
-            });
+            const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || null;
+            const itemsPayload = cart.map(item => {
+              const variantId = item.variantId || item.variant_id || fallbackVariantId;
+              if (!variantId) return null;
+              return {
+                id: variantId,
+                quantity: item.quantity || 1,
+                properties: {
+                  ...(item.properties || {}),
+                  'Concierge Reference': refNumber,
+                  'Customer Name': name,
+                  'Customer Phone': phone
+                }
+              };
+            }).filter(Boolean);
+            if (itemsPayload.length) {
+              await fetch('/cart/add.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: itemsPayload })
+              });
+            }
             await fetch('/cart/update.js', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -4773,140 +4929,15 @@
     let selfServiceCurrentStep = 1;
     let currentAdminDetailBookingId = null;
 
-    const INITIAL_SAMPLE_BOOKINGS = [
-      {
-        id: 'HS-ENM-2026-1048',
-        orderType: 'HOME SERVICE',
-        createdAt: '2026-10-22T14:30:00.000Z',
-        updatedAt: '2026-10-22T15:00:00.000Z',
-        fullName: 'Dr. Ayesha Malik',
-        phone: '0300-8451290',
-        whatsapp: '0300-8451290',
-        email: 'ayesha.malik@serviceshospital.org',
-        contactMethod: 'WhatsApp',
-        preferredVisitWindow: 'Wednesday (2:00 PM – 5:00 PM)',
-        preferredDate: '2026-10-22',
-        customerNotes: 'Need in-person sizing for surgical team.',
-        addressSnapshot: {
-          id: 'lhr-shadman',
-          area: 'Jail Road / Shadman',
-          zoneTag: 'Services & SIMS Corridor',
-          fullAddress: 'Services Hospital & SIMS Academic Corridor, Jail Road, Lahore',
-          landmark: 'Doctors Hostel Block B, Ward 4'
-        },
-        advanceRequired: 3000,
-        advancePaymentStatus: 'Advance Paid',
-        verifiedAmountReceived: 3000,
-        paymentMethod: 'Shopify Checkout (PKR 3,000 Advance)',
-        trxRef: 'CHG-984218',
-        representativeName: 'Muhammad Hamza (Senior Uniform Specialist)',
-        visitTime: '22 Oct 2026, 3:00 PM',
-        agreedRequirements: "4x Men's Sprinter Athletic Scrubs (Navy, Size L, +2\" tall inseam), 1x Tailored Consultation Lab Coat (Size 42, Embroidered: Dr. Ayesha Malik / SIMS Surgery). Chest: 42, Waist: 34, Inseam: 32.",
-        confirmedOrderTotal: 29800,
-        linkedShopifyOrderId: '#ENM-1088',
-        remainingBalance: 26800,
-        lifecycleStatus: 'Final Order Created',
-        adminNotes: [
-          { timestamp: '2026-10-22T16:00:00.000Z', note: 'In-person fitting completed by Muhammad Hamza. Requirements & measurements collected. Final order total PKR 29,800 confirmed and linked to order #ENM-1088. PKR 3,000 advance credited.', author: 'Muhammad Hamza (Staff)' },
-          { timestamp: '2026-10-22T15:00:00.000Z', note: 'Customer contacted via WhatsApp. Confirmed fitting date for Wednesday 3 PM.', author: 'Customer Care Staff' }
-        ],
-        statusHistory: [
-          { timestamp: '2026-10-22T14:30:00.000Z', fromStatus: 'None', toStatus: 'Awaiting Customer Care', note: 'Booking submitted online with advance deposit', updatedBy: 'System' },
-          { timestamp: '2026-10-22T15:00:00.000Z', fromStatus: 'Awaiting Customer Care', toStatus: 'Visit Scheduled', note: 'Consultation slot agreed with customer', updatedBy: 'Customer Care Staff' },
-          { timestamp: '2026-10-22T16:30:00.000Z', fromStatus: 'Visit Scheduled', toStatus: 'Final Order Created', note: 'Requirements collected and final order #ENM-1088 created. Remaining: PKR 26,800', updatedBy: 'Muhammad Hamza' }
-        ]
-      },
-      {
-        id: 'HS-ENM-2026-0982',
-        orderType: 'HOME SERVICE',
-        createdAt: '2026-10-23T11:00:00.000Z',
-        updatedAt: '2026-10-23T11:30:00.000Z',
-        fullName: 'Dr. Bilal Qureshi',
-        phone: '0321-4567890',
-        whatsapp: '0321-4567890',
-        email: 'bilal.q@skm.org.pk',
-        contactMethod: 'Phone Call',
-        preferredVisitWindow: 'Thursday Morning (10:00 AM – 1:00 PM)',
-        preferredDate: '2026-10-29',
-        customerNotes: 'Hospital oncology team uniform fitting.',
-        addressSnapshot: {
-          id: 'lhr-johar-town',
-          area: 'Johar Town',
-          zoneTag: 'Doctors Hospital Medical Hub',
-          fullAddress: 'Doctors Hospital Medical Enclave, G1 Market, Johar Town, Lahore',
-          landmark: 'Behind Radiation Oncology Wing, SKMCH'
-        },
-        advanceRequired: 3000,
-        advancePaymentStatus: 'Awaiting Advance Payment',
-        verifiedAmountReceived: 0,
-        paymentMethod: 'Bank Transfer (Meezan Bank)',
-        trxRef: 'IBFT-771920',
-        representativeName: 'Unassigned',
-        visitTime: 'Pending Advance Verification',
-        agreedRequirements: 'To be determined during representative consultation',
-        confirmedOrderTotal: null,
-        linkedShopifyOrderId: '',
-        remainingBalance: null,
-        lifecycleStatus: 'Awaiting Advance Payment',
-        adminNotes: [
-          { timestamp: '2026-10-23T11:30:00.000Z', note: 'Bank transfer slip uploaded. Awaiting finance confirmation.', author: 'Customer Care Staff' }
-        ],
-        statusHistory: [
-          { timestamp: '2026-10-23T11:00:00.000Z', fromStatus: 'None', toStatus: 'Awaiting Advance Payment', note: 'Customer submitted with manual bank deposit slip', updatedBy: 'System' }
-        ]
-      },
-      {
-        id: 'HS-ENM-2026-1120',
-        orderType: 'HOME SERVICE',
-        createdAt: '2026-10-24T09:15:00.000Z',
-        updatedAt: '2026-10-24T10:00:00.000Z',
-        fullName: 'Dr. Usman Tariq',
-        phone: '0333-5129840',
-        whatsapp: '0333-5129840',
-        email: 'usman.tariq@clinics.pk',
-        contactMethod: 'WhatsApp',
-        preferredVisitWindow: 'Friday Evening (5:00 PM – 8:00 PM)',
-        preferredDate: '2026-10-31',
-        customerNotes: 'Looking for executive gabardine mandarin collar scrubs.',
-        addressSnapshot: {
-          id: 'lhr-gulberg',
-          area: 'Gulberg III',
-          zoneTag: 'Main Boulevard Corridor',
-          fullAddress: 'Gulberg III Medical Pavilion, Main Boulevard, Lahore',
-          landmark: 'Clinic Suite 302'
-        },
-        advanceRequired: 3000,
-        advancePaymentStatus: 'Advance Paid',
-        verifiedAmountReceived: 3000,
-        paymentMethod: 'Shopify Checkout (PKR 3,000 Advance)',
-        trxRef: 'CHG-102948',
-        representativeName: 'Tariq Mehmood',
-        visitTime: 'Friday 31 Oct, 5:30 PM',
-        agreedRequirements: 'To be collected during visit',
-        confirmedOrderTotal: null,
-        linkedShopifyOrderId: '',
-        remainingBalance: null,
-        lifecycleStatus: 'Visit Scheduled',
-        adminNotes: [
-          { timestamp: '2026-10-24T10:00:00.000Z', note: 'Advance verified. Fitting appointment scheduled with Tariq Mehmood for Friday 5:30 PM.', author: 'Customer Care Staff' }
-        ],
-        statusHistory: [
-          { timestamp: '2026-10-24T09:15:00.000Z', fromStatus: 'None', toStatus: 'Advance Paid', note: 'Advance payment processed', updatedBy: 'System' },
-          { timestamp: '2026-10-24T10:00:00.000Z', fromStatus: 'Advance Paid', toStatus: 'Visit Scheduled', note: 'Appointment assigned to Tariq Mehmood', updatedBy: 'Customer Care Staff' }
-        ]
-      }
-    ];
+    const INITIAL_SAMPLE_BOOKINGS = [];
 
     function getStoredBookings() {
       try {
         const raw = localStorage.getItem(SS_STORAGE_KEY);
-        if (!raw) {
-          localStorage.setItem(SS_STORAGE_KEY, JSON.stringify(INITIAL_SAMPLE_BOOKINGS));
-          return INITIAL_SAMPLE_BOOKINGS;
-        }
+        if (!raw) return [];
         return JSON.parse(raw) || [];
       } catch (e) {
-        return INITIAL_SAMPLE_BOOKINGS;
+        return [];
       }
     }
 
@@ -5240,17 +5271,20 @@
           'Minimum Qualifying Order': `PKR ${MINIMUM_HOME_SERVICE_ORDER_VALUE.toLocaleString()}`
         };
 
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: [{
-              id: 67718805684512,
-              quantity: 1,
-              properties: lineProps
-            }]
-          })
-        }).catch(() => {});
+        const serviceVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || null;
+        if (serviceVariantId) {
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: [{
+                id: serviceVariantId,
+                quantity: 1,
+                properties: lineProps
+              }]
+            })
+          }).catch(() => {});
+        }
       }
 
       // Display Success Confirmation View (Step 4)
@@ -5800,15 +5834,23 @@
       "default": "Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes."
     },
     {
+      "type": "video",
+      "id": "video",
+      "label": "Brand Showcase Shopify Video",
+      "info": "Select or upload a video directly from your Shopify Files / Media library."
+    },
+    {
       "type": "text",
       "id": "brand_video_url",
-      "label": "Brand Showcase Video URL (MP4)",
+      "label": "Brand Video URL (Fallback MP4)",
+      "info": "Used if no Shopify Video is selected above.",
       "default": "https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4"
     },
     {
       "type": "image_picker",
       "id": "brand_video_poster",
-      "label": "Brand Showcase Video Poster Image"
+      "label": "Brand Video Poster Image (Optional)",
+      "info": "Image displayed before the video plays."
     },
     {
       "type": "text",
@@ -6360,20 +6402,17 @@
         {
           "type": "textarea",
           "id": "review",
-          "label": "Review Quote",
-          "default": "The 4-way mechanical stretch in the Sprinter series is unmatched during 24-hour calls. Exceptional stitch quality and fit."
+          "label": "Review Quote"
         },
         {
           "type": "text",
           "id": "author",
-          "label": "Doctor / Clinician Name",
-          "default": "Dr. Hamza Tariq, FCPS"
+          "label": "Doctor / Clinician Name"
         },
         {
           "type": "text",
           "id": "city",
-          "label": "Hospital / City",
-          "default": "Shaukat Khanum Memorial Hospital, Lahore"
+          "label": "Hospital / City"
         },
         {
           "type": "checkbox",

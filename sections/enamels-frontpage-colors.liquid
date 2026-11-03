@@ -1,0 +1,392 @@
+{% comment %}
+  Enamels Frontpage Colors Section
+  "Shop by colors" with circular fabric swatches and navigation arrows.
+  Desktop: Row of 10 swatches flanked by arrows.
+  Mobile: 3 swatches visible at a time flanked by arrows.
+{% endcomment %}
+
+<section class="enamels-colors-section" id="enamels-colors-{{ section.id }}">
+  <div class="enamels-colors__container">
+    <!-- Header -->
+    <div class="enamels-section-head">
+      <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'Shop by colors' }}</h2>
+      {% if section.settings.view_all_link != blank and section.settings.view_all_label != blank %}
+        <a href="{{ section.settings.view_all_link }}" class="enamels-section-head__link">
+          {{ section.settings.view_all_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Carousel Wrapper with Left & Right Arrows -->
+    <div class="enamels-swatch-carousel" data-carousel-id="{{ section.id }}">
+      <button
+        type="button"
+        class="enamels-carousel-arrow enamels-carousel-arrow--left"
+        aria-label="Previous colors"
+        data-action="prev"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="enamels-swatch-track" data-track>
+        {% for block in section.blocks %}
+          {% assign swatch_img = block.settings.image %}
+          {% assign swatch_fallback = block.settings.fallback_asset %}
+          <a
+            href="{{ block.settings.link | default: '/collections/all' }}"
+            class="enamels-swatch-item"
+            {{ block.shopify_attributes }}
+          >
+            <div class="enamels-swatch-circle" style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}">
+              {% if swatch_img != blank %}
+                <img
+                  src="{{ swatch_img | image_url: width: 180 }}"
+                  alt="{{ block.settings.title | escape }}"
+                  loading="lazy"
+                  width="80"
+                  height="80"
+                >
+              {% elsif swatch_fallback != blank %}
+                <img
+                  src="{{ swatch_fallback | asset_url }}"
+                  alt="{{ block.settings.title | escape }}"
+                  loading="lazy"
+                  width="80"
+                  height="80"
+                >
+              {% endif %}
+            </div>
+            <span class="enamels-swatch-label">{{ block.settings.title }}</span>
+          </a>
+        {% endfor %}
+      </div>
+
+      <button
+        type="button"
+        class="enamels-carousel-arrow enamels-carousel-arrow--right"
+        aria-label="Next colors"
+        data-action="next"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  #enamels-colors-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | default: 12 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 28 }}px;
+  }
+
+  #enamels-colors-{{ section.id }} .enamels-colors__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .enamels-swatch-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .enamels-carousel-arrow {
+    flex: 0 0 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #666666;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 2;
+  }
+
+  .enamels-carousel-arrow:hover {
+    color: #111111;
+    transform: scale(1.15);
+  }
+
+  .enamels-swatch-track {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 6px 4px;
+    align-items: flex-start;
+  }
+
+  .enamels-swatch-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .enamels-swatch-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    width: 72px;
+    transition: transform 0.2s ease;
+  }
+
+  .enamels-swatch-item:hover {
+    transform: translateY(-3px);
+  }
+
+  .enamels-swatch-circle {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 8px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eaeaea;
+  }
+
+  .enamels-swatch-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .enamels-swatch-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #111111;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  @media (max-width: 640px) {
+    #enamels-colors-{{ section.id }} .enamels-colors__container {
+      padding: 0 10px;
+    }
+
+    .enamels-swatch-track {
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .enamels-swatch-item {
+      width: calc((100% - 24px) / 3);
+      max-width: 100px;
+    }
+
+    .enamels-swatch-circle {
+      width: 76px;
+      height: 76px;
+      margin-bottom: 6px;
+    }
+
+    .enamels-swatch-label {
+      font-size: 0.78rem;
+    }
+
+    .enamels-carousel-arrow {
+      flex: 0 0 24px;
+      height: 24px;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    const section = document.getElementById('enamels-colors-{{ section.id }}');
+    if (!section) return;
+    const track = section.querySelector('[data-track]');
+    const prevBtn = section.querySelector('[data-action="prev"]');
+    const nextBtn = section.querySelector('[data-action="next"]');
+
+    if (prevBtn && track) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -track.clientWidth * 0.6, behavior: 'smooth' });
+      });
+    }
+
+    if (nextBtn && track) {
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: track.clientWidth * 0.6, behavior: 'smooth' });
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Enamels Shop By Colors",
+  "tag": "section",
+  "class": "enamels-colors-section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Shop by colors"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Label",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "color_swatch",
+      "name": "Color Swatch",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Color Name",
+          "default": "BLUE"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Color Link"
+        },
+        {
+          "type": "color",
+          "id": "color_code",
+          "label": "Fallback Solid Color"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Fabric Swatch Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Asset File Name",
+          "info": "e.g. enamels-swatch-blue.jpg"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Shop By Colors",
+      "blocks": [
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "BLUE",
+            "fallback_asset": "enamels-swatch-blue.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "GREEN",
+            "fallback_asset": "enamels-swatch-green.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "SEAGREEN",
+            "fallback_asset": "enamels-swatch-seagreen.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "MUSTARD",
+            "fallback_asset": "enamels-swatch-mustard.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "DARK GREEN",
+            "fallback_asset": "enamels-swatch-darkgreen.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "BLUE",
+            "fallback_asset": "enamels-swatch-blue.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "GREEN",
+            "fallback_asset": "enamels-swatch-green.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "SEAGREEN",
+            "fallback_asset": "enamels-swatch-seagreen.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "MUSTARD",
+            "fallback_asset": "enamels-swatch-mustard.jpg"
+          }
+        },
+        {
+          "type": "color_swatch",
+          "settings": {
+            "title": "DARK GREEN",
+            "fallback_asset": "enamels-swatch-darkgreen.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

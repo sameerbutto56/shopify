@@ -6,10 +6,10 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign category_title = section.settings.title | default: 'Clinical Scrubs'
-  assign category_tag = section.settings.tag | default: 'PURPOSE-BUILT MEDICAL UNIFORMS'
-  assign category_desc = section.settings.description | default: 'Proprietary antimicrobial 4-way athletic stretch and luxury micro-drape fabrics tailored for intense 24-hour clinical rounds.'
-  assign btn_label = section.settings.button_label | default: 'Explore Scrubs Collection →'
+  assign category_title = section.settings.title | strip
+  assign category_tag = section.settings.tag | strip
+  assign category_desc = section.settings.description | strip
+  assign btn_label = section.settings.button_label | strip
   assign btn_link = section.settings.button_link | default: '#category-scrubs'
   assign img_pos = section.settings.image_position | default: 'right'
   assign text_align = section.settings.text_alignment | default: 'left'
@@ -96,9 +96,11 @@
           <span class="category-pill-tag">{{ category_tag | escape }}</span>
         {% endif %}
 
-        <h2 class="category-showcase-title" style="color: {{ text_color }};">
-          {{ category_title | escape }}
-        </h2>
+        {% if category_title != blank %}
+          <h2 class="category-showcase-title" style="color: {{ text_color }};">
+            {{ category_title | escape }}
+          </h2>
+        {% endif %}
 
         {% if category_desc != blank %}
           <p class="category-showcase-desc">
@@ -144,21 +146,18 @@
           {% if section.settings.image != blank %}
             <img
               src="{{ section.settings.image | image_url: width: 1000 }}"
-              alt="{{ section.settings.image.alt | default: category_title | escape }}"
+              alt="{{ section.settings.image.alt | default: category_title | default: 'Clinical Scrubs' | escape }}"
               class="category-showcase-img"
               loading="lazy"
               width="{{ section.settings.image.width }}"
               height="{{ section.settings.image.height }}"
             />
           {% else %}
-            <img
-              src="{{ 'cat-sprinter.jpg' | asset_url }}"
-              alt="{{ category_title | escape }}"
-              class="category-showcase-img"
-              loading="lazy"
-              width="800"
-              height="600"
-            />
+            <div class="category-img-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 280px;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+              </svg>
+            </div>
           {% endif %}
         </div>
       </div>

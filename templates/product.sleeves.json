@@ -1,0 +1,104 @@
+{
+  "sections": {
+    "main": {
+      "type": "enamels-product-pdp",
+      "blocks": {
+        "vendor_sku": {
+          "type": "vendor_sku",
+          "settings": {
+            "show_vendor": true,
+            "show_sku": true,
+            "show_article_name": true,
+            "show_category": true
+          }
+        },
+        "title_rating": {
+          "type": "title_rating",
+          "settings": {
+            "title_size": 26,
+            "show_rating": true,
+            "rating_score": "4.9",
+            "reviews_count": "128",
+            "show_verified_badge": true
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_compare_at_price": true,
+            "show_discount_badge": true,
+            "show_tax_note": true,
+            "tax_note_text": "Inclusive of all taxes. Free delivery on orders over PKR 7,000 in Pakistan."
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "show_size_guide_btn": true
+          }
+        },
+        "bullet_features": {
+          "type": "bullet_features",
+          "settings": {
+            "heading": "Med Sleeves Compression Highlights",
+            "bullet_1": "Graduated 15-20 mmHg compression improves circulation during long standing theatre shifts",
+            "bullet_2": "Non-slip medical silicone bicep grip prevents rolling down or shifting",
+            "bullet_3": "Thermoregulating moisture-wicking yarns keep arms comfortable under cool hospital AC",
+            "bullet_4": "UPF 50+ UV barrier with antimicrobial odor control",
+            "bullet_5": "Seamless circular knit prevents chafing and pressure marks"
+          }
+        },
+        "specifications_table": {
+          "type": "specifications_table",
+          "settings": {
+            "heading": "Sleeve Specifications",
+            "spec_fabric": "85% Nylon / 15% Medical Spandex",
+            "spec_fit": "Graduated Anatomical Compression",
+            "spec_pockets": "Silicone Anti-Slip Wave Bicep Band",
+            "spec_stretch": "4-Way Dynamic Graduated Compression",
+            "spec_care": "Hand Wash Cold or Gentle Machine Wash",
+            "spec_origin": "Pakistan"
+          }
+        }
+      },
+      "block_order": [
+        "vendor_sku",
+        "title_rating",
+        "price",
+        "variant_picker",
+        "bullet_features",
+        "specifications_table"
+      ],
+      "settings": {
+        "container_width": 1380,
+        "column_ratio": "4.8:5:3.4",
+        "show_breadcrumbs": true,
+        "gallery_aspect_ratio": "3/4",
+        "gallery_image_fit": "contain",
+        "enable_image_zoom": true,
+        "enable_lightbox": true,
+        "atc_btn_text": "Add to Cart",
+        "atc_btn_bg": "#102a43",
+        "atc_btn_color": "#ffffff",
+        "show_buy_now": true,
+        "buy_now_btn_bg": "#008779",
+        "buy_now_btn_color": "#ffffff",
+        "btn_border_radius": 8,
+        "show_quantity": true,
+        "show_stock_badge": true,
+        "show_shipping_promise": true,
+        "show_trust_table": true,
+        "show_home_fitting": true,
+        "shipping_fee_pk": 250,
+        "free_shipping_threshold": 7000,
+        "shipping_fee_intl": 4000,
+        "shipping_fee_intl_addon": 1800,
+        "padding_top": 20,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

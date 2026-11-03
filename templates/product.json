@@ -1,591 +1,137 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */{
+{
   "sections": {
     "main": {
-      "type": "product-information",
+      "type": "enamels-product-pdp",
       "blocks": {
-        "disclosures_g9mWze": {
-          "type": "disclosures",
-          "name": "t:names.disclosures",
+        "vendor_sku": {
+          "type": "vendor_sku",
           "settings": {
-            "heading": "Disclosures",
-            "heading_preset": "h5",
-            "open_by_default": false,
-            "icon": "caret",
-            "disclosure_heading_preset": "h6",
-            "text_color": "",
-            "dividers": true,
-            "divider_color": "{{ settings.color_palette.color2 }}",
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "media-gallery": {
-          "type": "_product-media-gallery",
-          "static": true,
-          "settings": {
-            "media_presentation": "grid",
-            "media_columns": "two",
-            "image_gap": 4,
-            "large_first_image": false,
-            "slideshow_controls_style": "counter",
-            "slideshow_mobile_controls_style": "dots",
-            "thumbnail_position": "right",
-            "thumbnail_width": 44,
-            "thumbnail_radius": 0,
-            "aspect_ratio": "adapt",
-            "constrain_to_viewport": true,
-            "media_fit": "contain",
-            "media_radius": 0,
-            "extend_media": false,
-            "zoom": true,
-            "video_loop": false,
-            "hide_variants": true,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "product-details": {
-          "type": "_product-details",
-          "static": true,
-          "settings": {
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "details_position": "flex-start",
-            "gap": 28,
-            "sticky_details_desktop": true,
-            "background_media": "none",
-            "background_color": "",
-            "video_position": "cover",
-            "background_image_position": "cover",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 24,
-            "padding-block-end": 24,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "group_icgrde": {
-              "type": "group",
-              "name": "t:names.header",
-              "settings": {
-                "content_direction": "column",
-                "vertical_on_mobile": true,
-                "horizontal_alignment": "flex-start",
-                "vertical_alignment": "center",
-                "align_baseline": false,
-                "horizontal_alignment_flex_direction_column": "flex-start",
-                "vertical_alignment_flex_direction_column": "center",
-                "gap": 12,
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "custom_height": 100,
-                "background_media": "none",
-                "background_color": "",
-                "video_position": "cover",
-                "background_image_position": "cover",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "open_in_new_tab": false,
-                "placeholder": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "text_xrnftG": {
-                  "type": "text",
-                  "name": "t:names.product_title",
-                  "settings": {
-                    "text": "<h1>{{ closest.product.title }}</h1>",
-                    "width": "100%",
-                    "max_width": "normal",
-                    "alignment": "left",
-                    "type_preset": "h3",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "wrap": "pretty",
-                    "text_color": "",
-                    "background": false,
-                    "background_color": "#00000026",
-                    "corner_radius": 0,
-                    "padding-block-start": 0,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                },
-                "price_tVjtKg": {
-                  "type": "price",
-                  "settings": {
-                    "show_sale_price_first": true,
-                    "show_installments": false,
-                    "show_tax_info": false,
-                    "type_preset": "paragraph",
-                    "width": "100%",
-                    "alignment": "left",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "text_color": "",
-                    "padding-block-start": 4,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "text_xrnftG",
-                "price_tVjtKg"
-              ]
-            },
-            "divider_VJhene": {
-              "type": "_divider",
-              "name": "t:names.divider",
-              "settings": {
-                "thickness": 1,
-                "corner_radius": "square",
-                "divider_color": "{{ settings.color_palette.color2 }}",
-                "width_percent": 100,
-                "padding-block-start": 0,
-                "padding-block-end": 0
-              },
-              "blocks": {}
-            },
-            "variant_picker_R3rGDr": {
-              "type": "variant-picker",
-              "settings": {
-                "variant_style": "buttons",
-                "show_swatches": false,
-                "option_label_text_color": "",
-                "variant_style_class": "default",
-                "custom_variant_background": "{{ settings.color_palette.background }}",
-                "custom_variant_text": "{{ settings.color_palette.foreground }}",
-                "custom_variant_border": "{{ settings.color_palette.foreground }}",
-                "selected_variant_style_class": "default",
-                "custom_selected_variant_background": "{{ settings.color_palette.foreground }}",
-                "custom_selected_variant_text": "{{ settings.color_palette.background }}",
-                "custom_selected_variant_border": "{{ settings.color_palette.foreground }}",
-                "alignment": "left",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "buy_buttons_eYQEYi": {
-              "type": "buy-buttons",
-              "settings": {
-                "stacking": true,
-                "text_color": "",
-                "show_pickup_availability": false,
-                "gift_card_form": true,
-                "recipient_button_style": "default",
-                "recipient_button_background": "{{ settings.color_palette.background }}",
-                "recipient_button_text": "{{ settings.color_palette.foreground }}",
-                "recipient_button_border": "{{ settings.color_palette.foreground }}",
-                "selected_recipient_button_style": "default",
-                "selected_recipient_button_background": "{{ settings.color_palette.foreground }}",
-                "selected_recipient_button_text": "{{ settings.color_palette.background }}",
-                "selected_recipient_button_border": "{{ settings.color_palette.foreground }}",
-                "input_style": "default",
-                "input_background_color": "{{ settings.color_palette.background }}",
-                "input_text_color": "{{ settings.color_palette.foreground }}",
-                "input_border_color": "{{ settings.color_palette.foreground }}",
-                "border_width": 1,
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "quantity": {
-                  "type": "quantity",
-                  "static": true,
-                  "settings": {
-                    "input_style": "default",
-                    "input_background_color": "{{ settings.color_palette.background }}",
-                    "input_text_color": "{{ settings.color_palette.foreground }}",
-                    "input_border_color": "{{ settings.color_palette.foreground }}",
-                    "border_width": 1,
-                    "border_radius": 0
-                  },
-                  "blocks": {}
-                },
-                "add-to-cart": {
-                  "type": "add-to-cart",
-                  "static": true,
-                  "settings": {
-                    "style_class": "button",
-                    "custom_button_background": "{{ settings.color_palette.foreground }}",
-                    "custom_button_text": "{{ settings.color_palette.background }}",
-                    "custom_button_border": "{{ settings.color_palette.background }}"
-                  },
-                  "blocks": {}
-                },
-                "accelerated-checkout": {
-                  "type": "accelerated-checkout",
-                  "static": true,
-                  "settings": {},
-                  "blocks": {}
-                }
-              },
-              "block_order": []
-            },
-            "text_aEtTtq": {
-              "type": "text",
-              "name": "t:names.product_description",
-              "settings": {
-                "text": "{{ closest.product.description }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "group_icgrde",
-            "divider_VJhene",
-            "variant_picker_R3rGDr",
-            "buy_buttons_eYQEYi",
-            "text_aEtTtq"
-          ]
-        }
-      },
-      "block_order": [
-        "disclosures_g9mWze"
-      ],
-      "settings": {
-        "content_width": "content-center-aligned",
-        "desktop_media_position": "left",
-        "equal_columns": false,
-        "limit_details_width": false,
-        "gap": 48,
-        "enable_sticky_add_to_cart": true,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 0,
-        "padding-block-end": 0
-      }
-    },
-    "product_recommendations_qggXJq": {
-      "type": "product-recommendations",
-      "blocks": {
-        "text_cbcgyb": {
-          "type": "text",
-          "name": "t:names.header",
-          "settings": {
-            "text": "<h3>You may also like </h3>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h4",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "text_color": "",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "static-product-card": {
-          "type": "_product-card",
-          "name": "t:names.product_card",
-          "static": true,
-          "settings": {
-            "product_card_gap": 8,
-            "background_color": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_color": "",
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 8,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "product_card_gallery_DNizbJ": {
-              "type": "_product-card-gallery",
-              "name": "t:names.product_card_media",
-              "settings": {
-                "image_ratio": "adapt",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_color": "",
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_title_M7MJkb": {
-              "type": "product-title",
-              "name": "t:names.product_title",
-              "settings": {
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "text_color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "price_gLWgA6": {
-              "type": "price",
-              "settings": {
-                "show_sale_price_first": true,
-                "show_installments": false,
-                "show_tax_info": false,
-                "type_preset": "h6",
-                "width": "100%",
-                "alignment": "left",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "text_color": "",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "product_card_gallery_DNizbJ",
-            "product_title_M7MJkb",
-            "price_gLWgA6"
-          ]
-        }
-      },
-      "block_order": [
-        "text_cbcgyb"
-      ],
-      "name": "t:names.product_recommendations",
-      "settings": {
-        "product": "{{ closest.product }}",
-        "recommendation_type": "related",
-        "layout_type": "grid",
-        "carousel_on_mobile": false,
-        "max_products": 4,
-        "columns": 4,
-        "mobile_columns": "2",
-        "columns_gap": 12,
-        "rows_gap": 24,
-        "icons_style": "arrow",
-        "icons_shape": "none",
-        "section_width": "page-width",
-        "gap": 28,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 48,
-        "padding-block-end": 48
-      }
-    },
-    "enamels_customizer": {
-      "type": "enamels-customizer-section",
-      "settings": {
-        "show_header": true,
-        "badge": "Official Clinical Personalization",
-        "title": "Step-by-Step Custom Fit & Embroidery",
-        "subtitle": "Tailor your scrubs with clinical precision: choose your fit, select official shades, and preview live chest pocket embroidery.",
-        "bg_color": "#f8fafc",
-        "padding_top": 48,
-        "padding_bottom": 48
-      }
-    },
-    "frequently_bought_together": {
-      "type": "frequently-bought-together",
-      "settings": {}
-    },
-    "trust_badges_pdp": {
-      "type": "trust-badges",
-      "blocks": {
-        "badge_1": {
-          "type": "badge",
-          "settings": {
-            "icon": "truck",
-            "title": "Nationwide Delivery",
-            "subtitle": "Fast 3-5 days delivery in Pakistan"
+            "show_vendor": true,
+            "show_sku": true,
+            "show_article_name": true,
+            "show_category": true
           }
         },
-        "badge_2": {
-          "type": "badge",
+        "title_rating": {
+          "type": "title_rating",
           "settings": {
-            "icon": "cash",
-            "title": "Cash on Delivery",
-            "subtitle": "Pay cash at your doorstep"
+            "title_size": 26,
+            "show_rating": true,
+            "rating_score": "4.9",
+            "reviews_count": "128",
+            "show_verified_badge": true
           }
         },
-        "badge_3": {
-          "type": "badge",
+        "price": {
+          "type": "price",
           "settings": {
-            "icon": "repeat",
-            "title": "7-Day Easy Exchange",
-            "subtitle": "Hassle-free size & style exchange"
+            "show_compare_at_price": true,
+            "show_discount_badge": true,
+            "show_tax_note": true,
+            "tax_note_text": "Inclusive of all taxes. Free delivery on orders over PKR 7,000 in Pakistan."
           }
         },
-        "badge_4": {
-          "type": "badge",
+        "variant_picker": {
+          "type": "variant_picker",
           "settings": {
-            "icon": "shield",
-            "title": "100% Original Quality",
-            "subtitle": "4-Way Stretch & tailored stitching"
+            "show_size_guide_btn": true
+          }
+        },
+        "customization": {
+          "type": "customization",
+          "settings": {
+            "enable_customization": true,
+            "custom_title": "Doctor Name & Credentials Personalization",
+            "custom_desc": "Precision computerized clinical embroidery. Please provide your name, title, and preferred thread color.",
+            "direct_embroidery_price": 450,
+            "patch_price": 550,
+            "sleeve_logo_price": 400
+          }
+        },
+        "cross_sell_bundle": {
+          "type": "cross_sell_bundle",
+          "settings": {
+            "heading": "Frequently Paired Clinical Essentials",
+            "subheading": "Add matching surgical cap and compression arm sleeves to complete your uniform."
+          }
+        },
+        "bullet_features": {
+          "type": "bullet_features",
+          "settings": {
+            "heading": "About this item",
+            "bullet_1": "Clinical Performance Textile: 72% Polyester, 21% Rayon, 7% Spandex 4-way flex blend",
+            "bullet_2": "Triple-Needle Reinforced Stitching: Maximum durability under demanding hospital shift conditions",
+            "bullet_3": "Ergonomic Pocket Architecture: Deep accessory pockets designed for stethoscope, pens & charts",
+            "bullet_4": "Wrinkle-Resistant & Anti-Static: Retains a crisp, professional clinical drape all day",
+            "bullet_5": "Autoclave & Sanitization Friendly: Non-fade reactive dyes tested for commercial washing"
+          }
+        },
+        "specifications_table": {
+          "type": "specifications_table",
+          "settings": {
+            "heading": "Technical Specifications",
+            "spec_fabric": "72% Poly / 21% Rayon / 7% Spandex",
+            "spec_fit": "Modern Clinical Tailored Fit",
+            "spec_pockets": "5 Pockets (Chest Pocket + 2 Deep Hip + 2 Cargo)",
+            "spec_stretch": "4-Way Mechanical Comfort Stretch",
+            "spec_care": "Machine wash cold with like colors, tumble dry low",
+            "spec_origin": "Pakistan (Sialkot Clinical Labs)"
           }
         }
       },
       "block_order": [
-        "badge_1",
-        "badge_2",
-        "badge_3",
-        "badge_4"
+        "vendor_sku",
+        "title_rating",
+        "price",
+        "variant_picker",
+        "customization",
+        "cross_sell_bundle",
+        "bullet_features",
+        "specifications_table"
       ],
       "settings": {
-        "bg_color": "#ffffff",
-        "text_color": "#0f172a"
+        "container_width": 1380,
+        "column_ratio": "4.8:5:3.4",
+        "show_breadcrumbs": true,
+        "gallery_aspect_ratio": "3/4",
+        "gallery_image_fit": "contain",
+        "enable_image_zoom": true,
+        "enable_lightbox": true,
+        "atc_btn_text": "Add to Cart",
+        "atc_btn_bg": "#102a43",
+        "atc_btn_color": "#ffffff",
+        "show_buy_now": true,
+        "buy_now_btn_bg": "#008779",
+        "buy_now_btn_color": "#ffffff",
+        "btn_border_radius": 8,
+        "show_quantity": true,
+        "show_stock_badge": true,
+        "show_shipping_promise": true,
+        "show_trust_table": true,
+        "show_home_fitting": true,
+        "shipping_fee_pk": 250,
+        "free_shipping_threshold": 7000,
+        "shipping_fee_intl": 4000,
+        "shipping_fee_intl_addon": 1800,
+        "padding_top": 20,
+        "padding_bottom": 60
       }
     },
-    "faq_pdp": {
-      "type": "faq-accordion",
-      "blocks": {
-        "faq_1": {
-          "type": "faq_item",
-          "settings": {
-            "question": "What is the delivery time across Pakistan?",
-            "answer": "Orders are dispatched within 24 hours. Delivery takes 2-4 business days for major cities (Karachi, Lahore, Islamabad/Rawalpindi) and 3-5 business days for other cities via Trax, PostEx, and TCS."
-          }
-        },
-        "faq_2": {
-          "type": "faq_item",
-          "settings": {
-            "question": "Can I pay via Cash on Delivery (COD)?",
-            "answer": "Yes! We offer Cash on Delivery across Pakistan. You can inspect the package and pay cash to the courier representative at your doorstep."
-          }
-        },
-        "faq_3": {
-          "type": "faq_item",
-          "settings": {
-            "question": "How long does custom name embroidery take?",
-            "answer": "Custom embroidery (direct name or name patch) typically adds 1-2 business days to the preparation time before shipping."
-          }
-        },
-        "faq_4": {
-          "type": "faq_item",
-          "settings": {
-            "question": "What if the scrub size does not fit me?",
-            "answer": "We provide a hassle-free 7-day size exchange policy! Simply message our WhatsApp support team at +92 300 1234567 and we will arrange a replacement size for you."
-          }
-        }
-      },
-      "block_order": [
-        "faq_1",
-        "faq_2",
-        "faq_3",
-        "faq_4"
-      ],
+    "enamels_cross_sell": {
+      "type": "enamels-cross-sell",
       "settings": {
-        "heading": "Frequently Asked Questions",
-        "subheading": "Care, Sizing & Delivery",
-        "bg_color": "#f8fafc",
-        "text_color": "#0f172a"
+        "enable_cross_sell": true,
+        "cross_sell_heading": "Complementary Clinical Essentials",
+        "cross_sell_subheading": "Discover perfectly paired surgical caps, compression sleeves, and medical accessories to complete your uniform.",
+        "cross_sell_image_fit": "contain",
+        "cross_sell_aspect_ratio": "3/4",
+        "padding_top": 24,
+        "padding_bottom": 36
       }
-    },
-    "interactive_catalogue_section": {
-      "type": "enamels-interactive-catalogue",
-      "settings": {}
     }
   },
   "order": [
     "main",
-    "enamels_customizer",
-    "frequently_bought_together",
-    "interactive_catalogue_section",
-    "product_recommendations_qggXJq",
-    "trust_badges_pdp",
-    "faq_pdp"
+    "enamels_cross_sell"
   ]
 }

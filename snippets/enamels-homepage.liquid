@@ -38,8 +38,7 @@
   <!-- ============================================================ -->
   <section class="enamels-slideshow-container" id="enamels-hero-slideshow" aria-label="Official Enamels Slideshow">
     <div class="slideshow-track" id="enamels-slideshow-track">
-      {% if slide_blocks_count > 0 %}
-        {% for block in section.blocks %}
+      {% for block in section.blocks %}
           {% if block.type == 'slide' and block.settings.visible != false %}
             {%- liquid
               assign has_title = false
@@ -133,87 +132,6 @@
             </div>
           {% endif %}
         {% endfor %}
-      {% else %}
-        <!-- Slide 1: Sprinter Autumn Edition -->
-        <div class="slide-panel">
-          <div class="slide-media-wrap">
-            <a href="#collection-sprinter" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('Sprinter'); return false;">
-              <img
-                src="{{ 'banner-autumn.jpg' | asset_url }}"
-                alt="Enamels Sprinter Autumn Edition"
-                class="slide-img-full"
-                width="1500"
-                height="575"
-                loading="eager"
-              />
-            </a>
-          </div>
-        </div>
-
-        <!-- Slide 2: Clinical Clogs & Footwear -->
-        <div class="slide-panel">
-          <div class="slide-media-wrap">
-            <a href="#collection-clogs" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('clogs', 'category'); return false;">
-              <img
-                src="{{ 'banner-clogs.jpg' | asset_url }}"
-                alt="Enamels Clinical Clogs & Footwear"
-                class="slide-img-full"
-                width="1500"
-                height="625"
-                loading="lazy"
-              />
-            </a>
-          </div>
-        </div>
-
-        <!-- Slide 3: New Arrivals / Abbotabad Banner -->
-        <div class="slide-panel">
-          <div class="slide-media-wrap">
-            <a href="#collection-new-arrivals" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('all', 'category'); return false;">
-              <img
-                src="{{ 'banner-abbotabad.jpg' | asset_url }}"
-                alt="Enamels New Arrivals 2026"
-                class="slide-img-full"
-                width="1500"
-                height="575"
-                loading="lazy"
-              />
-            </a>
-          </div>
-        </div>
-
-        <!-- Slide 4: Surgical Caps (BunFit™ Series) -->
-        <div class="slide-panel">
-          <div class="slide-media-wrap">
-            <a href="#collection-caps" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('caps', 'category'); return false;">
-              <img
-                src="{{ 'banner-caps.jpg' | asset_url }}"
-                alt="Enamels BunFit Surgical Caps"
-                class="slide-img-full"
-                width="1500"
-                height="575"
-                loading="lazy"
-              />
-            </a>
-          </div>
-        </div>
-
-        <!-- Slide 5: Velora By Enamels -->
-        <div class="slide-panel">
-          <div class="slide-media-wrap">
-            <a href="#collection-velora" class="slide-media-link" onclick="if(window.navigateToCollection) window.navigateToCollection('Velora'); return false;">
-              <img
-                src="{{ 'banner-velora.jpg' | asset_url }}"
-                alt="Velora Luxury Micro-Drape By Enamels"
-                class="slide-img-full"
-                width="1500"
-                height="575"
-                loading="lazy"
-              />
-            </a>
-          </div>
-        </div>
-      {% endif %}
     </div>
 
     {% if show_arrows %}
@@ -225,21 +143,13 @@
     {% if show_dots %}
     <!-- Pagination Dots -->
     <div class="slideshow-dots-bar" id="slideshow-dots-bar">
-      {% if slide_blocks_count > 0 %}
-        {% assign dot_index = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'slide' %}
-            <button type="button" class="slideshow-dot {% if dot_index == 0 %}active{% endif %}" onclick="window.jumpToBannerSlide({{ dot_index }})" aria-label="Slide {{ dot_index | plus: 1 }}"></button>
-            {% assign dot_index = dot_index | plus: 1 %}
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <button type="button" class="slideshow-dot active" onclick="window.jumpToBannerSlide(0)" aria-label="Slide 1"></button>
-        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(1)" aria-label="Slide 2"></button>
-        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(2)" aria-label="Slide 3"></button>
-        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(3)" aria-label="Slide 4"></button>
-        <button type="button" class="slideshow-dot" onclick="window.jumpToBannerSlide(4)" aria-label="Slide 5"></button>
-      {% endif %}
+      {% assign dot_index = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'slide' %}
+          <button type="button" class="slideshow-dot {% if dot_index == 0 %}active{% endif %}" onclick="window.jumpToBannerSlide({{ dot_index }})" aria-label="Slide {{ dot_index | plus: 1 }}"></button>
+          {% assign dot_index = dot_index | plus: 1 %}
+        {% endif %}
+      {% endfor %}
     </div>
     {% endif %}
   </section>
@@ -250,13 +160,22 @@
   <!-- 2. EXPLORE OUR BRANDS / SIGNATURE ARTICLES (SECTION 2)       -->
   <!-- ============================================================ -->
   <section class="frubs-brands-section page-container" id="homepage-featured-articles" aria-label="Explore Our Brands and Signature Articles">
-    <div class="categories-section-header" style="margin-bottom: 12px;">
-      <span class="categories-section-tag">{{ section.settings.brands_tag | default: 'PURPOSE-BUILT CLINICAL APPAREL' | escape }}</span>
-      <h2 class="categories-section-title">{{ section.settings.brands_title | default: 'Explore Our Brands' | escape }}</h2>
-      <p class="categories-section-subtitle">
-        {{ section.settings.brands_subtitle | default: 'Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes.' | escape }}
-      </p>
-    </div>
+    {% assign brands_tag_text = section.settings.brands_tag | strip %}
+    {% assign brands_title_text = section.settings.brands_title | strip %}
+    {% assign brands_subtitle_text = section.settings.brands_subtitle | strip %}
+    {% if brands_tag_text != blank or brands_title_text != blank or brands_subtitle_text != blank %}
+      <div class="categories-section-header" style="margin-bottom: 12px;">
+        {% if brands_tag_text != blank %}
+          <span class="categories-section-tag">{{ brands_tag_text | escape }}</span>
+        {% endif %}
+        {% if brands_title_text != blank %}
+          <h2 class="categories-section-title">{{ brands_title_text | escape }}</h2>
+        {% endif %}
+        {% if brands_subtitle_text != blank %}
+          <p class="categories-section-subtitle">{{ brands_subtitle_text | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
 
     <div class="frubs-brands-grid">
       <!-- 1. Vilora (Velora) -->
@@ -362,47 +281,51 @@
             </div>
           </a>
 
-          <!-- 3. Scrubs -->
-          <a href="#category-scrubs" class="split-category-tile" onclick="window.selectProductCategory('scrubs'); return false;" aria-label="Shop Medical Scrubs">
+          <!-- 3. Sale -->
+          <a href="/collections/sale" class="split-category-tile" aria-label="Shop Enamels Sale & Promotional Editions">
             <div class="split-category-thumb">
-              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Clinical Scrubs" width="160" height="160" loading="lazy" />
+              <span class="customizer-banner-badge" style="background: #e11d48; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">SALE</span>
+              <img src="{{ 'cat-sale.jpg' | asset_url }}" alt="Enamels Medical Scrubs on Sale" width="160" height="160" loading="lazy" />
             </div>
             <div class="split-category-info">
-              <h3 class="split-category-name">Scrubs</h3>
-              <span class="split-category-meta">All Series →</span>
+              <h3 class="split-category-name">Sale</h3>
+              <span class="split-category-meta">Promotions →</span>
             </div>
           </a>
 
-          <!-- 4. Lab Coats -->
-          <a href="#collection-lab-coats" class="split-category-tile" onclick="window.selectProductCategory('lab-coat'); return false;" aria-label="Shop Medical Lab Coats">
+          <!-- 4. Bulk Orders -->
+          <a href="/pages/bulk-orders" class="split-category-tile" aria-label="Bulk Hospital & Institution Orders">
             <div class="split-category-thumb">
-              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Doctor Lab Coats" width="160" height="160" loading="lazy" />
+              <span class="customizer-banner-badge" style="background: #0284c7; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">MIN 10</span>
+              <img src="{{ 'cat-bulk-orders.jpg' | asset_url }}" alt="Enamels Hospital Bulk Uniforms" width="160" height="160" loading="lazy" />
             </div>
             <div class="split-category-info">
-              <h3 class="split-category-name">Lab Coats</h3>
-              <span class="split-category-meta">Helium White →</span>
+              <h3 class="split-category-name">Bulk Orders</h3>
+              <span class="split-category-meta">Institutions →</span>
             </div>
           </a>
 
-          <!-- 5. Caps -->
-          <a href="#collection-caps" class="split-category-tile" onclick="window.selectProductCategory('caps'); return false;" aria-label="Shop Surgical Scrub Caps">
+          <!-- 5. Home Service -->
+          <a href="/pages/home-service" class="split-category-tile" onclick="if (typeof window.navigateToView === 'function' && document.getElementById('view-self-service')) { window.navigateToView('self-service'); return false; }" aria-label="Lahore Concierge Home Fitting Service">
             <div class="split-category-thumb">
-              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Surgical Caps" width="160" height="160" loading="lazy" />
+              <span class="customizer-banner-badge" style="background: #008779; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">CONCIERGE</span>
+              <img src="{{ 'cat-home-service.jpg' | asset_url }}" alt="Lahore Clinician Home Fitting" width="160" height="160" loading="lazy" />
             </div>
             <div class="split-category-info">
-              <h3 class="split-category-name">Caps</h3>
-              <span class="split-category-meta">BunFit™ Series →</span>
+              <h3 class="split-category-name">Home Service</h3>
+              <span class="split-category-meta">Lahore Fitting →</span>
             </div>
           </a>
 
-          <!-- 6. Sleeves & Accessories -->
-          <a href="#accessories" class="split-category-tile" onclick="window.navigateToAccessories(); return false;" aria-label="Shop Clinical Accessories and Compression Sleeves">
+          <!-- 6. Make Your Own Scrubs -->
+          <a href="/pages/customizer" class="split-category-tile" onclick="if (typeof window.navigateToView === 'function' && document.getElementById('view-ready-to-wear')) { window.navigateToView('ready-to-wear'); return false; }" aria-label="Bespoke Medical Scrub Customizer">
             <div class="split-category-thumb">
-              <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Clinical Accessories" width="160" height="160" loading="lazy" />
+              <span class="customizer-banner-badge" style="background: #b45309; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">BESPOKE</span>
+              <img src="{{ 'cat-customizer.jpg' | asset_url }}" alt="Make Your Own Scrubs Customizer" width="160" height="160" loading="lazy" />
             </div>
             <div class="split-category-info">
-              <h3 class="split-category-name">Accessories</h3>
-              <span class="split-category-meta">Sleeves & More →</span>
+              <h3 class="split-category-name">Make Your Own Scrubs</h3>
+              <span class="split-category-meta">Custom Studio →</span>
             </div>
           </a>
         </div>
@@ -412,39 +335,104 @@
       <div class="split-video-column">
         <div class="brand-video-card-container">
           <div class="brand-video-wrapper">
+            {% assign shopify_video = section.settings.video %}
             {% if section.settings.brand_video_poster != blank %}
               {% assign brand_poster = section.settings.brand_video_poster | image_url: width: 900 %}
+            {% elsif shopify_video != blank and shopify_video.preview_image != blank %}
+              {% assign brand_poster = shopify_video.preview_image | image_url: width: 900 %}
             {% else %}
-              {% assign brand_poster = 'demo-sprinter-navy.jpg' | asset_url %}
+              {% assign brand_poster = '' %}
             {% endif %}
-            {% assign brand_video_src = section.settings.brand_video_url | default: 'https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4' %}
-            <video
-              id="enamels-brand-promo-video"
-              class="brand-promo-video-element"
-              poster="{{ brand_poster }}"
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              aria-label="Enamels Medical Performance Brand Showcase Video"
-            >
-              <source src="{{ brand_video_src }}" type="video/mp4">
-            </video>
+            {% assign brand_video_src = section.settings.brand_video_url %}
+            {% assign is_autoplay = section.settings.video_autoplay %}
+            {% if is_autoplay == nil %}{% assign is_autoplay = true %}{% endif %}
+            {% assign is_loop = section.settings.video_loop %}
+            {% if is_loop == nil %}{% assign is_loop = true %}{% endif %}
+            {% assign is_muted = section.settings.video_muted %}
+            {% if is_muted == nil %}{% assign is_muted = true %}{% endif %}
+            {% assign is_controls = section.settings.video_controls %}
+            {% if is_controls == nil %}{% assign is_controls = false %}{% endif %}
+            {% assign video_cta_link = section.settings.video_cta_link %}
+            {% assign video_cta_label = section.settings.video_cta_label | strip %}
 
+            {% if shopify_video != blank %}
+              {{
+                shopify_video
+                | video_tag:
+                  id: 'enamels-brand-promo-video',
+                  class: 'brand-promo-video-element',
+                  image_size: '900x',
+                  poster: brand_poster,
+                  autoplay: is_autoplay,
+                  loop: is_loop,
+                  muted: is_muted,
+                  controls: is_controls,
+                  playsinline: true,
+                  preload: 'metadata',
+                  aria-label: 'Enamels Medical Performance Brand Showcase Video'
+              }}
+            {% elsif brand_video_src != blank %}
+              <video
+                id="enamels-brand-promo-video"
+                class="brand-promo-video-element"
+                poster="{{ brand_poster }}"
+                {% if is_autoplay %}autoplay{% endif %}
+                {% if is_muted %}muted{% endif %}
+                {% if is_loop %}loop{% endif %}
+                {% if is_controls %}controls{% endif %}
+                playsinline
+                preload="metadata"
+                aria-label="Enamels Medical Performance Brand Showcase Video"
+              >
+                <source src="{{ brand_video_src }}" type="video/mp4">
+              </video>
+            {% else %}
+              <div class="brand-video-placeholder-wrap">
+                <img
+                  src="{{ brand_poster }}"
+                  alt="Enamels Brand Video Poster"
+                  class="brand-promo-video-element"
+                  width="900"
+                  height="600"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% assign video_badge_text = section.settings.video_badge | strip %}
+            {% assign video_title_text = section.settings.video_title | strip %}
+            {% assign video_desc_text = section.settings.video_desc | strip %}
+            {% if video_badge_text != blank or video_title_text != blank or video_desc_text != blank or video_cta_label != blank %}
             <!-- Video Overlay Card with Controls -->
             <div class="brand-video-overlay-banner">
+              {% if video_badge_text != blank or video_title_text != blank or video_desc_text != blank %}
               <div class="brand-video-info">
-                <span class="brand-video-badge">CINEMATIC SHOWCASE</span>
-                <h3 class="brand-video-title">Engineered for Clinical Endurance</h3>
-                <p class="brand-video-desc">Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations.</p>
+                {% if video_badge_text != blank %}
+                  <span class="brand-video-badge">{{ video_badge_text | escape }}</span>
+                {% endif %}
+                {% if video_title_text != blank %}
+                  <h3 class="brand-video-title">{{ video_title_text | escape }}</h3>
+                {% endif %}
+                {% if video_desc_text != blank %}
+                  <p class="brand-video-desc">{{ video_desc_text | escape }}</p>
+                {% endif %}
               </div>
+              {% endif %}
               <div class="brand-video-controls">
+                {% if video_cta_link != blank and video_cta_label != blank %}
+                  <a
+                    href="{{ video_cta_link }}"
+                    class="brand-video-cta-link-btn"
+                    aria-label="{{ video_cta_label | escape }}"
+                  >
+                    {{ video_cta_label | escape }}
+                  </a>
+                {% endif %}
                 <button
                   type="button"
                   class="brand-video-toggle-btn"
                   id="brand-video-play-pause-btn"
-                  onclick="window.toggleBrandPromoVideo()"
+                  onclick="if (typeof window.toggleBrandPromoVideo === 'function') { window.toggleBrandPromoVideo(event); }"
                   aria-label="Pause Promotional Video"
                 >
                   <span id="brand-video-btn-icon">⏸</span>
@@ -452,6 +440,7 @@
                 </button>
               </div>
             </div>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -649,11 +638,22 @@
   {% if enable_series %}
   <section style="background-color: #f8fafc; padding: 60px 0; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
     <div class="page-container">
-      <div class="section-header-wrap" style="margin-top: 0;">
-        <span class="section-tag-sub">{{ section.settings.series_tag | default: 'ENGINEERED FOR CLINICAL ROLES' | escape }}</span>
-        <h2 class="section-title-main">{{ section.settings.series_title | default: 'Signature Scrub Lines' | escape }}</h2>
-        <p class="section-title-desc">{{ section.settings.series_subtitle | default: 'From intense ER calls to executive outpatient consultations, discover purpose-built medical uniforms.' | escape }}</p>
-      </div>
+      {% assign series_tag_text = section.settings.series_tag | strip %}
+      {% assign series_title_text = section.settings.series_title | strip %}
+      {% assign series_subtitle_text = section.settings.series_subtitle | strip %}
+      {% if series_tag_text != blank or series_title_text != blank or series_subtitle_text != blank %}
+        <div class="section-header-wrap" style="margin-top: 0;">
+          {% if series_tag_text != blank %}
+            <span class="section-tag-sub">{{ series_tag_text | escape }}</span>
+          {% endif %}
+          {% if series_title_text != blank %}
+            <h2 class="section-title-main">{{ series_title_text | escape }}</h2>
+          {% endif %}
+          {% if series_subtitle_text != blank %}
+            <p class="section-title-desc">{{ series_subtitle_text | escape }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
         {% if series_blocks_count > 0 %}
@@ -739,11 +739,22 @@
 
   {% if enable_palette %}
   <section class="page-container" style="padding: 50px 0;">
-    <div class="section-header-wrap" style="margin-top: 0;">
-      <span class="section-tag-sub">{{ section.settings.palette_tag | default: 'COLOR HARMONY' | escape }}</span>
-      <h2 class="section-title-main">{{ section.settings.palette_title | default: 'Shop by Hospital & Clinical Shade' | escape }}</h2>
-      <p class="section-title-desc">{{ section.settings.palette_subtitle | default: 'Adhere to strict hospital ward color guidelines or express individual professional style.' | escape }}</p>
-    </div>
+    {% assign palette_tag_text = section.settings.palette_tag | strip %}
+    {% assign palette_title_text = section.settings.palette_title | strip %}
+    {% assign palette_subtitle_text = section.settings.palette_subtitle | strip %}
+    {% if palette_tag_text != blank or palette_title_text != blank or palette_subtitle_text != blank %}
+      <div class="section-header-wrap" style="margin-top: 0;">
+        {% if palette_tag_text != blank %}
+          <span class="section-tag-sub">{{ palette_tag_text | escape }}</span>
+        {% endif %}
+        {% if palette_title_text != blank %}
+          <h2 class="section-title-main">{{ palette_title_text | escape }}</h2>
+        {% endif %}
+        {% if palette_subtitle_text != blank %}
+          <p class="section-title-desc">{{ palette_subtitle_text | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
 
     <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; max-width: 900px; margin: 0 auto;">
       {% if swatch_blocks_count > 0 %}
@@ -829,11 +840,22 @@
   {% if enable_testimonials and testimonial_blocks_count > 0 %}
   <section style="background-color: #ffffff; padding: 60px 0; border-top: 1px solid #e2e8f0;">
     <div class="page-container">
-      <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
-        <span class="section-tag-sub">{{ section.settings.testimonials_tag | default: 'CUSTOMER FEEDBACK' | escape }}</span>
-        <h2 class="section-title-main">{{ section.settings.testimonials_heading | default: 'Client Reviews' | escape }}</h2>
-        <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ section.settings.testimonials_subheading | escape }}</p>
-      </div>
+      {% assign testimonials_tag_text = section.settings.testimonials_tag | strip %}
+      {% assign testimonials_heading_text = section.settings.testimonials_heading | strip %}
+      {% assign testimonials_subheading_text = section.settings.testimonials_subheading | strip %}
+      {% if testimonials_tag_text != blank or testimonials_heading_text != blank or testimonials_subheading_text != blank %}
+        <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
+          {% if testimonials_tag_text != blank %}
+            <span class="section-tag-sub">{{ testimonials_tag_text | escape }}</span>
+          {% endif %}
+          {% if testimonials_heading_text != blank %}
+            <h2 class="section-title-main">{{ testimonials_heading_text | escape }}</h2>
+          {% endif %}
+          {% if testimonials_subheading_text != blank %}
+            <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ testimonials_subheading_text | escape }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 36px;">
         {% for block in section.blocks %}

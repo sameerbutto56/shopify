@@ -102,9 +102,9 @@
             <div id="sim-logo-preview-wrap" style="display: none; margin-bottom: 4px;">
               <!-- Dynamic Logo Emblem Preview -->
             </div>
-            <div class="embroidery-preview-text line-1" id="pocket-doctor-name">DR. AYESHA MALIK</div>
-            <div class="embroidery-preview-text line-2" id="pocket-doctor-dept">CARDIOLOGY</div>
-            <div class="embroidery-preview-text line-3" id="pocket-doctor-sub">AGA KHAN HOSPITAL</div>
+            <div class="embroidery-preview-text line-1" id="pocket-doctor-name"></div>
+            <div class="embroidery-preview-text line-2" id="pocket-doctor-dept"></div>
+            <div class="embroidery-preview-text line-3" id="pocket-doctor-sub"></div>
           </div>
 
           <!-- Placement Disclaimer Pill -->
@@ -581,34 +581,9 @@
           </div>
         </div>
 
-        <!-- STEP 8: CROSS-SELLING & ADD-ON COMPANIONS -->
-        <div class="cross-sell-box" id="pdp-cross-sell-box">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 11px; font-weight: 700; color: #102a43; text-transform: uppercase;">Complementary Clinical Add-Ons:</span>
-            <span style="font-size: 11px; color: #64748b;">Bundle & Complete Your Look</span>
-          </div>
-
-          <div class="cross-sell-items-grid">
-            <!-- 1. BunFit Cap -->
-            <div class="cross-sell-item-card">
-              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Cap" class="cross-sell-thumb" width="60" height="60" loading="lazy" />
-              <div class="cross-sell-info">
-                <h4 class="cross-sell-title">BunFit™ Surgical Cap</h4>
-                <div class="cross-sell-price">Rs. 1,450</div>
-              </div>
-              <button type="button" class="btn-cross-add" onclick="window.addCompanionItem('cap')">+ Add</button>
-            </div>
-
-            <!-- 2. Med Sleeves -->
-            <div class="cross-sell-item-card">
-              <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Med Sleeves" class="cross-sell-thumb" width="60" height="60" loading="lazy" />
-              <div class="cross-sell-info">
-                <h4 class="cross-sell-title">Med Arm Sleeves</h4>
-                <div class="cross-sell-price">Rs. 750</div>
-              </div>
-              <button type="button" class="btn-cross-add" onclick="window.addCompanionItem('sleeves')">+ Add</button>
-            </div>
-          </div>
+        <!-- STEP 8: INTERACTIVE CROSS-SELLING & PRODUCT PREVIEW SYSTEM -->
+        <div class="pdp-interactive-cross-sell-wrapper" id="pdp-cross-sell-box" style="margin-top: 24px; margin-bottom: 24px;">
+          {% render 'enamels-cross-sell' %}
         </div>
 
         <!-- QUANTITY & ADD TO CART ACTION -->
@@ -983,13 +958,13 @@
         <div style="background: #f8fafc; border: 1px dashed #00b8a9; border-radius: 8px; padding: 16px; max-width: 500px; margin: 0 auto 24px; text-align: left;">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 10px;">
             <span style="font-size: 12px; color: #64748b; font-weight: 600;">Booking Reference:</span>
-            <strong style="font-size: 15px; color: #102a43;" id="rep-success-ref-id">ENM-VISIT-2026-0000</strong>
+            <strong style="font-size: 15px; color: #102a43;" id="rep-success-ref-id">—</strong>
           </div>
           <div style="font-size: 12px; color: #334155; line-height: 1.6;">
-            <div><strong>Customer:</strong> <span id="rep-success-name">Dr. Ayesha Malik</span> (<span id="rep-success-phone">0300 1234567</span>)</div>
-            <div><strong>Location:</strong> <span id="rep-success-address">Services Hospital, Jail Road, Lahore</span></div>
-            <div><strong>Preferred Slot:</strong> <span id="rep-success-timing">Tomorrow, Afternoon</span></div>
-            <div><strong>Products:</strong> <span id="rep-success-products">2x Sprinter Scrub Sets</span></div>
+            <div><strong>Customer:</strong> <span id="rep-success-name">—</span> (<span id="rep-success-phone">—</span>)</div>
+            <div><strong>Location:</strong> <span id="rep-success-address">—</span></div>
+            <div><strong>Preferred Slot:</strong> <span id="rep-success-timing">—</span></div>
+            <div><strong>Products:</strong> <span id="rep-success-products">—</span></div>
             <div><strong>Consultation Fee:</strong> Rs. 500 <span style="color: #00b8a9; font-weight: 600;">(100% Adjustable Against Orders &gt;= Rs. 10,000)</span></div>
           </div>
         </div>

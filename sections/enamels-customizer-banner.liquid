@@ -6,11 +6,11 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign badge_text = section.settings.badge | default: 'BESPOKE CUSTOM STUDIO'
-  assign tag_text = section.settings.tag | default: 'TAILORED CLINICAL PRECISION'
-  assign title_text = section.settings.title | default: 'Make Your Own Scrubs'
-  assign desc_text = section.settings.description | default: 'Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.'
-  assign button_label = section.settings.button_label | default: 'Launch Customizer Studio →'
+  assign badge_text = section.settings.badge | strip
+  assign tag_text = section.settings.tag | strip
+  assign title_text = section.settings.title | strip
+  assign desc_text = section.settings.description | strip
+  assign button_label = section.settings.button_label | strip
   assign button_link = section.settings.button_link | default: '#ready-to-wear'
   assign section_bg = section.settings.section_bg | default: '#ffffff'
   assign pad_top = section.settings.padding_top | default: 48
@@ -27,13 +27,17 @@
       {% if section.settings.image != blank %}
         <img
           src="{{ section.settings.image | image_url: width: 800 }}"
-          alt="{{ section.settings.image.alt | default: title_text | escape }}"
+          alt="{{ section.settings.image.alt | default: title_text | default: 'Make Your Own Scrubs Custom Studio' | escape }}"
           width="{{ section.settings.image.width }}"
           height="{{ section.settings.image.height }}"
           loading="lazy"
         />
       {% else %}
-        <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Make Your Own Scrubs Custom Studio" width="600" height="450" loading="lazy" />
+        <div class="customizer-banner-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 280px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+          </svg>
+        </div>
       {% endif %}
     </div>
     <div class="customizer-banner-content">
@@ -46,34 +50,46 @@
       {% if desc_text != blank %}
         <p class="customizer-banner-desc">{{ desc_text | escape }}</p>
       {% endif %}
-      <div class="customizer-banner-features">
-        <div class="customizer-feat-item">
-          <span class="feat-icon">{{ section.settings.feat1_icon | default: '📏' }}</span>
-          <span>{{ section.settings.feat1_text | default: 'Custom Measurements (Inches / CM)' | escape }}</span>
+      {% if section.settings.feat1_text != blank or section.settings.feat2_text != blank or section.settings.feat3_text != blank or section.settings.feat4_text != blank %}
+        <div class="customizer-banner-features">
+          {% if section.settings.feat1_text != blank %}
+            <div class="customizer-feat-item">
+              {% if section.settings.feat1_icon != blank %}<span class="feat-icon">{{ section.settings.feat1_icon }}</span>{% endif %}
+              <span>{{ section.settings.feat1_text | escape }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.feat2_text != blank %}
+            <div class="customizer-feat-item">
+              {% if section.settings.feat2_icon != blank %}<span class="feat-icon">{{ section.settings.feat2_icon }}</span>{% endif %}
+              <span>{{ section.settings.feat2_text | escape }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.feat3_text != blank %}
+            <div class="customizer-feat-item">
+              {% if section.settings.feat3_icon != blank %}<span class="feat-icon">{{ section.settings.feat3_icon }}</span>{% endif %}
+              <span>{{ section.settings.feat3_text | escape }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.feat4_text != blank %}
+            <div class="customizer-feat-item">
+              {% if section.settings.feat4_icon != blank %}<span class="feat-icon">{{ section.settings.feat4_icon }}</span>{% endif %}
+              <span>{{ section.settings.feat4_text | escape }}</span>
+            </div>
+          {% endif %}
         </div>
-        <div class="customizer-feat-item">
-          <span class="feat-icon">{{ section.settings.feat2_icon | default: '🎨' }}</span>
-          <span>{{ section.settings.feat2_text | default: 'Proprietary Fabrics & Hospital Shades' | escape }}</span>
+      {% endif %}
+      {% if button_label != blank %}
+        <div style="margin-top: 24px;">
+          <button
+            type="button"
+            class="btn-hero-primary"
+            onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); } else { window.location.href = '{{ button_link }}'; }"
+            style="padding: 14px 28px; font-size: 14px;"
+          >
+            {{ button_label | escape }}
+          </button>
         </div>
-        <div class="customizer-feat-item">
-          <span class="feat-icon">{{ section.settings.feat3_icon | default: '🪡' }}</span>
-          <span>{{ section.settings.feat3_text | default: 'Doctor Name & Department Crest Embroidery' | escape }}</span>
-        </div>
-        <div class="customizer-feat-item">
-          <span class="feat-icon">{{ section.settings.feat4_icon | default: '⚡' }}</span>
-          <span>{{ section.settings.feat4_text | default: 'Direct Shopify Cart & Checkout Integration' | escape }}</span>
-        </div>
-      </div>
-      <div style="margin-top: 24px;">
-        <button
-          type="button"
-          class="btn-hero-primary"
-          onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); } else { window.location.href = '{{ button_link }}'; }"
-          style="padding: 14px 28px; font-size: 14px;"
-        >
-          {{ button_label | escape }}
-        </button>
-      </div>
+      {% endif %}
     </div>
   </div>
 </section>

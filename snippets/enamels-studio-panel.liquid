@@ -136,8 +136,90 @@
     <!-- TAB 3: CATEGORY MANAGER                   -->
     <!-- ========================================== -->
     <div class="enamels-studio-panel-content" id="studio-content-categories">
-      <div style="margin-bottom: 12px; font-size: 12px; color: #64748b;">
-        Configure catalogue categories, meta text, and drag-and-drop thumbnail pictures.
+      <!-- Section Alignment & Layout Tuning -->
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">📐 Section Alignment & Layout</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Overall Section Alignment</label>
+          <div class="studio-btn-group" id="btn-group-cat-section-align">
+            <button type="button" class="studio-btn-group-item" data-align="left" onclick="window.setStudioAlignment('categorySectionAlign', 'left', this)">⬅️ Left</button>
+            <button type="button" class="studio-btn-group-item active" data-align="center" onclick="window.setStudioAlignment('categorySectionAlign', 'center', this)">⏺️ Center</button>
+            <button type="button" class="studio-btn-group-item" data-align="right" onclick="window.setStudioAlignment('categorySectionAlign', 'right', this)">➡️ Right</button>
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">
+            Section Max Width: <span class="studio-range-badge" id="badge-cat-max-width">1320px</span>
+          </label>
+          <div class="studio-range-wrap">
+            <input type="range" id="studio-cat-max-width" min="1000" max="1600" step="20" value="1320" oninput="window.updateStudioRange('categorySectionMaxWidth', this.value, 'badge-cat-max-width', 'px')">
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Two-Column Vertical Alignment</label>
+          <div class="studio-btn-group" id="btn-group-cat-col-valign">
+            <button type="button" class="studio-btn-group-item active" data-align="start" onclick="window.setStudioAlignment('categoryColumnsVerticalAlign', 'start', this)">⬆️ Top</button>
+            <button type="button" class="studio-btn-group-item" data-align="center" onclick="window.setStudioAlignment('categoryColumnsVerticalAlign', 'center', this)">↕️ Center</button>
+            <button type="button" class="studio-btn-group-item" data-align="end" onclick="window.setStudioAlignment('categoryColumnsVerticalAlign', 'end', this)">⬇️ Bottom</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heading & Thumbnail Grid Alignment -->
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">🗂️ Header & Thumbnail Controls</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Heading & Subtitle Alignment</label>
+          <div class="studio-btn-group" id="btn-group-cat-header-align">
+            <button type="button" class="studio-btn-group-item active" data-align="left" onclick="window.setStudioAlignment('categoryHeaderAlign', 'left', this)">⬅️ Left</button>
+            <button type="button" class="studio-btn-group-item" data-align="center" onclick="window.setStudioAlignment('categoryHeaderAlign', 'center', this)">⏺️ Center</button>
+            <button type="button" class="studio-btn-group-item" data-align="right" onclick="window.setStudioAlignment('categoryHeaderAlign', 'right', this)">➡️ Right</button>
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Thumbnail Row Alignment</label>
+          <div class="studio-btn-group" id="btn-group-cat-thumbs-align">
+            <button type="button" class="studio-btn-group-item" data-align="left" onclick="window.setStudioAlignment('categoryThumbnailsAlign', 'left', this)">⬅️ Left</button>
+            <button type="button" class="studio-btn-group-item active" data-align="center" onclick="window.setStudioAlignment('categoryThumbnailsAlign', 'center', this)">⏺️ Center</button>
+            <button type="button" class="studio-btn-group-item" data-align="right" onclick="window.setStudioAlignment('categoryThumbnailsAlign', 'right', this)">➡️ Right</button>
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Card Caption Alignment</label>
+          <div class="studio-btn-group" id="btn-group-cat-text-align">
+            <button type="button" class="studio-btn-group-item active" data-align="left" onclick="window.setStudioAlignment('categoryTextAlign', 'left', this)">⬅️ Left</button>
+            <button type="button" class="studio-btn-group-item" data-align="center" onclick="window.setStudioAlignment('categoryTextAlign', 'center', this)">⏺️ Center</button>
+            <button type="button" class="studio-btn-group-item" data-align="right" onclick="window.setStudioAlignment('categoryTextAlign', 'right', this)">➡️ Right</button>
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">
+            Thumbnail Width Desktop: <span class="studio-range-badge" id="badge-cat-thumb-width">160px</span>
+          </label>
+          <div class="studio-range-wrap">
+            <input type="range" id="studio-cat-thumb-width" min="100" max="280" step="5" value="160" oninput="window.updateStudioRange('categoryThumbWidth', this.value, 'badge-cat-thumb-width', 'px')">
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Section Title</label>
+          <input type="text" class="studio-field-input" id="studio-category-title" value="Shop by Category">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Section Tag</label>
+          <input type="text" class="studio-field-input" id="studio-category-tag" value="QUICK CATALOGUE DISCOVERY">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Section Subtitle</label>
+          <textarea class="studio-field-textarea" id="studio-category-sub">Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role.</textarea>
+        </div>
+      </div>
+
+      <div style="margin: 12px 0 8px; font-size: 12px; font-weight: 700; color: #1e293b;">
+        🗂️ Manage Category Cards
       </div>
       <div id="studio-categories-list">
         <!-- Rendered dynamically via window.renderStudioCategories() -->
@@ -148,13 +230,139 @@
     <!-- TAB 4: BANNER & VIDEO MANAGER             -->
     <!-- ========================================== -->
     <div class="enamels-studio-panel-content" id="studio-content-media">
+      <!-- Video Positioning & Vertical Offset Card -->
       <div class="studio-card">
         <div class="studio-card-header">
-          <h3 class="studio-card-title">🎬 Cinematic Brand Video</h3>
+          <h3 class="studio-card-title">📐 Video Positioning & Offsets</h3>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">
+            Vertical Offset (Top Spacing): <span class="studio-range-badge" id="badge-video-offset-top">20px</span>
+          </label>
+          <div class="studio-range-wrap">
+            <input type="range" id="studio-video-offset-top" min="-60" max="140" step="2" value="20" oninput="window.updateStudioRange('videoOffsetTop', this.value, 'badge-video-offset-top', 'px')">
+          </div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 4px;">
+            Lower or raise the video card to align its top edge seamlessly with category cards.
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Horizontal Video Alignment</label>
+          <div class="studio-btn-group" id="btn-group-video-align">
+            <button type="button" class="studio-btn-group-item" data-align="left" onclick="window.setStudioAlignment('videoHorizontalAlign', 'left', this)">⬅️ Left</button>
+            <button type="button" class="studio-btn-group-item active" data-align="center" onclick="window.setStudioAlignment('videoHorizontalAlign', 'center', this)">⏺️ Center</button>
+            <button type="button" class="studio-btn-group-item" data-align="right" onclick="window.setStudioAlignment('videoHorizontalAlign', 'right', this)">➡️ Right</button>
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">
+            Video Card Max Width: <span class="studio-range-badge" id="badge-video-max-width">560px</span>
+          </label>
+          <div class="studio-range-wrap">
+            <input type="range" id="studio-video-max-width" min="320" max="800" step="10" value="560" oninput="window.updateStudioRange('videoMaxWidth', this.value, 'badge-video-max-width', 'px')">
+          </div>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Video Aspect Ratio</label>
+          <select class="studio-field-select" id="studio-video-aspect-ratio">
+            <option value="16_9" selected>16:9 Widescreen</option>
+            <option value="4_3">4:3 Standard</option>
+            <option value="1_1">1:1 Square</option>
+            <option value="4_5">4:5 Portrait</option>
+            <option value="custom">Custom Height</option>
+          </select>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Video Object Fit Mode</label>
+          <select class="studio-field-select" id="studio-video-object-fit">
+            <option value="cover" selected>Cover (Fill entire container)</option>
+            <option value="contain">Contain (Fit inside without cropping)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Video Control Visibility Card -->
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">👁️ Video Element Visibility & Controls</h3>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Show Custom Pause Button</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-show-pause" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Show Video Overlay Banner</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-show-overlay" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Show Video CTA Button</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-show-cta" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Show Video Badge</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-show-badge" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Show Video Title</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-show-title" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Show Video Description</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-show-desc" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Autoplay Video</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-autoplay" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Mute Video by Default</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-muted" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+        <div class="studio-switch-row">
+          <span class="studio-switch-label">Loop Video Continuously</span>
+          <label class="studio-switch">
+            <input type="checkbox" id="studio-video-loop" checked>
+            <span class="studio-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Video Media & Content Card -->
+      <div class="studio-card">
+        <div class="studio-card-header">
+          <h3 class="studio-card-title">🎬 Video Media & Text Content</h3>
         </div>
         <div class="studio-field-group">
           <label class="studio-field-label">MP4 Video Source URL</label>
           <input type="text" class="studio-field-input" id="studio-video-url" value="https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">Video Badge</label>
+          <input type="text" class="studio-field-input" id="studio-video-badge" value="CINEMATIC SHOWCASE">
         </div>
         <div class="studio-field-group">
           <label class="studio-field-label">Video Title</label>
@@ -163,6 +371,14 @@
         <div class="studio-field-group">
           <label class="studio-field-label">Video Description</label>
           <textarea class="studio-field-textarea" id="studio-video-desc">Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations.</textarea>
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">CTA Button Label</label>
+          <input type="text" class="studio-field-input" id="studio-video-cta-label" value="Explore Collection →">
+        </div>
+        <div class="studio-field-group">
+          <label class="studio-field-label">CTA Button Link</label>
+          <input type="text" class="studio-field-input" id="studio-video-cta-link" value="">
         </div>
         <div class="studio-field-group">
           <label class="studio-field-label">Video Poster Image</label>

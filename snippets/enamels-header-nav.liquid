@@ -24,8 +24,24 @@
   endfor
 
   assign logo_max_width = section.settings.logo_max_width | default: 100
-  assign phone_number = section.settings.phone_number | default: settings.enamels_support_phone | default: '+92 301 13 31 133'
-  assign phone_tel = section.settings.phone_tel | default: '+923011331133'
+  assign phone_number = section.settings.phone_number
+  if phone_number == blank
+    assign phone_number = settings.enamels_support_phone
+  endif
+
+  assign phone_tel = section.settings.phone_tel
+  if phone_tel == blank and phone_number != blank
+    assign phone_tel = phone_number | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', ''
+  endif
+
+  assign show_phone = true
+  if section.settings.show_phone == false
+    assign show_phone = false
+  endif
+  if phone_number == blank
+    assign show_phone = false
+  endif
+
   assign search_placeholder = section.settings.search_placeholder | default: 'Search scrubs, lab coats, surgical caps, sleeves...'
   assign show_wishlist = true
   if section.settings.show_wishlist == false
@@ -107,12 +123,14 @@
 
       <!-- 3. Actions & Contact Info -->
       <div class="header-actions-wrap">
+        {% if show_phone %}
         <a href="tel:{{ phone_tel }}" class="customer-service-badge" title="Direct Phone Support">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
           </svg>
           <span>{{ phone_number | escape }}</span>
         </a>
+        {% endif %}
 
         {% if show_wishlist %}
         <!-- Wishlist Button -->
@@ -343,6 +361,22 @@
           </a>
         </li>
 
+        <!-- Sale & Special Offers -->
+        <li class="mobile-nav-item">
+          <a href="#sale" onclick="if(typeof window.filterCollectionByTag==='function'){window.filterCollectionByTag('sale-active');}else if(typeof window.navigateToCollection==='function'){window.navigateToCollection('sale');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <span>Sale & Promotions</span>
+            <span class="nav-badge-pill" style="background: #e11d48; color: #ffffff;">SALE</span>
+          </a>
+        </li>
+
+        <!-- Bulk Orders -->
+        <li class="mobile-nav-item">
+          <a href="/pages/bulk-orders" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
+            <span>Bulk Orders (10+ Scrubs)</span>
+            <span class="nav-badge-pill" style="background: #0284c7; color: #ffffff;">INSTITUTIONAL</span>
+          </a>
+        </li>
+
         <li class="mobile-nav-divider"></li>
 
         <!-- 8. Design Your Own Scrubs -->
@@ -364,14 +398,21 @@
     </nav>
 
     <div class="mobile-nav-footer">
-      <p class="mobile-support-title">Direct Support:</p>
-      <a href="tel:{{ phone_tel | default: '+923011331133' }}" class="mobile-support-tel">
+      {% if show_phone or settings.whatsapp_number != blank %}
+        <p class="mobile-support-title">Direct Support:</p>
+      {% endif %}
+      {% if show_phone %}
+      <a href="tel:{{ phone_tel }}" class="mobile-support-tel">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <span>{{ phone_number | default: '+92 301 13 31 133' | escape }}</span>
+        <span>{{ phone_number | escape }}</span>
       </a>
-      <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="mobile-whatsapp-btn">
+      {% endif %}
+      {% assign whatsapp_clean = settings.whatsapp_number | default: '' | replace: '+', '' | replace: ' ', '' | replace: '-', '' %}
+      {% if whatsapp_clean != blank %}
+      <a href="https://wa.me/{{ whatsapp_clean }}" target="_blank" rel="noopener" class="mobile-whatsapp-btn">
         💬 WhatsApp Official Support
       </a>
+      {% endif %}
     </div>
   </div>
 </div>

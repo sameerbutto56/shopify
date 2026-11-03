@@ -6,9 +6,9 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign tag_text = section.settings.section_tag | default: 'ONLINE STORE APPAREL & ACCESSORIES'
-  assign title_text = section.settings.section_title | default: 'Curated Product Catalogue'
-  assign subtitle_text = section.settings.section_subtitle | default: 'Explore our live collection of clinical scrubs, lab coats, surgical caps, and accessories.'
+  assign tag_text = section.settings.section_tag | strip
+  assign title_text = section.settings.section_title | strip
+  assign subtitle_text = section.settings.section_subtitle | strip
   assign show_filter_pills = section.settings.show_filter_pills
   assign show_sort = section.settings.show_sort
   assign grid_cols = section.settings.grid_columns | default: 4
@@ -23,16 +23,29 @@
 
 {% if enable_section %}
 {%- style -%}
+  #homepage-live-catalogue-section {
+    padding-top: {{ section.settings.padding_top | default: 48 }}px !important;
+    padding-bottom: {{ section.settings.padding_bottom | default: 48 }}px !important;
+    background-color: {{ section.settings.section_bg | default: '#ffffff' }};
+  }
+  #homepage-live-catalogue-section .categories-section-header {
+    margin-bottom: {{ section.settings.header_margin_bottom | default: 16 }}px;
+  }
   #homepage-live-catalogue-section #homepage-live-products-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_min_width_desktop | default: 260 }}px, 1fr)) !important;
     gap: {{ section.settings.grid_gap_desktop | default: 24 }}px !important;
+    margin-bottom: {{ section.settings.thumbnail_margin_bottom | default: 0 }}px !important;
   }
   #homepage-live-catalogue-section .product-preview-card {
     border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    background-color: {{ section.settings.card_bg | default: '#ffffff' }};
   }
   #homepage-live-catalogue-section .card-thumb-wrap {
     overflow: hidden;
+    background-color: {{ section.settings.thumbnail_media_bg | default: '#ffffff' }};
+    padding-top: {{ section.settings.thumbnail_pad_top | default: 0 }}px;
+    padding-bottom: {{ section.settings.thumbnail_pad_bottom | default: 0 }}px;
     border-top-left-radius: {{ section.settings.card_border_radius | default: 12 }}px;
     border-top-right-radius: {{ section.settings.card_border_radius | default: 12 }}px;
     {% if section.settings.thumbnail_aspect_ratio == 'custom' %}
@@ -63,11 +76,18 @@
     height: 100%;
     object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
     object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+    transform: scale({{ section.settings.image_zoom | default: 100 | divided_by: 100.0 }});
+    transform-origin: center center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
   #homepage-live-catalogue-section .card-body-wrap {
     padding: {{ section.settings.caption_padding | default: 16 }}px;
   }
   @media (max-width: 768px) {
+    #homepage-live-catalogue-section {
+      padding-top: {{ section.settings.padding_top | default: 48 | times: 0.7 | round }}px !important;
+      padding-bottom: {{ section.settings.padding_bottom | default: 48 | times: 0.7 | round }}px !important;
+    }
     #homepage-live-catalogue-section #homepage-live-products-grid {
       grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_min_width_mobile | default: 160 }}px, 1fr)) !important;
       gap: {{ section.settings.grid_gap_mobile | default: 12 }}px !important;
@@ -79,58 +99,42 @@
     {% endif %}
   }
 {%- endstyle -%}
-<section class="page-container enamels-homepage-modular-section" style="padding: 56px 0;" id="homepage-live-catalogue-section" aria-label="Curated Live Product Catalogue">
-  <div class="categories-section-header">
-    {% if tag_text != blank %}
-      <span class="categories-section-tag">{{ tag_text | escape }}</span>
-    {% endif %}
-    {% if title_text != blank %}
-      <h2 class="categories-section-title">{{ title_text | escape }}</h2>
-    {% endif %}
-    {% if subtitle_text != blank %}
-      <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
-    {% endif %}
-  </div>
+<section class="page-container enamels-homepage-modular-section" id="homepage-live-catalogue-section" aria-label="Curated Live Product Catalogue">
+  {% if tag_text != blank or title_text != blank or subtitle_text != blank %}
+    <div class="categories-section-header" style="margin-bottom: {{ section.settings.header_margin_bottom | default: 16 }}px;">
+      {% if tag_text != blank %}
+        <span class="categories-section-tag">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if title_text != blank %}
+        <h2 class="categories-section-title">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if subtitle_text != blank %}
+        <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
 
   {% if show_filter_pills or show_sort %}
   <!-- Category Filter & Sort Bar -->
   <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 20px 0 28px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
     {% if show_filter_pills %}
     <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="homepage-category-filter-pills">
-      {% if filter_blocks_count > 0 %}
-        {% assign pill_idx = 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'filter_pill' and block.settings.visible != false %}
-            <button
-              type="button"
-              class="filter-pill-btn {% if pill_idx == 0 %}active{% endif %}"
-              id="hp-filter-{{ block.settings.category_key | default: 'all' | handleize }}"
-              data-cat="{{ block.settings.category_key | default: 'all' }}"
-              onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('{{ block.settings.category_key | default: 'all' }}');"
-              {{ block.shopify_attributes }}
-            >
-              <span class="filter-pill-text">{{ block.settings.title | escape }}</span>
-            </button>
-            {% assign pill_idx = pill_idx | plus: 1 %}
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <button type="button" class="filter-pill-btn active" id="hp-filter-all" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('all');">
-          <span class="filter-pill-text">All Products</span>
-        </button>
-        <button type="button" class="filter-pill-btn" id="hp-filter-scrubs" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('scrubs');">
-          <span class="filter-pill-text">Scrubs</span>
-        </button>
-        <button type="button" class="filter-pill-btn" id="hp-filter-labcoat" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('lab-coat');">
-          <span class="filter-pill-text">Lab Coats</span>
-        </button>
-        <button type="button" class="filter-pill-btn" id="hp-filter-caps" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('caps');">
-          <span class="filter-pill-text">Surgical Caps</span>
-        </button>
-        <button type="button" class="filter-pill-btn" id="hp-filter-accessories" onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('accessories');">
-          <span class="filter-pill-text">Accessories</span>
-        </button>
-      {% endif %}
+      {% assign pill_idx = 0 %}
+      {% for block in section.blocks %}
+        {% if block.type == 'filter_pill' and block.settings.visible != false %}
+          <button
+            type="button"
+            class="filter-pill-btn {% if pill_idx == 0 %}active{% endif %}"
+            id="hp-filter-{{ block.settings.category_key | default: 'all' | handleize }}"
+            data-cat="{{ block.settings.category_key | default: 'all' }}"
+            onclick="if (typeof window.filterHomepageGrid === 'function') window.filterHomepageGrid('{{ block.settings.category_key | default: 'all' }}');"
+            {{ block.shopify_attributes }}
+          >
+            <span class="filter-pill-text">{{ block.settings.title | escape }}</span>
+          </button>
+          {% assign pill_idx = pill_idx | plus: 1 %}
+        {% endif %}
+      {% endfor %}
     </div>
     {% endif %}
 
@@ -329,6 +333,103 @@
       "step": 2,
       "default": 16,
       "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Section & Thumbnail Spacing (Top & Bottom)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Section Top Space (Padding Top in px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Section Bottom Space (Padding Bottom in px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_margin_bottom",
+      "label": "Space Below Heading / Above Thumbnails (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_margin_bottom",
+      "label": "Space Below Thumbnail Grid (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail Image Spacing & Letterbox Controls"
+    },
+    {
+      "type": "range",
+      "id": "image_zoom",
+      "label": "Image Zoom / Scale (%) - Crop Out Black Letterbox Bars",
+      "min": 100,
+      "max": 180,
+      "step": 2,
+      "default": 100,
+      "unit": "%",
+      "info": "Increase zoom to crop out black bands or screenshot borders on top and bottom."
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_pad_top",
+      "label": "Thumbnail Top Inner Space / Padding (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_pad_bottom",
+      "label": "Thumbnail Bottom Inner Space / Padding (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "thumbnail_media_bg",
+      "label": "Thumbnail Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background Color",
+      "default": "#ffffff"
     }
   ],
   "blocks": [
@@ -369,44 +470,7 @@
   ],
   "presets": [
     {
-      "name": "Live Product Catalogue",
-      "blocks": [
-        {
-          "type": "filter_pill",
-          "settings": {
-            "title": "All Products",
-            "category_key": "all"
-          }
-        },
-        {
-          "type": "filter_pill",
-          "settings": {
-            "title": "Scrubs",
-            "category_key": "scrubs"
-          }
-        },
-        {
-          "type": "filter_pill",
-          "settings": {
-            "title": "Lab Coats",
-            "category_key": "lab-coat"
-          }
-        },
-        {
-          "type": "filter_pill",
-          "settings": {
-            "title": "Surgical Caps",
-            "category_key": "caps"
-          }
-        },
-        {
-          "type": "filter_pill",
-          "settings": {
-            "title": "Accessories",
-            "category_key": "accessories"
-          }
-        }
-      ]
+      "name": "Live Product Catalogue"
     }
   ]
 }

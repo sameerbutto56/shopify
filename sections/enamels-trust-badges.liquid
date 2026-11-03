@@ -11,42 +11,35 @@
 -%}
 
 {% if enable_section %}
+<style>
+  .enamels-trust-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  @media (max-width: 640px) {
+    .enamels-trust-badges-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+    #homepage-trust-badges {
+      padding: 24px 0 !important;
+    }
+  }
+</style>
+
 <section class="enamels-homepage-modular-section" style="background-color: {{ bg_color }}; border-top: 1px solid #e2e8f0; padding: 40px 0;" id="homepage-trust-badges" aria-label="Customer Guarantees and Trust Badges">
   <div class="page-container">
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-      {% if blocks_count > 0 %}
-        {% for block in section.blocks %}
-          {% if block.type == 'trust_badge' %}
-            <div style="text-align: center; padding: 16px;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
-              <div style="font-size: 26px; margin-bottom: 8px;">{{ block.settings.icon_emoji | default: '✨' }}</div>
-              <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">{{ block.settings.title | escape }}</h4>
-              <p style="font-size: 11px; color: #64748b; margin: 0;">{{ block.settings.subtitle | escape }}</p>
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% else %}
-        <!-- Default Badges -->
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">🚚</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Free Shipping</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">On all orders over Rs. 7,000 nationwide</p>
-        </div>
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">💵</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Cash on Delivery</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">Available across all cities in Pakistan</p>
-        </div>
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">⚡</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">7-Day Easy Exchange</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">Instant sizing support via WhatsApp</p>
-        </div>
-        <div style="text-align: center; padding: 16px;">
-          <div style="font-size: 26px; margin-bottom: 8px;">🪡</div>
-          <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">Custom Embroidery</h4>
-          <p style="font-size: 11px; color: #64748b; margin: 0;">Computerized name & hospital crests</p>
-        </div>
-      {% endif %}
+    <div class="enamels-trust-badges-grid">
+      {% for block in section.blocks %}
+        {% if block.type == 'trust_badge' %}
+          <div style="text-align: center; padding: 16px;" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+            <div style="font-size: 26px; margin-bottom: 8px;">{{ block.settings.icon_emoji | default: '✨' }}</div>
+            <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 4px; text-transform: uppercase;">{{ block.settings.title | escape }}</h4>
+            <p style="font-size: 11px; color: #64748b; margin: 0;">{{ block.settings.subtitle | escape }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
   </div>
 </section>
@@ -84,27 +77,19 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Title",
-          "default": "Free Shipping"
+          "label": "Title"
         },
         {
           "type": "text",
           "id": "subtitle",
-          "label": "Description",
-          "default": "On all orders over Rs. 7,000 nationwide"
+          "label": "Description"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Trust & Service Badges",
-      "blocks": [
-        { "type": "trust_badge", "settings": { "icon_emoji": "🚚", "title": "Free Shipping", "subtitle": "On all orders over Rs. 7,000 nationwide" } },
-        { "type": "trust_badge", "settings": { "icon_emoji": "💵", "title": "Cash on Delivery", "subtitle": "Available across all cities in Pakistan" } },
-        { "type": "trust_badge", "settings": { "icon_emoji": "⚡", "title": "7-Day Easy Exchange", "subtitle": "Instant sizing support via WhatsApp" } },
-        { "type": "trust_badge", "settings": { "icon_emoji": "🪡", "title": "Custom Embroidery", "subtitle": "Computerized name & hospital crests" } }
-      ]
+      "name": "Trust & Service Badges"
     }
   ]
 }

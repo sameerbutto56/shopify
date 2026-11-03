@@ -24,9 +24,9 @@
     </div>
 
 {% liquid
-  assign rtw_heading = section.settings.heading | default: "Make Your Own Scrubs — Tailoring Configurator"
-  assign rtw_badge = section.settings.badge | default: "BESPOKE MEDICAL APPAREL STUDIO"
-  assign rtw_subtext = section.settings.subtext | default: "Configure your technical medical uniform step-by-step. Select certified fabrics, official hospital shades or custom laboratory dyes, standard sizes or custom body measurements, and computerized doctor embroidery."
+  assign rtw_heading = section.settings.heading | strip
+  assign rtw_badge = section.settings.badge | strip
+  assign rtw_subtext = section.settings.subtext | strip
   assign show_hs_cta = true
   if section.settings.show_home_service_cta == false
     assign show_hs_cta = false
@@ -34,9 +34,12 @@
 %}
 
     <!-- Studio Header Banner -->
+    {% if rtw_heading != blank or rtw_badge != blank or rtw_subtext != blank or show_hs_cta %}
     <div style="background: #ffffff; border: 1px solid var(--enamels-border); border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.03);">
       <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+        {% if rtw_heading != blank or rtw_badge != blank or rtw_subtext != blank %}
         <div>
+          {% if rtw_badge != blank %}
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
             <span class="nav-tag-highlight" style="background: #008779; color: #ffffff; padding: 3px 8px; font-weight: 700;">
               {{ rtw_badge | escape }}
@@ -45,13 +48,19 @@
               AUTHENTIC CLINICAL SPECIFICATIONS
             </span>
           </div>
+          {% endif %}
+          {% if rtw_heading != blank %}
           <h1 style="font-size: 24px; font-weight: 700; color: #102a43; margin: 0 0 4px; text-transform: uppercase; letter-spacing: -0.3px;">
             {{ rtw_heading | escape }}
           </h1>
+          {% endif %}
+          {% if rtw_subtext != blank %}
           <p style="font-size: 13px; color: #64748b; margin: 0; max-width: 720px; line-height: 1.5;">
             {{ rtw_subtext | escape }}
           </p>
+          {% endif %}
         </div>
+        {% endif %}
 
         {% if show_hs_cta %}
         <div>
@@ -62,6 +71,7 @@
         {% endif %}
       </div>
     </div>
+    {% endif %}
 
     <!-- 7-Step Navigation Progress Track -->
     <div class="rtw-steps-nav" style="margin-bottom: 24px;">
@@ -561,9 +571,9 @@
                 </div>
 
                 <div class="stitch-display-container">
-                  <div class="stitch-text-line line-name" id="rtw-sim-line-1" style="color: #FFFFFF;">DR. AYESHA MALIK</div>
-                  <div class="stitch-text-line line-dept" id="rtw-sim-line-2" style="color: #FFFFFF;">CARDIOLOGY</div>
-                  <div class="stitch-text-line line-hosp" id="rtw-sim-line-3" style="color: #FFFFFF; display: none;">AGA KHAN HOSPITAL</div>
+                  <div class="stitch-text-line line-name" id="rtw-sim-line-1" style="color: #FFFFFF;"></div>
+                  <div class="stitch-text-line line-dept" id="rtw-sim-line-2" style="color: #FFFFFF;"></div>
+                  <div class="stitch-text-line line-hosp" id="rtw-sim-line-3" style="color: #FFFFFF; display: none;"></div>
                 </div>
               </div>
             </div>
@@ -572,7 +582,7 @@
             <div class="full-garment-stage" id="rtw-garment-stage">
               <img src="{{ 'cat-sprinter.jpg' | asset_url }}" id="rtw-garment-photo" alt="Uniform Perspective" class="garment-mannequin-photo" width="400" height="400" loading="lazy" />
               <div class="garment-pocket-marker" id="rtw-garment-marker">
-                <div style="font-family: 'Times New Roman', serif; font-size: 9px; font-weight: 700; color: #FFFFFF;" id="rtw-garment-sim-line">DR. AYESHA MALIK</div>
+                <div style="font-family: 'Times New Roman', serif; font-size: 9px; font-weight: 700; color: #FFFFFF;" id="rtw-garment-sim-line"></div>
               </div>
             </div>
 

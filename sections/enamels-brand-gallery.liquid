@@ -6,24 +6,41 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign tag_text = section.settings.brands_tag | default: 'PURPOSE-BUILT CLINICAL APPAREL'
-  assign title_text = section.settings.brands_title | default: 'Explore Our Brands'
-  assign subtitle_text = section.settings.brands_subtitle | default: 'Discover purpose-built medical uniforms tailored from proprietary stretch fabrics, luxury micro-drapes, and executive silhouettes.'
+  assign tag_text = section.settings.brands_tag | strip
+  assign title_text = section.settings.brands_title | strip
+  assign subtitle_text = section.settings.brands_subtitle | strip
   assign blocks_count = section.blocks.size
 -%}
 
 {% if enable_section %}
 {%- style -%}
+  #shopify-section-{{ section.id }} .frubs-brands-section {
+    padding-top: {{ section.settings.padding_top | default: 48 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 48 }}px;
+    background-color: {{ section.settings.section_bg | default: '#ffffff' }};
+  }
+  #shopify-section-{{ section.id }} .categories-section-header {
+    margin-bottom: {{ section.settings.header_margin_bottom | default: 16 }}px;
+  }
   #shopify-section-{{ section.id }} .frubs-brands-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumbnail_width_desktop | default: 240 }}px, 1fr));
     gap: {{ section.settings.thumbnail_spacing | default: 18 }}px;
+    margin-top: {{ section.settings.thumbnail_margin_top | default: 0 }}px;
+    margin-bottom: {{ section.settings.thumbnail_margin_bottom | default: 0 }}px;
   }
   #shopify-section-{{ section.id }} .frubs-brand-tile {
     border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
+    background-color: {{ section.settings.card_bg | default: '#f8fafc' }};
   }
   #shopify-section-{{ section.id }} .frubs-brand-tile-media {
     border-radius: {{ section.settings.card_border_radius | default: 12 }}px {{ section.settings.card_border_radius | default: 12 }}px 0 0;
+    background-color: {{ section.settings.thumbnail_media_bg | default: '#ffffff' }};
+    padding-top: {{ section.settings.thumbnail_pad_top | default: 0 }}px;
+    padding-bottom: {{ section.settings.thumbnail_pad_bottom | default: 0 }}px;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
     {% if section.settings.image_aspect_ratio == 'custom' %}
       height: {{ section.settings.thumbnail_height_desktop | default: 320 }}px;
       aspect-ratio: unset;
@@ -50,11 +67,58 @@
   #shopify-section-{{ section.id }} .frubs-brand-tile-media img {
     object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
     object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+    transform: scale({{ section.settings.image_zoom | default: 100 | divided_by: 100.0 }});
+    transform-origin: center center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #shopify-section-{{ section.id }} .frubs-brand-tile:hover .frubs-brand-tile-media img {
+    transform: scale({{ section.settings.image_zoom | default: 100 | times: 1.04 | divided_by: 100.0 }});
   }
   #shopify-section-{{ section.id }} .frubs-brand-tile-body {
     padding: {{ section.settings.caption_spacing | default: 14 }}px;
   }
+  #shopify-section-{{ section.id }} .frubs-brand-tile-cta {
+    margin-top: {{ section.settings.button_margin_top | default: 8 }}px;
+    margin-bottom: {{ section.settings.button_margin_bottom | default: 0 }}px;
+  }
+  #shopify-section-{{ section.id }} .frubs-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #008779;
+    color: #ffffff !important;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .frubs-btn-pill:hover {
+    background: #006b60;
+  }
+  #shopify-section-{{ section.id }} .frubs-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #008779 !important;
+    border: 1.5px solid #008779;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .frubs-btn-outline:hover {
+    background: #f0fdfa;
+  }
   @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .frubs-brands-section {
+      padding-top: {{ section.settings.padding_top | default: 48 | times: 0.7 | round }}px;
+      padding-bottom: {{ section.settings.padding_bottom | default: 48 | times: 0.7 | round }}px;
+    }
     #shopify-section-{{ section.id }} .frubs-brands-grid {
       grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumbnail_width_mobile | default: 160 }}px, 1fr));
       gap: {{ section.settings.thumbnail_spacing_mobile | default: 12 }}px;
@@ -67,17 +131,19 @@
   }
 {%- endstyle -%}
 <section class="frubs-brands-section page-container enamels-homepage-modular-section" id="homepage-featured-articles" aria-label="Explore Our Brands and Signature Articles">
-  <div class="categories-section-header" style="margin-bottom: 12px;">
-    {% if tag_text != blank %}
-      <span class="categories-section-tag">{{ tag_text | escape }}</span>
-    {% endif %}
-    {% if title_text != blank %}
-      <h2 class="categories-section-title">{{ title_text | escape }}</h2>
-    {% endif %}
-    {% if subtitle_text != blank %}
-      <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
-    {% endif %}
-  </div>
+  {% if tag_text != blank or title_text != blank or subtitle_text != blank %}
+    <div class="categories-section-header" style="margin-bottom: {{ section.settings.header_margin_bottom | default: 16 }}px;">
+      {% if tag_text != blank %}
+        <span class="categories-section-tag">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if title_text != blank %}
+        <h2 class="categories-section-title">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if subtitle_text != blank %}
+        <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
 
   <div class="frubs-brands-grid">
     {% if blocks_count > 0 %}
@@ -92,10 +158,24 @@
           assign brand_link = block.settings.link
           assign block_ratio = block.settings.image_aspect_ratio_override | default: 'inherit'
           assign block_height = block.settings.custom_height | default: 0
+          assign block_fit = block.settings.image_fit_override | default: 'inherit'
+          assign block_zoom = block.settings.custom_zoom | default: 0
+          assign block_media_bg = block.settings.custom_media_bg
+          assign block_pad_top = block.settings.custom_pad_top | default: -1
+          assign block_pad_bottom = block.settings.custom_pad_bottom | default: -1
+
+          assign block_pos_y = block.settings.custom_pos_y | default: 'inherit'
+
+          assign resolved_btn_style = section.settings.button_style | default: 'link'
+          if block.settings.button_style_override != blank and block.settings.button_style_override != 'inherit'
+            assign resolved_btn_style = block.settings.button_style_override
+          endif
 
           assign has_body = false
           if brand_name != blank or brand_desc != blank or cta_text != blank
-            assign has_body = true
+            if resolved_btn_style != 'hidden' or brand_name != blank or brand_desc != blank
+              assign has_body = true
+            endif
           endif
         -%}
         <a
@@ -108,9 +188,20 @@
         >
           <div
             class="frubs-brand-tile-media"
-            {% if block_ratio != 'inherit' and block_ratio != blank %}
-              style="{% if block_ratio == 'custom' and block_height > 0 %}height: {{ block_height }}px; aspect-ratio: unset;{% elsif block_ratio == '1_1' %}aspect-ratio: 1 / 1; height: auto;{% elsif block_ratio == '3_4' %}aspect-ratio: 3 / 4; height: auto;{% elsif block_ratio == '4_3' %}aspect-ratio: 4 / 3; height: auto;{% elsif block_ratio == '16_9' %}aspect-ratio: 16 / 9; height: auto;{% elsif block_ratio == 'natural' %}aspect-ratio: auto; height: auto;{% endif %}"
-            {% endif %}
+            style="
+              {% if block_ratio != 'inherit' and block_ratio != blank %}
+                {% if block_ratio == 'custom' and block_height > 0 %}height: {{ block_height }}px; aspect-ratio: unset;
+                {% elsif block_ratio == '1_1' %}aspect-ratio: 1 / 1; height: auto;
+                {% elsif block_ratio == '3_4' %}aspect-ratio: 3 / 4; height: auto;
+                {% elsif block_ratio == '4_3' %}aspect-ratio: 4 / 3; height: auto;
+                {% elsif block_ratio == '16_9' %}aspect-ratio: 16 / 9; height: auto;
+                {% elsif block_ratio == 'natural' %}aspect-ratio: auto; height: auto;
+                {% endif %}
+              {% endif %}
+              {% if block_media_bg != blank %}background-color: {{ block_media_bg }};{% endif %}
+              {% if block_pad_top >= 0 %}padding-top: {{ block_pad_top }}px;{% endif %}
+              {% if block_pad_bottom >= 0 %}padding-bottom: {{ block_pad_bottom }}px;{% endif %}
+            "
           >
             {% if badge_text != blank %}
               <span class="frubs-brand-tile-badge" style="background: {{ badge_bg }}; color: {{ badge_color }};">
@@ -124,9 +215,18 @@
                 width="{{ block.settings.image.width }}"
                 height="{{ block.settings.image.height }}"
                 loading="lazy"
+                style="
+                  {% if block_fit != 'inherit' and block_fit != blank %}object-fit: {{ block_fit }};{% endif %}
+                  {% if block_pos_y != 'inherit' and block_pos_y != blank %}object-position: center {{ block_pos_y }};{% endif %}
+                  {% if block_zoom > 0 %}transform: scale({{ block_zoom | divided_by: 100.0 }});{% endif %}
+                "
               />
             {% else %}
-              <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="{{ brand_name | default: 'Brand Thumbnail' | escape }}" width="300" height="400" loading="lazy" />
+              <div class="frubs-brand-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 200px;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                  <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+                </svg>
+              </div>
             {% endif %}
           </div>
           {% if has_body %}
@@ -137,78 +237,21 @@
             {% if brand_desc != blank %}
               <p class="frubs-brand-tile-sub">{{ brand_desc | escape }}</p>
             {% endif %}
-            {% if cta_text != blank %}
-              <span class="frubs-brand-tile-cta">{{ cta_text | escape }}</span>
+            {% if cta_text != blank and resolved_btn_style != 'hidden' %}
+              <span
+                class="frubs-brand-tile-cta{% if resolved_btn_style == 'pill' %} frubs-btn-pill{% elsif resolved_btn_style == 'outline' %} frubs-btn-outline{% endif %}"
+                style="
+                  {% if block.settings.button_margin_top != blank and block.settings.button_margin_top >= 0 %}margin-top: {{ block.settings.button_margin_top }}px;{% endif %}
+                  {% if block.settings.button_margin_bottom != blank and block.settings.button_margin_bottom >= 0 %}margin-bottom: {{ block.settings.button_margin_bottom }}px;{% endif %}
+                "
+              >
+                {{ cta_text | escape }}
+              </span>
             {% endif %}
           </div>
           {% endif %}
         </a>
       {% endfor %}
-    {% else %}
-      <!-- 1. Vilora -->
-      <a href="#collection-vilora" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('women', 'scrubs', 'Vilora'); return false;" aria-label="Explore Vilora Series">
-        <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #be185d; color: #ffffff;">MICRO-DRAPE</span>
-          <img src="{{ 'cat-velora.jpg' | asset_url }}" alt="Vilora Luxury Medical Scrubs" width="300" height="400" loading="eager" />
-        </div>
-        <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">Vilora Series</h3>
-          <p class="frubs-brand-tile-sub">Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for female clinicians.</p>
-          <span class="frubs-brand-tile-cta">Explore Vilora →</span>
-        </div>
-      </a>
-
-      <!-- 2. Sprinter -->
-      <a href="#collection-sprinter" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'scrubs', 'Sprinter'); return false;" aria-label="Explore Sprinter Series">
-        <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #102a43; color: #ffffff;">4-WAY STRETCH</span>
-          <img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Sprinter Athletic Scrub Series" width="300" height="400" loading="eager" />
-        </div>
-        <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">Sprinter Series</h3>
-          <p class="frubs-brand-tile-sub">Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers.</p>
-          <span class="frubs-brand-tile-cta">Explore Sprinter →</span>
-        </div>
-      </a>
-
-      <!-- 3. Crown -->
-      <a href="#collection-crown" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'scrubs', 'Crown'); return false;" aria-label="Explore Crown Series">
-        <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #b45309; color: #ffffff;">EXECUTIVE MANDARIN</span>
-          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Crown Executive Mandarin Scrubs" width="300" height="400" loading="eager" />
-        </div>
-        <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">Crown Series</h3>
-          <p class="frubs-brand-tile-sub">Distinctive standing mandarin collar with concealed front placket tailored for senior consultant rounds.</p>
-          <span class="frubs-brand-tile-cta">Explore Crown →</span>
-        </div>
-      </a>
-
-      <!-- 4. Ground -->
-      <a href="#collection-ground" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'scrubs', 'Ground'); return false;" aria-label="Explore Ground Series">
-        <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #1e293b; color: #ffffff;">HEAVY-DUTY TWILL</span>
-          <img src="{{ 'cat-crown.jpg' | asset_url }}" alt="Ground Heavy-Duty Tactical Scrubs" width="300" height="400" loading="lazy" />
-        </div>
-        <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">Ground Series</h3>
-          <p class="frubs-brand-tile-sub">High-density tactical weave engineered for emergency room resilience and intense clinical duty.</p>
-          <span class="frubs-brand-tile-cta">Explore Ground →</span>
-        </div>
-      </a>
-
-      <!-- 5. Helium -->
-      <a href="#collection-helium" class="frubs-brand-tile" onclick="window.navigateToArticleSeries('all', 'lab-coat', 'Helium'); return false;" aria-label="Explore Helium Series">
-        <div class="frubs-brand-tile-media">
-          <span class="frubs-brand-tile-badge" style="background: #0369a1; color: #ffffff;">LAB COATS</span>
-          <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Helium Technical White Lab Coats" width="300" height="400" loading="lazy" />
-        </div>
-        <div class="frubs-brand-tile-body">
-          <h3 class="frubs-brand-tile-title">Helium Series</h3>
-          <p class="frubs-brand-tile-sub">Crisp optical white technical doctor coats with reinforced stethoscope loop & tablet pockets.</p>
-          <span class="frubs-brand-tile-cta">Explore Helium →</span>
-        </div>
-      </a>
     {% endif %}
   </div>
 </section>
@@ -372,6 +415,148 @@
       "step": 2,
       "default": 14,
       "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Section & Thumbnail Spacing (Top & Bottom)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Section Top Space (Padding Top in px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Section Bottom Space (Padding Bottom in px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_margin_bottom",
+      "label": "Space Below Heading / Above Thumbnails (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_margin_top",
+      "label": "Extra Space Above Thumbnail Grid (px)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_margin_bottom",
+      "label": "Space Below Thumbnail Grid (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail Image Spacing & Letterbox Controls"
+    },
+    {
+      "type": "range",
+      "id": "image_zoom",
+      "label": "Image Zoom / Scale (%) - Crop Out Black Letterbox Bars",
+      "min": 100,
+      "max": 180,
+      "step": 2,
+      "default": 100,
+      "unit": "%",
+      "info": "Increase zoom to crop out black bands or screenshot borders on top and bottom."
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_pad_top",
+      "label": "Thumbnail Top Inner Space / Padding (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_pad_bottom",
+      "label": "Thumbnail Bottom Inner Space / Padding (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "thumbnail_media_bg",
+      "label": "Thumbnail Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background Color",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail Button & Caption Controls"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Thumbnail Button Style",
+      "options": [
+        { "value": "link", "label": "Teal Text Link with Arrow" },
+        { "value": "pill", "label": "Teal Solid Button Pill" },
+        { "value": "outline", "label": "Teal Outline Button" }
+      ],
+      "default": "link"
+    },
+    {
+      "type": "range",
+      "id": "button_margin_top",
+      "label": "Space Above Thumbnail Button (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_margin_bottom",
+      "label": "Space Below Thumbnail Button (px)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
     }
   ],
   "blocks": [
@@ -418,8 +603,7 @@
         {
           "type": "text",
           "id": "badge",
-          "label": "Badge Text",
-          "default": "MICRO-DRAPE"
+          "label": "Badge Text"
         },
         {
           "type": "color",
@@ -436,8 +620,7 @@
         {
           "type": "textarea",
           "id": "description",
-          "label": "Short Description",
-          "default": "Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for clinicians."
+          "label": "Short Description"
         },
         {
           "type": "text",
@@ -449,60 +632,115 @@
           "type": "url",
           "id": "link",
           "label": "Target Link / Collection"
+        },
+        {
+          "type": "header",
+          "content": "Thumbnail Fit, Zoom & Spacing Adjustments"
+        },
+        {
+          "type": "select",
+          "id": "image_fit_override",
+          "label": "Image Fit Override",
+          "options": [
+            { "value": "inherit", "label": "Inherit Section Default" },
+            { "value": "cover", "label": "Cover (Fill & Crop to Frame)" },
+            { "value": "contain", "label": "Contain (Fit Full Image)" },
+            { "value": "fill", "label": "Fill (Stretch to Edge)" }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "select",
+          "id": "custom_pos_y",
+          "label": "Vertical Focal Alignment",
+          "options": [
+            { "value": "inherit", "label": "Inherit Section Default" },
+            { "value": "center", "label": "Center" },
+            { "value": "top", "label": "Top (Align Top)" },
+            { "value": "bottom", "label": "Bottom (Align Bottom)" }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "range",
+          "id": "custom_zoom",
+          "label": "Thumbnail Image Zoom Override (%)",
+          "min": 0,
+          "max": 180,
+          "step": 2,
+          "default": 0,
+          "unit": "%",
+          "info": "Set to 0 to use section zoom. 100% to 180% to zoom in and crop out black screenshot bars on top/bottom."
+        },
+        {
+          "type": "color",
+          "id": "custom_media_bg",
+          "label": "Thumbnail Background Color Override",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "custom_pad_top",
+          "label": "Thumbnail Top Space Override (px)",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "default": 0,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "custom_pad_bottom",
+          "label": "Thumbnail Bottom Space Override (px)",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "default": 0,
+          "unit": "px"
+        },
+        {
+          "type": "header",
+          "content": "Button Style & Spacing Adjustments"
+        },
+        {
+          "type": "select",
+          "id": "button_style_override",
+          "label": "Button Style Override",
+          "options": [
+            { "value": "inherit", "label": "Inherit Section Default" },
+            { "value": "link", "label": "Teal Text Link" },
+            { "value": "pill", "label": "Teal Solid Button Pill" },
+            { "value": "outline", "label": "Teal Outline Button" },
+            { "value": "hidden", "label": "Hide Button" }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "range",
+          "id": "button_margin_top",
+          "label": "Space Above Button Override (px)",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "default": 8,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "button_margin_bottom",
+          "label": "Space Below Button Override (px)",
+          "min": 0,
+          "max": 40,
+          "step": 2,
+          "default": 0,
+          "unit": "px"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Brand & Article Gallery",
-      "blocks": [
-        {
-          "type": "brand",
-          "settings": {
-            "title": "Vilora Series",
-            "badge": "MICRO-DRAPE",
-            "badge_bg": "#be185d",
-            "description": "Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for clinicians."
-          }
-        },
-        {
-          "type": "brand",
-          "settings": {
-            "title": "Splender Series",
-            "badge": "4-WAY STRETCH",
-            "badge_bg": "#102a43",
-            "description": "Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers."
-          }
-        },
-        {
-          "type": "brand",
-          "settings": {
-            "title": "Ground Series",
-            "badge": "EXECUTIVE CUT",
-            "badge_bg": "#b45309",
-            "description": "Distinctive standing mandarin collar with concealed front placket tailored for senior rounds."
-          }
-        },
-        {
-          "type": "brand",
-          "settings": {
-            "title": "FlexFit Series",
-            "badge": "ALL-DAY FLEX",
-            "badge_bg": "#0f766e",
-            "description": "Reinforced stretch seams and deep multi-pocket storage engineered for high-activity ward rotations."
-          }
-        },
-        {
-          "type": "brand",
-          "settings": {
-            "title": "Helium Series",
-            "badge": "LAB COATS",
-            "badge_bg": "#0369a1",
-            "description": "Crisp optical white technical doctor coats with reinforced stethoscope loop & tablet pockets."
-          }
-        }
-      ]
+      "name": "Brand & Article Gallery"
     }
   ]
 }

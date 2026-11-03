@@ -1,0 +1,378 @@
+{% comment %}
+  Enamels Dedicated Category Section — Women
+  Provides fully independent Theme Editor settings for Women's category showcase,
+  image size, aspect ratio, text alignment, colors, and direct collection routing.
+{% endcomment %}
+
+{%- liquid
+  assign enable_section = section.settings.enable_section
+  assign category_title = section.settings.title | strip
+  assign category_tag = section.settings.tag | strip
+  assign category_desc = section.settings.description | strip
+  assign btn_label = section.settings.button_label | strip
+  assign btn_link = section.settings.button_link | default: '#women'
+  assign img_pos = section.settings.image_position | default: 'left'
+  assign text_align = section.settings.text_alignment | default: 'left'
+  assign aspect_ratio = section.settings.aspect_ratio | default: '4_3'
+  assign bg_color = section.settings.section_bg | default: '#ffffff'
+  assign text_color = section.settings.text_color | default: '#102a43'
+  assign pad_top = section.settings.padding_top | default: 56
+  assign pad_bottom = section.settings.padding_bottom | default: 56
+
+  assign has_text_content = false
+  if category_title != blank or category_tag != blank or category_desc != blank or btn_label != blank
+    assign has_text_content = true
+  endif
+  if section.settings.show_features
+    if section.settings.feat_1 != blank or section.settings.feat_2 != blank or section.settings.feat_3 != blank
+      assign has_text_content = true
+    endif
+  endif
+-%}
+
+{% if enable_section %}
+{%- style -%}
+  #shopify-section-{{ section.id }} .category-visual-col {
+    max-width: {{ section.settings.image_max_width_desktop | default: 560 }}px;
+    width: 100%;
+  }
+  #shopify-section-{{ section.id }} .category-img-frame {
+    border-radius: {{ section.settings.image_border_radius | default: 16 }}px;
+    overflow: hidden;
+    {% if section.settings.aspect_ratio == 'custom' %}
+      height: {{ section.settings.image_height_desktop | default: 420 }}px;
+      aspect-ratio: unset;
+    {% elsif section.settings.aspect_ratio == '1_1' %}
+      aspect-ratio: 1 / 1;
+      height: auto;
+    {% elsif section.settings.aspect_ratio == '3_4' %}
+      aspect-ratio: 3 / 4;
+      height: auto;
+    {% elsif section.settings.aspect_ratio == '16_9' %}
+      aspect-ratio: 16 / 9;
+      height: auto;
+    {% elsif section.settings.aspect_ratio == 'natural' %}
+      aspect-ratio: auto;
+      height: auto;
+    {% else %}
+      aspect-ratio: 4 / 3;
+      height: auto;
+    {% endif %}
+  }
+  #shopify-section-{{ section.id }} .category-showcase-img {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
+    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+  }
+  @media (max-width: 900px) {
+    #shopify-section-{{ section.id }} .category-visual-col {
+      max-width: {{ section.settings.image_max_width_mobile | default: 340 }}px;
+      margin: 0 auto;
+    }
+    {% if section.settings.aspect_ratio == 'custom' %}
+      #shopify-section-{{ section.id }} .category-img-frame {
+        height: {{ section.settings.image_height_mobile | default: 260 }}px;
+      }
+    {% endif %}
+  }
+{%- endstyle -%}
+<section
+  class="enamels-category-section-wrap enamels-homepage-modular-section"
+  id="enamels-category-women-section"
+  style="
+    background-color: {{ bg_color }};
+    padding-top: {{ pad_top }}px;
+    padding-bottom: {{ pad_bottom }}px;
+    color: {{ text_color }};
+  "
+>
+  <div class="page-container">
+    <div class="category-showcase-layout img-pos-{{ img_pos }}{% unless has_text_content %} is-image-only{% endunless %}">
+      <!-- Text & Action Content -->
+      {% if has_text_content %}
+      <div class="category-content-col align-{{ text_align }}">
+        {% if category_tag != blank %}
+          <span class="category-pill-tag">{{ category_tag | escape }}</span>
+        {% endif %}
+
+        {% if category_title != blank %}
+          <h2 class="category-showcase-title" style="color: {{ text_color }};">
+            {{ category_title | escape }}
+          </h2>
+        {% endif %}
+
+        {% if category_desc != blank %}
+          <p class="category-showcase-desc">
+            {{ category_desc | escape }}
+          </p>
+        {% endif %}
+
+        {% if section.settings.show_features %}
+          <div class="category-features-list">
+            {% if section.settings.feat_1 != blank %}
+              <div class="category-feature-bullet">
+                <span class="category-feat-icon">✨</span>
+                <span>{{ section.settings.feat_1 | escape }}</span>
+              </div>
+            {% endif %}
+            {% if section.settings.feat_2 != blank %}
+              <div class="category-feature-bullet">
+                <span class="category-feat-icon">🛡️</span>
+                <span>{{ section.settings.feat_2 | escape }}</span>
+              </div>
+            {% endif %}
+            {% if section.settings.feat_3 != blank %}
+              <div class="category-feature-bullet">
+                <span class="category-feat-icon">🧵</span>
+                <span>{{ section.settings.feat_3 | escape }}</span>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if btn_label != blank %}
+          <div class="category-cta-wrap">
+            <a
+              href="{{ btn_link }}"
+              class="btn-category-action"
+              style="
+                background-color: {{ section.settings.button_bg | default: '#be185d' }};
+                color: {{ section.settings.button_color | default: '#ffffff' }};
+              "
+              onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
+            >
+              {{ btn_label | escape }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Visual Imagery Column -->
+      <div class="category-visual-col">
+        <div class="category-img-frame ratio-{{ aspect_ratio }}">
+          {% if section.settings.image != blank %}
+            <img
+              src="{{ section.settings.image | image_url: width: 1000 }}"
+              alt="{{ section.settings.image.alt | default: category_title | default: 'Women Collection' | escape }}"
+              class="category-showcase-img"
+              loading="lazy"
+              width="{{ section.settings.image.width }}"
+              height="{{ section.settings.image.height }}"
+            />
+          {% else %}
+            <div class="category-img-placeholder" style="background: #fdf2f8; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 280px;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="1.5">
+                <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Category — Women",
+  "class": "enamels-category-section-women-wrapper",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Enable Section",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "tag",
+      "label": "Sub-heading Tag",
+      "default": "WOMENS CLINICAL RANGE"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Women's Medical Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Ultra-soft luxury micro-drapes and tailored fits designed specifically for female clinicians."
+    },
+    {
+      "type": "header",
+      "content": "Bullet Feature Highlights"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_features",
+      "label": "Show Feature Highlights",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "feat_1",
+      "label": "Feature 1",
+      "default": "Liquid-Soft Micro-Drape Fabric"
+    },
+    {
+      "type": "text",
+      "id": "feat_2",
+      "label": "Feature 2",
+      "default": "Fluid-Repellent & Antimicrobial"
+    },
+    {
+      "type": "text",
+      "id": "feat_3",
+      "label": "Feature 3",
+      "default": "Tailored Notch Collar & Joggers"
+    },
+    {
+      "type": "header",
+      "content": "Call-to-Action Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button Label",
+      "default": "Explore Women's Scrubs →"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button Background Color",
+      "default": "#be185d"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Image Showcase & Geometry"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Showcase Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "4_3", "label": "4:3 Standard" },
+        { "value": "3_4", "label": "3:4 Tall Portrait" },
+        { "value": "16_9", "label": "16:9 Cinema Wide" },
+        { "value": "natural", "label": "Natural Image Dimensions" },
+        { "value": "custom", "label": "Custom Pixel Height" }
+      ],
+      "default": "4_3"
+    },
+    {
+      "type": "range",
+      "id": "image_height_desktop",
+      "label": "Custom Height Desktop (px)",
+      "min": 200,
+      "max": 800,
+      "step": 20,
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "image_max_width_desktop",
+      "label": "Max Width Desktop (px)",
+      "min": 300,
+      "max": 900,
+      "step": 20,
+      "default": 560
+    },
+    {
+      "type": "select",
+      "id": "image_fit_mode",
+      "label": "Image Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill entire box)" },
+        { "value": "contain", "label": "Contain (Show full image)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Colors & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top (px)",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom (px)",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "default": 56
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category — Women"
+    }
+  ]
+}
+{% endschema %}

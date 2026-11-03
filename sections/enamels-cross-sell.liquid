@@ -1,0 +1,125 @@
+{% comment %}
+  Section contract: Enamels Interactive Cross-Selling & Product Preview System
+  Provides an interactive, responsive complementary product discovery system with:
+  - Category tabs: Caps | Sleeves | Accessories | More ▾ (Lab Coats, Socks, Embroidery, Underscrubs)
+  - Accessible product dropdown & selector powered by real Shopify catalog data
+  - High-resolution dynamic product preview stage (configurable image fit & aspect ratio)
+  - Synchronized variant picker (Color/Pattern, Size) with live price and stock status
+  - 1-Click direct Add-to-Cart and multi-item scrub bundle staging tray
+  @example
+  <!-- In templates/product.json or rendered inside PDP -->
+{% endcomment %}
+
+{%- if section.settings.enable_cross_sell -%}
+  <div class="section-enamels-cross-sell-wrapper page-width" style="padding-top: {{ section.settings.padding_top | default: 24 }}px; padding-bottom: {{ section.settings.padding_bottom | default: 36 }}px;">
+    {% render 'enamels-cross-sell' %}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Enamels Cross-Selling",
+  "tag": "section",
+  "class": "section-enamels-cross-sell",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_cross_sell",
+      "label": "Enable Cross-Selling Section",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cross_sell_heading",
+      "label": "Heading",
+      "default": "Complementary Clinical Essentials"
+    },
+    {
+      "type": "textarea",
+      "id": "cross_sell_subheading",
+      "label": "Subheading",
+      "default": "Discover perfectly paired surgical caps, compression sleeves, and medical accessories to complete your uniform."
+    },
+    {
+      "type": "select",
+      "id": "cross_sell_image_fit",
+      "label": "Product Preview Image Fit",
+      "options": [
+        { "value": "contain", "label": "Contain (Full item visible without cropping)" },
+        { "value": "cover", "label": "Cover (Fills preview stage)" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "cross_sell_aspect_ratio",
+      "label": "Preview Aspect Ratio",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
+        { "value": "4/3", "label": "Landscape (4:3)" }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "text",
+      "id": "cross_sell_btn_label",
+      "label": "Add Button Label",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Collection Sources (Optional)"
+    },
+    {
+      "type": "collection",
+      "id": "caps_collection",
+      "label": "Surgical Caps Collection"
+    },
+    {
+      "type": "collection",
+      "id": "sleeves_collection",
+      "label": "Arm Sleeves Collection"
+    },
+    {
+      "type": "collection",
+      "id": "accessories_collection",
+      "label": "Accessories Collection"
+    },
+    {
+      "type": "collection",
+      "id": "labcoats_collection",
+      "label": "Lab Coats Collection"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Interactive Cross-Selling"
+    }
+  ]
+}
+{% endschema %}

@@ -6,8 +6,8 @@
 {% endcomment %}
 
 {% liquid
-  assign ss_heading = section.settings.heading | default: "Enamels Home Service — Sizing & Uniform Consultation"
-  assign ss_subtext = section.settings.subtext | default: "Experience personalized medical uniform fitting at your hospital, clinic, or residence in Lahore. An authorized Enamels representative visits with sample sizing garments, genuine textile swatch rings, and embroidery consultation to assess your exact requirements and take precision measurements in person."
+  assign ss_heading = section.settings.heading | strip
+  assign ss_subtext = section.settings.subtext | strip
   assign min_order = section.settings.min_order_value | default: 25000
   assign adv_deposit = section.settings.advance_amount | default: 3000
   assign adv_expl = section.settings.advance_explanation | default: "100% adjustable against your final order total. It is not an additional service charge."
@@ -79,13 +79,17 @@
         </span>
       </div>
 
-      <h1 class="self-service-main-heading" style="font-size: 26px; color: #102a43; font-weight: 700; margin: 0 0 8px;">
-        {{ ss_heading | escape }}
-      </h1>
+      {% if ss_heading != blank %}
+        <h1 class="self-service-main-heading" style="font-size: 26px; color: #102a43; font-weight: 700; margin: 0 0 8px;">
+          {{ ss_heading | escape }}
+        </h1>
+      {% endif %}
 
-      <p class="self-service-main-desc" style="font-size: 14px; color: #475569; line-height: 1.6; max-width: 860px; margin: 0 0 20px;">
-        {{ ss_subtext | escape }}
-      </p>
+      {% if ss_subtext != blank %}
+        <p class="self-service-main-desc" style="font-size: 14px; color: #475569; line-height: 1.6; max-width: 860px; margin: 0 0 20px;">
+          {{ ss_subtext | escape }}
+        </p>
+      {% endif %}
 
       <!-- Prominent Policy Banner Cards Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 20px;">

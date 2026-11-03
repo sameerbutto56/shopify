@@ -222,6 +222,11 @@
     endif
   -%}
 
+  <!-- Automated Pakistan & International Shipping Calculator -->
+  <div style="margin-top: 14px; margin-bottom: 12px;">
+    {% render 'enamels-shipping-calculator' %}
+  </div>
+
   <div class="cart-totals__container{% if settings.show_installments %} cart-totals__container--has-installments{% endif %}">
     <span
       class="cart-totals__item cart-totals__total"

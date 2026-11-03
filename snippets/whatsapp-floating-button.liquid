@@ -3,11 +3,11 @@
 {% enddoc %}
 
 {%- liquid
-  assign whatsapp_number = settings.whatsapp_number | default: '923001234567'
+  assign whatsapp_number = settings.whatsapp_number
   assign whatsapp_message = settings.whatsapp_message | default: 'Hello! I need help with an order on your store.' | url_encode
 -%}
 
-{% if settings.enable_whatsapp %}
+{% if settings.enable_whatsapp and whatsapp_number != blank %}
   <a
     href="https://wa.me/{{ whatsapp_number }}?text={{ whatsapp_message }}"
     class="whatsapp-float"

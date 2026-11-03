@@ -6,73 +6,91 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign badge_text = section.settings.badge | default: 'LAHORE CONCIERGE'
-  assign location_pill = section.settings.location_pill | default: '📍 Currently Available in Lahore Only'
-  assign title_text = section.settings.title | default: 'Home Service — At Your Convenience'
-  assign desc_text = section.settings.description | default: 'Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.'
-  assign button_label = section.settings.button_label | default: 'Book a Representative Visit →'
-  assign notice_text = section.settings.fee_notice | default: 'Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only'
+  assign badge_text = section.settings.badge | strip
+  assign location_pill = section.settings.location_pill | strip
+  assign title_text = section.settings.title | strip
+  assign desc_text = section.settings.description | strip
+  assign button_label = section.settings.button_label | strip
+  assign notice_text = section.settings.fee_notice | strip
 -%}
 
 {% if enable_section %}
 <section class="page-container enamels-homepage-modular-section" style="padding: 24px 0 48px;" id="homepage-home-service-banner" aria-label="Concierge Home Service Visit">
   <div class="home-service-editorial-banner">
     <div class="home-service-banner-content">
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-        {% if badge_text != blank %}
-          <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">{{ badge_text | escape }}</span>
-        {% endif %}
-        {% if location_pill != blank %}
-          <span class="self-service-location-pill">{{ location_pill | escape }}</span>
-        {% endif %}
-      </div>
+      {% if badge_text != blank or location_pill != blank %}
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+          {% if badge_text != blank %}
+            <span class="nav-tag-highlight" style="background: #00b8a9; color: #ffffff;">{{ badge_text | escape }}</span>
+          {% endif %}
+          {% if location_pill != blank %}
+            <span class="self-service-location-pill">{{ location_pill | escape }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
       {% if title_text != blank %}
         <h2 class="home-service-banner-title">{{ title_text | escape }}</h2>
       {% endif %}
       {% if desc_text != blank %}
         <p class="home-service-banner-desc">{{ desc_text | escape }}</p>
       {% endif %}
-      <div class="home-service-banner-highlights">
-        <div class="home-service-hl-item">
-          <span>{{ section.settings.hl1_text | default: '📏 In-Person Body Sizing & Fitting' | escape }}</span>
+      {% if section.settings.hl1_text != blank or section.settings.hl2_text != blank or section.settings.hl3_text != blank or section.settings.hl4_text != blank %}
+        <div class="home-service-banner-highlights">
+          {% if section.settings.hl1_text != blank %}
+            <div class="home-service-hl-item">
+              <span>{{ section.settings.hl1_text | escape }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.hl2_text != blank %}
+            <div class="home-service-hl-item">
+              <span>{{ section.settings.hl2_text | escape }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.hl3_text != blank %}
+            <div class="home-service-hl-item">
+              <span>{{ section.settings.hl3_text | escape }}</span>
+            </div>
+          {% endif %}
+          {% if section.settings.hl4_text != blank %}
+            <div class="home-service-hl-item">
+              <span>{{ section.settings.hl4_text | escape }}</span>
+            </div>
+          {% endif %}
         </div>
-        <div class="home-service-hl-item">
-          <span>{{ section.settings.hl2_text | default: '🎨 Genuine Fabric Swatch Inspection' | escape }}</span>
+      {% endif %}
+      {% if button_label != blank or notice_text != blank %}
+        <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          {% if button_label != blank %}
+            <button
+              type="button"
+              class="btn-card-action"
+              onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); } else { window.location.href = '/pages/home-service'; }"
+              style="width: auto; padding: 14px 28px; font-size: 14px; font-weight: 700; background: #008779; color: #ffffff;"
+            >
+              {{ button_label | escape }}
+            </button>
+          {% endif %}
+          {% if notice_text != blank %}
+            <span style="font-size: 12px; color: #64748b;">{{ notice_text | escape }}</span>
+          {% endif %}
         </div>
-        <div class="home-service-hl-item">
-          <span>{{ section.settings.hl3_text | default: '🪡 Embroidery & Logo Setup' | escape }}</span>
-        </div>
-        <div class="home-service-hl-item">
-          <span>{{ section.settings.hl4_text | default: '💵 PKR 3,000 Advance (Adjustable Against PKR 25,000 Min. Order)' | escape }}</span>
-        </div>
-      </div>
-      <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-        <button
-          type="button"
-          class="btn-card-action"
-          onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); } else { window.location.href = '/pages/home-service'; }"
-          style="width: auto; padding: 14px 28px; font-size: 14px; font-weight: 700; background: #008779; color: #ffffff;"
-        >
-          {{ button_label | escape }}
-        </button>
-        {% if notice_text != blank %}
-          <span style="font-size: 12px; color: #64748b;">{{ notice_text | escape }}</span>
-        {% else %}
-          <span style="font-size: 12px; color: #64748b;">Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only</span>
-        {% endif %}
-      </div>
+      {% endif %}
     </div>
     <div class="home-service-banner-media">
       {% if section.settings.image != blank %}
         <img
           src="{{ section.settings.image | image_url: width: 800 }}"
-          alt="{{ section.settings.image.alt | default: title_text | escape }}"
+          alt="{{ section.settings.image.alt | default: title_text | default: 'Enamels Home Service Representative Visit' | escape }}"
           width="{{ section.settings.image.width }}"
           height="{{ section.settings.image.height }}"
           loading="lazy"
         />
       {% else %}
-        <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Enamels Home Service Representative Visit" width="600" height="450" loading="lazy" />
+        <div class="home-service-banner-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 280px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+          </svg>
+        </div>
       {% endif %}
     </div>
   </div>

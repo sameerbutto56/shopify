@@ -133,14 +133,11 @@
               height="{{ section.settings.image.height }}"
             />
           {% else %}
-            <img
-              src="{{ 'cat-sprinter.jpg' | asset_url }}"
-              alt="{{ category_title | escape }}"
-              class="category-showcase-img"
-              loading="lazy"
-              width="800"
-              height="600"
-            />
+            <div class="category-img-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 280px;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+              </svg>
+            </div>
           {% endif %}
         </div>
       </div>

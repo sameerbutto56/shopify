@@ -6,28 +6,44 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign tag_text = section.settings.testimonials_tag | default: 'CUSTOMER FEEDBACK'
-  assign heading_text = section.settings.testimonials_heading | default: 'Client Reviews'
-  assign subheading_text = section.settings.testimonials_subheading
+  assign tag_text = section.settings.testimonials_tag | strip
+  assign heading_text = section.settings.testimonials_heading | strip
+  assign subheading_text = section.settings.testimonials_subheading | strip
   assign blocks_count = section.blocks.size
 -%}
 
 {% if enable_section and blocks_count > 0 %}
 <section class="enamels-homepage-modular-section" style="background-color: #ffffff; padding: 60px 0; border-top: 1px solid #e2e8f0;" id="homepage-testimonials-section" aria-label="Customer Reviews">
   <div class="page-container">
-    <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
-      {% if tag_text != blank %}
-        <span class="section-tag-sub">{{ tag_text | escape }}</span>
-      {% endif %}
-      {% if heading_text != blank %}
-        <h2 class="section-title-main">{{ heading_text | escape }}</h2>
-      {% endif %}
-      {% if subheading_text != blank %}
-        <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ subheading_text | escape }}</p>
-      {% endif %}
-    </div>
+    {% if tag_text != blank or heading_text != blank or subheading_text != blank %}
+      <div class="section-header-wrap" style="margin-top: 0; text-align: center;">
+        {% if tag_text != blank %}
+          <span class="section-tag-sub">{{ tag_text | escape }}</span>
+        {% endif %}
+        {% if heading_text != blank %}
+          <h2 class="section-title-main">{{ heading_text | escape }}</h2>
+        {% endif %}
+        {% if subheading_text != blank %}
+          <p class="section-title-desc" style="max-width: 640px; margin: 0 auto;">{{ subheading_text | escape }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 24px; margin-top: 36px;">
+<style>
+  .enamels-testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 640px) {
+    .enamels-testimonials-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+  }
+</style>
+
+    <div class="enamels-testimonials-grid" style="{% if tag_text != blank or heading_text != blank or subheading_text != blank %}margin-top: 36px;{% else %}margin-top: 0;{% endif %}">
       {% for block in section.blocks %}
         {% if block.type == 'testimonial' %}
           <div
@@ -112,20 +128,17 @@
         {
           "type": "textarea",
           "id": "review",
-          "label": "Review Text",
-          "default": "Exceptional fabric quality, comfortable fit during long surgical shifts, and precise custom name embroidery."
+          "label": "Review Text"
         },
         {
           "type": "text",
           "id": "author",
-          "label": "Customer / Doctor Name",
-          "default": "Dr. Sarah Khan"
+          "label": "Customer / Doctor Name"
         },
         {
           "type": "text",
           "id": "city",
-          "label": "Hospital / City",
-          "default": "Lahore"
+          "label": "Hospital / City"
         },
         {
           "type": "checkbox",

@@ -6,19 +6,19 @@
         "msg_1": {
           "type": "message",
           "settings": {
-            "text": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
+            "text": "\u2728 FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
           }
         },
         "msg_2": {
           "type": "message",
           "settings": {
-            "text": "💵 CASH ON DELIVERY AVAILABLE ACROSS ALL CITIES IN PAKISTAN"
+            "text": "\ud83d\udcb5 CASH ON DELIVERY AVAILABLE ACROSS ALL CITIES IN PAKISTAN"
           }
         },
         "msg_3": {
           "type": "message",
           "settings": {
-            "text": "⚡ 7-DAY EASY SIZE EXCHANGE & DEDICATED WHATSAPP ASSISTANCE"
+            "text": "\u26a1 7-DAY EASY SIZE EXCHANGE & DEDICATED WHATSAPP ASSISTANCE"
           }
         }
       },
@@ -38,8 +38,9 @@
       "type": "enamels-header",
       "settings": {
         "logo_max_width": 100,
-        "phone_number": "+92 301 13 31 133",
-        "phone_tel": "+923011331133",
+        "show_phone": true,
+        "phone_number": "",
+        "phone_tel": "",
         "search_placeholder": "Search scrubs, lab coats, surgical caps, sleeves...",
         "show_wishlist": true,
         "show_account": true,
@@ -58,7 +59,7 @@
             "visible": true,
             "title": "Sprinter Autumn Edition",
             "subtitle": "Athletic 4-Way Stretch Twill Engineered for High Mobility",
-            "button_label": "Shop Sprinter →",
+            "button_label": "Shop Sprinter \u2192",
             "button_link": "#collection-sprinter",
             "link": "#collection-sprinter",
             "caption_position": "center_left",
@@ -76,7 +77,7 @@
             "visible": true,
             "title": "Clinical Clogs & Footwear",
             "subtitle": "Ergonomic Hospital Shock Absorption & Fluid Resistance",
-            "button_label": "Explore Footwear →",
+            "button_label": "Explore Footwear \u2192",
             "button_link": "#collection-clogs",
             "link": "#collection-clogs",
             "caption_position": "center_left",
@@ -128,7 +129,7 @@
             "visible": true,
             "title": "Velora By Enamels",
             "subtitle": "Liquid-soft luxury micro-drape tailored specifically for female clinicians with fluid-repellent antimicrobial coating and discreet hidden zip pockets.",
-            "button_label": "Explore Velora →",
+            "button_label": "Explore Velora \u2192",
             "button_link": "#collection-velora",
             "link": "#collection-velora",
             "caption_position": "center_left",
@@ -169,7 +170,7 @@
             "badge_bg": "#be185d",
             "badge_color": "#ffffff",
             "description": "Liquid-soft micro-drape with fluid-repellent antimicrobial finishing tailored for female clinicians.",
-            "cta_text": "Explore Vilora →",
+            "cta_text": "Explore Vilora \u2192",
             "link": "#collection-vilora"
           }
         },
@@ -181,7 +182,7 @@
             "badge_bg": "#102a43",
             "badge_color": "#ffffff",
             "description": "Athletic mechanical stretch twill, raglan sleeve mobility & 6-pocket functional cargo joggers.",
-            "cta_text": "Explore Sprinter →",
+            "cta_text": "Explore Sprinter \u2192",
             "link": "#collection-sprinter"
           }
         },
@@ -193,7 +194,7 @@
             "badge_bg": "#b45309",
             "badge_color": "#ffffff",
             "description": "Distinctive standing mandarin collar with concealed front placket tailored for senior consultant rounds.",
-            "cta_text": "Explore Crown →",
+            "cta_text": "Explore Crown \u2192",
             "link": "#collection-crown"
           }
         },
@@ -205,7 +206,7 @@
             "badge_bg": "#1e293b",
             "badge_color": "#ffffff",
             "description": "High-density tactical weave engineered for emergency room resilience and intense clinical duty.",
-            "cta_text": "Explore Ground →",
+            "cta_text": "Explore Ground \u2192",
             "link": "#collection-ground"
           }
         },
@@ -217,7 +218,7 @@
             "badge_bg": "#0369a1",
             "badge_color": "#ffffff",
             "description": "Crisp optical white technical doctor coats with reinforced stethoscope loop & tablet pockets.",
-            "cta_text": "Explore Helium →",
+            "cta_text": "Explore Helium \u2192",
             "link": "#collection-helium"
           }
         }
@@ -243,48 +244,62 @@
           "type": "category",
           "settings": {
             "title": "Men",
-            "meta": "12 Styles →",
-            "link": "#men"
+            "meta": "Men's Collection \u2192",
+            "description": "Athletic 4-way stretch clinical scrubs tailored for male healthcare professionals.",
+            "link": "/pages/men"
           }
         },
         "cat_2": {
           "type": "category",
           "settings": {
             "title": "Women",
-            "meta": "14 Styles →",
-            "link": "#women"
+            "meta": "Women's Collection \u2192",
+            "description": "Liquid-soft micro-drape uniforms tailored for female clinicians.",
+            "link": "/pages/women"
           }
         },
         "cat_3": {
           "type": "category",
           "settings": {
-            "title": "Scrubs",
-            "meta": "All Cuts →",
-            "link": "#category-scrubs"
+            "title": "Sale",
+            "meta": "Promotional Offers \u2192",
+            "description": "Genuine discounts on active clinical styles & seasonal series.",
+            "link": "/collections/sale",
+            "badge_text": "SALE",
+            "badge_color": "#e11d48"
           }
         },
         "cat_4": {
           "type": "category",
           "settings": {
-            "title": "Lab Coats",
-            "meta": "Technical White →",
-            "link": "#category-lab-coats"
+            "title": "Bulk Orders",
+            "meta": "Institutions & Hospitals \u2192",
+            "description": "Institutional scrub orders for hospital departments & clinics (Min. 10 scrubs).",
+            "link": "/pages/bulk-orders",
+            "badge_text": "MIN 10",
+            "badge_color": "#0284c7"
           }
         },
         "cat_5": {
           "type": "category",
           "settings": {
-            "title": "Surgical Caps",
-            "meta": "BunFit™ Weave →",
-            "link": "#category-caps"
+            "title": "Home Service",
+            "meta": "Lahore Fitting \u2192",
+            "description": "In-person sizing, fabric swatches & measurement consultation at your location.",
+            "link": "/pages/home-service",
+            "badge_text": "CONCIERGE",
+            "badge_color": "#008779"
           }
         },
         "cat_6": {
           "type": "category",
           "settings": {
-            "title": "Accessories",
-            "meta": "Sleeves & Footwear →",
-            "link": "#category-accessories"
+            "title": "Make Your Own Scrubs",
+            "meta": "Custom Studio \u2192",
+            "description": "Customise fabrics, shades, measurements & personalized doctor embroidery.",
+            "link": "/pages/customizer",
+            "badge_text": "BESPOKE",
+            "badge_color": "#b45309"
           }
         }
       },
@@ -403,7 +418,7 @@
         "tag": "TAILORED CLINICAL PRECISION",
         "title": "Make Your Own Scrubs",
         "description": "Experience our interactive customization studio. Select proprietary medical fabrics, approved hospital shades, custom measurements in inches or cm, size auto-fill, C (Custom) fit, and personalized doctor title & hospital crest embroidery.",
-        "button_label": "Launch Customizer Studio →",
+        "button_label": "Launch Customizer Studio \u2192",
         "button_link": "#ready-to-wear",
         "section_bg": "#ffffff",
         "padding_top": 48,
@@ -415,11 +430,11 @@
       "settings": {
         "enable_section": true,
         "badge": "LAHORE CONCIERGE",
-        "location_pill": "📍 Currently Available in Lahore Only",
-        "title": "Home Service — At Your Convenience",
+        "location_pill": "\ud83d\udccd Currently Available in Lahore Only",
+        "title": "Home Service \u2014 At Your Convenience",
         "description": "Request an in-person visit from an Enamels representative in Lahore who will bring genuine fabric swatches, assist with precision body measurements, and help place your order at your hospital, clinic, or residence.",
-        "button_label": "Book a Representative Visit →",
-        "fee_notice": "Min. order PKR 25,000 • PKR 3,000 advance adjustable against order total • Lahore only"
+        "button_label": "Book a Representative Visit \u2192",
+        "fee_notice": "Min. order PKR 25,000 \u2022 PKR 3,000 advance adjustable against order total \u2022 Lahore only"
       }
     },
     "seasonal_collections": {
@@ -443,7 +458,7 @@
             "description": "Proprietary mechanical stretch twill (72% Poly, 21% Rayon, 7% Spandex). Built with raglan sleeves and 6-pocket cargo jogger pants for unmatched agility.",
             "price_label": "From Rs. 5,150",
             "series_key": "Sprinter",
-            "button_label": "Explore Series →"
+            "button_label": "Explore Series \u2192"
           }
         },
         "series_2": {
@@ -455,7 +470,7 @@
             "description": "Luxurious liquid drape tailored specifically for feminine silhouettes with fluid-repellent antimicrobial coating and discreet hidden zip pockets.",
             "price_label": "From Rs. 5,450",
             "series_key": "Vilora",
-            "button_label": "Explore Series →"
+            "button_label": "Explore Series \u2192"
           }
         },
         "series_3": {
@@ -467,7 +482,7 @@
             "description": "Structured standing mandarin collar with hidden press placket designed for senior consultants and executive clinical rounds.",
             "price_label": "From Rs. 5,650",
             "series_key": "Crown",
-            "button_label": "Explore Series →"
+            "button_label": "Explore Series \u2192"
           }
         }
       },
@@ -578,43 +593,8 @@
     },
     "testimonials": {
       "type": "enamels-testimonials",
-      "blocks": {
-        "rev_1": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "review": "The 4-way mechanical stretch in the Sprinter series is unmatched during 24-hour calls. Exceptional stitch quality and fit.",
-            "author": "Dr. Hamza Tariq, FCPS",
-            "city": "Shaukat Khanum Memorial Hospital, Lahore",
-            "verified_buyer": true
-          }
-        },
-        "rev_2": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "review": "Vilora fabric drapes perfectly and feels light even under hot theater lights. The personalized embroidery was very neat.",
-            "author": "Dr. Sarah Khan",
-            "city": "Doctors Hospital, Lahore",
-            "verified_buyer": true
-          }
-        },
-        "rev_3": {
-          "type": "testimonial",
-          "settings": {
-            "rating": 5,
-            "review": "Home Service representative came directly to our clinic with trial sizes and swatches. Seamless experience from start to finish.",
-            "author": "Dr. Bilal Ahmed",
-            "city": "Aga Khan University Hospital",
-            "verified_buyer": true
-          }
-        }
-      },
-      "block_order": [
-        "rev_1",
-        "rev_2",
-        "rev_3"
-      ],
+      "blocks": {},
+      "block_order": [],
       "settings": {
         "enable_section": true,
         "testimonials_tag": "CUSTOMER FEEDBACK",
@@ -627,7 +607,7 @@
         "badge_1": {
           "type": "trust_badge",
           "settings": {
-            "icon_emoji": "🚚",
+            "icon_emoji": "\ud83d\ude9a",
             "title": "Free Shipping",
             "subtitle": "On all orders over Rs. 7,000 nationwide"
           }
@@ -635,7 +615,7 @@
         "badge_2": {
           "type": "trust_badge",
           "settings": {
-            "icon_emoji": "💵",
+            "icon_emoji": "\ud83d\udcb5",
             "title": "Cash on Delivery",
             "subtitle": "Available across all cities in Pakistan"
           }
@@ -643,7 +623,7 @@
         "badge_3": {
           "type": "trust_badge",
           "settings": {
-            "icon_emoji": "⚡",
+            "icon_emoji": "\u26a1",
             "title": "7-Day Easy Exchange",
             "subtitle": "Instant sizing support via WhatsApp"
           }
@@ -651,7 +631,7 @@
         "badge_4": {
           "type": "trust_badge",
           "settings": {
-            "icon_emoji": "🪡",
+            "icon_emoji": "\ud83e\udea1",
             "title": "Custom Embroidery",
             "subtitle": "Computerized name & hospital crests"
           }
@@ -681,7 +661,7 @@
         "title": "Clinical Scrubs",
         "tag": "PURPOSE-BUILT MEDICAL UNIFORMS",
         "description": "Proprietary antimicrobial 4-way athletic stretch and luxury micro-drape fabrics tailored for intense 24-hour clinical rounds.",
-        "button_label": "Explore Scrubs Collection →",
+        "button_label": "Explore Scrubs Collection \u2192",
         "button_link": "#category-scrubs"
       }
     },
@@ -692,7 +672,7 @@
         "title": "Lab Coats / White Coats",
         "tag": "OPTICAL WHITE CLINICAL TAILORING",
         "description": "Crisp, structured white coats engineered with tablet pockets, reinforced stethoscope loops, and liquid-shield finishing for senior medical staff and students.",
-        "button_label": "Explore Lab Coats →",
+        "button_label": "Explore Lab Coats \u2192",
         "button_link": "#category-lab-coats"
       }
     },
@@ -700,10 +680,10 @@
       "type": "enamels-category-caps",
       "settings": {
         "enable_section": true,
-        "title": "Surgical Caps (BunFit™)",
+        "title": "Surgical Caps (BunFit\u2122)",
         "tag": "THEATRE ERGONOMICS & COMFORT",
         "description": "Engineered with breathable sweatbands, pony/bun pouches, and elastic adjusters for surgeons, anesthetists, and scrub nurses.",
-        "button_label": "Explore Surgical Caps →",
+        "button_label": "Explore Surgical Caps \u2192",
         "button_link": "#category-caps"
       }
     },
@@ -714,7 +694,7 @@
         "title": "Clinical Sleeves",
         "tag": "FLEXFIT COMPRESSION & HYGIENE",
         "description": "Elastic compression arm sleeves designed for OT sterile field protocols, forearm warmth under theatre AC, and UV protection during outdoor emergency transfers.",
-        "button_label": "Explore Sleeves →",
+        "button_label": "Explore Sleeves \u2192",
         "button_link": "#category-sleeves"
       }
     },
@@ -725,14 +705,340 @@
         "title": "Clinical Accessories & Footwear",
         "tag": "ERGONOMIC WARD ESSENTIALS",
         "description": "Shock-absorbing medical clogs, badge reels, compression support accessories, and theatre footwear designed to alleviate fatigue during standing surgeries.",
-        "button_label": "Explore Accessories & Clogs →",
+        "button_label": "Explore Accessories & Clogs \u2192",
         "button_link": "#category-accessories"
       }
+    },
+    "frontpage_hero": {
+      "type": "enamels-frontpage-hero",
+      "settings": {
+        "bg_color": "#e8e8e8",
+        "men_label": "SHOP MEN",
+        "men_link": "/collections/men-scrubs",
+        "women_label": "SHOP WOMEN",
+        "women_link": "/collections/women-scrubs",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "frontpage_categories": {
+      "type": "enamels-frontpage-categories",
+      "settings": {
+        "title": "Shop by category",
+        "view_all_label": "View all",
+        "view_all_link": "/collections/all",
+        "padding_top": 12,
+        "padding_bottom": 24
+      },
+      "blocks": {
+        "pill_men": {
+          "type": "category_pill",
+          "settings": {
+            "title": "MEN",
+            "link": "/collections/men-scrubs",
+            "fallback_asset": "enamels-cat-men.jpg"
+          }
+        },
+        "pill_women": {
+          "type": "category_pill",
+          "settings": {
+            "title": "WOMEN",
+            "link": "/collections/women-scrubs",
+            "fallback_asset": "enamels-cat-women.jpg"
+          }
+        },
+        "pill_new_arrivals": {
+          "type": "category_pill",
+          "settings": {
+            "title": "NEW ARRIVALS",
+            "link": "/collections/new-arrivals",
+            "fallback_asset": "enamels-cat-new-arrivals.jpg"
+          }
+        },
+        "pill_customize": {
+          "type": "category_pill",
+          "settings": {
+            "title": "CUSTOMIZE SCRUBS",
+            "link": "/pages/customizer",
+            "fallback_asset": "enamels-cat-customize.jpg"
+          }
+        },
+        "pill_intl": {
+          "type": "category_pill",
+          "settings": {
+            "title": "INTERNATIONAL ORDER",
+            "link": "/pages/bulk-orders",
+            "fallback_asset": "enamels-cat-intl-order.jpg"
+          }
+        },
+        "pill_labcoats": {
+          "type": "category_pill",
+          "settings": {
+            "title": "LABCOATS",
+            "link": "/collections/lab-coats",
+            "fallback_asset": "enamels-cat-labcoats.jpg"
+          }
+        }
+      },
+      "block_order": [
+        "pill_men",
+        "pill_women",
+        "pill_new_arrivals",
+        "pill_customize",
+        "pill_intl",
+        "pill_labcoats"
+      ]
+    },
+    "frontpage_colors": {
+      "type": "enamels-frontpage-colors",
+      "settings": {
+        "title": "Shop by colors",
+        "view_all_label": "View all",
+        "view_all_link": "/collections/scrubs",
+        "padding_top": 12,
+        "padding_bottom": 28
+      },
+      "blocks": {
+        "swatch_1": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "BLUE",
+            "fallback_asset": "enamels-swatch-blue.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_2": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "GREEN",
+            "fallback_asset": "enamels-swatch-green.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_3": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "SEAGREEN",
+            "fallback_asset": "enamels-swatch-seagreen.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_4": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "MUSTARD",
+            "fallback_asset": "enamels-swatch-mustard.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_5": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "DARK GREEN",
+            "fallback_asset": "enamels-swatch-darkgreen.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_6": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "BLUE",
+            "fallback_asset": "enamels-swatch-blue.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_7": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "GREEN",
+            "fallback_asset": "enamels-swatch-green.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_8": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "SEAGREEN",
+            "fallback_asset": "enamels-swatch-seagreen.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_9": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "MUSTARD",
+            "fallback_asset": "enamels-swatch-mustard.jpg",
+            "link": "/collections/scrubs"
+          }
+        },
+        "swatch_10": {
+          "type": "color_swatch",
+          "settings": {
+            "title": "DARK GREEN",
+            "fallback_asset": "enamels-swatch-darkgreen.jpg",
+            "link": "/collections/scrubs"
+          }
+        }
+      },
+      "block_order": [
+        "swatch_1",
+        "swatch_2",
+        "swatch_3",
+        "swatch_4",
+        "swatch_5",
+        "swatch_6",
+        "swatch_7",
+        "swatch_8",
+        "swatch_9",
+        "swatch_10"
+      ]
+    },
+    "frontpage_new_arrivals": {
+      "type": "enamels-frontpage-new-arrivals",
+      "settings": {
+        "title": "New Arrivals",
+        "view_all_label": "",
+        "view_all_link": "/collections/new-arrivals",
+        "padding_top": 16,
+        "padding_bottom": 32
+      },
+      "blocks": {
+        "na_1": {
+          "type": "product_card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-blue.jpg",
+            "link": "/products/sprinter-autumn-edition"
+          }
+        },
+        "na_2": {
+          "type": "product_card",
+          "settings": {
+            "title": "BLACK",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-black.jpg",
+            "link": "/products/sprinter-autumn-edition"
+          }
+        },
+        "na_3": {
+          "type": "product_card",
+          "settings": {
+            "title": "SEAGREEN",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-seagreen.jpg",
+            "link": "/products/sprinter-autumn-edition"
+          }
+        },
+        "na_4": {
+          "type": "product_card",
+          "settings": {
+            "title": "OLIVE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-olive.jpg",
+            "link": "/products/sprinter-autumn-edition"
+          }
+        },
+        "na_5": {
+          "type": "product_card",
+          "settings": {
+            "title": "RUST",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-rust.jpg",
+            "link": "/products/sprinter-autumn-edition"
+          }
+        },
+        "na_6": {
+          "type": "product_card",
+          "settings": {
+            "title": "DARK GREEN",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-darkgreen.jpg",
+            "link": "/products/sprinter-autumn-edition"
+          }
+        }
+      },
+      "block_order": [
+        "na_1",
+        "na_2",
+        "na_3",
+        "na_4",
+        "na_5",
+        "na_6"
+      ]
+    },
+    "frontpage_lookbook": {
+      "type": "enamels-frontpage-lookbook",
+      "settings": {
+        "title": "Join the Enamels Club",
+        "btn_text": "Add to cart",
+        "padding_top": 16,
+        "padding_bottom": 36
+      },
+      "blocks": {
+        "lb_1": {
+          "type": "lookbook_card",
+          "settings": {
+            "product_title": "Women Suit",
+            "product_price": "PKR 8,499",
+            "fallback_asset": "enamels-lookbook-1.jpg",
+            "link": "/collections/women-scrubs"
+          }
+        },
+        "lb_2": {
+          "type": "lookbook_card",
+          "settings": {
+            "product_title": "Women Suit",
+            "product_price": "PKR 10,999",
+            "fallback_asset": "enamels-lookbook-2.jpg",
+            "link": "/collections/women-scrubs"
+          }
+        },
+        "lb_3": {
+          "type": "lookbook_card",
+          "settings": {
+            "product_title": "Women Suit",
+            "product_price": "PKR 10,999",
+            "fallback_asset": "enamels-lookbook-3.jpg",
+            "link": "/collections/women-scrubs"
+          }
+        },
+        "lb_4": {
+          "type": "lookbook_card",
+          "settings": {
+            "product_title": "Women Dress",
+            "product_price": "PKR 7,499",
+            "fallback_asset": "enamels-lookbook-4.jpg",
+            "link": "/collections/women-scrubs"
+          }
+        },
+        "lb_5": {
+          "type": "lookbook_card",
+          "settings": {
+            "product_title": "Women Kurti",
+            "product_price": "PKR 4,999",
+            "fallback_asset": "enamels-lookbook-5.jpg",
+            "link": "/collections/women-scrubs"
+          }
+        }
+      },
+      "block_order": [
+        "lb_1",
+        "lb_2",
+        "lb_3",
+        "lb_4",
+        "lb_5"
+      ]
     }
   },
   "order": [
     "announcement_bar",
     "header",
+    "frontpage_hero",
+    "frontpage_categories",
+    "frontpage_colors",
+    "frontpage_new_arrivals",
+    "frontpage_lookbook",
     "slideshow",
     "brand_gallery",
     "category_video",

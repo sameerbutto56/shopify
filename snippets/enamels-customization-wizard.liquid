@@ -168,8 +168,8 @@
           <div class="embroidery-visual-pocket" id="pocket-preview-container">
             <div class="pocket-seam"></div>
             <div class="pocket-embroidery-content">
-              <div class="simulated-stitch-text line-1 font-block" id="sim-text-line1">Dr. Sarah Khan, MD</div>
-              <div class="simulated-stitch-text line-2 font-block" id="sim-text-line2">General Surgery</div>
+              <div class="simulated-stitch-text line-1 font-block" id="sim-text-line1"></div>
+              <div class="simulated-stitch-text line-2 font-block" id="sim-text-line2"></div>
             </div>
             <span class="preview-badge-watermark">Live Pocket Simulation</span>
           </div>
@@ -178,12 +178,12 @@
           <div class="embroidery-controls-form">
             <div class="form-field">
               <label for="emb-line1">Line 1 (Doctor Name / Title):</label>
-              <input type="text" id="emb-line1" maxlength="30" placeholder="e.g. Dr. Ayesha Malik, MD" value="Dr. Sarah Khan, MD" oninput="window.enamelsUpdateStitchPreview()">
+              <input type="text" id="emb-line1" maxlength="30" placeholder="e.g. Dr. Full Name, MD" value="" oninput="window.enamelsUpdateStitchPreview()">
             </div>
 
             <div class="form-field">
               <label for="emb-line2">Line 2 (Speciality / Hospital):</label>
-              <input type="text" id="emb-line2" maxlength="35" placeholder="e.g. Cardiology / AKUH" value="General Surgery" oninput="window.enamelsUpdateStitchPreview()">
+              <input type="text" id="emb-line2" maxlength="35" placeholder="e.g. Cardiology / Hospital" value="" oninput="window.enamelsUpdateStitchPreview()">
             </div>
 
             <div class="form-row">
@@ -802,8 +802,8 @@
       size: 'SMALL',
       personalizationTier: 'none',
       personalizationCost: 0,
-      line1: 'Dr. Sarah Khan, MD',
-      line2: 'General Surgery',
+      line1: '',
+      line2: '',
       threadColor: '#ffffff',
       threadFont: 'font-block',
       basePrice: {{ product.price | default: 515000 }},

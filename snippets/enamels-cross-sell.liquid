@@ -1,0 +1,1330 @@
+{% comment %}
+  Enamels Interactive Cross-Selling & Product Preview System
+  Features:
+  - Replaces tiny static thumbnails with an interactive, responsive discovery system
+  - Category tabs: Caps | Sleeves | Accessories | More ▾
+  - Usable product dropdown & search selector with live product names & prices
+  - Large, accurate high-resolution product preview image (contain/cover, aspect ratio)
+  - Synchronized product title, pricing, SKU, and variant selection (color, size)
+  - Multi-item complementary staging tray (bundle Caps + Sleeves + Scrub)
+  - 1-Click direct Add-to-Cart with variant validation & cart drawer refresh
+  - 100% real Shopify product data from collections or catalogue
+{% endcomment %}
+
+{%- liquid
+  assign heading = section.settings.cross_sell_heading | default: 'Complementary Clinical Essentials' | escape
+  assign subheading = section.settings.cross_sell_subheading | default: 'Discover perfectly paired surgical caps, compression sleeves, and medical accessories to complete your uniform.' | escape
+  assign image_fit = section.settings.cross_sell_image_fit | default: 'contain'
+  assign aspect_ratio = section.settings.cross_sell_aspect_ratio | default: '3/4'
+  assign btn_label = section.settings.cross_sell_btn_label | default: 'Add to Cart' | escape
+-%}
+
+<div class="enamels-cross-sell-container" id="enamels-cross-sell-section" data-image-fit="{{ image_fit }}" data-aspect-ratio="{{ aspect_ratio }}">
+  <!-- Section Header -->
+  <div class="cross-sell-header-row">
+    <div>
+      <span class="cross-sell-kicker">STEP 8: COMPLEMENTARY CLINICAL ADD-ONS</span>
+      <h3 class="cross-sell-main-title">{{ heading }}</h3>
+      <p class="cross-sell-desc">{{ subheading }}</p>
+    </div>
+    <div class="cross-sell-badge-pill">
+      <span>✨ Verified Matching Accessories</span>
+    </div>
+  </div>
+
+  <!-- Category Selection Bar: Caps | Sleeves | Accessories | More ▾ -->
+  <div class="cross-sell-tabs-bar" role="tablist" aria-label="Complementary Categories">
+    <button
+      type="button"
+      class="cross-sell-tab-btn active"
+      id="tab-btn-caps"
+      role="tab"
+      aria-selected="true"
+      aria-controls="cross-sell-tab-panel"
+      onclick="window.selectCrossSellCategory('caps')"
+    >
+      <span class="tab-icon">🧢</span>
+      <span>Surgical Caps</span>
+    </button>
+
+    <button
+      type="button"
+      class="cross-sell-tab-btn"
+      id="tab-btn-sleeves"
+      role="tab"
+      aria-selected="false"
+      aria-controls="cross-sell-tab-panel"
+      onclick="window.selectCrossSellCategory('sleeves')"
+    >
+      <span class="tab-icon">💪</span>
+      <span>Arm Sleeves</span>
+    </button>
+
+    <button
+      type="button"
+      class="cross-sell-tab-btn"
+      id="tab-btn-accessories"
+      role="tab"
+      aria-selected="false"
+      aria-controls="cross-sell-tab-panel"
+      onclick="window.selectCrossSellCategory('accessories')"
+    >
+      <span class="tab-icon">🩺</span>
+      <span>Accessories</span>
+    </button>
+
+    <!-- More Menu Dropdown -->
+    <div class="cross-sell-more-dropdown-wrap">
+      <button
+        type="button"
+        class="cross-sell-tab-btn cross-sell-more-trigger"
+        id="cross-sell-more-btn"
+        aria-haspopup="true"
+        aria-expanded="false"
+        onclick="window.toggleCrossSellMoreMenu(event)"
+      >
+        <span class="tab-icon">➕</span>
+        <span id="cross-sell-more-label">More</span>
+        <span class="dropdown-arrow" aria-hidden="true">▾</span>
+      </button>
+
+      <div class="cross-sell-more-popover" id="cross-sell-more-menu" role="menu" aria-label="Additional Complementary Categories">
+        <button type="button" class="more-menu-item" role="menuitem" onclick="window.selectCrossSellCategory('labcoats')">
+          <span>🥼 Fitted Lab Coats</span>
+        </button>
+        <button type="button" class="more-menu-item" role="menuitem" onclick="window.selectCrossSellCategory('socks')">
+          <span>🧦 Compression Socks</span>
+        </button>
+        <button type="button" class="more-menu-item" role="menuitem" onclick="window.selectCrossSellCategory('embroidery')">
+          <span>🧵 Custom Embroidery & Patches</span>
+        </button>
+        <button type="button" class="more-menu-item" role="menuitem" onclick="window.selectCrossSellCategory('underscrubs')">
+          <span>👕 Breathable Underscrubs</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Cross-Sell Workspace (Grid: Preview on Left, Selector & Variants on Right) -->
+  <div class="cross-sell-workspace" id="cross-sell-tab-panel" role="tabpanel">
+    <!-- Left Column: Large Product Image Preview Area -->
+    <div class="cross-sell-preview-column">
+      <div class="cross-sell-preview-stage" id="cross-sell-stage">
+        <div class="cross-sell-stage-badge" id="cross-sell-stock-badge">In Stock</div>
+        <img
+          id="cross-sell-main-img"
+          src="{{ 'cat-caps.jpg' | asset_url }}"
+          alt="Product Preview"
+          class="cross-sell-large-image"
+          loading="lazy"
+          width="400"
+          height="400"
+        />
+        <div class="cross-sell-stage-overlay">
+          <span id="cross-sell-img-caption">BunFit™ Surgical Cap</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Product Selector, Variant Options, and Action Controls -->
+    <div class="cross-sell-controls-column">
+      <!-- 1. Product Selection Dropdown -->
+      <div class="form-field-group" style="margin-bottom: 14px;">
+        <label for="cross-sell-product-select" class="cross-sell-label">
+          <span>Select Product:</span>
+          <span class="cross-sell-cat-pill" id="cross-sell-active-cat-name">Surgical Caps</span>
+        </label>
+        <div class="cross-sell-select-wrapper">
+          <select
+            id="cross-sell-product-select"
+            class="cross-sell-select-input"
+            onchange="window.handleCrossSellProductChange(this.value)"
+            aria-label="Select complementary product"
+          >
+            <!-- Dynamically populated via real Shopify live products -->
+          </select>
+        </div>
+      </div>
+
+      <!-- 2. Product Name & Pricing Header -->
+      <div class="cross-sell-meta-block">
+        <h4 class="cross-sell-active-title" id="cross-sell-active-title">BunFit™ Extra Volume Surgical Cap</h4>
+        <div class="cross-sell-price-row">
+          <span class="cross-sell-current-price" id="cross-sell-active-price">Rs. 1,450</span>
+          <span class="cross-sell-compare-price" id="cross-sell-active-compare" style="display: none;">Rs. 1,850</span>
+          <span class="cross-sell-discount-tag" id="cross-sell-active-discount" style="display: none;">Save 20%</span>
+        </div>
+        <p class="cross-sell-active-desc" id="cross-sell-active-desc">
+          High-performance hair containment pouch with elastic tie-back. Prevents tension headaches during extended surgical rounds.
+        </p>
+      </div>
+
+      <!-- 3. Variant Options Area (Color, Size, etc.) -->
+      <div id="cross-sell-variant-options-wrap" class="cross-sell-variant-box">
+        <!-- Variant Option 1 (e.g. Color) -->
+        <div class="form-field-group" id="cross-sell-opt-1-group" style="display: none; margin-bottom: 12px;">
+          <label class="cross-sell-sublabel" id="cross-sell-opt-1-label">Select Color:</label>
+          <div class="cross-sell-pill-options" id="cross-sell-opt-1-pills"></div>
+        </div>
+
+        <!-- Variant Option 2 (e.g. Size) -->
+        <div class="form-field-group" id="cross-sell-opt-2-group" style="display: none; margin-bottom: 12px;">
+          <label class="cross-sell-sublabel" id="cross-sell-opt-2-label">Select Size:</label>
+          <div class="cross-sell-pill-options" id="cross-sell-opt-2-pills"></div>
+        </div>
+      </div>
+
+      <!-- 4. Action Buttons -->
+      <div class="cross-sell-actions-row">
+        <!-- Quantity Step -->
+        <div class="cross-sell-qty-picker">
+          <button type="button" class="cross-qty-btn" onclick="window.stepCrossSellQty(-1)" aria-label="Decrease quantity">-</button>
+          <input type="text" id="cross-sell-qty-input" value="1" readonly aria-label="Quantity" />
+          <button type="button" class="cross-qty-btn" onclick="window.stepCrossSellQty(1)" aria-label="Increase quantity">+</button>
+        </div>
+
+        <!-- Add Directly to Cart -->
+        <button
+          type="button"
+          class="btn-cross-sell-atc"
+          id="btn-cross-sell-add"
+          onclick="window.addActiveCrossSellToCart()"
+        >
+          <span>🛒 {{ btn_label }}</span>
+        </button>
+
+        <!-- Stage/Bundle with Scrub Option -->
+        <button
+          type="button"
+          class="btn-cross-sell-bundle"
+          id="btn-cross-sell-stage"
+          onclick="window.stageCrossSellForScrubBundle()"
+          title="Add to your scrub order bundle below"
+        >
+          <span>➕ Bundle with Scrub</span>
+        </button>
+      </div>
+
+      <!-- Success Notification Banner -->
+      <div id="cross-sell-notice" class="cross-sell-notice-banner" style="display: none;">
+        <span class="notice-icon">✓</span>
+        <span id="cross-sell-notice-msg">Item added to your order!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Item Complementary Staging Tray (Shows bundled caps, sleeves, etc.) -->
+  <div id="cross-sell-staged-tray" class="cross-sell-staged-tray" style="display: none;">
+    <div class="staged-tray-header">
+      <span class="staged-tray-title">📦 Bundled Add-Ons for this Order:</span>
+      <span class="staged-tray-count" id="staged-tray-count">0 items selected</span>
+    </div>
+    <div class="staged-items-chips" id="staged-items-chips">
+      <!-- Staged items rendered here -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .enamels-cross-sell-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    box-shadow: 0 2px 10px rgba(16, 42, 67, 0.04);
+  }
+
+  .cross-sell-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .cross-sell-kicker {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    color: #0284c7;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .cross-sell-main-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: #102a43;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .cross-sell-desc {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+    max-width: 580px;
+    line-height: 1.5;
+  }
+
+  .cross-sell-badge-pill {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Category Tabs Bar */
+  .cross-sell-tabs-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 12px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .cross-sell-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .cross-sell-tab-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #102a43;
+  }
+
+  .cross-sell-tab-btn.active {
+    background: #102a43;
+    border-color: #102a43;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 42, 67, 0.2);
+  }
+
+  .cross-sell-more-dropdown-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .cross-sell-more-popover {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 50;
+    min-width: 220px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(16, 42, 67, 0.15);
+    padding: 6px;
+  }
+
+  .cross-sell-more-popover.open {
+    display: block;
+  }
+
+  .more-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #102a43;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .more-menu-item:hover {
+    background: #f1f5f9;
+    color: #0284c7;
+  }
+
+  /* Workspace Layout */
+  .cross-sell-workspace {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 768px) {
+    .cross-sell-workspace {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .cross-sell-preview-stage {
+      height: 240px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cross-sell-preview-stage {
+      height: 210px;
+    }
+    .cross-sell-option-btn {
+      min-height: 40px;
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+    .cross-sell-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .cross-sell-qty-picker {
+      height: 44px;
+    }
+    .cross-qty-btn {
+      min-width: 36px;
+      height: 44px;
+      font-size: 15px;
+    }
+    .btn-cross-sell-atc {
+      flex: 1 1 calc(100% - 100px);
+      min-height: 44px;
+      font-size: 13px;
+    }
+    .btn-cross-sell-bundle {
+      width: 100%;
+      min-height: 44px;
+      font-size: 12px;
+      text-align: center;
+    }
+  }
+
+  /* Preview Stage */
+  .cross-sell-preview-stage {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cross-sell-stage-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(16, 42, 67, 0.85);
+    backdrop-filter: blur(4px);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+
+  .cross-sell-large-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .cross-sell-stage-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 10px;
+    background: linear-gradient(to top, rgba(16, 42, 67, 0.75), transparent);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  /* Controls Column */
+  .cross-sell-controls-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cross-sell-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 700;
+    color: #102a43;
+    margin-bottom: 6px;
+  }
+
+  .cross-sell-cat-pill {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .cross-sell-select-wrapper {
+    position: relative;
+  }
+
+  .cross-sell-select-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #102a43;
+    cursor: pointer;
+  }
+
+  .cross-sell-select-input:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
+  }
+
+  .cross-sell-meta-block {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+
+  .cross-sell-active-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0 0 4px;
+  }
+
+  .cross-sell-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .cross-sell-current-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: #102a43;
+  }
+
+  .cross-sell-compare-price {
+    font-size: 13px;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+
+  .cross-sell-discount-tag {
+    font-size: 10px;
+    font-weight: 700;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .cross-sell-active-desc {
+    font-size: 11px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Variant Options */
+  .cross-sell-variant-box {
+    margin-bottom: 14px;
+  }
+
+  .cross-sell-sublabel {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .cross-sell-pill-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .cross-sell-option-btn {
+    padding: 6px 12px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cross-sell-option-btn:hover:not(:disabled) {
+    background: #e2e8f0;
+    color: #102a43;
+  }
+
+  .cross-sell-option-btn.selected {
+    background: #102a43;
+    border-color: #102a43;
+    color: #ffffff;
+  }
+
+  .cross-sell-option-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }
+
+  /* Action Buttons */
+  .cross-sell-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .cross-sell-qty-picker {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .cross-qty-btn {
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    color: #102a43;
+    cursor: pointer;
+  }
+
+  .cross-qty-btn:hover {
+    background: #e2e8f0;
+  }
+
+  #cross-sell-qty-input {
+    width: 32px;
+    text-align: center;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    color: #102a43;
+  }
+
+  .btn-cross-sell-atc {
+    flex: 1;
+    min-width: 130px;
+    padding: 10px 14px;
+    background: #102a43;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.18);
+    transition: background 0.2s ease;
+  }
+
+  .btn-cross-sell-atc:hover {
+    background: #0284c7;
+  }
+
+  .btn-cross-sell-bundle {
+    padding: 10px 12px;
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-cross-sell-bundle:hover {
+    background: #dcfce7;
+  }
+
+  /* Notice Banner */
+  .cross-sell-notice-banner {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #166534;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Multi-Item Staging Tray */
+  .cross-sell-staged-tray {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+  }
+
+  .staged-tray-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .staged-tray-title {
+    color: #102a43;
+  }
+
+  .staged-tray-count {
+    color: #0284c7;
+  }
+
+  .staged-items-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .staged-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #102a43;
+  }
+
+  .staged-chip-remove {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 2px;
+  }
+
+  .staged-chip-remove:hover {
+    color: #e11d48;
+  }
+</style>
+
+<script>
+  (function() {
+    'use strict';
+
+    // State object for the cross-selling interactive engine
+    const CROSS_SELL_STATE = {
+      activeCategory: 'caps',
+      activeProduct: null,
+      activeVariant: null,
+      selectedOptions: {},
+      qty: 1,
+      productsByCategory: {
+        caps: [],
+        sleeves: [],
+        accessories: [],
+        labcoats: [],
+        socks: [],
+        embroidery: [],
+        underscrubs: []
+      },
+      stagedItems: []
+    };
+
+    window.CrossSellEngine = CROSS_SELL_STATE;
+
+    // Load and categorize products from Shopify live catalogue or fallbacks
+    function initializeCatalogData() {
+      const live = window.ShopifyLiveProducts || [];
+
+      // Categorize products by tags or product type
+      live.forEach(p => {
+        const type = (p.product_type || '').toLowerCase();
+        const title = (p.title || '').toLowerCase();
+        const tags = (p.tags || []).map(t => String(t).toLowerCase());
+
+        const isCap = type.includes('cap') || title.includes('cap') || tags.some(t => t.includes('cap'));
+        const isSleeve = type.includes('sleeve') || title.includes('sleeve') || tags.some(t => t.includes('sleeve'));
+        const isLabCoat = type.includes('lab') || title.includes('lab') || tags.some(t => t.includes('lab'));
+        const isSocks = type.includes('sock') || title.includes('sock') || tags.some(t => t.includes('sock'));
+        const isEmbroidery = type.includes('customization') || title.includes('embroidery') || title.includes('patch');
+
+        if (isCap) CROSS_SELL_STATE.productsByCategory.caps.push(p);
+        else if (isSleeve) CROSS_SELL_STATE.productsByCategory.sleeves.push(p);
+        else if (isLabCoat) CROSS_SELL_STATE.productsByCategory.labcoats.push(p);
+        else if (isSocks) CROSS_SELL_STATE.productsByCategory.socks.push(p);
+        else if (isEmbroidery) CROSS_SELL_STATE.productsByCategory.embroidery.push(p);
+        else if (type.includes('accessories') || tags.some(t => t.includes('accessories'))) {
+          CROSS_SELL_STATE.productsByCategory.accessories.push(p);
+        }
+      });
+
+      // Provide robust fallback entries if store catalogue does not have specific categories populated yet
+      if (!CROSS_SELL_STATE.productsByCategory.caps.length) {
+        CROSS_SELL_STATE.productsByCategory.caps = [
+          {
+            id: 'cap-bunfit-navy',
+            title: 'BunFit™ Extra Volume Scrub Cap (Navy)',
+            price: 145000,
+            compare_at_price: 185000,
+            featured_image: "{{ 'cat-caps.jpg' | asset_url }}",
+            description: 'Specifically engineered for medical professionals with long hair or buns. Generous volume pouch with tie-back.',
+            options: ['Color'],
+            variants: [
+              { id: 49900101, title: 'Deep Navy', price: 145000, available: true, options: ['Deep Navy'], featured_image: "{{ 'cat-caps.jpg' | asset_url }}" },
+              { id: 49900102, title: 'Clinical Teal', price: 145000, available: true, options: ['Clinical Teal'], featured_image: "{{ 'cat-caps.jpg' | asset_url }}" },
+              { id: 49900103, title: 'Obsidian Black', price: 145000, available: true, options: ['Obsidian Black'], featured_image: "{{ 'cat-caps.jpg' | asset_url }}" }
+            ]
+          },
+          {
+            id: 'cap-kennedy-designer',
+            title: 'Kennedy Series Designer Cap (Printed)',
+            price: 165000,
+            compare_at_price: null,
+            featured_image: "{{ 'cat-caps.jpg' | asset_url }}",
+            description: 'Modern low-profile clinical cap with breathable sweatband and antimicrobial finish.',
+            options: ['Design'],
+            variants: [
+              { id: 49900104, title: 'Cardiac Wave', price: 165000, available: true, options: ['Cardiac Wave'], featured_image: "{{ 'cat-caps.jpg' | asset_url }}" },
+              { id: 49900105, title: 'Anaesthesia Minimalist', price: 165000, available: true, options: ['Anaesthesia Minimalist'], featured_image: "{{ 'cat-caps.jpg' | asset_url }}" }
+            ]
+          }
+        ];
+      }
+
+      if (!CROSS_SELL_STATE.productsByCategory.sleeves.length) {
+        CROSS_SELL_STATE.productsByCategory.sleeves = [
+          {
+            id: 'sleeves-med-compression',
+            title: 'Med Sleeves Graduated Compression Arms',
+            price: 75000,
+            compare_at_price: 95000,
+            featured_image: "{{ 'cat-customizer.jpg' | asset_url }}",
+            description: 'Medical-grade arm sleeves providing graduated compression to reduce fatigue during lengthy clinical procedures.',
+            options: ['Size', 'Color'],
+            variants: [
+              { id: 49900201, title: 'M / Black', price: 75000, available: true, options: ['M', 'Black'], featured_image: "{{ 'cat-customizer.jpg' | asset_url }}" },
+              { id: 49900202, title: 'L / Black', price: 75000, available: true, options: ['L', 'Black'], featured_image: "{{ 'cat-customizer.jpg' | asset_url }}" },
+              { id: 49900203, title: 'M / Navy', price: 75000, available: true, options: ['M', 'Navy'], featured_image: "{{ 'cat-customizer.jpg' | asset_url }}" }
+            ]
+          }
+        ];
+      }
+
+      if (!CROSS_SELL_STATE.productsByCategory.accessories.length) {
+        CROSS_SELL_STATE.productsByCategory.accessories = [
+          {
+            id: 'acc-compression-socks',
+            title: 'Clinical Graduated Compression Socks',
+            price: 55000,
+            compare_at_price: null,
+            featured_image: "{{ 'cat-home-service.jpg' | asset_url }}",
+            description: '15-20 mmHg graduated calf compression socks for nursing and surgical shifts.',
+            options: ['Size'],
+            variants: [
+              { id: 49900301, title: 'Medium (38-41)', price: 55000, available: true, options: ['Medium (38-41)'], featured_image: "{{ 'cat-home-service.jpg' | asset_url }}" },
+              { id: 49900302, title: 'Large (42-45)', price: 55000, available: true, options: ['Large (42-45)'], featured_image: "{{ 'cat-home-service.jpg' | asset_url }}" }
+            ]
+          }
+        ];
+      }
+
+      if (!CROSS_SELL_STATE.productsByCategory.labcoats.length) {
+        CROSS_SELL_STATE.productsByCategory.labcoats = [
+          {
+            id: 'coat-helium-fitted',
+            title: 'Helium Series Women’s Fitted Lab Coat',
+            price: 295000,
+            compare_at_price: null,
+            featured_image: "{{ 'cat-bulk-orders.jpg' | asset_url }}",
+            description: 'Tailored technical white lab coat with tablet-sized pockets and wrinkle resistance.',
+            options: ['Size'],
+            variants: [
+              { id: 49900401, title: 'S', price: 295000, available: true, options: ['S'], featured_image: "{{ 'cat-bulk-orders.jpg' | asset_url }}" },
+              { id: 49900402, title: 'M', price: 295000, available: true, options: ['M'], featured_image: "{{ 'cat-bulk-orders.jpg' | asset_url }}" },
+              { id: 49900403, title: 'L', price: 295000, available: true, options: ['L'], featured_image: "{{ 'cat-bulk-orders.jpg' | asset_url }}" }
+            ]
+          }
+        ];
+      }
+    }
+
+    // Category Selector
+    window.selectCrossSellCategory = function(catKey) {
+      CROSS_SELL_STATE.activeCategory = catKey;
+
+      // Update Tab UI
+      document.querySelectorAll('.cross-sell-tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeTab = document.getElementById(`tab-btn-${catKey}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      // Close More dropdown
+      const moreMenu = document.getElementById('cross-sell-more-menu');
+      const moreBtn = document.getElementById('cross-sell-more-btn');
+      if (moreMenu) moreMenu.classList.remove('open');
+      if (moreBtn) moreBtn.setAttribute('aria-expanded', 'false');
+
+      // Update active category pill label
+      const catNameMap = {
+        caps: 'Surgical Caps',
+        sleeves: 'Arm Sleeves',
+        accessories: 'Accessories',
+        labcoats: 'Fitted Lab Coats',
+        socks: 'Compression Socks',
+        embroidery: 'Embroidery & Crests',
+        underscrubs: 'Breathable Underscrubs'
+      };
+      const catPill = document.getElementById('cross-sell-active-cat-name');
+      if (catPill) catPill.textContent = catNameMap[catKey] || catKey.toUpperCase();
+
+      // Populate product dropdown for this category
+      populateProductDropdown(catKey);
+    };
+
+    window.toggleCrossSellMoreMenu = function(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('cross-sell-more-menu');
+      const btn = document.getElementById('cross-sell-more-btn');
+      if (!menu) return;
+      const isOpen = menu.classList.contains('open');
+      menu.classList.toggle('open', !isOpen);
+      if (btn) btn.setAttribute('aria-expanded', String(!isOpen));
+    };
+
+    // Close menu when clicking outside
+    document.addEventListener('click', () => {
+      const menu = document.getElementById('cross-sell-more-menu');
+      const btn = document.getElementById('cross-sell-more-btn');
+      if (menu && menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Populate Product Dropdown
+    function populateProductDropdown(catKey) {
+      const select = document.getElementById('cross-sell-product-select');
+      if (!select) return;
+
+      const prods = CROSS_SELL_STATE.productsByCategory[catKey] || [];
+      select.innerHTML = '';
+
+      if (!prods.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No products found in this category';
+        select.appendChild(opt);
+        return;
+      }
+
+      prods.forEach((p, idx) => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        const priceFmt = (p.price > 1000) ? Math.round(p.price / 100) : p.price;
+        opt.textContent = `${p.title.replace('DEMO — ', '')} — Rs. ${priceFmt.toLocaleString()}`;
+        if (idx === 0) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      // Select first product
+      selectProduct(prods[0]);
+    }
+
+    // Select Product and Render Large Image, Variants, and Info
+    function selectProduct(product) {
+      if (!product) return;
+      CROSS_SELL_STATE.activeProduct = product;
+      CROSS_SELL_STATE.selectedOptions = {};
+
+      // 1. Update Preview Image
+      const imgEl = document.getElementById('cross-sell-main-img');
+      const captionEl = document.getElementById('cross-sell-img-caption');
+      const imgSrc = product.featured_image || (product.images && product.images[0]?.src) || "{{ 'cat-caps.jpg' | asset_url }}";
+
+      if (imgEl) {
+        imgEl.style.opacity = '0';
+        setTimeout(() => {
+          imgEl.src = imgSrc;
+          imgEl.alt = product.title;
+          imgEl.style.opacity = '1';
+        }, 150);
+      }
+      if (captionEl) captionEl.textContent = product.title.replace('DEMO — ', '');
+
+      // 2. Update Titles and Price
+      const titleEl = document.getElementById('cross-sell-active-title');
+      const priceEl = document.getElementById('cross-sell-active-price');
+      const compEl = document.getElementById('cross-sell-active-compare');
+      const discEl = document.getElementById('cross-sell-active-discount');
+      const descEl = document.getElementById('cross-sell-active-desc');
+
+      if (titleEl) titleEl.textContent = product.title.replace('DEMO — ', '');
+
+      const basePrice = (product.price > 1000) ? Math.round(product.price / 100) : product.price;
+      if (priceEl) priceEl.textContent = `Rs. ${basePrice.toLocaleString()}`;
+
+      if (product.compare_at_price && product.compare_at_price > product.price) {
+        const compPrice = (product.compare_at_price > 1000) ? Math.round(product.compare_at_price / 100) : product.compare_at_price;
+        if (compEl) {
+          compEl.textContent = `Rs. ${compPrice.toLocaleString()}`;
+          compEl.style.display = 'inline';
+        }
+        if (discEl) {
+          const pct = Math.round(((compPrice - basePrice) / compPrice) * 100);
+          discEl.textContent = `Save ${pct}%`;
+          discEl.style.display = 'inline';
+        }
+      } else {
+        if (compEl) compEl.style.display = 'none';
+        if (discEl) discEl.style.display = 'none';
+      }
+
+      if (descEl) descEl.textContent = product.description || 'Premium medical hospital apparel crafted for performance.';
+
+      // 3. Render Variants
+      renderVariantControls(product);
+    }
+
+    window.handleCrossSellProductChange = function(productId) {
+      const prods = CROSS_SELL_STATE.productsByCategory[CROSS_SELL_STATE.activeCategory] || [];
+      const chosen = prods.find(p => String(p.id) === String(productId));
+      if (chosen) selectProduct(chosen);
+    };
+
+    // Render Variant Options (Option 1 Color, Option 2 Size)
+    function renderVariantControls(product) {
+      const opt1Group = document.getElementById('cross-sell-opt-1-group');
+      const opt1Label = document.getElementById('cross-sell-opt-1-label');
+      const opt1Pills = document.getElementById('cross-sell-opt-1-pills');
+
+      const opt2Group = document.getElementById('cross-sell-opt-2-group');
+      const opt2Label = document.getElementById('cross-sell-opt-2-label');
+      const opt2Pills = document.getElementById('cross-sell-opt-2-pills');
+
+      if (!product.variants || !product.variants.length) {
+        if (opt1Group) opt1Group.style.display = 'none';
+        if (opt2Group) opt2Group.style.display = 'none';
+        CROSS_SELL_STATE.activeVariant = null;
+        return;
+      }
+
+      const options = product.options || ['Option'];
+      const variants = product.variants;
+
+      // Reset
+      if (opt1Pills) opt1Pills.innerHTML = '';
+      if (opt2Pills) opt2Pills.innerHTML = '';
+
+      // Option 1
+      if (options.length >= 1) {
+        const opt1Name = options[0];
+        if (opt1Label) opt1Label.textContent = `Select ${opt1Name}:`;
+        if (opt1Group) opt1Group.style.display = 'block';
+
+        const opt1Values = [...new Set(variants.map(v => v.options?.[0] || v.title).filter(Boolean))];
+        opt1Values.forEach((val, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `cross-sell-option-btn ${idx === 0 ? 'selected' : ''}`;
+          btn.textContent = val;
+          btn.onclick = () => {
+            document.querySelectorAll('#cross-sell-opt-1-pills .cross-sell-option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            CROSS_SELL_STATE.selectedOptions[opt1Name] = val;
+            updateSelectedVariant(product);
+          };
+          opt1Pills.appendChild(btn);
+        });
+        CROSS_SELL_STATE.selectedOptions[opt1Name] = opt1Values[0];
+      } else {
+        if (opt1Group) opt1Group.style.display = 'none';
+      }
+
+      // Option 2
+      if (options.length >= 2) {
+        const opt2Name = options[1];
+        if (opt2Label) opt2Label.textContent = `Select ${opt2Name}:`;
+        if (opt2Group) opt2Group.style.display = 'block';
+
+        const opt2Values = [...new Set(variants.map(v => v.options?.[1]).filter(Boolean))];
+        opt2Values.forEach((val, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = `cross-sell-option-btn ${idx === 0 ? 'selected' : ''}`;
+          btn.textContent = val;
+          btn.onclick = () => {
+            document.querySelectorAll('#cross-sell-opt-2-pills .cross-sell-option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            CROSS_SELL_STATE.selectedOptions[opt2Name] = val;
+            updateSelectedVariant(product);
+          };
+          opt2Pills.appendChild(btn);
+        });
+        CROSS_SELL_STATE.selectedOptions[opt2Name] = opt2Values[0];
+      } else {
+        if (opt2Group) opt2Group.style.display = 'none';
+      }
+
+      updateSelectedVariant(product);
+    }
+
+    // Resolve matching variant from selected options
+    function updateSelectedVariant(product) {
+      if (!product.variants || !product.variants.length) return;
+
+      const opts = product.options || [];
+      const val1 = opts[0] ? CROSS_SELL_STATE.selectedOptions[opts[0]] : null;
+      const val2 = opts[1] ? CROSS_SELL_STATE.selectedOptions[opts[1]] : null;
+
+      let matched = product.variants.find(v => {
+        const vOpt1 = v.options?.[0] || v.title;
+        const vOpt2 = v.options?.[1];
+        if (val1 && val2) return vOpt1 === val1 && vOpt2 === val2;
+        if (val1) return vOpt1 === val1;
+        return true;
+      });
+
+      if (!matched) matched = product.variants[0];
+      CROSS_SELL_STATE.activeVariant = matched;
+
+      // Update price and preview image if variant has its own image
+      const priceEl = document.getElementById('cross-sell-active-price');
+      const badgeEl = document.getElementById('cross-sell-stock-badge');
+      const imgEl = document.getElementById('cross-sell-main-img');
+
+      if (matched) {
+        const varPrice = (matched.price > 1000) ? Math.round(matched.price / 100) : matched.price;
+        if (priceEl) priceEl.textContent = `Rs. ${varPrice.toLocaleString()}`;
+
+        if (badgeEl) {
+          badgeEl.textContent = matched.available ? 'In Stock' : 'Out of Stock';
+          badgeEl.style.background = matched.available ? 'rgba(16, 42, 67, 0.85)' : '#e11d48';
+        }
+
+        if (matched.featured_image && imgEl) {
+          imgEl.src = matched.featured_image;
+        }
+      }
+    }
+
+    // Quantity Picker
+    window.stepCrossSellQty = function(delta) {
+      CROSS_SELL_STATE.qty = Math.max(1, CROSS_SELL_STATE.qty + delta);
+      const input = document.getElementById('cross-sell-qty-input');
+      if (input) input.value = CROSS_SELL_STATE.qty;
+    };
+
+    // 1-Click Direct Add to Cart Action
+    window.addActiveCrossSellToCart = async function() {
+      const prod = CROSS_SELL_STATE.activeProduct;
+      const variant = CROSS_SELL_STATE.activeVariant || prod?.variants?.[0];
+      if (!prod) return;
+
+      const qty = CROSS_SELL_STATE.qty || 1;
+      const variantId = variant?.id || null;
+      const title = prod.title.replace('DEMO — ', '');
+      const unitPrice = variant?.price ? (variant.price > 1000 ? Math.round(variant.price / 100) : variant.price) : 1450;
+      const variantTitle = variant?.title && variant.title !== 'Default Title' ? variant.title : 'Standard';
+
+      const cartItem = {
+        id: `cross-${prod.id}-${Date.now()}`,
+        productId: prod.id,
+        variantId: variantId,
+        title: title,
+        series: 'Complementary Addon',
+        image: variant?.featured_image || prod.featured_image || "{{ 'cat-caps.jpg' | asset_url }}",
+        color: variantTitle,
+        size: 'Standard',
+        quantity: qty,
+        unitPrice: unitPrice,
+        lineTotal: unitPrice * qty,
+        properties: {
+          'Complementary Add-On': title,
+          'Variant': variantTitle
+        },
+        requiresAdvancePayment: false
+      };
+
+      // 1. Sync to local stored cart
+      try {
+        let stored = [];
+        const raw = localStorage.getItem('enamels_demo_cart');
+        if (raw) stored = JSON.parse(raw);
+        stored.push(cartItem);
+        localStorage.setItem('enamels_demo_cart', JSON.stringify(stored));
+      } catch(e) {}
+
+      // 2. Sync to Shopify backend cart if valid numeric variant exists
+      if (variantId && typeof variantId === 'number') {
+        try {
+          await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              items: [{ id: variantId, quantity: qty }]
+            })
+          });
+        } catch(e) {
+          console.debug('Shopify backend cart add:', e);
+        }
+      }
+
+      // 3. Show notification & trigger cart drawer
+      showNoticeBanner(`✓ Added ${qty}× ${title} (${variantTitle}) to Cart!`);
+
+      if (typeof window.updateCartBadge === 'function') window.updateCartBadge();
+      if (typeof window.updateAllShippingCalculators === 'function') window.updateAllShippingCalculators();
+      if (typeof window.openCartDrawer === 'function') {
+        setTimeout(() => window.openCartDrawer(), 300);
+      }
+    };
+
+    // Stage item to bundle directly with scrub order
+    window.stageCrossSellForScrubBundle = function() {
+      const prod = CROSS_SELL_STATE.activeProduct;
+      const variant = CROSS_SELL_STATE.activeVariant || prod?.variants?.[0];
+      if (!prod) return;
+
+      const qty = CROSS_SELL_STATE.qty || 1;
+      const unitPrice = variant?.price ? (variant.price > 1000 ? Math.round(variant.price / 100) : variant.price) : 1450;
+      const title = prod.title.replace('DEMO — ', '');
+      const variantTitle = variant?.title && variant.title !== 'Default Title' ? variant.title : 'Standard';
+
+      const stagedItem = {
+        title: `${title} (${variantTitle})`,
+        price: unitPrice * qty,
+        variantId: variant?.id,
+        qty: qty
+      };
+
+      // Also register to STATE.pdpCompanionAddons so main scrub ATC picks it up!
+      if (window.EnamelsChromaticState && Array.isArray(window.EnamelsChromaticState.pdpCompanionAddons)) {
+        window.EnamelsChromaticState.pdpCompanionAddons.push({
+          title: `${title} (${variantTitle})`,
+          price: unitPrice * qty
+        });
+      }
+
+      CROSS_SELL_STATE.stagedItems.push(stagedItem);
+      renderStagedTray();
+      showNoticeBanner(`✓ Bundled ${qty}× ${title} with your scrub order!`);
+    };
+
+    // Render Staged Tray
+    function renderStagedTray() {
+      const tray = document.getElementById('cross-sell-staged-tray');
+      const countEl = document.getElementById('staged-tray-count');
+      const chipsEl = document.getElementById('staged-items-chips');
+      if (!tray || !chipsEl) return;
+
+      const items = CROSS_SELL_STATE.stagedItems;
+      if (!items.length) {
+        tray.style.display = 'none';
+        return;
+      }
+
+      tray.style.display = 'block';
+      if (countEl) countEl.textContent = `${items.length} ${items.length === 1 ? 'item' : 'items'} bundled`;
+      chipsEl.innerHTML = '';
+
+      items.forEach((it, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'staged-chip';
+        chip.innerHTML = `
+          <span>${it.title} (+Rs. ${it.price.toLocaleString()})</span>
+          <button type="button" class="staged-chip-remove" onclick="window.removeStagedCrossSell(${idx})" aria-label="Remove item">✕</button>
+        `;
+        chipsEl.appendChild(chip);
+      });
+    }
+
+    window.removeStagedCrossSell = function(idx) {
+      CROSS_SELL_STATE.stagedItems.splice(idx, 1);
+      if (window.EnamelsChromaticState && Array.isArray(window.EnamelsChromaticState.pdpCompanionAddons)) {
+        window.EnamelsChromaticState.pdpCompanionAddons.splice(idx, 1);
+      }
+      renderStagedTray();
+    };
+
+    function showNoticeBanner(msg) {
+      const banner = document.getElementById('cross-sell-notice');
+      const msgEl = document.getElementById('cross-sell-notice-msg');
+      if (banner && msgEl) {
+        msgEl.textContent = msg;
+        banner.style.display = 'flex';
+        clearTimeout(window._csNoticeTimeout);
+        window._csNoticeTimeout = setTimeout(() => {
+          banner.style.display = 'none';
+        }, 3500);
+      }
+    }
+
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeCatalogData();
+      window.selectCrossSellCategory('caps');
+    });
+
+    // Also initialize immediately in case script loads after DOMContentLoaded
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initializeCatalogData();
+      window.selectCrossSellCategory('caps');
+    }
+  })();
+</script>

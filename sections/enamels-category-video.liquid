@@ -7,9 +7,30 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
+  assign section_alignment = section.settings.section_alignment | default: 'center'
+  assign section_max_width = section.settings.section_max_width | default: 1320
+  assign columns_vertical_align = section.settings.columns_vertical_align | default: 'start'
+
+  assign show_column_tag = section.settings.show_column_tag
+  if show_column_tag == nil
+    assign show_column_tag = true
+  endif
   assign col_tag = section.settings.column_tag | strip
+
+  assign show_column_title = section.settings.show_column_title
+  if show_column_title == nil
+    assign show_column_title = true
+  endif
   assign col_title = section.settings.column_title | strip
+
+  assign show_column_sub = section.settings.show_column_sub
+  if show_column_sub == nil
+    assign show_column_sub = true
+  endif
   assign col_sub = section.settings.column_sub | strip
+
+  assign header_alignment = section.settings.header_alignment | default: 'left'
+  assign thumbnails_alignment = section.settings.thumbnails_alignment | default: 'center'
   
   assign aspect_ratio = section.settings.aspect_ratio | default: '1_1'
   assign text_align = section.settings.text_align | default: 'left'
@@ -20,35 +41,153 @@
   assign card_text_color = section.settings.card_text_color | default: '#102a43'
   assign meta_color = section.settings.meta_color | default: '#008779'
 
+  assign shopify_video = section.settings.video
+  assign video_url = section.settings.brand_video_url
+
+  assign video_horizontal_align = section.settings.video_horizontal_align | default: 'center'
+  assign video_offset_top_desktop = section.settings.video_offset_top_desktop | default: 20
+  assign video_offset_top_mobile = section.settings.video_offset_top_mobile | default: 0
+  assign video_offset_x_desktop = section.settings.video_offset_x_desktop | default: 0
+  assign video_max_width = section.settings.video_max_width | default: 560
+  assign video_aspect_ratio = section.settings.video_aspect_ratio | default: '16_9'
+  assign video_height_desktop = section.settings.video_height_desktop | default: 420
+  assign video_height_mobile = section.settings.video_height_mobile | default: 260
+  assign video_object_fit = section.settings.video_object_fit | default: 'cover'
+  assign video_object_pos_x = section.settings.video_object_pos_x | default: 'center'
+  assign video_object_pos_y = section.settings.video_object_pos_y | default: 'center'
+
+  assign show_pause_button = section.settings.show_pause_button
+  if show_pause_button == nil
+    assign show_pause_button = true
+  endif
+
+  assign show_video_overlay = section.settings.show_video_overlay
+  if show_video_overlay == nil
+    assign show_video_overlay = true
+  endif
+
+  assign show_video_badge = section.settings.show_video_badge
+  if show_video_badge == nil
+    assign show_video_badge = true
+  endif
   assign video_badge = section.settings.video_badge | strip
+
+  assign show_video_title = section.settings.show_video_title
+  if show_video_title == nil
+    assign show_video_title = true
+  endif
   assign video_title = section.settings.video_title | strip
+
+  assign show_video_desc = section.settings.show_video_desc
+  if show_video_desc == nil
+    assign show_video_desc = true
+  endif
   assign video_desc = section.settings.video_desc | strip
-  assign video_url = section.settings.brand_video_url | default: 'https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4'
-  
+
+  assign show_video_cta = section.settings.show_video_cta
+  if show_video_cta == nil
+    assign show_video_cta = true
+  endif
+  assign video_cta_link = section.settings.video_cta_link
+  assign video_cta_label = section.settings.video_cta_label | default: 'Explore Collection →'
+
+  assign video_autoplay = section.settings.video_autoplay
+  if video_autoplay == nil
+    assign video_autoplay = true
+  endif
+
+  assign video_loop = section.settings.video_loop
+  if video_loop == nil
+    assign video_loop = true
+  endif
+
+  assign video_muted = section.settings.video_muted
+  if video_muted == nil
+    assign video_muted = true
+  endif
+
+  assign video_controls = section.settings.video_controls
+  if video_controls == nil
+    assign video_controls = false
+  endif
+
   if section.settings.brand_video_poster != blank
     assign brand_poster = section.settings.brand_video_poster | image_url: width: 900
+  elsif shopify_video != blank and shopify_video.preview_image != blank
+    assign brand_poster = shopify_video.preview_image | image_url: width: 900
   else
-    assign brand_poster = 'demo-sprinter-navy.jpg' | asset_url
+    assign brand_poster = ''
   endif
 -%}
 
 {% if enable_section %}
 {%- style -%}
+  #shopify-section-{{ section.id }} .split-cat-video-section {
+    max-width: {{ section_max_width }}px;
+    {% if section_alignment == 'left' %}
+      margin-left: 0;
+      margin-right: auto;
+    {% elsif section_alignment == 'right' %}
+      margin-left: auto;
+      margin-right: 0;
+    {% else %}
+      margin-left: auto;
+      margin-right: auto;
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .split-cat-video-grid {
+    align-items: {{ columns_vertical_align }};
+  }
+
+  #shopify-section-{{ section.id }} .split-thumbnails-column {
+    justify-content: flex-start;
+  }
+
+  #shopify-section-{{ section.id }} .split-column-header {
+    text-align: {{ header_alignment }};
+    display: flex;
+    flex-direction: column;
+    align-items: {% if header_alignment == 'center' %}center{% elsif header_alignment == 'right' %}flex-end{% else %}flex-start{% endif %};
+    margin-bottom: {{ section.settings.header_margin_bottom | default: 20 }}px;
+  }
+
   #shopify-section-{{ section.id }} .split-thumbnails-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumb_width_desktop | default: 140 }}px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumb_width_desktop | default: 140 }}px, {{ section.settings.thumb_width_desktop | default: 140 }}px));
+    justify-content: {% if thumbnails_alignment == 'left' %}flex-start{% elsif thumbnails_alignment == 'right' %}flex-end{% else %}center{% endif %};
+    justify-items: center;
     gap: {{ section.settings.thumb_spacing | default: 12 }}px;
+    align-content: start;
+    align-items: start;
+    flex: none;
+    margin-top: {{ section.settings.thumbnail_margin_top | default: 0 }}px;
+    margin-bottom: {{ section.settings.thumbnail_margin_bottom | default: 0 }}px;
   }
+
   #shopify-section-{{ section.id }} .split-category-tile {
     border-radius: {{ section.settings.card_border_radius | default: 12 }}px;
     padding: 0;
     overflow: hidden;
+    height: fit-content;
+    width: 100%;
+    max-width: {{ section.settings.thumb_width_desktop | default: 140 }}px;
+    align-self: start;
+    background-color: {{ card_bg }};
+  }
+  #shopify-section-{{ section.id }} .split-category-tile.is-image-only {
+    height: fit-content !important;
+    align-self: start !important;
   }
   #shopify-section-{{ section.id }} .split-category-thumb {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: {{ section.settings.thumbnail_media_bg | default: '#ffffff' }};
     border-radius: {% if aspect_ratio == 'round' %}50%{% else %}{{ section.settings.card_border_radius | default: 12 }}px {{ section.settings.card_border_radius | default: 12 }}px 0 0{% endif %};
     {% if aspect_ratio == 'custom' %}
       height: {{ section.settings.thumb_height_desktop | default: 160 }}px;
-      aspect-ratio: unset;
+      aspect-ratio: auto;
     {% elsif aspect_ratio == '1_1' or aspect_ratio == 'round' %}
       aspect-ratio: 1 / 1;
       height: auto;
@@ -67,25 +206,171 @@
     {% endif %}
   }
   #shopify-section-{{ section.id }} .split-category-tile.is-image-only .split-category-thumb {
-    border-radius: {% if aspect_ratio == 'round' %}50%{% else %}{{ section.settings.card_border_radius | default: 12 }}px{% endif %};
+    border-radius: {% if aspect_ratio == 'round' %}50%{% else %}{{ section.settings.card_border_radius | default: 12 }}px{% endif %} !important;
+    margin: 0 !important;
+    width: 100% !important;
   }
-  #shopify-section-{{ section.id }} .split-category-img {
-    object-fit: {{ section.settings.image_fit_mode | default: 'cover' }};
-    object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+  #shopify-section-{{ section.id }} .split-category-tile.is-image-only .split-category-info,
+  #shopify-section-{{ section.id }} .split-category-info:empty {
+    display: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
   }
+
+  {% if section.settings.image_fit_mode == 'contain' %}
+    #shopify-section-{{ section.id }} .split-category-img {
+      object-fit: contain !important;
+      object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }} !important;
+      transform: none !important;
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: none !important;
+    }
+    #shopify-section-{{ section.id }} .split-category-tile:hover .split-category-img {
+      transform: none !important;
+    }
+  {% else %}
+    #shopify-section-{{ section.id }} .split-category-img {
+      object-fit: cover !important;
+      object-position: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }} !important;
+      {% if section.settings.image_zoom and section.settings.image_zoom != 100 %}
+        transform: scale({{ section.settings.image_zoom | divided_by: 100.0 }});
+        transform-origin: {{ section.settings.image_pos_x | default: 'center' }} {{ section.settings.image_pos_y | default: 'center' }};
+      {% else %}
+        transform: none;
+      {% endif %}
+      width: 100%;
+      height: 100%;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    #shopify-section-{{ section.id }} .split-category-tile:hover .split-category-img {
+      transform: scale({{ section.settings.image_zoom | default: 100 | times: 1.05 | divided_by: 100.0 }});
+    }
+  {% endif %}
+
+  {% if aspect_ratio == 'natural' %}
+    #shopify-section-{{ section.id }} .split-category-thumb {
+      height: auto !important;
+      aspect-ratio: auto !important;
+    }
+    #shopify-section-{{ section.id }} .split-category-img {
+      width: 100% !important;
+      height: auto !important;
+      max-height: {{ section.settings.thumb_height_desktop | default: 360 }}px;
+      object-fit: contain !important;
+      display: block;
+    }
+  {% endif %}
+
   #shopify-section-{{ section.id }} .split-category-info {
     padding: {{ section.settings.caption_spacing | default: 10 }}px;
   }
+
+  /* Video Showcase Column Positioning */
+  #shopify-section-{{ section.id }} .split-video-column {
+    display: flex;
+    flex-direction: column;
+    align-items: {% if video_horizontal_align == 'left' %}flex-start{% elsif video_horizontal_align == 'right' %}flex-end{% else %}center{% endif %};
+    margin-top: {{ video_offset_top_desktop }}px;
+    {% if video_offset_x_desktop != 0 %}
+      transform: translateX({{ video_offset_x_desktop }}px);
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .brand-video-card-container {
+    max-width: {{ video_max_width }}px;
+    width: 100%;
+  }
+
+  #shopify-section-{{ section.id }} .brand-video-wrapper {
+    {% if video_aspect_ratio == 'custom' %}
+      height: {{ video_height_desktop }}px;
+      min-height: {{ video_height_desktop }}px;
+      aspect-ratio: auto;
+    {% elsif video_aspect_ratio == '4_3' %}
+      aspect-ratio: 4 / 3;
+      min-height: 0;
+      height: auto;
+    {% elsif video_aspect_ratio == '1_1' %}
+      aspect-ratio: 1 / 1;
+      min-height: 0;
+      height: auto;
+    {% elsif video_aspect_ratio == '4_5' %}
+      aspect-ratio: 4 / 5;
+      min-height: 0;
+      height: auto;
+    {% else %}
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+      height: auto;
+    {% endif %}
+  }
+
+  #shopify-section-{{ section.id }} .brand-promo-video-element {
+    object-fit: {{ video_object_fit }};
+    object-position: {{ video_object_pos_x }} {{ video_object_pos_y }};
+  }
+
+  #shopify-section-{{ section.id }} .brand-video-toggle-btn {
+    {% unless show_pause_button %}
+      display: none !important;
+    {% endunless %}
+  }
+
+  #shopify-section-{{ section.id }} .brand-video-overlay-banner {
+    {% unless show_video_overlay %}
+      display: none !important;
+    {% endunless %}
+  }
+
   @media (max-width: 768px) {
     #shopify-section-{{ section.id }} .split-thumbnails-grid {
-      grid-template-columns: repeat(auto-fill, minmax({{ section.settings.thumb_width_mobile | default: 110 }}px, 1fr));
-      gap: {{ section.settings.thumb_spacing_mobile | default: 8 }}px;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: {{ section.settings.thumb_spacing_mobile | default: 10 }}px;
+      justify-content: stretch;
+      width: 100%;
+    }
+    #shopify-section-{{ section.id }} .split-category-tile {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+    #shopify-section-{{ section.id }} .split-video-column {
+      margin-top: {{ video_offset_top_mobile }}px;
+      transform: none;
+      align-items: center;
+      width: 100%;
+    }
+    #shopify-section-{{ section.id }} .brand-video-card-container {
+      max-width: 100% !important;
     }
     {% if aspect_ratio == 'custom' %}
       #shopify-section-{{ section.id }} .split-category-thumb {
-        height: {{ section.settings.thumb_height_mobile | default: 110 }}px;
+        height: auto;
+        aspect-ratio: 1 / 1;
       }
     {% endif %}
+    {% if video_aspect_ratio == 'custom' %}
+      #shopify-section-{{ section.id }} .brand-video-wrapper {
+        height: {{ video_height_mobile }}px;
+        min-height: {{ video_height_mobile }}px;
+      }
+    {% endif %}
+  }
+  @media (max-width: 480px) {
+    #shopify-section-{{ section.id }} .split-category-info {
+      padding: 8px 10px !important;
+    }
+    #shopify-section-{{ section.id }} .split-category-name {
+      font-size: 13px !important;
+      line-height: 1.25 !important;
+    }
+    #shopify-section-{{ section.id }} .split-category-meta {
+      font-size: 11px !important;
+    }
   }
 {%- endstyle -%}
 <section
@@ -98,16 +383,15 @@
     <!-- Left: Small Category Thumbnails -->
     <div class="split-thumbnails-column">
       {% if col_tag != blank or col_title != blank or col_sub != blank %}
-        <div class="split-column-header" style="text-align: {{ text_align }};">
-          {% if col_tag != blank %}<span class="categories-section-tag">{{ col_tag | escape }}</span>{% endif %}
-          {% if col_title != blank %}<h2 class="split-column-title" style="color: {{ card_text_color }};">{{ col_title | escape }}</h2>{% endif %}
-          {% if col_sub != blank %}<p class="split-column-sub">{{ col_sub | escape }}</p>{% endif %}
+        <div class="split-column-header">
+          {% if show_column_tag and col_tag != blank %}<span class="categories-section-tag">{{ col_tag | escape }}</span>{% endif %}
+          {% if show_column_title and col_title != blank %}<h2 class="split-column-title" style="color: {{ card_text_color }};">{{ col_title | escape }}</h2>{% endif %}
+          {% if show_column_sub and col_sub != blank %}<p class="split-column-sub">{{ col_sub | escape }}</p>{% endif %}
         </div>
       {% endif %}
 
       <div class="split-thumbnails-grid">
-        {% if section.blocks.size > 0 %}
-          {% for block in section.blocks %}
+        {% for block in section.blocks %}
             {% if block.type == 'category' %}
               {%- liquid
                 assign is_visible = true
@@ -119,7 +403,7 @@
               {% if is_visible %}
                 {%- liquid
                   assign cat_name = block.settings.title | strip
-                  assign cat_meta = block.settings.meta | strip
+                  assign cat_meta = block.settings.description | default: block.settings.meta | strip
                   assign cat_link = block.settings.link
                   assign cat_name_lower = cat_name | downcase
                   assign badge_txt = block.settings.badge_text | strip
@@ -130,41 +414,62 @@
                     assign has_info = true
                   endif
 
-                  # Smart Category Image Fallback
+                  # Category Image (Merchant Image > Asset Fallback > Icon Placeholder)
+                  assign tile_img_src = ''
                   if block.settings.image != blank
                     assign tile_img_src = block.settings.image | image_url: width: 400
-                  elsif cat_name_lower contains 'women'
-                    assign tile_img_src = 'cat-women-scrubs.jpg' | asset_url
-                  elsif cat_name_lower contains 'men'
+                  elsif cat_name_lower == 'men'
                     assign tile_img_src = 'cat-men-scrubs.jpg' | asset_url
-                  elsif cat_name_lower contains 'lab' or cat_name_lower contains 'coat' or cat_name_lower contains 'white'
-                    assign tile_img_src = 'cat-labcoat.jpg' | asset_url
-                  elsif cat_name_lower contains 'cap' or cat_name_lower contains 'bunfit'
-                    assign tile_img_src = 'cat-caps.jpg' | asset_url
-                  elsif cat_name_lower contains 'access' or cat_name_lower contains 'sleeve' or cat_name_lower contains 'clog' or cat_name_lower contains 'foot'
-                    assign tile_img_src = 'cat-flexfit.jpg' | asset_url
-                  else
+                  elsif cat_name_lower == 'women'
+                    assign tile_img_src = 'cat-women-scrubs.jpg' | asset_url
+                  elsif cat_name_lower contains 'sale'
+                    assign tile_img_src = 'cat-sale.jpg' | asset_url
+                  elsif cat_name_lower contains 'bulk'
+                    assign tile_img_src = 'cat-bulk-orders.jpg' | asset_url
+                  elsif cat_name_lower contains 'home service' or cat_name_lower contains 'fitting'
+                    assign tile_img_src = 'cat-home-service.jpg' | asset_url
+                  elsif cat_name_lower contains 'make your own' or cat_name_lower contains 'custom'
+                    assign tile_img_src = 'cat-customizer.jpg' | asset_url
+                  elsif cat_name_lower contains 'scrub'
                     assign tile_img_src = 'cat-sprinter.jpg' | asset_url
+                  elsif cat_name_lower contains 'lab'
+                    assign tile_img_src = 'cat-labcoat.jpg' | asset_url
+                  elsif cat_name_lower contains 'cap'
+                    assign tile_img_src = 'cat-caps.jpg' | asset_url
+                  elsif cat_name_lower contains 'access' or cat_name_lower contains 'sleeve'
+                    assign tile_img_src = 'cat-flexfit.jpg' | asset_url
                   endif
 
-                  # Smart In-Page View Router
+                  # Smart Navigation & In-Page View Router
                   assign cat_onclick = ""
-                  if cat_link contains '#men' or cat_name_lower == 'men'
+                  if cat_link contains '#men'
                     assign cat_onclick = "if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
-                  elsif cat_link contains '#women' or cat_name_lower == 'women'
+                  elsif cat_name_lower == 'men' and cat_link == blank
+                    assign cat_onclick = "if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
+                  elsif cat_link contains '#women'
                     assign cat_onclick = "if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
-                  elsif cat_link contains 'scrub' or cat_name_lower contains 'scrub'
+                  elsif cat_name_lower == 'women' and cat_link == blank
+                    assign cat_onclick = "if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
+                  elsif cat_link contains 'home-service' or cat_link contains 'self-service' or cat_name_lower contains 'home service' or cat_name_lower contains 'home fitting'
+                    assign cat_onclick = "if (typeof window.navigateToView === 'function' && document.getElementById('view-self-service')) { window.navigateToView('self-service'); return false; }"
+                  elsif cat_link contains 'customizer' or cat_link contains 'ready-to-wear' or cat_name_lower contains 'make your own' or cat_name_lower contains 'custom'
+                    assign cat_onclick = "if (typeof window.navigateToView === 'function' && document.getElementById('view-ready-to-wear')) { window.navigateToView('ready-to-wear'); return false; }"
+                  elsif cat_link contains '#sale'
+                    assign cat_onclick = "if (typeof window.filterCollectionByTag === 'function') { window.filterCollectionByTag('sale-active'); return false; }"
+                  elsif cat_link contains 'scrub' and cat_link contains '#'
                     assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('scrubs'); return false; }"
-                  elsif cat_link contains 'lab' or cat_name_lower contains 'lab' or cat_name_lower contains 'coat'
+                  elsif cat_link contains 'lab' and cat_link contains '#'
                     assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('lab-coat'); return false; }"
-                  elsif cat_link contains 'cap' or cat_name_lower contains 'cap'
+                  elsif cat_name_lower contains 'lab' and cat_link contains '#'
+                    assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('lab-coat'); return false; }"
+                  elsif cat_link contains 'cap' and cat_link contains '#'
                     assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('caps'); return false; }"
-                  elsif cat_link contains 'access' or cat_link contains 'sleeve' or cat_name_lower contains 'access' or cat_name_lower contains 'sleeve'
+                  elsif cat_name_lower contains 'cap' and cat_link contains '#'
+                    assign cat_onclick = "if (typeof window.selectProductCategory === 'function') { window.selectProductCategory('caps'); return false; }"
+                  elsif cat_link contains 'access' and cat_link contains '#'
                     assign cat_onclick = "if (typeof window.navigateToAccessories === 'function') { window.navigateToAccessories(); return false; }"
-                  elsif cat_link contains 'ready-to-wear'
-                    assign cat_onclick = "if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); return false; }"
-                  elsif cat_link contains 'self-service'
-                    assign cat_onclick = "if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); return false; }"
+                  elsif cat_name_lower contains 'access' and cat_link contains '#'
+                    assign cat_onclick = "if (typeof window.navigateToAccessories === 'function') { window.navigateToAccessories(); return false; }"
                   endif
                 -%}
                 <a
@@ -177,23 +482,29 @@
                   {% if cat_onclick != blank %}onclick="{{ cat_onclick }}"{% endif %}
                   {{ block.shopify_attributes }}
                 >
-                  <div
-                    class="split-category-thumb"
-                    style="aspect-ratio: {% if aspect_ratio == '4_5' %}4 / 5{% elsif aspect_ratio == '16_9' %}16 / 9{% elsif aspect_ratio == 'round' %}1 / 1; border-radius: 50%; margin: 10px auto; width: 85%;{% else %}1 / 1{% endif %};"
-                  >
+                  <div class="split-category-thumb{% if section.settings.image_fit_mode == 'contain' %} is-contain{% endif %}">
                     {% if badge_txt != blank %}
                       <span class="customizer-banner-badge" style="background: {{ badge_col }}; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">
                         {{ badge_txt | escape }}
                       </span>
                     {% endif %}
-                    <img
-                      src="{{ tile_img_src }}"
-                      alt="{{ cat_name | default: block.settings.image.alt | default: 'Category Thumbnail' | escape }}"
-                      class="split-category-img"
-                      width="200"
-                      height="200"
-                      loading="lazy"
-                    />
+                    {% if tile_img_src != blank %}
+                      <img
+                        src="{{ tile_img_src }}"
+                        alt="{{ cat_name | default: block.settings.image.alt | default: 'Category Thumbnail' | escape }}"
+                        class="split-category-img"
+                        data-fit="{{ section.settings.image_fit_mode | default: 'cover' }}"
+                        width="200"
+                        height="200"
+                        loading="lazy"
+                      />
+                    {% else %}
+                      <div class="split-category-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 120px;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5">
+                          <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"/>
+                        </svg>
+                      </div>
+                    {% endif %}
                   </div>
                   {% if has_info %}
                   <div class="split-category-info" style="text-align: {{ text_align }};">
@@ -209,33 +520,6 @@
               {% endif %}
             {% endif %}
           {% endfor %}
-        {% else %}
-          <!-- Default Fallback Tiles if no blocks added -->
-          <a href="#men" class="split-category-tile" onclick="window.navigateToGender('men'); return false;" aria-label="Shop Men">
-            <div class="split-category-thumb"><img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Men" width="160" height="160" loading="lazy" /></div>
-            <div class="split-category-info"><h3 class="split-category-name">Men</h3><span class="split-category-meta">12 Styles →</span></div>
-          </a>
-          <a href="#women" class="split-category-tile" onclick="window.navigateToGender('women'); return false;" aria-label="Shop Women">
-            <div class="split-category-thumb"><img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Women" width="160" height="160" loading="lazy" /></div>
-            <div class="split-category-info"><h3 class="split-category-name">Women</h3><span class="split-category-meta">14 Styles →</span></div>
-          </a>
-          <a href="#category-scrubs" class="split-category-tile" onclick="window.selectProductCategory('scrubs'); return false;" aria-label="Shop Scrubs">
-            <div class="split-category-thumb"><img src="{{ 'cat-sprinter.jpg' | asset_url }}" alt="Scrubs" width="160" height="160" loading="lazy" /></div>
-            <div class="split-category-info"><h3 class="split-category-name">Scrubs</h3><span class="split-category-meta">All Cuts →</span></div>
-          </a>
-          <a href="#collection-lab-coats" class="split-category-tile" onclick="window.selectProductCategory('lab-coat'); return false;" aria-label="Shop Lab Coats">
-            <div class="split-category-thumb"><img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Lab Coats" width="160" height="160" loading="lazy" /></div>
-            <div class="split-category-info"><h3 class="split-category-name">Lab Coats</h3><span class="split-category-meta">Technical White →</span></div>
-          </a>
-          <a href="#collection-caps" class="split-category-tile" onclick="window.selectProductCategory('caps'); return false;" aria-label="Shop Caps">
-            <div class="split-category-thumb"><img src="{{ 'cat-caps.jpg' | asset_url }}" alt="Caps" width="160" height="160" loading="lazy" /></div>
-            <div class="split-category-info"><h3 class="split-category-name">Surgical Caps</h3><span class="split-category-meta">BunFit™ Weave →</span></div>
-          </a>
-          <a href="#accessories" class="split-category-tile" onclick="window.navigateToAccessories(); return false;" aria-label="Shop Accessories">
-            <div class="split-category-thumb"><img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Accessories" width="160" height="160" loading="lazy" /></div>
-            <div class="split-category-info"><h3 class="split-category-name">Accessories</h3><span class="split-category-meta">Sleeves & Footwear →</span></div>
-          </a>
-        {% endif %}
       </div>
     </div>
 
@@ -243,48 +527,91 @@
     <div class="split-video-column">
       <div class="brand-video-card-container">
         <div class="brand-video-wrapper">
-          <video
-            id="enamels-brand-promo-video"
-            class="brand-promo-video-element"
-            poster="{{ brand_poster }}"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            aria-label="Enamels Medical Performance Brand Showcase Video"
-          >
-            <source src="{{ video_url }}" type="video/mp4">
-          </video>
+          {% if shopify_video != blank %}
+            {{
+              shopify_video
+              | video_tag:
+                id: 'enamels-brand-promo-video',
+                class: 'brand-promo-video-element',
+                image_size: '900x',
+                poster: brand_poster,
+                autoplay: video_autoplay,
+                loop: video_loop,
+                muted: video_muted,
+                controls: video_controls,
+                playsinline: true,
+                preload: 'metadata',
+                aria-label: 'Enamels Medical Performance Brand Showcase Video'
+            }}
+          {% elsif video_url != blank %}
+            <video
+              id="enamels-brand-promo-video"
+              class="brand-promo-video-element"
+              poster="{{ brand_poster }}"
+              {% if video_autoplay %}autoplay{% endif %}
+              {% if video_muted %}muted{% endif %}
+              {% if video_loop %}loop{% endif %}
+              {% if video_controls %}controls{% endif %}
+              playsinline
+              preload="metadata"
+              aria-label="Enamels Medical Performance Brand Showcase Video"
+            >
+              <source src="{{ video_url }}" type="video/mp4">
+            </video>
+          {% elsif brand_poster != blank %}
+            <div class="brand-video-placeholder-wrap">
+              <img
+                src="{{ brand_poster }}"
+                alt="{{ video_title | default: 'Brand Video Poster' | escape }}"
+                class="brand-promo-video-element"
+                width="900"
+                height="600"
+                loading="lazy"
+              >
+            </div>
+          {% endif %}
 
           <!-- Video Overlay Card with Controls -->
+          {% if show_video_overlay %}
           <div class="brand-video-overlay-banner">
             {% if video_badge != blank or video_title != blank or video_desc != blank %}
               <div class="brand-video-info">
-                {% if video_badge != blank %}
+                {% if show_video_badge and video_badge != blank %}
                   <span class="brand-video-badge">{{ video_badge | escape }}</span>
                 {% endif %}
-                {% if video_title != blank %}
+                {% if show_video_title and video_title != blank %}
                   <h3 class="brand-video-title">{{ video_title | escape }}</h3>
                 {% endif %}
-                {% if video_desc != blank %}
+                {% if show_video_desc and video_desc != blank %}
                   <p class="brand-video-desc">{{ video_desc | escape }}</p>
                 {% endif %}
               </div>
             {% endif %}
             <div class="brand-video-controls">
+              {% if show_video_cta and video_cta_link != blank and video_cta_label != blank %}
+                <a
+                  href="{{ video_cta_link }}"
+                  class="brand-video-cta-link-btn"
+                  aria-label="{{ video_cta_label | escape }}"
+                >
+                  {{ video_cta_label | escape }}
+                </a>
+              {% endif %}
+              {% if show_pause_button %}
               <button
                 type="button"
                 class="brand-video-toggle-btn"
                 id="brand-video-play-pause-btn"
-                onclick="if (typeof window.toggleBrandPromoVideo === 'function') window.toggleBrandPromoVideo();"
+                onclick="if (typeof window.toggleBrandPromoVideo === 'function') { window.toggleBrandPromoVideo(event); }"
                 aria-label="Pause Promotional Video"
               >
                 <span id="brand-video-btn-icon">⏸</span>
                 <span id="brand-video-btn-label">Pause</span>
               </button>
+              {% endif %}
             </div>
           </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -322,6 +649,65 @@
     }
   })();
 </script>
+<script>
+  (function() {
+    function setupBrandPromoVideo() {
+      const vid = document.getElementById('enamels-brand-promo-video');
+      const btn = document.getElementById('brand-video-play-pause-btn');
+      const icon = document.getElementById('brand-video-btn-icon');
+      const label = document.getElementById('brand-video-btn-label');
+      if (!vid) return;
+
+      function updatePlayState() {
+        if (!icon || !label || !btn) return;
+        if (vid.paused) {
+          icon.textContent = '▶';
+          label.textContent = 'Play';
+          btn.setAttribute('aria-label', 'Play Promotional Video');
+        } else {
+          icon.textContent = '⏸';
+          label.textContent = 'Pause';
+          btn.setAttribute('aria-label', 'Pause Promotional Video');
+        }
+      }
+
+      vid.removeEventListener('play', updatePlayState);
+      vid.removeEventListener('pause', updatePlayState);
+      vid.addEventListener('play', updatePlayState);
+      vid.addEventListener('pause', updatePlayState);
+      updatePlayState();
+
+      window.toggleBrandPromoVideo = function(evt) {
+        if (evt) {
+          evt.stopPropagation();
+          if (evt.preventDefault) evt.preventDefault();
+        }
+        const v = document.getElementById('enamels-brand-promo-video');
+        if (!v) return;
+        if (v.paused) {
+          v.play().catch(function(err) {
+            console.warn('[Enamels Video] Play prevented:', err);
+          });
+        } else {
+          v.pause();
+        }
+      };
+
+      if (btn) {
+        btn.onclick = function(e) {
+          window.toggleBrandPromoVideo(e);
+        };
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupBrandPromoVideo);
+    } else {
+      setupBrandPromoVideo();
+    }
+    document.addEventListener('shopify:section:load', setupBrandPromoVideo);
+  })();
+</script>
 {% endif %}
 
 {% schema %}
@@ -337,7 +723,50 @@
     },
     {
       "type": "header",
-      "content": "Category Column Settings"
+      "content": "Section Layout & Horizontal Alignment"
+    },
+    {
+      "type": "select",
+      "id": "section_alignment",
+      "label": "Section Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "info": "Centers the entire Show by Category and Video section on the page."
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "Section Maximum Width (px)",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "default": 1320,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "columns_vertical_align",
+      "label": "Two-Column Vertical Alignment",
+      "options": [
+        { "value": "start", "label": "Top / Start" },
+        { "value": "center", "label": "Center" },
+        { "value": "end", "label": "Bottom / End" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "header",
+      "content": "Category Column & Header Alignment"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_column_tag",
+      "label": "Show Header Tag",
+      "default": true
     },
     {
       "type": "text",
@@ -346,16 +775,66 @@
       "default": "QUICK CATALOGUE DISCOVERY"
     },
     {
+      "type": "checkbox",
+      "id": "show_column_title",
+      "label": "Show Section Title",
+      "default": true
+    },
+    {
       "type": "text",
       "id": "column_title",
       "label": "Section Title",
       "default": "Shop by Category"
     },
     {
+      "type": "checkbox",
+      "id": "show_column_sub",
+      "label": "Show Section Subtitle",
+      "default": true
+    },
+    {
       "type": "textarea",
       "id": "column_sub",
       "label": "Section Subtitle",
       "default": "Browse clinical apparel, scrubs, lab coats, and medical accessories tailored for every role."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Heading & Subtitle Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left",
+      "info": "Aligns the section title and subtitle independently from the thumbnail row."
+    },
+    {
+      "type": "range",
+      "id": "header_margin_bottom",
+      "label": "Space Below Heading / Above Thumbnails (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail Grid Alignment & Dimensions"
+    },
+    {
+      "type": "select",
+      "id": "thumbnails_alignment",
+      "label": "Thumbnail Row Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center",
+      "info": "Centers thumbnail cards horizontally even when there are fewer thumbnails than columns."
     },
     {
       "type": "select",
@@ -367,13 +846,10 @@
         { "value": "4_5", "label": "4:5 Portrait" },
         { "value": "16_9", "label": "16:9 Widescreen" },
         { "value": "round", "label": "Circle / Round" },
-        { "value": "natural", "label": "Natural / Auto" }
+        { "value": "natural", "label": "Natural / Auto (Fit to image height)" }
       ],
-      "default": "1_1"
-    },
-    {
-      "type": "header",
-      "content": "Thumbnail Pixel Dimensions"
+      "default": "1_1",
+      "info": "Select 'Natural / Auto' to remove letterboxing and adapt container tightly to the image without blank gaps."
     },
     {
       "type": "range",
@@ -420,10 +896,11 @@
       "id": "image_fit_mode",
       "label": "Image Fit Mode",
       "options": [
-        { "value": "cover", "label": "Cover" },
-        { "value": "contain", "label": "Contain" }
+        { "value": "cover", "label": "Cover (Fill entire box)" },
+        { "value": "contain", "label": "Contain (Fit within frame without cropping)" }
       ],
-      "default": "cover"
+      "default": "cover",
+      "info": "Choose 'Contain' to display the entire image without cropping or zooming. Choose 'Cover' to fill the thumbnail box."
     },
     {
       "type": "select",
@@ -490,10 +967,11 @@
     {
       "type": "select",
       "id": "text_align",
-      "label": "Text Alignment",
+      "label": "Card Caption Text Alignment",
       "options": [
         { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" }
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
       ],
       "default": "left"
     },
@@ -530,7 +1008,7 @@
       "id": "padding_top",
       "label": "Top Spacing (px)",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "default": 48
     },
@@ -539,24 +1017,239 @@
       "id": "padding_bottom",
       "label": "Bottom Spacing (px)",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "default": 48
     },
     {
+      "type": "range",
+      "id": "thumbnail_margin_top",
+      "label": "Extra Space Above Thumbnail Grid (px)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_margin_bottom",
+      "label": "Space Below Thumbnail Grid (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_zoom",
+      "label": "Thumbnail Image Zoom / Scale (%)",
+      "min": 100,
+      "max": 180,
+      "step": 2,
+      "default": 100,
+      "unit": "%",
+      "info": "Zoom in to crop out black borders or letterbox bands on top/bottom of images."
+    },
+    {
+      "type": "color",
+      "id": "thumbnail_media_bg",
+      "label": "Thumbnail Media Background Color",
+      "default": "#ffffff"
+    },
+    {
       "type": "header",
-      "content": "Brand Video Showcase Settings"
+      "content": "Brand Video Showcase & Positioning"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Shopify Video",
+      "info": "Select or upload a video directly from your Shopify Files / Media library."
     },
     {
       "type": "text",
       "id": "brand_video_url",
-      "label": "MP4 Video URL",
+      "label": "External Video URL (Fallback MP4)",
+      "info": "Used if no Shopify Video is selected above. Paste a direct .mp4 CDN URL.",
       "default": "https://cdn.shopify.com/videos/c/o/v/6df1013caab84ae983ea1c32759e663a.mp4"
     },
     {
       "type": "image_picker",
       "id": "brand_video_poster",
-      "label": "Video Poster Image"
+      "label": "Custom Video Poster / Cover Image (Optional)",
+      "info": "Overrides the video's default thumbnail before playback."
+    },
+    {
+      "type": "select",
+      "id": "video_horizontal_align",
+      "label": "Video Container Horizontal Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "video_offset_top_desktop",
+      "label": "Video Vertical Offset Desktop (px)",
+      "min": -80,
+      "max": 140,
+      "step": 4,
+      "default": 20,
+      "unit": "px",
+      "info": "Adjust to align the video top edge with the category thumbnails or header."
+    },
+    {
+      "type": "range",
+      "id": "video_offset_top_mobile",
+      "label": "Video Vertical Offset Mobile (px)",
+      "min": -60,
+      "max": 60,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "video_offset_x_desktop",
+      "label": "Video Horizontal Offset (px)",
+      "min": -80,
+      "max": 80,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "video_max_width",
+      "label": "Video Maximum Width (px)",
+      "min": 320,
+      "max": 800,
+      "step": 10,
+      "default": 560,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "video_aspect_ratio",
+      "label": "Video Aspect Ratio / Height",
+      "options": [
+        { "value": "16_9", "label": "16:9 Widescreen" },
+        { "value": "4_3", "label": "4:3 Standard" },
+        { "value": "1_1", "label": "1:1 Square" },
+        { "value": "4_5", "label": "4:5 Portrait" },
+        { "value": "custom", "label": "Custom (Height in px)" }
+      ],
+      "default": "16_9"
+    },
+    {
+      "type": "range",
+      "id": "video_height_desktop",
+      "label": "Video Height Desktop (px, when Custom)",
+      "min": 260,
+      "max": 650,
+      "step": 10,
+      "default": 420,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "video_height_mobile",
+      "label": "Video Height Mobile (px, when Custom)",
+      "min": 180,
+      "max": 450,
+      "step": 10,
+      "default": 260,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "video_object_fit",
+      "label": "Video Object Fit Mode",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill entire box)" },
+        { "value": "contain", "label": "Contain (Fit within frame)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "video_object_pos_x",
+      "label": "Video Focal Point Horizontal",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "video_object_pos_y",
+      "label": "Video Focal Point Vertical",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Video Playback & Control Visibility"
+    },
+    {
+      "type": "checkbox",
+      "id": "video_autoplay",
+      "label": "Autoplay Video",
+      "default": true,
+      "info": "Modern browsers require videos to be muted for autoplay."
+    },
+    {
+      "type": "checkbox",
+      "id": "video_muted",
+      "label": "Mute Video by Default",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "video_loop",
+      "label": "Loop Video Continuously",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "video_controls",
+      "label": "Show Native Playback Controls",
+      "default": false,
+      "info": "Displays the browser's built-in scrub bar and audio controls."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pause_button",
+      "label": "Show Custom Pause Button",
+      "default": true,
+      "info": "Uncheck to completely hide and remove the theme's custom pause/play button overlay."
+    },
+    {
+      "type": "header",
+      "content": "Video Information Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_video_overlay",
+      "label": "Show Video Overlay Banner",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_video_badge",
+      "label": "Show Video Badge",
+      "default": true
     },
     {
       "type": "text",
@@ -565,16 +1258,50 @@
       "default": "CINEMATIC SHOWCASE"
     },
     {
+      "type": "checkbox",
+      "id": "show_video_title",
+      "label": "Show Video Title",
+      "default": true
+    },
+    {
       "type": "text",
       "id": "video_title",
       "label": "Video Title",
       "default": "Engineered for Clinical Endurance"
     },
     {
+      "type": "checkbox",
+      "id": "show_video_desc",
+      "label": "Show Video Description",
+      "default": true
+    },
+    {
       "type": "textarea",
       "id": "video_desc",
       "label": "Video Description",
       "default": "Proprietary antimicrobial stretch weaves engineered for 24-hour hospital rotations."
+    },
+    {
+      "type": "header",
+      "content": "Video Link & Call to Action"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_video_cta",
+      "label": "Show CTA Button",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "video_cta_link",
+      "label": "Video Click Destination / CTA Link (Optional)",
+      "info": "Navigates to a collection, product, or page when the CTA button is clicked."
+    },
+    {
+      "type": "text",
+      "id": "video_cta_label",
+      "label": "CTA Button Label (Optional)",
+      "default": "Explore Collection →"
     }
   ],
   "blocks": [
@@ -591,8 +1318,13 @@
         {
           "type": "text",
           "id": "meta",
-          "label": "Meta Text (e.g. All Series →)",
+          "label": "Meta / Subtitle (e.g. 12 Styles →)",
           "default": "All Cuts →"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Optional Description"
         },
         {
           "type": "image_picker",
@@ -626,63 +1358,7 @@
   ],
   "presets": [
     {
-      "name": "Shop by Category & Video",
-      "blocks": [
-        {
-          "type": "category",
-          "settings": {
-            "title": "Men",
-            "meta": "12 Styles →",
-            "link": "#men",
-            "visible": true
-          }
-        },
-        {
-          "type": "category",
-          "settings": {
-            "title": "Women",
-            "meta": "14 Styles →",
-            "link": "#women",
-            "visible": true
-          }
-        },
-        {
-          "type": "category",
-          "settings": {
-            "title": "Scrubs",
-            "meta": "All Cuts →",
-            "link": "#category-scrubs",
-            "visible": true
-          }
-        },
-        {
-          "type": "category",
-          "settings": {
-            "title": "Lab Coats",
-            "meta": "Technical White →",
-            "link": "#collection-lab-coats",
-            "visible": true
-          }
-        },
-        {
-          "type": "category",
-          "settings": {
-            "title": "Surgical Caps",
-            "meta": "BunFit™ Weave →",
-            "link": "#collection-caps",
-            "visible": true
-          }
-        },
-        {
-          "type": "category",
-          "settings": {
-            "title": "Accessories",
-            "meta": "Sleeves & Footwear →",
-            "link": "#accessories",
-            "visible": true
-          }
-        }
-      ]
+      "name": "Shop by Category & Video"
     }
   ]
 }

@@ -1,0 +1,243 @@
+{% comment %}
+  Enamels Frontpage Hero Banner Section
+  Matches the exact Enamels aesthetic from desktop & mobile UI design.
+{% endcomment %}
+
+<section class="enamels-hero-section" id="enamels-hero-{{ section.id }}">
+  <div class="enamels-hero__container">
+    <div class="enamels-hero__grid">
+      <!-- Left: Navigation Links -->
+      <div class="enamels-hero__left">
+        <nav class="enamels-hero__nav" aria-label="Hero navigation">
+          {% if section.settings.men_label != blank %}
+            <a href="{{ section.settings.men_link | default: '/collections/men-scrubs' }}" class="enamels-hero__link enamels-hero__link--underline">
+              {{ section.settings.men_label }}
+            </a>
+          {% endif %}
+          {% if section.settings.women_label != blank %}
+            <a href="{{ section.settings.women_link | default: '/collections/women-scrubs' }}" class="enamels-hero__link">
+              {{ section.settings.women_label }}
+            </a>
+          {% endif %}
+        </nav>
+      </div>
+
+      <!-- Right: Model Photography -->
+      <div class="enamels-hero__right">
+        {% if section.settings.image != blank %}
+          <picture>
+            {% if section.settings.mobile_image != blank %}
+              <source media="(max-width: 767px)" srcset="{{ section.settings.mobile_image | image_url: width: 800 }}">
+            {% endif %}
+            <img
+              src="{{ section.settings.image | image_url: width: 1400 }}"
+              alt="{{ section.settings.image.alt | default: 'Enamels Medical Scrubs' }}"
+              class="enamels-hero__image"
+              loading="eager"
+              fetchpriority="high"
+              width="700"
+              height="300"
+            >
+          </picture>
+        {% else %}
+          <!-- Fallback high-fidelity asset -->
+          <picture>
+            <source media="(max-width: 767px)" srcset="{{ 'enamels-frontpage-hero-mobile.jpg' | asset_url }}">
+            <img
+              src="{{ 'enamels-frontpage-hero.jpg' | asset_url }}"
+              alt="Shop Men and Women Scrubs"
+              class="enamels-hero__image"
+              loading="eager"
+              fetchpriority="high"
+              width="700"
+              height="300"
+            >
+          </picture>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  #enamels-hero-{{ section.id }} {
+    background-color: {{ section.settings.bg_color | default: '#e8e8e8' }};
+    padding-top: {{ section.settings.padding_top | default: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
+    margin-bottom: 28px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__grid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 180px;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__left {
+    flex: 0 0 auto;
+    padding-left: 20px;
+    z-index: 2;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__link {
+    font-family: inherit;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #111111;
+    text-decoration: none;
+    text-transform: uppercase;
+    display: inline-block;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    width: fit-content;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__link:hover {
+    opacity: 0.8;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__link--underline {
+    position: relative;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #111111;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__right {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    max-height: 240px;
+    overflow: hidden;
+  }
+
+  #enamels-hero-{{ section.id }} .enamels-hero__image {
+    width: auto;
+    max-height: 240px;
+    object-fit: contain;
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    #enamels-hero-{{ section.id }} {
+      margin-bottom: 20px;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__container {
+      padding: 0 12px;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__grid {
+      min-height: 140px;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__left {
+      padding-left: 8px;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__link {
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__nav {
+      gap: 12px;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__right {
+      max-height: 160px;
+    }
+
+    #enamels-hero-{{ section.id }} .enamels-hero__image {
+      max-height: 160px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Enamels Hero Banner",
+  "tag": "section",
+  "class": "enamels-hero-section-wrapper",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "text",
+      "id": "men_label",
+      "label": "First Link Label",
+      "default": "SHOP MEN"
+    },
+    {
+      "type": "url",
+      "id": "men_link",
+      "label": "First Link URL"
+    },
+    {
+      "type": "text",
+      "id": "women_label",
+      "label": "Second Link Label",
+      "default": "SHOP WOMEN"
+    },
+    {
+      "type": "url",
+      "id": "women_link",
+      "label": "Second Link URL"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop Model Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile Model Image"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Hero Banner"
+    }
+  ]
+}
+{% endschema %}

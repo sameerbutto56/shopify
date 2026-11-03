@@ -5,25 +5,33 @@
   <!-- Included in templates/index.json -->
 {% endcomment %}
 
+{%- liquid
+  assign badge_text = section.settings.badge | strip
+  assign title_text = section.settings.title | strip
+  assign subtitle_text = section.settings.subtitle | strip
+-%}
+
 <div class="shop-by-series-section section-padding" style="background-color: {{ section.settings.bg_color | default: '#ffffff' }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
   <div class="page-width">
-    <div class="series-section-header" style="max-width: 760px; margin: 0 auto 48px auto; text-align: center;">
-      {% if section.settings.badge != blank %}
-        <span class="series-section-badge" style="display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #0d9488; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;">
-          {{ section.settings.badge | escape }}
-        </span>
-      {% endif %}
-      {% if section.settings.title != blank %}
-        <h2 class="series-section-title" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; color: #0f172a; margin: 0 0 14px 0; letter-spacing: -0.02em;">
-          {{ section.settings.title | escape }}
-        </h2>
-      {% endif %}
-      {% if section.settings.subtitle != blank %}
-        <p class="series-section-subtitle" style="font-size: 1.05rem; color: #64748b; line-height: 1.6; margin: 0;">
-          {{ section.settings.subtitle | escape }}
-        </p>
-      {% endif %}
-    </div>
+    {% if badge_text != blank or title_text != blank or subtitle_text != blank %}
+      <div class="series-section-header" style="max-width: 760px; margin: 0 auto {{ section.settings.header_margin_bottom | default: 32 }}px auto; text-align: center;">
+        {% if badge_text != blank %}
+          <span class="series-section-badge" style="display: inline-block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #0d9488; background: #f0fdfa; border: 1px solid #ccfbf1; padding: 4px 14px; border-radius: 999px; margin-bottom: 12px;">
+            {{ badge_text | escape }}
+          </span>
+        {% endif %}
+        {% if title_text != blank %}
+          <h2 class="series-section-title" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 800; color: #0f172a; margin: 0 0 14px 0; letter-spacing: -0.02em;">
+            {{ title_text | escape }}
+          </h2>
+        {% endif %}
+        {% if subtitle_text != blank %}
+          <p class="series-section-subtitle" style="font-size: 1.05rem; color: #64748b; line-height: 1.6; margin: 0;">
+            {{ subtitle_text | escape }}
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
 
     <div class="series-cards-grid">
       {% for block in section.blocks %}
@@ -443,6 +451,16 @@
       "default": 64
     },
     {
+      "type": "range",
+      "id": "header_margin_bottom",
+      "label": "Space Below Heading / Above Cards (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
       "type": "header",
       "content": "Thumbnail & Card Dimensions"
     },
@@ -581,20 +599,17 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Series Name",
-          "default": "Sprinter Series"
+          "label": "Series Name"
         },
         {
           "type": "text",
           "id": "subtitle",
-          "label": "Subtitle / Category",
-          "default": "High-Mobility Athletic Scrubs"
+          "label": "Subtitle / Category"
         },
         {
           "type": "text",
           "id": "tag",
-          "label": "Badge Tag",
-          "default": "Best Seller"
+          "label": "Badge Tag"
         },
         {
           "type": "color",
@@ -616,26 +631,22 @@
         {
           "type": "text",
           "id": "price_text",
-          "label": "Price Tag",
-          "default": "From Rs. 5,150"
+          "label": "Price Tag"
         },
         {
           "type": "textarea",
           "id": "description",
-          "label": "Description",
-          "default": "Engineered for doctors on the move. Features 4-way mechanical stretch, raglan sleeve mobility, and moisture-wicking technology."
+          "label": "Description"
         },
         {
           "type": "text",
           "id": "features",
-          "label": "Key Features (separated by •)",
-          "default": "4-Way Stretch • Moisture Wicking • Fade Resistant"
+          "label": "Key Features (separated by •)"
         },
         {
           "type": "text",
           "id": "colors",
-          "label": "Color Swatches (Hex codes separated by comma)",
-          "default": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d"
+          "label": "Color Swatches (Hex codes separated by comma)"
         },
         {
           "type": "url",
@@ -646,72 +657,14 @@
           "type": "text",
           "id": "button_label",
           "label": "Button Label",
-          "default": "Shop Sprinter Series"
+          "default": "Shop Series"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Shop by Series",
-      "blocks": [
-        {
-          "type": "series_card",
-          "settings": {
-            "title": "Sprinter Series",
-            "subtitle": "High-Mobility Athletic Scrubs",
-            "tag": "Most Popular",
-            "tag_bg": "#0d9488",
-            "price_text": "From Rs. 5,150",
-            "description": "Engineered for active surgical and ER shifts. 4-way mechanical stretch, athletic raglan sleeves, and deep cargo utility pockets.",
-            "features": "4-Way Stretch • Moisture-Wicking • Anti-Static",
-            "colors": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d",
-            "button_label": "Shop Sprinter Series"
-          }
-        },
-        {
-          "type": "series_card",
-          "settings": {
-            "title": "Velora Series",
-            "subtitle": "Refined Elegance & Comfort",
-            "tag": "Signature",
-            "tag_bg": "#581c87",
-            "price_text": "From Rs. 5,500",
-            "description": "Ultra-soft touch with graceful fluid drape. Available in Summit top and tailored Wide-Leg cuts for elevated clinical style.",
-            "features": "Ultra-Soft Touch • Fluid Drape • Wrinkle-Resistant",
-            "colors": "#581c87,#0f172a,#3f4e3b,#18181b,#64748b",
-            "button_label": "Shop Velora Series"
-          }
-        },
-        {
-          "type": "series_card",
-          "settings": {
-            "title": "Crown Series",
-            "subtitle": "Executive Tailored Fit",
-            "tag": "Premium",
-            "tag_bg": "#0f172a",
-            "price_text": "From Rs. 6,200",
-            "description": "Structured executive presence designed for hospital consultants and department heads with clean notch lapels and tailored lines.",
-            "features": "Structured Collar • Anti-Microbial • Executive Cut",
-            "colors": "#0f172a,#18181b,#334155",
-            "button_label": "Shop Crown Series"
-          }
-        },
-        {
-          "type": "series_card",
-          "settings": {
-            "title": "BunFit™ & Headwear",
-            "subtitle": "Extra-Volume Surgical Caps",
-            "tag": "Essential",
-            "tag_bg": "#0284c7",
-            "price_text": "From Rs. 620",
-            "description": "Patented expandable pleating accommodating all hair volumes and buns, integrated sweatband, and matching Sprinter fabric tones.",
-            "features": "Hair Volume Pleating • Sweatband Lining • Matching Colors",
-            "colors": "#581c87,#0f172a,#3f4e3b,#6ba4b8,#14532d",
-            "button_label": "Shop Surgical Caps"
-          }
-        }
-      ]
+      "name": "Shop by Series"
     }
   ]
 }

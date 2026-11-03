@@ -133,5 +133,72 @@
   - Node.js master verification suite: 14/14 files present, 4/4 tagging test cases passed, CSS collapse rules passed.
   - Pushed to unpublished Staging Theme `#192352092448` (`Horizon`). Production theme `#192354877728` untouched.
 
+## Milestone 11: Complete Amazon-Style Product Detail Page (PDP) System
+- [x] **Desktop 3-Column Shopping Architecture**:
+  - Left Column (Media Gallery): Large main product image with aspect-ratio controls (`3/4`, `1/1`, `4/5`, `natural`), image fit (`contain`/`cover`), vertical thumbnail rail with smooth switching, video player, hover zoom lens canvas, and fullscreen lightbox.
+  - Middle Column (Product Information): Brand/vendor link, SKU, article code, product title, verified clinical rating score (4.9/5 stars), live price, compare-at price, discount savings badge, color swatches with circle/image previews, size chips with sold-out strike-through, size guide trigger button, doctor name embroidery personalization studio box, cross-sell companion items (matching BunFit caps & Med Sleeves), Amazon-style \"About this item\" bullet list, and technical clinical specifications table.
+  - Right Column (Buy Box / Purchase Panel): Sticky buy card, price recap, live stock status (green pulse dot for in-stock, red dot for sold-out), delivery guarantee promise (PKR 250 standard / Free over 7,000 / 24-48 hr dispatch), quantity stepper (- / input / +), primary CTA Add to Cart with spinner, secondary CTA Buy Now direct checkout handoff, security and trust table (Ships from, Sold by, 7-Day Exchange, Cash on Delivery), and Lahore/Karachi Home Fitting concierge banner.
+- [x] **Dedicated Mobile Layout Hierarchy (12-Stage Native Ordering)**:
+  - Formatted using CSS `display: contents` and explicit flex `order: 1` through `order: 12`:
+    1. Product Image Gallery (with horizontal thumbnail scroll & swipe dots)
+    2. Brand & SKU
+    3. Product Title & Rating
+    4. Price & Savings Discount
+    5. Color Selection & Swatches
+    6. Size Selection & Size Guide Button
+    7. Personalization / Customization Options
+    8. Buy Box (Quantity Stepper, Add to Cart, Buy Now)
+    9. Delivery Guarantee & Shipping Information
+    10. \"About this item\" Bullet Features & Technical Specifications
+    11. Cross-Sell Companion Essentials (Caps & Sleeves)
+    12. Description & Customer Reviews Breakdown (5-star histogram + verified review cards)
+- [x] **Sticky Mobile Add to Cart Bar**:
+  - Slides up automatically when customer scrolls past the main Buy Box on mobile devices. Displays thumbnail, truncated title, live price, and instant Add to Cart CTA.
+- [x] **Shopify Line-Item Property Integration**:
+  - Doctor Name, Embroidery Style (`Direct Chest`, `Velcro Patch`, `Left Sleeve Logo`), Thread Color (`Clinical White`, `Silver Metallic`, `Gold Metallic`, `Sky Blue`, `Navy Blue`), and Special Notes properly attached to `/cart/add.js` payload. Preserved cleanly through cart drawer and checkout.
+- [x] **Specialized Product Templates**:
+  - Created 7 dedicated JSON templates in `templates/`:
+    - `templates/product.json` (Default Amazon PDP)
+    - `templates/product.scrubs.json` (Standard Scrubs with full personalization + size chart + cross-sell)
+    - `templates/product.customized.json` (Scrubs with highlighted clinical embroidery personalization)
+    - `templates/product.lab-coats.json` (Lab Coats with tailored coat specifications & iPad pocket specs)
+    - `templates/product.caps.json` (Surgical Caps with ponytail/bunfit compartment specs)
+    - `templates/product.sleeves.json` (Compression Sleeves with graduated compression & bicep grip specs)
+    - `templates/product.accessories.json` (General Accessories)
+- [x] **100% Theme Editor Modularity**:
+  - All 13 block types (`vendor_sku`, `title_rating`, `price`, `variant_picker`, `customization`, `cross_sell_bundle`, `bullet_features`, `specifications_table`, `description`, etc.) can be added, removed, reordered, and configured directly in Shopify Theme Editor without writing code.
+  - Section-level settings for container width, column ratios, gallery fit/ratio, button colors, button radius, quantity toggle, buy now toggle, and shipping fee thresholds.
+
+## Milestone 12: Front Page UI Exact Replication (Mobile & Web)
+- [x] **Section 1: Hero Banner** (`sections/enamels-frontpage-hero.liquid`):
+  - Clean light grey background (`#e8e8e8`).
+  - Left navigation: `SHOP MEN` (bold with solid underline) and `SHOP WOMEN`.
+  - Right imagery: Studio doctor duo in rust and teal medical scrubs with shadow play. Fully responsive for desktop and mobile.
+- [x] **Section 2: Shop by Category** (`sections/enamels-frontpage-categories.liquid`):
+  - 6 Category Pills: `MEN`, `WOMEN`, `NEW ARRIVALS`, `CUSTOMIZE SCRUBS`, `INTERNATIONAL ORDER`, `LABCOATS`.
+  - Pill layout: Desktop single row of 6 pills; Mobile 2 columns x 3 rows grid.
+  - Cutout model photos, soft grey pill background (`#dfdfdf`), rounded 8px corners.
+- [x] **Section 3: Shop by Colors** (`sections/enamels-frontpage-colors.liquid`):
+  - Circular fabric weave/texture swatches with uppercase color label beneath (`BLUE`, `GREEN`, `SEAGREEN`, `MUSTARD`, `DARK GREEN`).
+  - Flanked by `<` and `>` arrow navigation buttons.
+  - Desktop carousel displaying 10 swatches in a row; Mobile showing 3 swatches visible at a time with smooth swipe/scroll.
+- [x] **Section 4: New Arrivals** (`sections/enamels-frontpage-new-arrivals.liquid`):
+  - 6 portrait cards: Female doctor in blue scrubs, Male doctor in black scrubs, Female in seagreen, Female in olive, Male in rust, Female in dark green.
+  - Desktop single row of 6 cards; Mobile 2-column grid.
+  - Displays product color/title label and price (`Rs 5900`).
+- [x] **Section 5: Join the Enamels Club** (`sections/enamels-frontpage-lookbook.liquid`):
+  - 5 tall editorial lifestyle cards in horizontal carousel with circular right navigation button `>`.
+  - Overlaid floating white card tag with product thumbnail, title (`Women Suit`, `Women Dress`), price (`PKR 8,499`, `PKR 10,999`), and chevron.
+  - Directly beneath tag: Full-width white `Add to cart` button.
+- [x] **Section 6: The Enamels Beige Footer** (`sections/enamels-frontpage-footer.liquid` & `sections/footer-group.json`):
+  - Warm camel/beige background (`#cbbaa6`) with dark charcoal typography.
+  - 4 structured columns: `SHOP`, `INFORMATION`, `TERMS AND POLICY`, `NEWSLETTER SIGN UP` (with email input & `SUBMIT` button, circular Facebook/Instagram icons).
+  - Sub-footer copyright `Enamels. All Rights Reserved. Manage By Softlight.` and payment badges (VISA, Mastercard, Apple Pay, Google Pay).
+- [x] **Templates & Theme Editor Modularity**:
+  - `templates/index.json` updated with all 5 core sections in exact visual sequence.
+  - All sections, headings, links, block counts, and media configurable in Shopify Theme Editor.
+
+
+
 
 

@@ -48,16 +48,16 @@
 
     const hangersHtml = items.map((item, idx) => {
       const isSelected = String(item.id) === String(RAIL_STATE.activeHangerId);
-      const cleanTitle = (item.title || '').replace('DEMO — ', '');
+      const cleanTitle = item.cleanTitle || (item.title || '').replace('DEMO — ', '');
       const colors = item.colors || [];
-      const activeColorName = (typeof window.getProductCardColor === 'function') ? window.getProductCardColor(item.id) : (colors[0]?.name || 'Deep Navy');
+      const activeColorName = (typeof window.getProductCardColor === 'function') ? window.getProductCardColor(item.id) : (colors[0]?.name || '');
       
       const activeImages = (typeof window.getCardActiveImages === 'function') ? window.getCardActiveImages(item.id) : [];
-      const activeImg = activeImages[0] || (window.ShopifyThemeAssets?.[item.image] || item.image || 'cat-sprinter.jpg');
+      const activeImg = activeImages[0] || (window.ShopifyThemeAssets?.[item.image] || item.image || '');
       const displayImg = window.ShopifyThemeAssets?.[activeImg] || activeImg;
 
-      const seriesName = (item.series || 'CLINICAL').toUpperCase();
-      const priceText = `Rs. ${(item.basePrice || 4850).toLocaleString()}`;
+      const seriesName = (item.series || '').toUpperCase();
+      const priceText = item.basePrice ? `Rs. ${(item.basePrice).toLocaleString()}` : '';
 
       // Color dots on hanger tag
       const dotsHtml = showSwatches && colors.length > 0 ? `
@@ -100,7 +100,7 @@
                 loading="eager"
                 width="320"
                 height="480"
-                onerror="this.src='${window.ShopifyThemeAssets?.['demo-hang-scrub-navy.png'] || displayImg}'"
+                onerror="this.style.opacity='0'"
               />
               <span class="enamels-wardrobe-hint-pill">Explore Piece ↗</span>
             </div>
@@ -945,11 +945,11 @@
               <div id="drawer-embroidery-body" style="display:none; margin-top:12px; padding-top:12px; border-top:1px dashed #99f6e4;">
                 <div style="display:flex; flex-direction:column; gap:8px;">
                   <div>
-                    <label style="font-size:10px; font-weight:700; color:#0f766e; display:block; margin-bottom:2px;">Line 1 (e.g. Dr. Ayesha Khan)</label>
+                    <label style="font-size:10px; font-weight:700; color:#0f766e; display:block; margin-bottom:2px;">Line 1 (Name & Title)</label>
                     <input type="text" id="drawer-emb-line1" placeholder="Enter Full Name" style="width:100%; padding:6px 10px; font-size:12px; border:1px solid #99f6e4; border-radius:4px;" />
                   </div>
                   <div>
-                    <label style="font-size:10px; font-weight:700; color:#0f766e; display:block; margin-bottom:2px;">Line 2 (e.g. Dept of Surgery / AKUH)</label>
+                    <label style="font-size:10px; font-weight:700; color:#0f766e; display:block; margin-bottom:2px;">Line 2 (Department / Clinic)</label>
                     <input type="text" id="drawer-emb-line2" placeholder="Department / Clinic" style="width:100%; padding:6px 10px; font-size:12px; border:1px solid #99f6e4; border-radius:4px;" />
                   </div>
                   <div>

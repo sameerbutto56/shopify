@@ -7,12 +7,27 @@
 
 {%- liquid
   assign logo_max_width = section.settings.logo_max_width | default: 100
-  assign phone_number = section.settings.phone_number | default: '+92 301 13 31 133'
-  assign phone_tel = section.settings.phone_tel | default: '+923011331133'
+  assign phone_number = section.settings.phone_number
+  if phone_number == blank
+    assign phone_number = settings.enamels_support_phone
+  endif
+
+  assign phone_tel = section.settings.phone_tel
+  if phone_tel == blank and phone_number != blank
+    assign phone_tel = phone_number | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', ''
+  endif
+
+  assign show_phone = true
+  if section.settings.show_phone == false
+    assign show_phone = false
+  endif
+  if phone_number == blank
+    assign show_phone = false
+  endif
+
   assign search_placeholder = section.settings.search_placeholder | default: 'Search scrubs, lab coats, surgical caps, sleeves...'
   assign show_wishlist = section.settings.show_wishlist
   assign show_search = section.settings.show_search
-  assign show_phone = section.settings.show_phone
   assign show_account = section.settings.show_account
   assign enable_sticky = section.settings.enable_sticky_header
   assign header_bg = section.settings.header_bg | default: '#ffffff'
@@ -21,10 +36,10 @@
   assign use_custom_menu = section.settings.use_custom_shopify_menu | default: false
   assign custom_menu = linklists[section.settings.custom_menu]
 
-  assign nav_studio_label = section.settings.nav_studio_label | default: 'DESIGN YOUR OWN SCRUBS'
-  assign nav_studio_badge = section.settings.nav_studio_badge | default: 'STUDIO'
-  assign nav_home_fitting_label = section.settings.nav_home_fitting_label | default: 'BOOK A HOME FITTING'
-  assign nav_home_fitting_badge = section.settings.nav_home_fitting_badge | default: 'LAHORE ONLY'
+  assign nav_studio_label = section.settings.nav_studio_label
+  assign nav_studio_badge = section.settings.nav_studio_badge
+  assign nav_home_fitting_label = section.settings.nav_home_fitting_label
+  assign nav_home_fitting_badge = section.settings.nav_home_fitting_badge
 
   assign show_scrubs = true
   if section.settings.show_nav_scrubs == false
@@ -324,8 +339,8 @@
               class="enamels-nav-link"
               onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); return false; }"
             >
-              <span class="nav-link-text">{{ nav_studio_label | escape }}</span>
-              <span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>
+              {% if nav_studio_label != blank %}<span class="nav-link-text">{{ nav_studio_label | escape }}</span>{% endif %}
+              {% if nav_studio_badge != blank %}<span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>{% endif %}
             </a>
           </li>
           {% endif %}
@@ -338,8 +353,8 @@
               class="enamels-nav-link"
               onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('self-service'); return false; }"
             >
-              <span class="nav-link-text">{{ nav_home_fitting_label | escape }}</span>
-              <span class="nav-badge-pill badge-lahore">{{ nav_home_fitting_badge | escape }}</span>
+              {% if nav_home_fitting_label != blank %}<span class="nav-link-text">{{ nav_home_fitting_label | escape }}</span>{% endif %}
+              {% if nav_home_fitting_badge != blank %}<span class="nav-badge-pill badge-lahore">{{ nav_home_fitting_badge | escape }}</span>{% endif %}
             </a>
           </li>
           {% endif %}
@@ -466,14 +481,30 @@
           </li>
           {% endif %}
 
+          <!-- Sale & Promotions -->
+          <li class="mobile-nav-item">
+            <a href="#sale" onclick="if(typeof window.filterCollectionByTag==='function'){window.filterCollectionByTag('sale-active');}else if(typeof window.navigateToCollection==='function'){window.navigateToCollection('sale');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+              <span>Sale & Promotions</span>
+              <span class="nav-badge-pill" style="background: #e11d48; color: #ffffff;">SALE</span>
+            </a>
+          </li>
+
+          <!-- Bulk Orders -->
+          <li class="mobile-nav-item">
+            <a href="/pages/bulk-orders" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
+              <span>Bulk Orders (10+ Scrubs)</span>
+              <span class="nav-badge-pill" style="background: #0284c7; color: #ffffff;">INSTITUTIONAL</span>
+            </a>
+          </li>
+
           <li class="mobile-nav-divider"></li>
 
           <!-- 8. Design Your Own Scrubs -->
           {% if show_ready_to_wear %}
           <li class="mobile-nav-item">
             <a href="#ready-to-wear" onclick="if(typeof window.navigateToView==='function') window.navigateToView('ready-to-wear'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
-              <span>{{ nav_studio_label | escape }}</span>
-              <span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>
+              {% if nav_studio_label != blank %}<span>{{ nav_studio_label | escape }}</span>{% endif %}
+              {% if nav_studio_badge != blank %}<span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>{% endif %}
             </a>
           </li>
           {% endif %}
@@ -482,8 +513,8 @@
           {% if show_home_service %}
           <li class="mobile-nav-item">
             <a href="#self-service" onclick="if(typeof window.navigateToView==='function') window.navigateToView('self-service'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
-              <span>{{ nav_home_fitting_label | escape }}</span>
-              <span class="nav-badge-pill badge-lahore">{{ nav_home_fitting_badge | escape }}</span>
+              {% if nav_home_fitting_label != blank %}<span>{{ nav_home_fitting_label | escape }}</span>{% endif %}
+              {% if nav_home_fitting_badge != blank %}<span class="nav-badge-pill badge-lahore">{{ nav_home_fitting_badge | escape }}</span>{% endif %}
             </a>
           </li>
           {% endif %}
@@ -492,16 +523,21 @@
     </nav>
 
     <div class="mobile-nav-footer">
-      <p class="mobile-support-title">Direct Support:</p>
+      {% if show_phone or settings.whatsapp_number != blank %}
+        <p class="mobile-support-title">Direct Support:</p>
+      {% endif %}
       {% if show_phone %}
       <a href="tel:{{ phone_tel }}" class="mobile-support-tel">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         <span>{{ phone_number | escape }}</span>
       </a>
       {% endif %}
-      <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="mobile-whatsapp-btn">
+      {% assign whatsapp_clean = settings.whatsapp_number | default: '' | replace: '+', '' | replace: ' ', '' | replace: '-', '' %}
+      {% if whatsapp_clean != blank %}
+      <a href="https://wa.me/{{ whatsapp_clean }}" target="_blank" rel="noopener" class="mobile-whatsapp-btn">
         💬 WhatsApp Official Support
       </a>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -667,14 +703,12 @@
     {
       "type": "text",
       "id": "phone_number",
-      "label": "Support Phone Display",
-      "default": "+92 301 13 31 133"
+      "label": "Support Phone Display"
     },
     {
       "type": "text",
       "id": "phone_tel",
-      "label": "Telephone Link (digits)",
-      "default": "+923011331133"
+      "label": "Telephone Link (digits)"
     },
     {
       "type": "checkbox",

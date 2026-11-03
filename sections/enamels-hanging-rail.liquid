@@ -27,9 +27,9 @@
   assign text_color = section.settings.text_color | default: '#64748b'
   assign pad_top = section.settings.section_padding_top | default: 40
   assign pad_bottom = section.settings.section_padding_bottom | default: 60
-  assign badge_text = section.settings.badge_text | default: 'Interactive Showroom'
-  assign heading = section.settings.heading | default: 'Boutique Rail Collection'
-  assign subtext = section.settings.subtext | default: 'Glide along the rail to inspect luxury clinical scrubs and tailored medical uniforms.'
+  assign badge_text = section.settings.badge_text | strip
+  assign heading = section.settings.heading | strip
+  assign subtext = section.settings.subtext | strip
   assign selected_collection = collections[section.settings.collection]
   assign product_limit = section.settings.products_to_show | default: 8
 %}
@@ -55,21 +55,25 @@
   <div class="page-container">
     <!-- Rail Section Header Row -->
     <div class="enamels-rail-header-row">
-      <div class="enamels-rail-title-wrap">
-        {% if badge_text != blank %}
-          <span class="enamels-rail-tag">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 6v6l4 2"></path>
-            </svg>
-            {{ badge_text | escape }}
-          </span>
-        {% endif %}
-        <h2 class="enamels-rail-heading" style="color: {{ heading_color }};">{{ heading | escape }}</h2>
-        {% if subtext != blank %}
-          <p class="enamels-rail-subtext" style="color: {{ text_color }};">{{ subtext | escape }}</p>
-        {% endif %}
-      </div>
+      {% if badge_text != blank or heading != blank or subtext != blank %}
+        <div class="enamels-rail-title-wrap">
+          {% if badge_text != blank %}
+            <span class="enamels-rail-tag">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              {{ badge_text | escape }}
+            </span>
+          {% endif %}
+          {% if heading != blank %}
+            <h2 class="enamels-rail-heading" style="color: {{ heading_color }};">{{ heading | escape }}</h2>
+          {% endif %}
+          {% if subtext != blank %}
+            <p class="enamels-rail-subtext" style="color: {{ text_color }};">{{ subtext | escape }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
 
       <!-- View Switcher Toggle -->
       <div class="enamels-view-switcher" role="group" aria-label="Catalog View Mode">
@@ -138,10 +142,17 @@
         {% endfor %}
       {% endif %}
 
-      var items = (realItems.length > 0) ? realItems : (window.EnamelsFullCatalogue || window.ENAMELS_DEFAULT_SCRUBS || []);
+      var items = (realItems.length > 0) ? realItems : [];
       if (!items || !items.length) {
-        // Retry shortly if catalog is loading asynchronously
-        setTimeout(initSectionRail, 150);
+        if (typeof window.renderHangingRailHtml === 'function') {
+          mount.innerHTML = window.renderHangingRailHtml([], {
+            rail_finish: {{ rail_finish | json }},
+            show_tags: {{ show_tags | json }},
+            show_swatches: {{ show_swatches | json }},
+            show_names: {{ show_product_names | json }},
+            show_prices: {{ show_prices | json }}
+          });
+        }
         return;
       }
 

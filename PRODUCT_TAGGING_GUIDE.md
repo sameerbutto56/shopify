@@ -70,3 +70,32 @@ If products were previously added with simple tags like `Scrubs`, `Men`, `Sprint
 4. Product title keywords (e.g., `cap`, `lab coat`, `sleeves`, `clog`, `men's`, `women's`)
 
 No products will break or disappear from the storefront.
+
+---
+
+## 5. Sale Qualification Rules
+
+To designate a product for the dedicated **Sale section** and **Sale collection** (`/collections/sale`):
+1. **Compare-at Price (Recommended)**: Set a `Compare-at price` higher than the `Price` on the product or variant in Shopify Admin.
+   - Example: Price = `Rs. 4,650`, Compare-at price = `Rs. 5,450`.
+   - The theme calculates the real discount percentage (`15% OFF`) and displays the prominent `SALE` badge.
+2. **Sale Tag**: Add the structured tag `sale-active` (or `sale`).
+3. **Removing from Sale**: To end a sale, simply clear the `Compare-at price` and remove the `sale-active` tag. The product will automatically disappear from the Sale collection without touching inventory or other category tags.
+
+---
+
+## 6. Shipping & Add-on Classification Rules
+
+The store automatically computes shipping at checkout based on destination:
+- **Pakistan Deliveries**: Domestic shipping rates apply:
+  - **Free Nationwide Delivery** on eligible order totals strictly greater than PKR 7,000 (e.g. PKR 7,001+).
+  - **Standard Domestic Courier (PKR 250)** for orders of PKR 7,000 or less.
+  - **Cash on Delivery (COD)**: Available nationwide across all cities in Pakistan via TCS and Trax Logistics.
+- **International Deliveries**:
+  `International shipping charge = (Q × 4,000) + (A × 1,800)`
+  - `Q` = Count of scrub sets in the order (identified by `category:scrubs` or product type `Scrubs`).
+  - `A` = Count of chargeable add-on units:
+    1. Line items with custom personalization properties (`Personalization`, `Embroidery Name`, `Crest / Logo`, `Alterations`).
+    2. Accessory add-ons (BunFit Surgical Caps, FlexFit Sleeves, Compression Socks).
+  - Plain scrub sets without customization count towards `Q` only. An add-on is never charged twice. Cash on Delivery is strictly restricted to Pakistan.
+

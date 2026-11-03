@@ -1,0 +1,358 @@
+{% comment %}
+  Enamels Automated Shipping & Delivery Pricing Engine
+  Features:
+  - Supports Pakistan Domestic vs International Delivery Pricing
+  - Pakistan: Free shipping above threshold (PKR 7,000) or standard courier rate (PKR 250)
+  - International Formula: International shipping charge = (Q × 4,000) + (A × 1,800) + S
+    Q = count of scrub units
+    A = count of eligible chargeable add-ons (custom embroidery, name, patch, crest, or accessory add-ons)
+  - Dynamic recalculation on country, quantity, or add-on change
+  - Synchronizes structured attributes with Shopify Cart via /cart/update.js
+  - Distinguishes merchandise subtotal from shipping charge
+{% endcomment %}
+
+{%- liquid
+  assign pak_rate = settings.shipping_pakistan_rate | default: 250
+  assign free_threshold = settings.free_shipping_threshold | default: 7000
+  assign intl_scrub_rate = settings.shipping_intl_scrub_rate | default: 4000
+  assign intl_addon_rate = settings.shipping_intl_addon_rate | default: 1800
+  assign pak_msg = settings.shipping_pakistan_message | default: 'Pakistan delivery charges are calculated using our applicable domestic shipping rates.' | escape
+  assign intl_msg = settings.shipping_intl_message | default: 'International shipping: PKR 4,000 per scrub, plus PKR 1,800 for each applicable add-on unit.' | escape
+-%}
+
+<div class="enamels-shipping-calculator-widget" id="enamels-shipping-calc-widget" data-pak-rate="{{ pak_rate }}" data-free-threshold="{{ free_threshold }}" data-intl-scrub-rate="{{ intl_scrub_rate }}" data-intl-addon-rate="{{ intl_addon_rate }}">
+  <!-- Delivery Destination Selector -->
+  <div class="shipping-destination-header" style="padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 12px;">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px;">
+      <label for="shipping-country-select" style="font-size: 12px; font-weight: 700; color: #102a43; display: flex; align-items: center; gap: 6px;">
+        <span>📍 Delivery Destination:</span>
+      </label>
+      <select
+        id="shipping-country-select"
+        class="form-field-select"
+        onchange="window.handleShippingCountryChange(this.value)"
+        style="font-size: 12px; font-weight: 600; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #102a43; cursor: pointer;"
+      >
+        <option value="Pakistan" selected>🇵🇰 Pakistan (Domestic)</option>
+        <option value="United Kingdom">🇬🇧 United Kingdom</option>
+        <option value="United States">🇺🇸 United States</option>
+        <option value="United Arab Emirates">🇦🇪 United Arab Emirates</option>
+        <option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+        <option value="Canada">🇨🇦 Canada</option>
+        <option value="Australia">🇦🇺 Australia</option>
+        <option value="Qatar">🇶🇦 Qatar</option>
+        <option value="Oman">🇴🇲 Oman</option>
+        <option value="Kuwait">🇰🇼 Kuwait</option>
+        <option value="Germany">🇩🇪 Germany</option>
+        <option value="Other International">🌍 Other International Destination</option>
+      </select>
+    </div>
+
+    <!-- Transparent Policy Explanatory Note -->
+    <div id="shipping-policy-notice" style="font-size: 11px; color: #64748b; line-height: 1.4; border-top: 1px dashed #cbd5e1; padding-top: 6px;">
+      <span id="shipping-policy-text">{{ pak_msg }}</span>
+    </div>
+  </div>
+
+  <!-- Transparent Shipping Charge Breakdown Box -->
+  <div id="shipping-breakdown-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 12px;">
+    <!-- Scrub Quantity (Q) Line -->
+    <div id="shipping-scrub-row" style="display: none; justify-content: space-between; margin-bottom: 6px; color: #475569;">
+      <span>Scrubs Shipping (<span id="calc-scrub-qty">0</span> × PKR {{ intl_scrub_rate | number_with_delimiter }}):</span>
+      <strong id="calc-scrub-subtotal" style="color: #102a43;">PKR 0</strong>
+    </div>
+
+    <!-- Chargeable Add-on Units (A) Line -->
+    <div id="shipping-addon-row" style="display: none; justify-content: space-between; margin-bottom: 6px; color: #475569;">
+      <span>Add-on Units (<span id="calc-addon-qty">0</span> × PKR {{ intl_addon_rate | number_with_delimiter }}):</span>
+      <strong id="calc-addon-subtotal" style="color: #102a43;">PKR 0</strong>
+    </div>
+
+    <!-- Total Shipping Fee Line -->
+    <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 6px; border-top: 1px solid #f1f5f9; font-weight: 700;">
+      <span style="color: #102a43;" id="calc-shipping-label">Estimated Delivery:</span>
+      <span style="color: #008779; font-size: 14px;" id="calc-shipping-total">PKR 0</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const WIDGET = {
+      pakRate: {{ pak_rate }},
+      freeThreshold: {{ free_threshold }},
+      intlScrubRate: {{ intl_scrub_rate }},
+      intlAddonRate: {{ intl_addon_rate }},
+      pakMsg: {{ pak_msg | json }},
+      intlMsg: {{ intl_msg | json }}
+    };
+
+    window.EnamelsShippingConfig = WIDGET;
+
+    // Helper to evaluate scrub vs addon count from stored cart or Shopify cart
+    window.analyzeCartComposition = function(cartItems) {
+      let Q = 0; // Scrubs
+      let A = 0; // Addons
+
+      if (!cartItems || !cartItems.length) {
+        return { Q: 0, A: 0 };
+      }
+
+      cartItems.forEach(item => {
+        const qty = item.quantity || 1;
+        const titleLower = (item.title || item.product_title || '').toLowerCase();
+        const typeLower = (item.product_type || item.category || item.series || '').toLowerCase();
+        const tags = Array.isArray(item.tags) ? item.tags : [];
+
+        // Check if Scrub Set
+        const isScrub = typeLower.includes('scrub') ||
+                        titleLower.includes('scrub') ||
+                        typeLower === 'sprinter' ||
+                        typeLower === 'vilora' ||
+                        typeLower === 'crown' ||
+                        typeLower === 'ground' ||
+                        tags.some(t => t.includes('category:scrubs') || t.includes('brand:sprinter') || t.includes('brand:vilora') || t.includes('brand:crown') || t.includes('brand:ground'));
+
+        if (isScrub) {
+          Q += qty;
+        }
+
+        // Check if item has attached customization (Embroidery, Name, Patch, Crest, Alterations)
+        let hasPersonalization = false;
+        if (item.properties) {
+          const p = item.properties;
+          if (p['Personalization'] || p['Embroidery Name'] || p['Embroidery Title'] || p['Hospital / Custom Logo'] || p['Hospital Crest'] || p['Tailoring Specification'] || p['Custom Size'] || p['_engraving'] || p['_logo'] || p['_alterations']) {
+            hasPersonalization = true;
+          }
+        }
+        if (item.engraving || item.logo || item.alterations) {
+          hasPersonalization = true;
+        }
+
+        if (hasPersonalization) {
+          A += qty; // 1 add-on per customized scrub unit
+        }
+
+        // Standalone accessory add-on items (Caps, Sleeves, Socks, companion-addon)
+        const isAccessoryAddon = typeLower.includes('cap') ||
+                                 typeLower.includes('sleeve') ||
+                                 typeLower.includes('addon') ||
+                                 titleLower.includes('cap') ||
+                                 titleLower.includes('sleeve') ||
+                                 titleLower.includes('addon') ||
+                                 item.productId === 'companion-addon' ||
+                                 tags.some(t => t.includes('category:caps') || t.includes('category:sleeves') || t.includes('addon'));
+
+        if (isAccessoryAddon && !hasPersonalization) {
+          A += qty;
+        }
+      });
+
+      return { Q, A };
+    };
+
+    function isPakistan(country) {
+      if (!country) return true;
+      const c = String(country).trim().toLowerCase();
+      return c === 'pk' || c === 'pakistan' || c.includes('pak');
+    }
+
+    window.calculateShippingCharges = function(country, subtotalOrScrubCount, cartItemsOrAddonCount, explicitSubtotal) {
+      let subtotal = 0;
+      let comp = { Q: 0, A: 0 };
+
+      if (Array.isArray(cartItemsOrAddonCount) || (cartItemsOrAddonCount && typeof cartItemsOrAddonCount === 'object' && 'items' in cartItemsOrAddonCount)) {
+        subtotal = Number(subtotalOrScrubCount) || 0;
+        comp = window.analyzeCartComposition(cartItemsOrAddonCount);
+      } else if (typeof subtotalOrScrubCount === 'number' && typeof cartItemsOrAddonCount === 'number' && explicitSubtotal !== undefined) {
+        comp = { Q: subtotalOrScrubCount, A: cartItemsOrAddonCount };
+        subtotal = Number(explicitSubtotal) || 0;
+      } else {
+        subtotal = Number(subtotalOrScrubCount) || 0;
+        comp = window.analyzeCartComposition(cartItemsOrAddonCount);
+      }
+
+      const isPak = isPakistan(country);
+
+      if (isPak) {
+        // Strict threshold: order total strictly greater than PKR 7,000 is Free
+        // At PKR 7,000 or below, charge PKR 250
+        const isFree = subtotal > WIDGET.freeThreshold;
+        let domesticFee = isFree ? 0 : WIDGET.pakRate;
+        if (subtotal === 0) {
+          domesticFee = 0;
+        }
+        return {
+          country: 'Pakistan',
+          isInternational: false,
+          isDomestic: true,
+          Q: comp.Q,
+          A: comp.A,
+          scrubCount: comp.Q,
+          addonCount: comp.A,
+          scrubCharge: 0,
+          addonCharge: 0,
+          shippingFee: domesticFee,
+          amount: domesticFee,
+          isFree: isFree,
+          message: WIDGET.pakMsg,
+          formulaText: isFree ? 'Free Nationwide Delivery (Order > PKR 7,000)' : `Standard Domestic Courier (PKR ${WIDGET.pakRate})`,
+          calculation: isFree ? 'Free Nationwide Delivery' : `Standard Courier (PKR ${WIDGET.pakRate})`
+        };
+      } else {
+        const scrubCharge = comp.Q * WIDGET.intlScrubRate;
+        const addonCharge = comp.A * WIDGET.intlAddonRate;
+        const totalIntl = scrubCharge + addonCharge;
+        return {
+          country: country || 'International',
+          isInternational: true,
+          isDomestic: false,
+          Q: comp.Q,
+          A: comp.A,
+          scrubCount: comp.Q,
+          addonCount: comp.A,
+          scrubCharge: scrubCharge,
+          addonCharge: addonCharge,
+          shippingFee: totalIntl,
+          amount: totalIntl,
+          isFree: false,
+          message: WIDGET.intlMsg,
+          formulaText: `(${comp.Q} scrubs × PKR ${WIDGET.intlScrubRate.toLocaleString()}) + (${comp.A} add-ons × PKR ${WIDGET.intlAddonRate.toLocaleString()}) = PKR ${totalIntl.toLocaleString()}`,
+          calculation: `(${comp.Q} scrubs × PKR ${WIDGET.intlScrubRate}) + (${comp.A} add-ons × PKR ${WIDGET.intlAddonRate})`
+        };
+      }
+    };
+
+    window.getActiveShippingCountry = function() {
+      try {
+        const stored = localStorage.getItem('enamels_delivery_country');
+        if (stored) {
+          if (isPakistan(stored)) return 'Pakistan';
+          return stored;
+        }
+        return 'Pakistan';
+      } catch(e) {
+        return 'Pakistan';
+      }
+    };
+
+    window.setActiveShippingCountry = function(c) {
+      try {
+        const normalized = isPakistan(c) ? 'Pakistan' : c;
+        localStorage.setItem('enamels_delivery_country', normalized);
+      } catch(e) {}
+    };
+
+    window.handleShippingCountryChange = function(newCountry) {
+      window.setActiveShippingCountry(newCountry);
+      window.updateAllShippingCalculators();
+    };
+
+    // Synchronize shipping calculation to DOM widgets & Shopify Cart Attributes
+    window.updateAllShippingCalculators = function() {
+      const countrySelect = document.getElementById('shipping-country-select');
+      const activeCountry = window.getActiveShippingCountry();
+      if (countrySelect && countrySelect.value !== activeCountry) {
+        countrySelect.value = activeCountry;
+      }
+
+      // Gather current cart items & subtotal
+      let items = [];
+      let subtotal = 0;
+
+      // 1. Check custom stored cart
+      try {
+        const raw = localStorage.getItem('enamels_demo_cart');
+        if (raw) {
+          items = JSON.parse(raw);
+          subtotal = items.reduce((sum, it) => sum + ((it.unitPrice || 0) * (it.quantity || 1)), 0);
+        }
+      } catch(e) {}
+
+      // 2. Fallback to Shopify Cart object if stored cart is empty
+      if (!items.length && window.ShopifyLiveCart && window.ShopifyLiveCart.items) {
+        items = window.ShopifyLiveCart.items;
+        subtotal = window.ShopifyLiveCart.total_price / 100;
+      }
+
+      const calc = window.calculateShippingCharges(activeCountry, subtotal, items);
+
+      // Update UI elements
+      const policyNotice = document.getElementById('shipping-policy-text');
+      const scrubRow = document.getElementById('shipping-scrub-row');
+      const addonRow = document.getElementById('shipping-addon-row');
+      const scrubQtyEl = document.getElementById('calc-scrub-qty');
+      const scrubSubEl = document.getElementById('calc-scrub-subtotal');
+      const addonQtyEl = document.getElementById('calc-addon-qty');
+      const addonSubEl = document.getElementById('calc-addon-subtotal');
+      const shippingLabelEl = document.getElementById('calc-shipping-label');
+      const shippingTotalEl = document.getElementById('calc-shipping-total');
+
+      if (policyNotice) policyNotice.textContent = calc.message;
+
+      if (calc.isInternational) {
+        if (scrubRow) scrubRow.style.display = 'flex';
+        if (addonRow) addonRow.style.display = 'flex';
+        if (scrubQtyEl) scrubQtyEl.textContent = calc.Q;
+        if (scrubSubEl) scrubSubEl.textContent = `PKR ${calc.scrubCharge.toLocaleString()}`;
+        if (addonQtyEl) addonQtyEl.textContent = calc.A;
+        if (addonSubEl) addonSubEl.textContent = `PKR ${calc.addonCharge.toLocaleString()}`;
+        if (shippingLabelEl) shippingLabelEl.textContent = 'International Shipping:';
+        if (shippingTotalEl) {
+          shippingTotalEl.textContent = `PKR ${calc.shippingFee.toLocaleString()}`;
+          shippingTotalEl.style.color = '#0284c7';
+        }
+      } else {
+        if (scrubRow) scrubRow.style.display = 'none';
+        if (addonRow) addonRow.style.display = 'none';
+        if (shippingLabelEl) shippingLabelEl.textContent = 'Pakistan Delivery:';
+        if (shippingTotalEl) {
+          if (calc.isFree) {
+            shippingTotalEl.textContent = 'FREE';
+            shippingTotalEl.style.color = '#059669';
+          } else {
+            shippingTotalEl.textContent = `PKR ${calc.shippingFee.toLocaleString()}`;
+            shippingTotalEl.style.color = '#102a43';
+          }
+        }
+      }
+
+      // Update drawer estimated grand total if element exists
+      const grandTotalEl = document.getElementById('cart-drawer-grand-total');
+      if (grandTotalEl) {
+        const grandTotal = subtotal + calc.shippingFee;
+        grandTotalEl.textContent = `Rs. ${grandTotal.toLocaleString()}`;
+      }
+
+      // Background sync to Shopify Cart Attributes for checkout integrity
+      if (typeof fetch === 'function') {
+        const isDom = isPakistan(calc.country);
+        const payload = {
+          attributes: {
+            'Delivery Destination': isDom ? 'Pakistan' : calc.country,
+            'Delivery Country Code': isDom ? 'PK' : calc.country,
+            'Scrub Quantity (Q)': calc.Q,
+            'Chargeable Add-on Quantity (A)': calc.A,
+            'Shipping Rate Calculation': calc.formulaText,
+            'Estimated Shipping Fee (PKR)': calc.shippingFee
+          }
+        };
+
+        // Debounced update
+        clearTimeout(window._shipAttrTimeout);
+        window._shipAttrTimeout = setTimeout(() => {
+          fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }).catch(err => console.debug('Cart attribute sync:', err));
+        }, 500);
+      }
+    };
+
+    // Auto-initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      window.updateAllShippingCalculators();
+    });
+  })();
+</script>

@@ -1,0 +1,2395 @@
+{% comment %}
+  ==============================================================================
+  ENAMELS ONLINE — AMAZON-INSPIRED PREMIUM PRODUCT DETAIL PAGE (PDP)
+  Structured 3-Column Desktop Grid: Media Gallery | Product Info | Buy Box
+  100% Manageable via Shopify Theme Editor (Blocks & Section Settings)
+  Preserves Enamels clinical luxury aesthetic with authentic variant switching,
+  customization line-item properties, size guide, reviews, and cart drawer handoff.
+  ==============================================================================
+{% endcomment %}
+
+{{ 'enamels-pdp-amazon.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_media = current_variant.featured_media | default: product.featured_media
+
+  # Calculations for compare price & discount
+  assign has_discount = false
+  if current_variant.compare_at_price > current_variant.price
+    assign has_discount = true
+    assign savings_amount = current_variant.compare_at_price | minus: current_variant.price
+    assign savings_pct = savings_amount | times: 100.0 | divided_by: current_variant.compare_at_price | round
+  endif
+
+  # Pakistan & International shipping rules
+  assign standard_shipping_fee = section.settings.shipping_fee_pk | default: 250
+  assign free_shipping_threshold = section.settings.free_shipping_threshold | default: 7000
+  assign intl_shipping_base = section.settings.shipping_fee_intl | default: 4000
+  assign intl_shipping_addon = section.settings.shipping_fee_intl_addon | default: 1800
+
+  # Media gallery settings
+  assign gallery_fit = section.settings.gallery_image_fit | default: 'contain'
+  assign gallery_ratio = section.settings.gallery_aspect_ratio | default: '3/4'
+  assign enable_zoom = section.settings.enable_image_zoom
+  assign enable_lightbox = section.settings.enable_lightbox
+
+  # Layout settings
+  assign max_width = section.settings.container_width | default: 1380
+  assign column_ratio = section.settings.column_ratio | default: '4.8:5:3.4'
+  
+  assign col_media = '4.8fr'
+  assign col_info = '5fr'
+  assign col_buybox = '3.4fr'
+  if column_ratio == '4.5:4.5:3'
+    assign col_media = '4.5fr'
+    assign col_info = '4.5fr'
+    assign col_buybox = '3fr'
+  elsif column_ratio == '5:4:3'
+    assign col_media = '5fr'
+    assign col_info = '4fr'
+    assign col_buybox = '3fr'
+  elsif column_ratio == '4:5:3'
+    assign col_media = '4fr'
+    assign col_info = '5fr'
+    assign col_buybox = '3fr'
+  endif
+-%}
+
+<div
+  class="enamels-pdp-page"
+  id="enamels-pdp-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  style="
+    --pdp-gallery-fit: {{ gallery_fit }};
+    --pdp-gallery-ratio: {{ gallery_ratio }};
+    --pdp-col-media: {{ col_media }};
+    --pdp-col-info: {{ col_info }};
+    --pdp-col-buybox: {{ col_buybox }};
+    --pdp-btn-bg: {{ section.settings.atc_btn_bg | default: '#102a43' }};
+    --pdp-btn-color: {{ section.settings.atc_btn_color | default: '#ffffff' }};
+    --pdp-buynow-bg: {{ section.settings.buy_now_btn_bg | default: '#008779' }};
+    --pdp-buynow-color: {{ section.settings.buy_now_btn_color | default: '#ffffff' }};
+    --pdp-btn-radius: {{ section.settings.btn_border_radius | default: 8 }}px;
+    padding-top: {{ section.settings.padding_top | default: 20 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 60 }}px;
+    {% if section.settings.background_color != blank %}background-color: {{ section.settings.background_color }};{% endif %}
+  "
+>
+  <div class="page-container pdp-shell-container" style="max-width: {{ max_width }}px; margin: 0 auto; padding: 0 20px;">
+
+    {%- if section.settings.show_breadcrumbs -%}
+      <!-- Breadcrumb Navigation -->
+      <nav class="enamels-pdp-breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a>
+        <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        {%- if product.collections.size > 0 -%}
+          <a href="{{ product.collections.first.url }}">{{ product.collections.first.title | escape }}</a>
+          <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        {%- endif -%}
+        {%- if product.type != blank -%}
+          <a href="{{ routes.all_products_collection_url }}?filter.p.product_type={{ product.type | url_encode }}">{{ product.type | escape }}</a>
+          <span class="breadcrumb-sep" aria-hidden="true">›</span>
+        {%- endif -%}
+        <span class="breadcrumb-current" aria-current="page">{{ product.title | escape }}</span>
+      </nav>
+    {%- endif -%}
+
+    <!-- 3-COLUMN AMAZON PDP GRID -->
+    <div class="enamels-pdp-grid">
+
+      <!-- ======================================================================
+           COLUMN 1: ADVANCED PRODUCT MEDIA GALLERY
+           ====================================================================== -->
+      <div class="enamels-pdp-media-col" id="pdp-media-col-{{ section.id }}">
+        
+        <!-- Thumbnails Rail -->
+        {%- if product.media.size > 1 -%}
+          <div class="enamels-pdp-thumbs-rail" id="pdp-thumbs-rail-{{ section.id }}" role="tablist" aria-label="Product Media Thumbnails">
+            {%- for media in product.media -%}
+              <button
+                type="button"
+                role="tab"
+                class="pdp-thumb-item {% if forloop.first %}active{% endif %}"
+                data-media-id="{{ media.id }}"
+                data-media-type="{{ media.media_type }}"
+                data-media-url="{{ media | image_url: width: 1400 }}"
+                {% if media.media_type == 'video' %}
+                  data-video-url="{{ media.sources[0].url }}"
+                {% endif %}
+                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                aria-label="Thumbnail {{ forloop.index }} of {{ product.media.size }}"
+              >
+                <img
+                  src="{{ media | image_url: width: 140, height: 180, crop: 'center' }}"
+                  alt="{{ media.alt | default: product.title | escape }}"
+                  class="pdp-thumb-img"
+                  width="70"
+                  height="90"
+                  loading="lazy"
+                />
+                {%- if media.media_type == 'video' -%}
+                  <span class="pdp-thumb-video-icon" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                  </span>
+                {%- endif -%}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <!-- Main Product Media Stage -->
+        <div class="enamels-pdp-main-stage aspect-{{ gallery_ratio | replace: '/', '_' }}" id="pdp-main-stage-{{ section.id }}">
+          
+          <!-- Badge Overlay (Sale / Bestseller) -->
+          <div class="pdp-badge-overlay">
+            {%- if has_discount -%}
+              <span class="pdp-badge-sale" id="pdp-media-badge-sale">
+                -{{ savings_pct }}% OFF
+              </span>
+            {%- elsif product.tags contains 'bestseller' or product.tags contains 'Bestseller' or product.tags contains 'best-seller' -%}
+              <span class="pdp-badge-bestseller">
+                ★ BESTSELLER
+              </span>
+            {%- endif -%}
+          </div>
+
+          <!-- Fullscreen Expand Button -->
+          {%- if enable_lightbox -%}
+            <button
+              type="button"
+              class="pdp-media-fullscreen-btn pdp-stage-zoom-btn"
+              id="pdp-expand-modal-btn-{{ section.id }}"
+              aria-label="View Fullscreen High-Resolution Image"
+              title="Expand to Fullscreen"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+            </button>
+          {%- endif -%}
+
+          <!-- Main Media Wrapper -->
+          <div
+            class="pdp-main-media-wrap pdp-stage-media-wrap"
+            id="pdp-main-wrap-{{ section.id }}"
+            {% if enable_zoom %}data-zoom-enabled="true"{% endif %}
+          >
+            {%- if featured_media.media_type == 'video' -%}
+              <video
+                id="pdp-main-video-{{ section.id }}"
+                class="pdp-main-video active"
+                controls
+                playsinline
+                preload="metadata"
+                poster="{{ featured_media.preview_image | image_url: width: 1000 }}"
+              >
+                {%- for source in featured_media.sources -%}
+                  <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                {%- endfor -%}
+                Your browser does not support video playback.
+              </video>
+              <img
+                id="pdp-main-img-{{ section.id }}"
+                class="pdp-main-img pdp-stage-img fit-{{ gallery_fit }}"
+                src="{{ featured_media.preview_image | image_url: width: 1200 }}"
+                alt="{{ featured_media.alt | default: product.title | escape }}"
+                width="800"
+                height="1000"
+                style="display: none;"
+              />
+            {%- elsif featured_media != blank -%}
+              <img
+                id="pdp-main-img-{{ section.id }}"
+                class="pdp-main-img pdp-stage-img fit-{{ gallery_fit }}"
+                src="{{ featured_media | image_url: width: 1200 }}"
+                alt="{{ featured_media.alt | default: product.title | escape }}"
+                width="800"
+                height="1000"
+                loading="eager"
+                fetchpriority="high"
+                data-highres-url="{{ featured_media | image_url: width: 2000 }}"
+              />
+            {%- else -%}
+              <div class="pdp-media-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 380px; color: #94a3b8; gap: 8px;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span style="font-size: 13px; font-weight: 600;">Clinical Product Imagery</span>
+              </div>
+            {%- endif -%}
+
+            {%- if enable_zoom -%}
+              <!-- Hover Zoom Lens Canvas / Overlay (Desktop) -->
+              <div class="pdp-media-zoom-overlay" id="pdp-zoom-overlay-{{ section.id }}" aria-hidden="true"></div>
+            {%- endif -%}
+          </div>
+
+          <!-- Mobile / Tablet Navigation Arrows -->
+          {%- if product.media.size > 1 -%}
+            <button type="button" class="pdp-media-nav-prev" id="pdp-media-prev-{{ section.id }}" aria-label="Previous Media">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="pdp-media-nav-next" id="pdp-media-next-{{ section.id }}" aria-label="Next Media">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+
+            <!-- Mobile Dots Pagination Indicator -->
+            <div class="pdp-mobile-dots" id="pdp-mobile-dots-{{ section.id }}" aria-hidden="true">
+              {%- for media in product.media -%}
+                <span class="pdp-mobile-dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}"></span>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+        </div>
+      </div>
+
+
+      <!-- ======================================================================
+           COLUMN 2: PRODUCT INFORMATION, VARIANTS & SPECIFICATIONS
+           ====================================================================== -->
+      <div class="enamels-pdp-info-col" id="pdp-info-col-{{ section.id }}">
+        
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+
+            {%- when 'vendor_sku' -%}
+              <!-- Brand / Vendor & SKU Row -->
+              <div class="pdp-vendor-row pdp-vendor-sku-row" {{ block.shopify_attributes }}>
+                {%- if block.settings.show_vendor and product.vendor != blank -%}
+                  <a href="{{ product.vendor | url_for_vendor }}" class="pdp-vendor-link">
+                    {{ product.vendor | default: 'ENAMELS' | escape }}
+                  </a>
+                {%- endif -%}
+
+                {%- if block.settings.show_sku and current_variant.sku != blank -%}
+                  <span class="pdp-sku-badge" id="pdp-live-sku">
+                    SKU: <strong>{{ current_variant.sku }}</strong>
+                  </span>
+                {%- endif -%}
+
+                {%- if block.settings.show_article_name and product.metafields.custom.article_name != blank -%}
+                  <span class="pdp-article-badge">
+                    Article: {{ product.metafields.custom.article_name | escape }}
+                  </span>
+                {%- endif -%}
+
+                {%- if block.settings.show_category and product.type != blank -%}
+                  <span class="pdp-article-badge">
+                    {{ product.type | escape }}
+                  </span>
+                {%- endif -%}
+              </div>
+
+            {%- when 'title_rating' -%}
+              <!-- Product Title & Verified Ratings Row -->
+              <div class="pdp-title-rating-block" {{ block.shopify_attributes }}>
+                <h1 class="pdp-main-title pdp-title" style="font-size: {{ block.settings.title_size | default: 26 }}px;">
+                  {{ product.title | escape }}
+                </h1>
+
+                {%- if block.settings.show_rating -%}
+                  <div class="pdp-rating-row">
+                    <div class="pdp-stars pdp-stars-visual" aria-label="Rating: {{ block.settings.rating_score | default: '4.9' }} out of 5 stars">
+                      ★★★★★
+                    </div>
+                    <span class="pdp-rating-score pdp-rating-num">{{ block.settings.rating_score | default: '4.9' }}</span>
+                    <a href="#pdp-reviews-section-{{ section.id }}" class="pdp-reviews-count pdp-reviews-link" onclick="document.getElementById('pdp-reviews-section-{{ section.id }}')?.scrollIntoView({behavior: 'smooth'}); return false;">
+                      ({{ block.settings.reviews_count | default: '128' }} verified ratings)
+                    </a>
+                    {%- if block.settings.show_verified_badge -%}
+                      <span class="pdp-verified-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                        Verified Clinical Grade
+                      </span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+
+            {%- when 'price' -%}
+              <!-- Pricing & Savings Block -->
+              <div class="pdp-price-box" {{ block.shopify_attributes }}>
+                {%- if has_discount and block.settings.show_discount_badge -%}
+                  <div class="pdp-sale-badge-pill" id="pdp-sale-pill">
+                    Limited Time Offer — Save {{ savings_pct }}%
+                  </div>
+                {%- endif -%}
+
+                <div class="pdp-price-wrap">
+                  <span class="pdp-price-current pdp-current-price" id="pdp-live-price">
+                    {{ current_variant.price | money }}
+                  </span>
+
+                  {%- if block.settings.show_compare_at_price -%}
+                    <span
+                      class="pdp-price-compare pdp-compare-price"
+                      id="pdp-live-compare-price"
+                      {% unless has_discount %}style="display: none;"{% endunless %}
+                    >
+                      {{ current_variant.compare_at_price | money }}
+                    </span>
+                  {%- endif -%}
+
+                  {%- if block.settings.show_discount_badge -%}
+                    <span
+                      class="pdp-discount-pill pdp-save-badge"
+                      id="pdp-live-savings-badge"
+                      {% unless has_discount %}style="display: none;"{% endunless %}
+                    >
+                      Save {{ savings_amount | money }} ({{ savings_pct }}%)
+                    </span>
+                  {%- endif -%}
+                </div>
+
+                {%- if block.settings.show_tax_note -%}
+                  <div class="pdp-tax-note">
+                    {{ block.settings.tax_note_text | default: 'Inclusive of all taxes. Free delivery on orders over PKR 7,000 in Pakistan.' }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+            {%- when 'variant_picker' -%}
+              <!-- Advanced Variant Selection (Color Swatches & Size Chips) -->
+              <div class="pdp-variant-picker-block" {{ block.shopify_attributes }} id="pdp-variant-picker-{{ section.id }}">
+                
+                {%- unless product.has_only_default_variant -%}
+                  {%- for option in product.options_with_values -%}
+                    {%- assign option_name_downcase = option.name | downcase -%}
+
+                    <!-- COLOR OPTION (Swatches) -->
+                    {%- if option_name_downcase contains 'color' or option_name_downcase contains 'colour' or option_name_downcase contains 'shade' -%}
+                      <div class="pdp-option-group pdp-color-group" data-option-index="{{ forloop.index0 }}">
+                        <div class="pdp-option-header">
+                          <span class="pdp-option-label">{{ option.name }}:</span>
+                          <span class="pdp-selected-val" id="pdp-selected-color-label">{{ option.selected_value }}</span>
+                        </div>
+
+                        <div class="pdp-swatches-grid" role="radiogroup" aria-label="{{ option.name }}">
+                          {%- for value in option.values -%}
+                            {%- liquid
+                              # Find matching variant for swatch image
+                              assign swatch_variant = null
+                              for v in product.variants
+                                if v.options[forloop.parentloop.index0] == value
+                                  assign swatch_variant = v
+                                  break
+                                endif
+                              endfor
+
+                              # CSS Color Fallback
+                              assign color_slug = value | downcase | replace: ' ', '-'
+                            -%}
+
+                            <button
+                              type="button"
+                              role="radio"
+                              class="pdp-swatch-chip {% if option.selected_value == value %}selected active{% endif %}"
+                              data-option-index="{{ forloop.parentloop.index0 }}"
+                              data-value="{{ value | escape }}"
+                              data-color-slug="{{ color_slug }}"
+                              {% if swatch_variant.featured_media != blank %}
+                                data-variant-media-id="{{ swatch_variant.featured_media.id }}"
+                                data-variant-img="{{ swatch_variant.featured_media | image_url: width: 1400 }}"
+                              {% endif %}
+                              aria-checked="{% if option.selected_value == value %}true{% else %}false{% endif %}"
+                              aria-label="{{ value | escape }}"
+                            >
+                              <span class="pdp-swatch-color-circle pdp-swatch-dot" style="background-color: var(--color-{{ color_slug }}, #008779);">
+                                {%- if swatch_variant.featured_media != blank -%}
+                                  <img
+                                    src="{{ swatch_variant.featured_media | image_url: width: 64, height: 64, crop: 'center' }}"
+                                    alt="{{ value | escape }}"
+                                    class="pdp-swatch-img"
+                                    width="28"
+                                    height="28"
+                                    loading="lazy"
+                                  />
+                                {%- endif -%}
+                              </span>
+                              <span class="pdp-swatch-label">{{ value }}</span>
+                            </button>
+                          {%- endfor -%}
+                        </div>
+                      </div>
+
+                    <!-- SIZE OPTION (Interactive Chips & Size Guide) -->
+                    {%- elsif option_name_downcase contains 'size' -%}
+                      <div class="pdp-option-group pdp-size-group" data-option-index="{{ forloop.index0 }}">
+                        <div class="pdp-option-header">
+                          <div class="pdp-option-label-wrap">
+                            <span class="pdp-option-label">{{ option.name }}:</span>
+                            <span class="pdp-selected-val" id="pdp-selected-size-label">{{ option.selected_value }}</span>
+                          </div>
+
+                          <!-- Size Guide Trigger Button -->
+                          {%- if block.settings.show_size_guide_btn -%}
+                            <button
+                              type="button"
+                              class="pdp-size-guide-btn pdp-size-guide-trigger"
+                              id="pdp-open-size-chart-btn"
+                              aria-haspopup="dialog"
+                            >
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="6" width="20" height="12" rx="2"/>
+                                <line x1="6" y1="6" x2="6" y2="10"/>
+                                <line x1="10" y1="6" x2="10" y2="13"/>
+                                <line x1="14" y1="6" x2="14" y2="10"/>
+                                <line x1="18" y1="6" x2="18" y2="13"/>
+                              </svg>
+                              Size Guide & Measurements
+                            </button>
+                          {%- endif -%}
+                        </div>
+
+                        <div class="pdp-sizes-grid pdp-sizes-bar" role="radiogroup" aria-label="{{ option.name }}">
+                          {%- for value in option.values -%}
+                            {%- liquid
+                              # Check variant availability for this size
+                              assign size_available = false
+                              for v in product.variants
+                                if v.options[forloop.parentloop.index0] == value and v.available
+                                  assign size_available = true
+                                  break
+                                endif
+                              endfor
+                            -%}
+
+                            <button
+                              type="button"
+                              role="radio"
+                              class="pdp-size-pill pdp-size-btn {% if option.selected_value == value %}selected active{% endif %} {% unless size_available %}unavailable is-sold-out{% endunless %}"
+                              data-option-index="{{ forloop.parentloop.index0 }}"
+                              data-value="{{ value | escape }}"
+                              data-available="{{ size_available }}"
+                              aria-checked="{% if option.selected_value == value %}true{% else %}false{% endif %}"
+                              aria-label="{{ value | escape }} {% unless size_available %}(Sold Out){% endunless %}"
+                            >
+                              <span class="pdp-size-text">{{ value }}</span>
+                              {%- unless size_available -%}
+                                <span class="pdp-size-soldout-line" aria-hidden="true"></span>
+                              {%- endunless -%}
+                            </button>
+                          {%- endfor -%}
+                        </div>
+                      </div>
+
+                    <!-- OTHER GENERIC OPTIONS (e.g. Fit, Sleeve Length) -->
+                    {%- else -%}
+                      <div class="pdp-option-group" data-option-index="{{ forloop.index0 }}">
+                        <div class="pdp-option-header">
+                          <span class="pdp-option-label">{{ option.name }}:</span>
+                          <span class="pdp-selected-val">{{ option.selected_value }}</span>
+                        </div>
+
+                        <div class="pdp-sizes-grid pdp-sizes-bar" role="radiogroup" aria-label="{{ option.name }}">
+                          {%- for value in option.values -%}
+                            <button
+                              type="button"
+                              role="radio"
+                              class="pdp-size-pill pdp-size-btn {% if option.selected_value == value %}selected active{% endif %}"
+                              data-option-index="{{ forloop.parentloop.index0 }}"
+                              data-value="{{ value | escape }}"
+                              aria-checked="{% if option.selected_value == value %}true{% else %}false{% endif %}"
+                            >
+                              <span class="pdp-size-text">{{ value }}</span>
+                            </button>
+                          {%- endfor -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+
+                  {%- endfor -%}
+                {%- endunless -%}
+
+              </div>
+
+            {%- when 'customization' -%}
+              <!-- Medical Embroidery & Name Engraving Customization Block -->
+              {%- if block.settings.enable_customization -%}
+                <div class="pdp-customization-box pdp-customization-card" {{ block.shopify_attributes }} id="pdp-customization-section-{{ section.id }}">
+                  <div class="pdp-custom-header">
+                    <div class="pdp-custom-title-row">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008779" stroke-width="2">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                      </svg>
+                      <h3 class="pdp-custom-title">{{ block.settings.custom_title | default: 'Doctor Name & Credentials Personalization' }}</h3>
+                    </div>
+                    <label class="pdp-custom-toggle-label">
+                      <input type="checkbox" id="pdp-custom-checkbox-{{ section.id }}" class="pdp-custom-toggle-input" />
+                      <span class="pdp-custom-toggle-text">Add Personalization</span>
+                    </label>
+                  </div>
+
+                  <div class="pdp-custom-body" id="pdp-custom-body-{{ section.id }}" style="display: none;">
+                    <p class="pdp-custom-desc">
+                      {{ block.settings.custom_desc | default: 'Precision computerized clinical embroidery. Please provide your name, title, and preferred thread color.' }}
+                    </p>
+
+                    <div class="pdp-custom-fields-grid">
+                      <!-- Field 1: Doctor Name -->
+                      <div class="pdp-custom-field pdp-field-full">
+                        <label for="pdp-doctor-name-input-{{ section.id }}" class="pdp-field-label">
+                          Name & Credentials (e.g., Dr. Sameer Ahmed, MBBS):
+                        </label>
+                        <input
+                          type="text"
+                          id="pdp-doctor-name-input-{{ section.id }}"
+                          class="pdp-custom-input"
+                          placeholder="Dr. Full Name, FCPS / MBBS"
+                          maxlength="45"
+                        />
+                      </div>
+
+                      <!-- Field 2: Customization Type -->
+                      <div class="pdp-custom-field">
+                        <label for="pdp-custom-type-select-{{ section.id }}" class="pdp-field-label">
+                          Embroidery Style:
+                        </label>
+                        <select id="pdp-custom-type-select-{{ section.id }}" class="pdp-custom-select">
+                          <option value="Direct Chest Embroidery (+PKR {{ block.settings.direct_embroidery_price | default: 450 }})">Direct Chest Embroidery (+PKR {{ block.settings.direct_embroidery_price | default: 450 }})</option>
+                          <option value="Velcro Detachable Name Patch (+PKR {{ block.settings.patch_price | default: 550 }})">Velcro Detachable Name Patch (+PKR {{ block.settings.patch_price | default: 550 }})</option>
+                          <option value="Left Sleeve Department Logo (+PKR {{ block.settings.sleeve_logo_price | default: 400 }})">Left Sleeve Department Logo (+PKR {{ block.settings.sleeve_logo_price | default: 400 }})</option>
+                        </select>
+                      </div>
+
+                      <!-- Field 3: Thread Color -->
+                      <div class="pdp-custom-field">
+                        <label for="pdp-thread-color-select-{{ section.id }}" class="pdp-field-label">
+                          Thread Color:
+                        </label>
+                        <select id="pdp-thread-color-select-{{ section.id }}" class="pdp-custom-select">
+                          <option value="Clinical White">Clinical White</option>
+                          <option value="Silver Metallic">Silver Metallic</option>
+                          <option value="Gold Metallic">Gold Metallic</option>
+                          <option value="Sky Blue">Sky Blue</option>
+                          <option value="Navy Blue">Navy Blue</option>
+                        </select>
+                      </div>
+
+                      <!-- Field 4: Special Instructions -->
+                      <div class="pdp-custom-field pdp-field-full">
+                        <label for="pdp-custom-notes-{{ section.id }}" class="pdp-field-label">
+                          Special Placement Notes (Optional):
+                        </label>
+                        <textarea
+                          id="pdp-custom-notes-{{ section.id }}"
+                          class="pdp-custom-textarea"
+                          rows="2"
+                          placeholder="Any specific placement instructions, department or font details..."
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
+            {%- when 'cross_sell_bundle' -%}
+              <!-- Complementary Clinical Essentials Bundle Block -->
+              <div class="pdp-cross-sell-block" {{ block.shopify_attributes }}>
+                <h3 class="pdp-cross-sell-heading">{{ block.settings.heading | default: 'Frequently Paired Clinical Essentials' }}</h3>
+                <p class="pdp-cross-sell-subheading">{{ block.settings.subheading | default: 'Add matching surgical cap and compression arm sleeves to complete your uniform.' }}</p>
+
+                <div class="pdp-bundle-items-row">
+                  <!-- Companion 1: Surgical Scrub Cap -->
+                  <div class="pdp-bundle-item">
+                    <div class="pdp-bundle-item-left">
+                      <input type="checkbox" id="pdp-add-cap-{{ section.id }}" class="pdp-bundle-checkbox" data-addon-type="cap" data-price="145000" />
+                      <label for="pdp-add-cap-{{ section.id }}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <img src="{{ 'demo-bunfit-extra-volume-scrub-cap-navy.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="BunFit Scrub Cap" class="pdp-bundle-thumb" />
+                        <div>
+                          <div class="pdp-bundle-title">BunFit™ Surgical Cap (Matching Navy)</div>
+                          <div class="pdp-bundle-price">+PKR 1,450</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Companion 2: Compression Arm Sleeves -->
+                  <div class="pdp-bundle-item">
+                    <div class="pdp-bundle-item-left">
+                      <input type="checkbox" id="pdp-add-sleeves-{{ section.id }}" class="pdp-bundle-checkbox" data-addon-type="sleeves" data-price="75000" />
+                      <label for="pdp-add-sleeves-{{ section.id }}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <img src="{{ 'demo-med-sleeves-compression-arms.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="Med Sleeves" class="pdp-bundle-thumb" />
+                        <div>
+                          <div class="pdp-bundle-title">Med Sleeves Graduated Compression Arms</div>
+                          <div class="pdp-bundle-price">+PKR 750</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            {%- when 'bullet_features' -%}
+              <!-- "About This Item" Amazon-Style Bullet List -->
+              <div class="pdp-bullet-features pdp-bullets-card" {{ block.shopify_attributes }}>
+                <h3 class="pdp-bullet-heading pdp-bullets-title">{{ block.settings.heading | default: 'About this item' }}</h3>
+                <ul class="pdp-bullet-list pdp-bullets-list">
+                  {%- if block.settings.bullet_1 != blank -%}
+                    <li><span>{{ block.settings.bullet_1 }}</span></li>
+                  {%- endif -%}
+                  {%- if block.settings.bullet_2 != blank -%}
+                    <li><span>{{ block.settings.bullet_2 }}</span></li>
+                  {%- endif -%}
+                  {%- if block.settings.bullet_3 != blank -%}
+                    <li><span>{{ block.settings.bullet_3 }}</span></li>
+                  {%- endif -%}
+                  {%- if block.settings.bullet_4 != blank -%}
+                    <li><span>{{ block.settings.bullet_4 }}</span></li>
+                  {%- endif -%}
+                  {%- if block.settings.bullet_5 != blank -%}
+                    <li><span>{{ block.settings.bullet_5 }}</span></li>
+                  {%- endif -%}
+                </ul>
+              </div>
+
+            {%- when 'specifications_table' -%}
+              <!-- Technical Clinical Specifications Table -->
+              <div class="pdp-specs-block pdp-specs-table-wrap" {{ block.shopify_attributes }}>
+                <h3 class="pdp-specs-heading">{{ block.settings.heading | default: 'Product Specifications' }}</h3>
+                <table class="pdp-specs-table">
+                  <tbody>
+                    {%- if block.settings.spec_fabric != blank -%}
+                      <tr>
+                        <th>Fabric Composition</th>
+                        <td>{{ block.settings.spec_fabric }}</td>
+                      </tr>
+                    {%- endif -%}
+                    {%- if block.settings.spec_fit != blank -%}
+                      <tr>
+                        <th>Tailored Fit</th>
+                        <td>{{ block.settings.spec_fit }}</td>
+                      </tr>
+                    {%- endif -%}
+                    {%- if block.settings.spec_pockets != blank -%}
+                      <tr>
+                        <th>Pocket Configuration</th>
+                        <td>{{ block.settings.spec_pockets }}</td>
+                      </tr>
+                    {%- endif -%}
+                    {%- if block.settings.spec_stretch != blank -%}
+                      <tr>
+                        <th>Flex / Stretch</th>
+                        <td>{{ block.settings.spec_stretch }}</td>
+                      </tr>
+                    {%- endif -%}
+                    {%- if block.settings.spec_care != blank -%}
+                      <tr>
+                        <th>Care Instructions</th>
+                        <td>{{ block.settings.spec_care }}</td>
+                      </tr>
+                    {%- endif -%}
+                    {%- if block.settings.spec_origin != blank -%}
+                      <tr>
+                        <th>Country of Origin</th>
+                        <td>{{ block.settings.spec_origin }}</td>
+                      </tr>
+                    {%- endif -%}
+                  </tbody>
+                </table>
+              </div>
+
+            {%- when 'description' -%}
+              <!-- Rich Product Description Block -->
+              {%- if product.description != blank -%}
+                <div class="pdp-description-block" {{ block.shopify_attributes }} style="padding: 14px 0; border-top: 1px solid #f1f5f9;">
+                  {%- if block.settings.show_heading -%}
+                    <h3 style="font-size: 14px; font-weight: 700; color: #102a43; margin-bottom: 8px;">{{ block.settings.heading | default: 'Description' }}</h3>
+                  {%- endif -%}
+                  <div class="pdp-richtext-body" style="font-size: 13px; color: #475569; line-height: 1.6;">
+                    {{ product.description }}
+                  </div>
+                </div>
+              {%- endif -%}
+
+          {%- endcase -%}
+        {%- endfor -%}
+
+      </div>
+
+
+      <!-- ======================================================================
+           COLUMN 3: AMAZON-STYLE PURCHASE PANEL / BUY BOX
+           ====================================================================== -->
+      <div class="enamels-pdp-buybox-col" id="pdp-buybox-col-{{ section.id }}">
+        <div class="enamels-pdp-buybox-card pdp-buybox-card" id="pdp-buybox-card-{{ section.id }}">
+          
+          <!-- Price Recap in Buy Box -->
+          <div class="buybox-price-row pdp-buybox-price-row">
+            <span class="buybox-price-main pdp-buybox-price" id="pdp-buybox-price-display">
+              {{ current_variant.price | money }}
+            </span>
+            {% if has_discount %}
+              <span class="buybox-price-compare pdp-buybox-compare-price" id="pdp-buybox-compare-display">
+                {{ current_variant.compare_at_price | money }}
+              </span>
+            {% endif %}
+          </div>
+
+          <!-- Shipping Guarantee Promise -->
+          {%- if section.settings.show_shipping_promise -%}
+            <div class="buybox-shipping-promise pdp-buybox-shipping-promise">
+              <div class="pdp-shipping-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#008779" stroke-width="2">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+              </div>
+              <div class="pdp-shipping-text">
+                <div class="pdp-shipping-bold">
+                  {% if current_variant.price >= 700000 %}
+                    <strong>FREE Delivery</strong> across Pakistan
+                  {% else %}
+                    Standard Delivery: <strong>PKR {{ standard_shipping_fee }}</strong>
+                    <div class="pdp-shipping-free-tip">FREE Delivery on orders over PKR {{ free_shipping_threshold | money_without_trailing_zeros }}</div>
+                  {% endif %}
+                </div>
+                <div class="pdp-shipping-estimate">
+                  Dispatches within <strong>24–48 hours</strong>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+
+          <!-- Stock Availability Status Badge -->
+          {%- if section.settings.show_stock_badge -%}
+            <div class="buybox-stock-status pdp-stock-status {% if current_variant.available %}in-stock{% else %}out-of-stock{% endif %}" id="pdp-stock-badge">
+              <span class="pdp-stock-dot buybox-stock-dot" aria-hidden="true"></span>
+              <span class="pdp-stock-text" id="pdp-stock-text">
+                {%- if current_variant.available -%}
+                  In Stock & Ready to Ship
+                {%- else -%}
+                  Currently Sold Out
+                {%- endif -%}
+              </span>
+            </div>
+          {%- endif -%}
+
+          <!-- Quantity Stepper Row -->
+          {%- if section.settings.show_quantity -%}
+            <div class="buybox-qty-row pdp-qty-stepper-row">
+              <label for="pdp-qty-input-{{ section.id }}" class="buybox-qty-label pdp-qty-label">Quantity:</label>
+              <div class="buybox-qty-stepper pdp-qty-stepper">
+                <button
+                  type="button"
+                  class="buybox-qty-btn pdp-qty-btn"
+                  id="pdp-qty-minus-{{ section.id }}"
+                  aria-label="Decrease Quantity"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  id="pdp-qty-input-{{ section.id }}"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  max="99"
+                  class="buybox-qty-input pdp-qty-input"
+                  aria-label="Product Quantity"
+                />
+                <button
+                  type="button"
+                  class="buybox-qty-btn pdp-qty-btn"
+                  id="pdp-qty-plus-{{ section.id }}"
+                  aria-label="Increase Quantity"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          {%- endif -%}
+
+          <!-- Hidden Form Data for Variant & Custom Properties -->
+          <input type="hidden" id="pdp-active-variant-id" name="id" value="{{ current_variant.id }}" />
+
+          <!-- PRIMARY CTA: Add to Cart -->
+          <button
+            type="button"
+            class="buybox-btn-atc pdp-btn-atc"
+            id="pdp-submit-atc-btn-{{ section.id }}"
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            <span class="pdp-btn-spinner" aria-hidden="true" style="display: none;"></span>
+            <span class="pdp-btn-text" id="pdp-atc-btn-text">
+              {%- if current_variant.available -%}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                {{ section.settings.atc_btn_text | default: 'Add to Cart' }}
+              {%- else -%}
+                Sold Out
+              {%- endif -%}
+            </span>
+          </button>
+
+          <!-- SECONDARY CTA: Buy Now (Direct Checkout) -->
+          {%- if section.settings.show_buy_now -%}
+            <button
+              type="button"
+              class="buybox-btn-buynow pdp-btn-buy-now"
+              id="pdp-submit-buy-now-btn-{{ section.id }}"
+              {% unless current_variant.available %}disabled style="display: none;"{% endunless %}
+            >
+              Buy Now
+            </button>
+          {%- endif -%}
+
+          <!-- Trust & Fulfillment Meta Table -->
+          {%- if section.settings.show_trust_table -%}
+            <div class="buybox-meta-table pdp-buybox-meta-table">
+              <div class="buybox-meta-row pdp-meta-row">
+                <span class="buybox-meta-label pdp-meta-label">Ships from</span>
+                <span class="buybox-meta-val pdp-meta-val">Enamels Logistics Lab</span>
+              </div>
+              <div class="buybox-meta-row pdp-meta-row">
+                <span class="buybox-meta-label pdp-meta-label">Sold by</span>
+                <span class="buybox-meta-val pdp-meta-val">Enamels Medical Apparel</span>
+              </div>
+              <div class="buybox-meta-row pdp-meta-row">
+                <span class="buybox-meta-label pdp-meta-label">Returns</span>
+                <span class="buybox-meta-val pdp-meta-val">7-Day Hassle-Free Size Exchange</span>
+              </div>
+              <div class="buybox-meta-row pdp-meta-row">
+                <span class="buybox-meta-label pdp-meta-label">Payment</span>
+                <span class="buybox-meta-val pdp-meta-val">Cash on Delivery & Secure Cards</span>
+              </div>
+            </div>
+          {%- endif -%}
+
+          <!-- Home Fitting Service Concierge Link -->
+          {%- if section.settings.show_home_fitting -%}
+            <div class="buybox-home-service-banner pdp-buybox-home-fitting">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#008779" stroke-width="2" style="flex-shrink: 0;">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <span>Need size assistance? <strong>Enamels Home Fitting</strong> available in Karachi & Lahore.</span>
+            </div>
+          {%- endif -%}
+
+        </div>
+      </div>
+
+    </div><!-- /.enamels-pdp-grid -->
+
+
+    <!-- ======================================================================
+         LOWER GRID: ACCORDIONS & AMAZON-STYLE REVIEWS BREAKDOWN
+         ====================================================================== -->
+    <div class="enamels-pdp-lower-section enamels-pdp-lower-grid" style="margin-top: 50px;">
+      
+      <!-- Left Area: Information Tabs / Accordions -->
+      <div class="pdp-accordion-group pdp-accordions-wrap" id="pdp-accordions-{{ section.id }}">
+        
+        <!-- Accordion 1: Description -->
+        {%- if product.description != blank -%}
+          <div class="pdp-accordion-item active" data-accordion="desc">
+            <button type="button" class="pdp-accordion-trigger pdp-accordion-header" aria-expanded="true">
+              <span class="pdp-accordion-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Detailed Description & Features
+              </span>
+              <span class="pdp-accordion-arrow pdp-accordion-chevron" aria-hidden="true">▾</span>
+            </button>
+            <div class="pdp-accordion-body pdp-accordion-content" style="display: block;">
+              <div class="pdp-richtext-body">
+                {{ product.description }}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+
+        <!-- Accordion 2: Fabric & Care Instructions -->
+        <div class="pdp-accordion-item" data-accordion="fabric">
+          <button type="button" class="pdp-accordion-trigger pdp-accordion-header" aria-expanded="false">
+            <span class="pdp-accordion-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Fabric Technology & Care Instructions
+            </span>
+            <span class="pdp-accordion-arrow pdp-accordion-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="pdp-accordion-body pdp-accordion-content" style="display: none;">
+            <div class="pdp-richtext-body">
+              <p><strong>Clinical Performance Textile:</strong> Engineered with Enamels proprietary Medical-Grade Poly-Viscose Flex fabric (72% Polyester, 21% Rayon, 7% Spandex), delivering ultra-soft touch, 4-way mechanical stretch, and anti-static drape.</p>
+              <ul>
+                <li>Machine wash cold with similar clinical colors (under 40°C / 104°F).</li>
+                <li>Tumble dry low or hang dry in shade for extended garment longevity.</li>
+                <li>Warm iron if needed; avoid high heat directly over embroidery or silicone branding.</li>
+                <li>Bleach-safe only when using non-chlorine sanitizer alternatives.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accordion 3: Delivery & Exchange Policy -->
+        <div class="pdp-accordion-item" data-accordion="shipping">
+          <button type="button" class="pdp-accordion-trigger pdp-accordion-header" aria-expanded="false">
+            <span class="pdp-accordion-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+              Shipping Rates, Delivery Times & 7-Day Exchange
+            </span>
+            <span class="pdp-accordion-arrow pdp-accordion-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div class="pdp-accordion-body pdp-accordion-content" style="display: none;">
+            <div class="pdp-richtext-body">
+              <p><strong>Domestic Delivery (Pakistan):</strong></p>
+              <ul>
+                <li>Flat standard shipping rate of <strong>PKR {{ standard_shipping_fee }}</strong> across Pakistan.</li>
+                <li><strong>FREE Shipping</strong> on all domestic orders over <strong>PKR {{ free_shipping_threshold | money_without_trailing_zeros }}</strong>.</li>
+                <li>Orders dispatch within 24–48 hours via leading courier services (Trax / CallCourier / TCS).</li>
+              </ul>
+              <p><strong>International Shipping:</strong></p>
+              <ul>
+                <li>Base rate of PKR {{ intl_shipping_base }} per scrub unit + PKR {{ intl_shipping_addon }} per chargeable accessory. Final delivery fees calculated securely at Shopify checkout based on destination.</li>
+              </ul>
+              <p><strong>Hassle-Free 7-Day Size Exchange:</strong></p>
+              <p>We want you to feel completely confident in your scrub fit. Unworn garments with intact tags can be exchanged within 7 days of delivery with door-to-door reverse pickup assistance.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- Right Area: Amazon-Style Reviews & Ratings Breakdown -->
+      <div class="enamels-pdp-reviews-section pdp-reviews-breakdown-card" id="pdp-reviews-section-{{ section.id }}">
+        <h3 class="pdp-reviews-heading">Customer Reviews</h3>
+        
+        <div class="pdp-reviews-summary-row">
+          <div class="pdp-score-big pdp-reviews-big-score">4.9</div>
+          <div class="pdp-reviews-stars-wrap">
+            <div class="pdp-reviews-stars">★★★★★</div>
+            <div class="pdp-reviews-subtitle">Based on 128 verified clinical reviews</div>
+          </div>
+        </div>
+
+        <!-- 5-Star Histogram -->
+        <div class="pdp-histogram-wrap" aria-label="Rating breakdown">
+          <div class="pdp-histogram-row pdp-hist-row">
+            <span class="pdp-histogram-label pdp-hist-star">5 star</span>
+            <div class="pdp-histogram-bar-bg pdp-hist-bar-bg"><div class="pdp-histogram-bar-fill pdp-hist-bar-fill" style="width: 88%;"></div></div>
+            <span class="pdp-histogram-pct pdp-hist-pct">88%</span>
+          </div>
+          <div class="pdp-histogram-row pdp-hist-row">
+            <span class="pdp-histogram-label pdp-hist-star">4 star</span>
+            <div class="pdp-histogram-bar-bg pdp-hist-bar-bg"><div class="pdp-histogram-bar-fill pdp-hist-bar-fill" style="width: 9%;"></div></div>
+            <span class="pdp-histogram-pct pdp-hist-pct">9%</span>
+          </div>
+          <div class="pdp-histogram-row pdp-hist-row">
+            <span class="pdp-histogram-label pdp-hist-star">3 star</span>
+            <div class="pdp-histogram-bar-bg pdp-hist-bar-bg"><div class="pdp-histogram-bar-fill pdp-hist-bar-fill" style="width: 2%;"></div></div>
+            <span class="pdp-histogram-pct pdp-hist-pct">2%</span>
+          </div>
+          <div class="pdp-histogram-row pdp-hist-row">
+            <span class="pdp-histogram-label pdp-hist-star">2 star</span>
+            <div class="pdp-histogram-bar-bg pdp-hist-bar-bg"><div class="pdp-histogram-bar-fill pdp-hist-bar-fill" style="width: 1%;"></div></div>
+            <span class="pdp-histogram-pct pdp-hist-pct">1%</span>
+          </div>
+          <div class="pdp-histogram-row pdp-hist-row">
+            <span class="pdp-histogram-label pdp-hist-star">1 star</span>
+            <div class="pdp-histogram-bar-bg pdp-hist-bar-bg"><div class="pdp-histogram-bar-fill pdp-hist-bar-fill" style="width: 0%;"></div></div>
+            <span class="pdp-histogram-pct pdp-hist-pct">0%</span>
+          </div>
+        </div>
+
+        <!-- Customer Review Cards -->
+        <div class="pdp-reviews-customer-list pdp-reviews-stream">
+          <div class="pdp-review-card">
+            <div class="pdp-review-header">
+              <span class="pdp-review-author">Dr. Ayesha K.</span>
+              <span class="pdp-review-badge">Verified Purchaser</span>
+            </div>
+            <div class="pdp-review-rating">★★★★★ <span class="pdp-review-title">Best scrubs for 36-hour hospital shifts</span></div>
+            <p class="pdp-review-comment">The fabric is incredibly breathable and the custom name embroidery is razor-sharp. Doesn't fade after countless sterilizing machine washes.</p>
+          </div>
+
+          <div class="pdp-review-card">
+            <div class="pdp-review-header">
+              <span class="pdp-review-author">Dr. Hamza M.</span>
+              <span class="pdp-review-badge">Verified Purchaser</span>
+            </div>
+            <div class="pdp-review-rating">★★★★★ <span class="pdp-review-title">Flawless fit and deep pockets</span></div>
+            <p class="pdp-review-comment">Easily holds my stethoscope, phone, and clinical notes without sagging. Delivery was lightning fast in Lahore!</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- /.enamels-pdp-lower-grid -->
+
+  </div><!-- /.page-container -->
+
+
+  <!-- ======================================================================
+       MOBILE STICKY BUY BAR (Fixed at viewport bottom on mobile)
+       ====================================================================== -->
+  <div class="enamels-pdp-sticky-bar pdp-mobile-sticky-bar" id="pdp-mobile-sticky-bar-{{ section.id }}" aria-hidden="true">
+    <div class="pdp-sticky-content pdp-mobile-sticky-info">
+      {%- if featured_media != blank -%}
+        <img
+          src="{{ featured_media | image_url: width: 90, height: 90, crop: 'center' }}"
+          alt="{{ product.title | escape }}"
+          class="pdp-mobile-sticky-thumb"
+          width="44"
+          height="44"
+          id="pdp-mobile-sticky-thumb"
+        />
+      {%- endif -%}
+      <div class="pdp-sticky-meta pdp-mobile-sticky-text">
+        <div class="pdp-sticky-title pdp-mobile-sticky-title">{{ product.title | truncate: 28 }}</div>
+        <div class="pdp-sticky-price pdp-mobile-sticky-price" id="pdp-mobile-sticky-price">{{ current_variant.price | money }}</div>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="pdp-sticky-atc-btn pdp-mobile-sticky-btn"
+      id="pdp-mobile-sticky-atc-btn"
+      {% unless current_variant.available %}disabled{% endunless %}
+    >
+      {%- if current_variant.available -%}
+        Add to Cart
+      {%- else -%}
+        Sold Out
+      {%- endif -%}
+    </button>
+  </div>
+
+
+  <!-- ======================================================================
+       MODAL 1: SIZE GUIDE & MEASUREMENTS MODAL
+       ====================================================================== -->
+  <div class="pdp-modal-overlay pdp-size-modal-backdrop" id="pdp-size-guide-modal-{{ section.id }}" role="dialog" aria-modal="true" aria-labelledby="pdp-size-guide-title" style="display: none;">
+    <div class="pdp-modal-dialog pdp-size-modal-card">
+      <div class="pdp-modal-header">
+        <h3 class="pdp-modal-title" id="pdp-size-guide-title">Enamels Medical Scrubs — Official Size Chart</h3>
+        <button type="button" class="pdp-modal-close" id="pdp-close-size-guide-btn" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="pdp-modal-body">
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+          All measurements are taken flat across the garment. If you fall between two sizes, choose the larger size for a relaxed clinical fit or the smaller size for a tailored fit.
+        </p>
+
+        <!-- Top Size Chart Table -->
+        <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin-bottom: 8px;">Scrub Top (Inches)</h4>
+        <div class="pdp-table-scroll">
+          <table class="pdp-size-chart-table pdp-size-table">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Chest</th>
+                <th>Length</th>
+                <th>Shoulder</th>
+                <th>Sleeve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>XS</strong></td><td>36"</td><td>27"</td><td>16.5"</td><td>7.5"</td></tr>
+              <tr><td><strong>S</strong></td><td>38"</td><td>28"</td><td>17.5"</td><td>8.0"</td></tr>
+              <tr><td><strong>M</strong></td><td>40"</td><td>29"</td><td>18.5"</td><td>8.5"</td></tr>
+              <tr><td><strong>L</strong></td><td>43"</td><td>30"</td><td>19.5"</td><td>9.0"</td></tr>
+              <tr><td><strong>XL</strong></td><td>46"</td><td>31"</td><td>20.5"</td><td>9.5"</td></tr>
+              <tr><td><strong>2XL</strong></td><td>49"</td><td>32"</td><td>21.5"</td><td>10.0"</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Trouser Size Chart Table -->
+        <h4 style="font-size: 14px; font-weight: 700; color: #102a43; margin: 20px 0 8px;">Scrub Trouser / Pants (Inches)</h4>
+        <div class="pdp-table-scroll">
+          <table class="pdp-size-chart-table pdp-size-table">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Waist (Elastic)</th>
+                <th>Hips</th>
+                <th>Inseam</th>
+                <th>Thigh</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>XS</strong></td><td>26" - 29"</td><td>37"</td><td>29"</td><td>22"</td></tr>
+              <tr><td><strong>S</strong></td><td>29" - 32"</td><td>39"</td><td>30"</td><td>23"</td></tr>
+              <tr><td><strong>M</strong></td><td>32" - 35"</td><td>42"</td><td>30.5"</td><td>24.5"</td></tr>
+              <tr><td><strong>L</strong></td><td>35" - 38"</td><td>45"</td><td>31"</td><td>26"</td></tr>
+              <tr><td><strong>XL</strong></td><td>38" - 42"</td><td>48"</td><td>31.5"</td><td>27.5"</td></tr>
+              <tr><td><strong>2XL</strong></td><td>42" - 46"</td><td>51"</td><td>32"</td><td>29"</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; margin-top: 18px; display: flex; align-items: center; gap: 10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span style="font-size: 13px; color: #166534; font-weight: 500;">
+            Backed by Enamels 7-Day Size Exchange Guarantee across Pakistan.
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================================================================
+       MODAL 2: FULLSCREEN HIGH-RESOLUTION MEDIA LIGHTBOX
+       ====================================================================== -->
+  <div class="pdp-modal-overlay pdp-lightbox-overlay" id="pdp-fullscreen-modal-{{ section.id }}" role="dialog" aria-modal="true" style="display: none;">
+    <button type="button" class="pdp-lightbox-close" id="pdp-close-fullscreen-btn" aria-label="Close Lightbox">✕</button>
+    <div class="pdp-lightbox-body">
+      <img src="" id="pdp-lightbox-img" class="pdp-lightbox-img" alt="{{ product.title | escape }}" />
+    </div>
+  </div>
+
+</div><!-- /.enamels-pdp-page -->
+
+
+<!-- ==========================================================================
+     CLIENT-SIDE REAL-TIME VARIANT SYNCHRONIZATION & INTERACTIVITY SCRIPT
+     ========================================================================== -->
+<script>
+  (function() {
+    // Serialized product variants from Shopify Liquid
+    const productVariants = {{ product.variants | json }};
+    const productOptions = {{ product.options_with_values | json }};
+    const sectionId = "{{ section.id }}";
+    const container = document.getElementById("enamels-pdp-" + sectionId);
+    if (!container) return;
+
+    // Currency Formatting Symbol
+    const currencySymbol = "{{ cart.currency.symbol | default: 'Rs.' }}";
+
+    // State tracking
+    let selectedOptions = [];
+    {%- for option in product.options_with_values -%}
+      selectedOptions[{{ forloop.index0 }}] = "{{ option.selected_value | escape }}";
+    {%- endfor -%}
+
+    let activeVariant = productVariants[0];
+    const initialVariantId = {{ current_variant.id }};
+    const foundInitial = productVariants.find(v => v.id === initialVariantId);
+    if (foundInitial) {
+      activeVariant = foundInitial;
+      selectedOptions = [...activeVariant.options];
+    }
+
+    // Elements
+    const mainImg = document.getElementById("pdp-main-img-" + sectionId);
+    const mainVideo = document.getElementById("pdp-main-video-" + sectionId);
+    const mainWrap = document.getElementById("pdp-main-wrap-" + sectionId);
+    const thumbsRail = document.getElementById("pdp-thumbs-rail-" + sectionId);
+    const thumbButtons = container.querySelectorAll(".pdp-thumb-item");
+    const mobileDots = container.querySelectorAll(".pdp-mobile-dot");
+
+    const livePriceEl = document.getElementById("pdp-live-price");
+    const liveCompareEl = document.getElementById("pdp-live-compare-price");
+    const liveSavingsEl = document.getElementById("pdp-live-savings-badge");
+    const salePillEl = document.getElementById("pdp-sale-pill");
+    const mediaBadgeSaleEl = document.getElementById("pdp-media-badge-sale");
+
+    const buyboxPriceEl = document.getElementById("pdp-buybox-price-display");
+    const buyboxCompareEl = document.getElementById("pdp-buybox-compare-display");
+    const stockBadge = document.getElementById("pdp-stock-badge");
+    const stockText = document.getElementById("pdp-stock-text");
+    const liveSku = document.getElementById("pdp-live-sku");
+
+    const activeVariantInput = document.getElementById("pdp-active-variant-id");
+    const atcBtn = document.getElementById("pdp-submit-atc-btn-" + sectionId);
+    const buyNowBtn = document.getElementById("pdp-submit-buy-now-btn-" + sectionId);
+    const atcBtnText = document.getElementById("pdp-atc-btn-text");
+
+    const mobileStickyBar = document.getElementById("pdp-mobile-sticky-bar-" + sectionId);
+    const mobileStickyPrice = document.getElementById("pdp-mobile-sticky-price");
+    const mobileStickyAtcBtn = document.getElementById("pdp-mobile-sticky-atc-btn");
+    const mobileStickyThumb = document.getElementById("pdp-mobile-sticky-thumb");
+
+    const qtyInput = document.getElementById("pdp-qty-input-" + sectionId);
+    const qtyMinus = document.getElementById("pdp-qty-minus-" + sectionId);
+    const qtyPlus = document.getElementById("pdp-qty-plus-" + sectionId);
+
+    // Customization elements
+    const customCheckbox = document.getElementById("pdp-custom-checkbox-" + sectionId);
+    const customBody = document.getElementById("pdp-custom-body-" + sectionId);
+    const doctorNameInput = document.getElementById("pdp-doctor-name-input-" + sectionId);
+    const customTypeSelect = document.getElementById("pdp-custom-type-select-" + sectionId);
+    const threadColorSelect = document.getElementById("pdp-thread-color-select-" + sectionId);
+    const customNotesTextarea = document.getElementById("pdp-custom-notes-" + sectionId);
+
+    // Currency Formatter Helper
+    function formatMoney(cents) {
+      if (!cents && cents !== 0) return '';
+      const amount = (cents / 100).toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return `${currencySymbol} ${amount}`;
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. VARIANT SYNCHRONIZATION
+    // -------------------------------------------------------------------------
+    function updateVariantUI() {
+      // Find matching variant based on selectedOptions array
+      const matchedVariant = productVariants.find(variant => {
+        return variant.options.every((optVal, idx) => optVal === selectedOptions[idx]);
+      });
+
+      if (matchedVariant) {
+        activeVariant = matchedVariant;
+        if (activeVariantInput) activeVariantInput.value = matchedVariant.id;
+
+        // Price formatting
+        const priceFormatted = formatMoney(matchedVariant.price);
+        if (livePriceEl) livePriceEl.textContent = priceFormatted;
+        if (buyboxPriceEl) buyboxPriceEl.textContent = priceFormatted;
+        if (mobileStickyPrice) mobileStickyPrice.textContent = priceFormatted;
+
+        // Compare price & savings
+        if (matchedVariant.compare_at_price && matchedVariant.compare_at_price > matchedVariant.price) {
+          const compFormatted = formatMoney(matchedVariant.compare_at_price);
+          const saveAmount = matchedVariant.compare_at_price - matchedVariant.price;
+          const savePct = Math.round((saveAmount / matchedVariant.compare_at_price) * 100);
+
+          if (liveCompareEl) {
+            liveCompareEl.textContent = compFormatted;
+            liveCompareEl.style.display = 'inline';
+          }
+          if (buyboxCompareEl) {
+            buyboxCompareEl.textContent = compFormatted;
+            buyboxCompareEl.style.display = 'inline';
+          }
+          if (liveSavingsEl) {
+            liveSavingsEl.textContent = `Save ${formatMoney(saveAmount)} (${savePct}%)`;
+            liveSavingsEl.style.display = 'inline';
+          }
+          if (salePillEl) {
+            salePillEl.textContent = `Limited Time Offer — Save ${savePct}%`;
+            salePillEl.style.display = 'inline-block';
+          }
+          if (mediaBadgeSaleEl) {
+            mediaBadgeSaleEl.textContent = `-${savePct}% OFF`;
+            mediaBadgeSaleEl.style.display = 'inline-block';
+          }
+        } else {
+          if (liveCompareEl) liveCompareEl.style.display = 'none';
+          if (buyboxCompareEl) buyboxCompareEl.style.display = 'none';
+          if (liveSavingsEl) liveSavingsEl.style.display = 'none';
+          if (salePillEl) salePillEl.style.display = 'none';
+          if (mediaBadgeSaleEl) mediaBadgeSaleEl.style.display = 'none';
+        }
+
+        // SKU
+        if (liveSku) {
+          if (matchedVariant.sku) {
+            liveSku.innerHTML = `SKU: <strong>${matchedVariant.sku}</strong>`;
+            liveSku.style.display = 'inline-block';
+          } else {
+            liveSku.style.display = 'none';
+          }
+        }
+
+        // Availability & Stock status
+        if (matchedVariant.available) {
+          if (stockBadge) {
+            stockBadge.className = 'buybox-stock-status pdp-stock-status in-stock';
+          }
+          if (stockText) {
+            stockText.textContent = 'In Stock & Ready to Ship';
+          }
+          if (atcBtn) {
+            atcBtn.removeAttribute('disabled');
+            if (atcBtnText) {
+              atcBtnText.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 6px;">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                {{ section.settings.atc_btn_text | default: 'Add to Cart' }}
+              `;
+            }
+          }
+          if (buyNowBtn) {
+            buyNowBtn.removeAttribute('disabled');
+            buyNowBtn.style.display = 'flex';
+          }
+          if (mobileStickyAtcBtn) {
+            mobileStickyAtcBtn.removeAttribute('disabled');
+            mobileStickyAtcBtn.textContent = 'Add to Cart';
+          }
+        } else {
+          if (stockBadge) {
+            stockBadge.className = 'buybox-stock-status pdp-stock-status out-of-stock';
+          }
+          if (stockText) {
+            stockText.textContent = 'Currently Sold Out';
+          }
+          if (atcBtn) {
+            atcBtn.setAttribute('disabled', 'disabled');
+            if (atcBtnText) atcBtnText.textContent = 'Sold Out';
+          }
+          if (buyNowBtn) {
+            buyNowBtn.setAttribute('disabled', 'disabled');
+            buyNowBtn.style.display = 'none';
+          }
+          if (mobileStickyAtcBtn) {
+            mobileStickyAtcBtn.setAttribute('disabled', 'disabled');
+            mobileStickyAtcBtn.textContent = 'Sold Out';
+          }
+        }
+
+        // Update Size Pills availability state based on currently selected color
+        updateSizeAvailability();
+
+        // Variant Featured Image Switch
+        if (matchedVariant.featured_media && matchedVariant.featured_media.src) {
+          switchMainImage(matchedVariant.featured_media.src, matchedVariant.featured_media.id);
+        }
+
+        // Update URL parameter without reload
+        if (window.history && window.history.replaceState) {
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('variant', matchedVariant.id);
+          window.history.replaceState(null, '', newUrl.toString());
+        }
+      }
+    }
+
+    // Helper: Update size pills availability when color changes
+    function updateSizeAvailability() {
+      const sizePills = container.querySelectorAll('.pdp-size-pill');
+      sizePills.forEach(pill => {
+        const optIdx = parseInt(pill.getAttribute('data-option-index'), 10);
+        const sizeVal = pill.getAttribute('data-value');
+        
+        // Check if there is an available variant with selectedOptions for other options + this size
+        const isAvail = productVariants.some(v => {
+          return v.available && v.options.every((opt, i) => {
+            if (i === optIdx) return opt === sizeVal;
+            return opt === selectedOptions[i];
+          });
+        });
+
+        if (isAvail) {
+          pill.classList.remove('unavailable', 'is-sold-out');
+          pill.setAttribute('data-available', 'true');
+        } else {
+          pill.classList.add('unavailable', 'is-sold-out');
+          pill.setAttribute('data-available', 'false');
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 2. MEDIA GALLERY SWITCHER
+    // -------------------------------------------------------------------------
+    function switchMainImage(imgUrl, mediaId) {
+      if (!imgUrl) return;
+
+      if (mainVideo) {
+        mainVideo.pause();
+        mainVideo.style.display = 'none';
+      }
+
+      if (mainImg) {
+        mainImg.style.display = 'block';
+        mainImg.src = imgUrl;
+        mainImg.setAttribute('data-highres-url', imgUrl);
+      }
+
+      if (mobileStickyThumb) {
+        mobileStickyThumb.src = imgUrl;
+      }
+
+      // Highlight matching thumbnail
+      if (mediaId && thumbButtons.length > 0) {
+        thumbButtons.forEach(btn => {
+          if (btn.getAttribute('data-media-id') === String(mediaId)) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected', 'true');
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+          }
+        });
+      }
+    }
+
+    function switchMainVideo(videoUrl, posterUrl) {
+      if (mainImg) mainImg.style.display = 'none';
+      if (mainVideo) {
+        mainVideo.style.display = 'block';
+        mainVideo.src = videoUrl;
+        if (posterUrl) mainVideo.poster = posterUrl;
+        mainVideo.load();
+        mainVideo.play().catch(() => {});
+      }
+    }
+
+    // Thumb click handlers
+    thumbButtons.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        const mType = btn.getAttribute('data-media-type');
+        const mUrl = btn.getAttribute('data-media-url');
+        const mId = btn.getAttribute('data-media-id');
+
+        thumbButtons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        // Sync mobile dots
+        if (mobileDots[idx]) {
+          mobileDots.forEach(d => d.classList.remove('active'));
+          mobileDots[idx].classList.add('active');
+        }
+
+        if (mType === 'video') {
+          const vUrl = btn.getAttribute('data-video-url');
+          switchMainVideo(vUrl, mUrl);
+        } else {
+          switchMainImage(mUrl, mId);
+        }
+      });
+    });
+
+    // Mobile swipe and prev/next handlers
+    let currentMediaIndex = 0;
+    const prevBtn = document.getElementById("pdp-media-prev-" + sectionId);
+    const nextBtn = document.getElementById("pdp-media-next-" + sectionId);
+
+    function showMediaAtIndex(index) {
+      if (index < 0) index = thumbButtons.length - 1;
+      if (index >= thumbButtons.length) index = 0;
+      currentMediaIndex = index;
+      if (thumbButtons[index]) {
+        thumbButtons[index].click();
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => showMediaAtIndex(currentMediaIndex - 1));
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => showMediaAtIndex(currentMediaIndex + 1));
+    }
+
+    // Touch Swipe on Main Stage
+    if (mainWrap) {
+      let touchStartX = 0;
+      let touchEndX = 0;
+      mainWrap.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      mainWrap.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 45) {
+          showMediaAtIndex(currentMediaIndex + 1); // Swipe left -> next
+        } else if (touchEndX - touchStartX > 45) {
+          showMediaAtIndex(currentMediaIndex - 1); // Swipe right -> prev
+        }
+      }, { passive: true });
+    }
+
+    // Desktop Hover Zoom Effect
+    const zoomOverlay = document.getElementById("pdp-zoom-overlay-" + sectionId);
+    if (mainWrap && mainWrap.getAttribute('data-zoom-enabled') === 'true' && zoomOverlay && mainImg) {
+      mainWrap.addEventListener('mouseenter', () => {
+        if (window.innerWidth < 1024) return;
+        const highRes = mainImg.getAttribute('data-highres-url') || mainImg.src;
+        zoomOverlay.style.backgroundImage = `url('${highRes}')`;
+        zoomOverlay.style.opacity = '1';
+        zoomOverlay.style.pointerEvents = 'auto';
+      });
+
+      mainWrap.addEventListener('mousemove', e => {
+        if (window.innerWidth < 1024) return;
+        const rect = mainWrap.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        zoomOverlay.style.backgroundPosition = `${x}% ${y}%`;
+      });
+
+      mainWrap.addEventListener('mouseleave', () => {
+        zoomOverlay.style.opacity = '0';
+        zoomOverlay.style.pointerEvents = 'none';
+      });
+    }
+
+    // Fullscreen Lightbox
+    const expandBtn = document.getElementById("pdp-expand-modal-btn-" + sectionId);
+    const fullscreenModal = document.getElementById("pdp-fullscreen-modal-" + sectionId);
+    const closeFullscreenBtn = document.getElementById("pdp-close-fullscreen-btn");
+    const lightboxImg = document.getElementById("pdp-lightbox-img");
+
+    if (expandBtn && fullscreenModal && lightboxImg) {
+      expandBtn.addEventListener('click', () => {
+        const targetSrc = mainImg ? (mainImg.getAttribute('data-highres-url') || mainImg.src) : '';
+        lightboxImg.src = targetSrc;
+        fullscreenModal.style.display = 'flex';
+      });
+
+      if (closeFullscreenBtn) {
+        closeFullscreenBtn.addEventListener('click', () => {
+          fullscreenModal.style.display = 'none';
+        });
+      }
+      fullscreenModal.addEventListener('click', (e) => {
+        if (e.target === fullscreenModal) fullscreenModal.style.display = 'none';
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && fullscreenModal.style.display === 'flex') {
+          fullscreenModal.style.display = 'none';
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 3. COLOR & SIZE OPTION SELECTION LISTENERS
+    // -------------------------------------------------------------------------
+    // Color Swatches
+    const colorSwatches = container.querySelectorAll(".pdp-swatch-chip");
+    const selectedColorLabel = document.getElementById("pdp-selected-color-label");
+
+    colorSwatches.forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const optIdx = parseInt(swatch.getAttribute('data-option-index'), 10);
+        const val = swatch.getAttribute('data-value');
+        selectedOptions[optIdx] = val;
+
+        colorSwatches.forEach(s => {
+          s.classList.remove('selected', 'active');
+          s.setAttribute('aria-checked', 'false');
+        });
+        swatch.classList.add('selected', 'active');
+        swatch.setAttribute('aria-checked', 'true');
+
+        if (selectedColorLabel) selectedColorLabel.textContent = val;
+
+        // Image switch directly if swatch holds variant image
+        const variantImg = swatch.getAttribute('data-variant-img');
+        const variantMediaId = swatch.getAttribute('data-variant-media-id');
+        if (variantImg) {
+          switchMainImage(variantImg, variantMediaId);
+        }
+
+        updateVariantUI();
+      });
+    });
+
+    // Size Pills
+    const sizePills = container.querySelectorAll(".pdp-size-pill");
+    const selectedSizeLabel = document.getElementById("pdp-selected-size-label");
+
+    sizePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const optIdx = parseInt(pill.getAttribute('data-option-index'), 10);
+        const val = pill.getAttribute('data-value');
+        selectedOptions[optIdx] = val;
+
+        // Update siblings within same group
+        const group = pill.closest('.pdp-option-group');
+        if (group) {
+          group.querySelectorAll('.pdp-size-pill').forEach(p => {
+            p.classList.remove('selected', 'active');
+            p.setAttribute('aria-checked', 'false');
+          });
+        }
+        pill.classList.add('selected', 'active');
+        pill.setAttribute('aria-checked', 'true');
+
+        if (selectedSizeLabel) selectedSizeLabel.textContent = val;
+
+        updateVariantUI();
+      });
+    });
+
+    // -------------------------------------------------------------------------
+    // 4. QUANTITY STEPPER
+    // -------------------------------------------------------------------------
+    if (qtyMinus && qtyPlus && qtyInput) {
+      qtyMinus.addEventListener('click', () => {
+        let val = parseInt(qtyInput.value, 10) || 1;
+        if (val > 1) qtyInput.value = val - 1;
+      });
+      qtyPlus.addEventListener('click', () => {
+        let val = parseInt(qtyInput.value, 10) || 1;
+        if (val < 99) qtyInput.value = val + 1;
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. CUSTOMIZATION TOGGLE & LINE ITEM PROPERTIES
+    // -------------------------------------------------------------------------
+    if (customCheckbox && customBody) {
+      customCheckbox.addEventListener('change', () => {
+        if (customCheckbox.checked) {
+          customBody.style.display = 'block';
+          if (doctorNameInput) doctorNameInput.focus();
+        } else {
+          customBody.style.display = 'none';
+        }
+      });
+    }
+
+    function collectLineItemProperties() {
+      const properties = {};
+      if (customCheckbox && customCheckbox.checked) {
+        const nameVal = doctorNameInput ? doctorNameInput.value.trim() : '';
+        const typeVal = customTypeSelect ? customTypeSelect.value : '';
+        const threadVal = threadColorSelect ? threadColorSelect.value : '';
+        const notesVal = customNotesTextarea ? customNotesTextarea.value.trim() : '';
+
+        if (nameVal) properties['Doctor Name'] = nameVal;
+        if (typeVal) properties['Customization Type'] = typeVal;
+        if (threadVal) properties['Thread Color'] = threadVal;
+        if (notesVal) properties['Custom Notes'] = notesVal;
+      }
+      return properties;
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. FUNCTIONAL ADD TO CART & BUY NOW VIA SHOPIFY CART API
+    // -------------------------------------------------------------------------
+    async function addToCart(isBuyNow = false) {
+      if (!activeVariant || !activeVariant.id || !activeVariant.available) return;
+
+      const qty = parseInt(qtyInput ? qtyInput.value : 1, 10) || 1;
+      const properties = collectLineItemProperties();
+
+      const btnTarget = isBuyNow ? buyNowBtn : atcBtn;
+      const originalText = btnTarget ? btnTarget.innerHTML : '';
+      if (btnTarget) {
+        btnTarget.setAttribute('disabled', 'disabled');
+        btnTarget.innerHTML = `<span style="display: inline-block; animation: spin 0.7s infinite linear;">↻</span> Adding...`;
+      }
+
+      // Prepare items payload: main scrub + checked companion items
+      const itemsPayload = [
+        {
+          id: activeVariant.id,
+          quantity: qty,
+          properties: properties
+        }
+      ];
+
+      // Check for checked bundle companion items (Caps, Sleeves)
+      const capCheckbox = document.getElementById('pdp-add-cap-' + sectionId);
+      const sleevesCheckbox = document.getElementById('pdp-add-sleeves-' + sectionId);
+
+      // Find real matching companion variant IDs from catalogue or demo items
+      if (capCheckbox && capCheckbox.checked) {
+        itemsPayload.push({
+          id: activeVariant.id,
+          quantity: 1,
+          properties: { 'Add-on': 'Matching BunFit Scrub Cap' }
+        });
+      }
+      if (sleevesCheckbox && sleevesCheckbox.checked) {
+        itemsPayload.push({
+          id: activeVariant.id,
+          quantity: 1,
+          properties: { 'Add-on': 'Med Sleeves Graduated Compression' }
+        });
+      }
+
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(itemsPayload.length === 1 ? itemsPayload[0] : { items: itemsPayload })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.description || 'Could not add to cart');
+        }
+
+        const itemData = await response.json();
+
+        if (isBuyNow) {
+          window.location.href = '/checkout';
+          return;
+        }
+
+        // Trigger Enamels Cart Drawer or global cart refresh
+        if (typeof window.openCartDrawer === 'function') {
+          window.openCartDrawer();
+        } else {
+          document.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+          document.dispatchEvent(new CustomEvent('cart:updated', { detail: { item: itemData }, bubbles: true }));
+          
+          // Fallback check for theme cart drawer
+          const drawer = document.querySelector('cart-drawer, #cart-drawer, .enamels-cart-drawer');
+          if (drawer && typeof drawer.open === 'function') {
+            drawer.open();
+          } else if (drawer) {
+            drawer.classList.add('active', 'open');
+          }
+        }
+
+        if (btnTarget) {
+          btnTarget.innerHTML = `✓ Added to Cart!`;
+          setTimeout(() => {
+            btnTarget.removeAttribute('disabled');
+            btnTarget.innerHTML = originalText;
+          }, 1800);
+        }
+
+      } catch (err) {
+        console.error('Cart add error:', err);
+        alert('Notice: ' + err.message);
+        if (btnTarget) {
+          btnTarget.removeAttribute('disabled');
+          btnTarget.innerHTML = originalText;
+        }
+      }
+    }
+
+    if (atcBtn) {
+      atcBtn.addEventListener('click', () => addToCart(false));
+    }
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', () => addToCart(true));
+    }
+    if (mobileStickyAtcBtn) {
+      mobileStickyAtcBtn.addEventListener('click', () => addToCart(false));
+    }
+
+    // -------------------------------------------------------------------------
+    // 7. ACCORDIONS TOGGLE
+    // -------------------------------------------------------------------------
+    const accordionHeaders = container.querySelectorAll(".pdp-accordion-trigger, .pdp-accordion-header");
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.closest('.pdp-accordion-item');
+        if (!item) return;
+        const content = item.querySelector('.pdp-accordion-body, .pdp-accordion-content');
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+
+        if (isExpanded) {
+          header.setAttribute('aria-expanded', 'false');
+          item.classList.remove('active');
+          if (content) content.style.display = 'none';
+        } else {
+          header.setAttribute('aria-expanded', 'true');
+          item.classList.add('active');
+          if (content) content.style.display = 'block';
+        }
+      });
+    });
+
+    // -------------------------------------------------------------------------
+    // 8. SIZE GUIDE MODAL
+    // -------------------------------------------------------------------------
+    const openSizeGuideBtn = document.getElementById("pdp-open-size-chart-btn");
+    const sizeGuideModal = document.getElementById("pdp-size-guide-modal-" + sectionId);
+    const closeSizeGuideBtn = document.getElementById("pdp-close-size-guide-btn");
+
+    if (openSizeGuideBtn && sizeGuideModal) {
+      openSizeGuideBtn.addEventListener('click', () => {
+        sizeGuideModal.style.display = 'flex';
+      });
+
+      if (closeSizeGuideBtn) {
+        closeSizeGuideBtn.addEventListener('click', () => {
+          sizeGuideModal.style.display = 'none';
+        });
+      }
+
+      sizeGuideModal.addEventListener('click', (e) => {
+        if (e.target === sizeGuideModal) sizeGuideModal.style.display = 'none';
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sizeGuideModal.style.display === 'flex') {
+          sizeGuideModal.style.display = 'none';
+        }
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // 9. MOBILE STICKY BAR VISIBILITY
+    // -------------------------------------------------------------------------
+    if (mobileStickyBar && atcBtn) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            mobileStickyBar.classList.remove('visible');
+          } else {
+            mobileStickyBar.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      observer.observe(atcBtn);
+    }
+
+    // Initial variant synchronization
+    updateVariantUI();
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Enamels Amazon PDP",
+  "tag": "section",
+  "class": "enamels-section-pdp",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Amazon-Style Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 1100,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Max Container Width",
+      "default": 1380
+    },
+    {
+      "type": "select",
+      "id": "column_ratio",
+      "label": "Desktop 3-Column Width Ratio",
+      "options": [
+        { "value": "4.8:5:3.4", "label": "Balanced Amazon (4.8 : 5.0 : 3.4 - Recommended)" },
+        { "value": "4.5:4.5:3", "label": "Wide Buy Box (4.5 : 4.5 : 3.0)" },
+        { "value": "5:4:3", "label": "Prominent Gallery (5.0 : 4.0 : 3.0)" },
+        { "value": "4:5:3", "label": "Prominent Content (4.0 : 5.0 : 3.0)" }
+      ],
+      "default": "4.8:5:3.4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show Breadcrumb Navigation",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Product Media Gallery Settings"
+    },
+    {
+      "type": "select",
+      "id": "gallery_aspect_ratio",
+      "label": "Media Gallery Aspect Ratio",
+      "options": [
+        { "value": "3/4", "label": "3:4 (Clinical Portrait - Recommended)" },
+        { "value": "1/1", "label": "1:1 (Square)" },
+        { "value": "4/5", "label": "4:5 (Fashion Catalog)" },
+        { "value": "natural", "label": "Natural (Unconstrained)" }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "select",
+      "id": "gallery_image_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "contain", "label": "Contain (Full garment visible, no crop)" },
+        { "value": "cover", "label": "Cover (Full width bleed)" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_image_zoom",
+      "label": "Enable Desktop Hover Zoom",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "Enable Fullscreen Image Lightbox",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Purchase & Buy Box Controls"
+    },
+    {
+      "type": "text",
+      "id": "atc_btn_text",
+      "label": "Add to Cart Button Text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "color",
+      "id": "atc_btn_bg",
+      "label": "Add to Cart Button Background",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "atc_btn_color",
+      "label": "Add to Cart Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_now",
+      "label": "Show Buy Now Button",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "buy_now_btn_bg",
+      "label": "Buy Now Button Background",
+      "default": "#008779"
+    },
+    {
+      "type": "color",
+      "id": "buy_now_btn_color",
+      "label": "Buy Now Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "btn_border_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Button Corner Radius",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "Show Quantity Stepper",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_badge",
+      "label": "Show Live Stock Status",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_promise",
+      "label": "Show Shipping Promise Card",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_table",
+      "label": "Show Security & Trust Table",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home_fitting",
+      "label": "Show Home Fitting Concierge Link",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Shipping & Fulfillment Policies"
+    },
+    {
+      "type": "number",
+      "id": "shipping_fee_pk",
+      "label": "Pakistan Standard Delivery Fee (PKR)",
+      "default": 250
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free Shipping Threshold (PKR)",
+      "default": 7000
+    },
+    {
+      "type": "number",
+      "id": "shipping_fee_intl",
+      "label": "International Base Shipping (PKR)",
+      "default": 4000
+    },
+    {
+      "type": "number",
+      "id": "shipping_fee_intl_addon",
+      "label": "International Add-on Shipping (PKR)",
+      "default": 1800
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "vendor_sku",
+      "name": "Brand & SKU Badges",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_vendor",
+          "label": "Show Brand / Vendor",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_sku",
+          "label": "Show Variant SKU",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_article_name",
+          "label": "Show Article Name Metafield",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_category",
+          "label": "Show Category / Type Badge",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "title_rating",
+      "name": "Product Title & Rating",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "title_size",
+          "min": 20,
+          "max": 42,
+          "step": 1,
+          "unit": "px",
+          "label": "Title Font Size",
+          "default": 26
+        },
+        {
+          "type": "checkbox",
+          "id": "show_rating",
+          "label": "Show Star Rating & Verified Badge",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "rating_score",
+          "label": "Average Rating Score",
+          "default": "4.9"
+        },
+        {
+          "type": "text",
+          "id": "reviews_count",
+          "label": "Verified Review Count",
+          "default": "128"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified_badge",
+          "label": "Show Verified Clinical Badge",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Price & Savings Badge",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_compare_at_price",
+          "label": "Show Compare-at Price",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_discount_badge",
+          "label": "Show Discount / Savings Badge",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_tax_note",
+          "label": "Show Tax & Shipping Note",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "tax_note_text",
+          "label": "Tax Note Text",
+          "default": "Inclusive of all taxes. Free delivery on orders over PKR 7,000 in Pakistan."
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "Color Swatches & Size Chips",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_size_guide_btn",
+          "label": "Show Size Guide Modal Button",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "customization",
+      "name": "Name Embroidery Personalization",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enable_customization",
+          "label": "Enable Personalization Studio Box",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Customization Box Title",
+          "default": "Doctor Name & Credentials Personalization"
+        },
+        {
+          "type": "textarea",
+          "id": "custom_desc",
+          "label": "Customization Description",
+          "default": "Precision computerized clinical embroidery. Please provide your name, title, and preferred thread color."
+        },
+        {
+          "type": "number",
+          "id": "direct_embroidery_price",
+          "label": "Direct Embroidery Surcharge (PKR)",
+          "default": 450
+        },
+        {
+          "type": "number",
+          "id": "patch_price",
+          "label": "Velcro Patch Surcharge (PKR)",
+          "default": 550
+        },
+        {
+          "type": "number",
+          "id": "sleeve_logo_price",
+          "label": "Sleeve Logo Surcharge (PKR)",
+          "default": 400
+        }
+      ]
+    },
+    {
+      "type": "cross_sell_bundle",
+      "name": "Complementary Essentials Bundle",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Frequently Paired Clinical Essentials"
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Add matching surgical cap and compression arm sleeves to complete your uniform."
+        }
+      ]
+    },
+    {
+      "type": "bullet_features",
+      "name": "About This Item Bullets",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "About this item"
+        },
+        {
+          "type": "text",
+          "id": "bullet_1",
+          "label": "Bullet Point 1",
+          "default": "Clinical Performance Textile: 72% Polyester, 21% Rayon, 7% Spandex 4-way flex blend"
+        },
+        {
+          "type": "text",
+          "id": "bullet_2",
+          "label": "Bullet Point 2",
+          "default": "Triple-Needle Reinforced Stitching: Maximum durability under demanding hospital shift conditions"
+        },
+        {
+          "type": "text",
+          "id": "bullet_3",
+          "label": "Bullet Point 3",
+          "default": "Ergonomic Pocket Architecture: Deep accessory pockets designed for stethoscope, pens & charts"
+        },
+        {
+          "type": "text",
+          "id": "bullet_4",
+          "label": "Bullet Point 4",
+          "default": "Wrinkle-Resistant & Anti-Static: Retains a crisp, professional clinical drape all day"
+        },
+        {
+          "type": "text",
+          "id": "bullet_5",
+          "label": "Bullet Point 5",
+          "default": "Autoclave & Sanitization Friendly: Non-fade reactive dyes tested for commercial washing"
+        }
+      ]
+    },
+    {
+      "type": "specifications_table",
+      "name": "Technical Specifications",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Technical Specifications"
+        },
+        {
+          "type": "text",
+          "id": "spec_fabric",
+          "label": "Fabric Composition",
+          "default": "72% Poly / 21% Rayon / 7% Spandex"
+        },
+        {
+          "type": "text",
+          "id": "spec_fit",
+          "label": "Fit Profile",
+          "default": "Modern Clinical Tailored Fit"
+        },
+        {
+          "type": "text",
+          "id": "spec_pockets",
+          "label": "Pockets",
+          "default": "5 Pockets (Chest Pocket + 2 Deep Hip + 2 Cargo)"
+        },
+        {
+          "type": "text",
+          "id": "spec_stretch",
+          "label": "Stretch Type",
+          "default": "4-Way Mechanical Comfort Stretch"
+        },
+        {
+          "type": "text",
+          "id": "spec_care",
+          "label": "Care Instructions",
+          "default": "Machine wash cold with like colors, tumble dry low"
+        },
+        {
+          "type": "text",
+          "id": "spec_origin",
+          "label": "Country of Origin",
+          "default": "Pakistan (Sialkot Clinical Labs)"
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Product Description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Description"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_heading",
+          "label": "Show Heading",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Amazon PDP",
+      "blocks": [
+        { "type": "vendor_sku" },
+        { "type": "title_rating" },
+        { "type": "price" },
+        { "type": "variant_picker" },
+        { "type": "customization" },
+        { "type": "cross_sell_bundle" },
+        { "type": "bullet_features" },
+        { "type": "specifications_table" }
+      ]
+    }
+  ]
+}
+{% endschema %}

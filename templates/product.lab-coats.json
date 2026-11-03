@@ -1,0 +1,124 @@
+{
+  "sections": {
+    "main": {
+      "type": "enamels-product-pdp",
+      "blocks": {
+        "vendor_sku": {
+          "type": "vendor_sku",
+          "settings": {
+            "show_vendor": true,
+            "show_sku": true,
+            "show_article_name": true,
+            "show_category": true
+          }
+        },
+        "title_rating": {
+          "type": "title_rating",
+          "settings": {
+            "title_size": 26,
+            "show_rating": true,
+            "rating_score": "4.9",
+            "reviews_count": "128",
+            "show_verified_badge": true
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_compare_at_price": true,
+            "show_discount_badge": true,
+            "show_tax_note": true,
+            "tax_note_text": "Inclusive of all taxes. Free delivery on orders over PKR 7,000 in Pakistan."
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "show_size_guide_btn": true
+          }
+        },
+        "customization": {
+          "type": "customization",
+          "settings": {
+            "enable_customization": true,
+            "custom_title": "Doctor Name & Credentials Personalization",
+            "custom_desc": "Precision computerized clinical embroidery. Please provide your name, title, and preferred thread color.",
+            "direct_embroidery_price": 450,
+            "patch_price": 550,
+            "sleeve_logo_price": 400
+          }
+        },
+        "cross_sell_bundle": {
+          "type": "cross_sell_bundle",
+          "settings": {
+            "heading": "Frequently Paired Clinical Essentials",
+            "subheading": "Add matching surgical cap and compression arm sleeves to complete your uniform."
+          }
+        },
+        "bullet_features": {
+          "type": "bullet_features",
+          "settings": {
+            "heading": "About this item",
+            "bullet_1": "Clinical Performance Textile: 72% Polyester, 21% Rayon, 7% Spandex 4-way flex blend",
+            "bullet_2": "Triple-Needle Reinforced Stitching: Maximum durability under demanding hospital shift conditions",
+            "bullet_3": "Ergonomic Pocket Architecture: Deep accessory pockets designed for stethoscope, pens & charts",
+            "bullet_4": "Wrinkle-Resistant & Anti-Static: Retains a crisp, professional clinical drape all day",
+            "bullet_5": "Autoclave & Sanitization Friendly: Non-fade reactive dyes tested for commercial washing"
+          }
+        },
+        "specifications_table": {
+          "type": "specifications_table",
+          "settings": {
+            "heading": "Lab Coat Technical Specifications",
+            "spec_fabric": "Anti-Fluid Breathable Poly-Cotton Blend (65% Poly / 35% Cotton)",
+            "spec_fit": "Tailored Consultation Cut with Back Vent & Princess Seams",
+            "spec_pockets": "3 Deep Pockets (iPad/Tablet Compatible Hip Pockets + Pen Pocket)",
+            "spec_stretch": "Mechanical Comfort Ease",
+            "spec_care": "Commercial Autoclave & Bleach-Safe Laundry Tested",
+            "spec_origin": "Pakistan (Enamels Tailoring Lab)"
+          }
+        }
+      },
+      "block_order": [
+        "vendor_sku",
+        "title_rating",
+        "price",
+        "variant_picker",
+        "customization",
+        "cross_sell_bundle",
+        "bullet_features",
+        "specifications_table"
+      ],
+      "settings": {
+        "container_width": 1380,
+        "column_ratio": "4.8:5:3.4",
+        "show_breadcrumbs": true,
+        "gallery_aspect_ratio": "3/4",
+        "gallery_image_fit": "contain",
+        "enable_image_zoom": true,
+        "enable_lightbox": true,
+        "atc_btn_text": "Add to Cart",
+        "atc_btn_bg": "#102a43",
+        "atc_btn_color": "#ffffff",
+        "show_buy_now": true,
+        "buy_now_btn_bg": "#008779",
+        "buy_now_btn_color": "#ffffff",
+        "btn_border_radius": 8,
+        "show_quantity": true,
+        "show_stock_badge": true,
+        "show_shipping_promise": true,
+        "show_trust_table": true,
+        "show_home_fitting": true,
+        "shipping_fee_pk": 250,
+        "free_shipping_threshold": 7000,
+        "shipping_fee_intl": 4000,
+        "shipping_fee_intl_addon": 1800,
+        "padding_top": 20,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

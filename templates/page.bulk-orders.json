@@ -1,0 +1,22 @@
+{
+  "sections": {
+    "bulk_orders": {
+      "type": "enamels-bulk-orders",
+      "settings": {
+        "heading": "Bulk Orders",
+        "subtext": "Planning a bulk order? Submit your requirements using the form below. Minimum order quantity: 10 scrubs.",
+        "min_order_quantity": 10
+      }
+    },
+    "chromatic_lab": {
+      "type": "enamels-chromatic-lab",
+      "settings": {
+        "hide_inline_homepage": true
+      }
+    }
+  },
+  "order": [
+    "bulk_orders",
+    "chromatic_lab"
+  ]
+}

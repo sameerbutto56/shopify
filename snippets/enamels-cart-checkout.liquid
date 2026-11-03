@@ -48,9 +48,18 @@
       </p>
     </div>
 
-    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px;">
-      <span style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Subtotal:</span>
-      <span style="font-size: 20px; font-weight: 700; color: #102a43;" id="cart-drawer-subtotal">Rs. 0</span>
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">
+      <span style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Merchandise Subtotal:</span>
+      <span style="font-size: 18px; font-weight: 700; color: #102a43;" id="cart-drawer-subtotal">Rs. 0</span>
+    </div>
+
+    <!-- Automated Pakistan & International Shipping Calculator -->
+    {% render 'enamels-shipping-calculator' %}
+
+    <!-- Estimated Grand Total -->
+    <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; padding-top: 8px; border-top: 1px solid #cbd5e1;">
+      <span style="font-size: 13px; color: #102a43; font-weight: 700; text-transform: uppercase;">Estimated Total:</span>
+      <span style="font-size: 20px; font-weight: 800; color: #102a43;" id="cart-drawer-grand-total">Rs. 0</span>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -58,18 +67,21 @@
         <span>Proceed to Checkout (Shopify)</span>
         <span aria-hidden="true">→</span>
       </button>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('bank')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 8px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #102a43;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
+        <button type="button" id="btn-cart-cod-option" class="gender-pill-btn" onclick="window.openCheckoutModal('cod')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 4px; font-size: 11px; font-weight: 700; background: #f0fdf4; border: 1px solid #86efac; color: #166534;">
+          💵 Cash on Delivery
+        </button>
+        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('bank')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 4px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #102a43;">
           🏦 Bank Transfer
         </button>
-        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('rep')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 8px; font-size: 11px; font-weight: 700; background: #e6fffa; border: 1px solid #99f6e4; color: #008779;">
-          💬 Concierge Assist
+        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('rep')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 4px; font-size: 11px; font-weight: 700; background: #e6fffa; border: 1px solid #99f6e4; color: #008779;">
+          💬 Concierge
         </button>
       </div>
     </div>
 
-    <div style="margin-top: 10px; text-align: center; font-size: 11px; color: #94a3b8;">
-      Cash on Delivery available for non-custom items • Nationwide Trax / TCS
+    <div style="margin-top: 10px; text-align: center; font-size: 11px; color: #94a3b8;" id="cart-cod-trust-badge">
+      Cash on Delivery available across all cities in Pakistan • Nationwide Trax / TCS
     </div>
   </div>
 </div>
@@ -78,6 +90,62 @@
 <div class="enamels-modal-backdrop" id="checkout-options-modal" onclick="window.closeCheckoutModal()">
   <div class="enamels-modal-card" onclick="event.stopPropagation()">
     <button type="button" class="modal-close-trigger" onclick="window.closeCheckoutModal()">✕</button>
+
+    <!-- OPTION C: CASH ON DELIVERY WORKFLOW (PAKISTAN ONLY) -->
+    <div id="checkout-view-cod" style="display: none;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="font-size: 22px;">💵</span>
+        <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0; text-transform: uppercase;">
+          Cash on Delivery (COD)
+        </h3>
+      </div>
+      <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 16px;">
+        Pay in cash directly to the courier representative when your parcel arrives at your hospital, clinic, or residence. Available across all cities in Pakistan via TCS & Trax Logistics.
+      </p>
+
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; font-size: 12px; color: #166534;">
+        <div style="font-weight: 700; margin-bottom: 4px;">🚚 Domestic Delivery Policy:</div>
+        <div>• Standard Courier: PKR 250 for orders up to PKR 7,000.</div>
+        <div>• <strong>FREE Delivery</strong> for orders strictly above PKR 7,000.</div>
+      </div>
+
+      <!-- Customer Details Form for COD -->
+      <div style="margin-bottom: 16px;">
+        <div class="alteration-fields-grid">
+          <div class="form-field-group">
+            <label>Full Name *</label>
+            <input type="text" class="form-field-input" id="cod-order-name" placeholder="Dr. Full Name" required />
+          </div>
+          <div class="form-field-group">
+            <label>WhatsApp / Mobile Phone *</label>
+            <input type="tel" class="form-field-input" id="cod-order-phone" placeholder="0300 1234567" required />
+          </div>
+          <div class="form-field-group">
+            <label>City in Pakistan *</label>
+            <input type="text" class="form-field-input" id="cod-order-city" placeholder="e.g. Lahore, Karachi, Islamabad, Peshawar" required />
+          </div>
+          <div class="form-field-group">
+            <label>Hospital, Clinic or Department</label>
+            <input type="text" class="form-field-input" id="cod-order-hospital" placeholder="e.g. Mayo Hospital / Ward 4" />
+          </div>
+          <div class="form-field-group" style="grid-column: 1 / -1;">
+            <label>Complete Street / Delivery Address *</label>
+            <input type="text" class="form-field-input" id="cod-order-address" placeholder="House/Ward, Street, Landmark, Sector/Area" required />
+          </div>
+          <div class="form-field-group" style="grid-column: 1 / -1;">
+            <label>Special Delivery Instructions (Optional)</label>
+            <input type="text" class="form-field-input" id="cod-order-notes" placeholder="e.g. Call before arrival, leave at hospital reception" />
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" class="gender-pill-btn" onclick="window.closeCheckoutModal()">Cancel</button>
+        <button type="button" class="btn-proceed-checkout" onclick="window.submitCodOrder()" style="flex: 1; background: #166534;">
+          Confirm Cash on Delivery Order →
+        </button>
+      </div>
+    </div>
 
     <!-- OPTION A: BANK TRANSFER WORKFLOW -->
     <div id="checkout-view-bank">

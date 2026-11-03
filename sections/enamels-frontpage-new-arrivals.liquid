@@ -1,0 +1,329 @@
+{% comment %}
+  Enamels Frontpage New Arrivals Section
+  Matches the exact New Arrivals cards from the user's UI screenshot.
+  Desktop: 1 row of 6 portrait cards.
+  Mobile: 2 columns grid.
+{% endcomment %}
+
+<section class="enamels-na-section" id="enamels-na-{{ section.id }}">
+  <div class="enamels-na__container">
+    <!-- Header -->
+    <div class="enamels-section-head">
+      <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'New Arrivals' }}</h2>
+      {% if section.settings.view_all_link != blank and section.settings.view_all_label != blank %}
+        <a href="{{ section.settings.view_all_link }}" class="enamels-section-head__link">
+          {{ section.settings.view_all_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Product Grid -->
+    <div class="enamels-na__grid">
+      {% for block in section.blocks %}
+        {% assign prod = block.settings.product %}
+        {% assign card_img = block.settings.image %}
+        {% assign card_fallback = block.settings.fallback_asset %}
+        {% assign card_link = block.settings.link %}
+        {% if card_link == blank and prod != blank %}
+          {% assign card_link = prod.url %}
+        {% endif %}
+
+        <div class="enamels-na-card" {{ block.shopify_attributes }}>
+          <a href="{{ card_link | default: '#' }}" class="enamels-na-card__link">
+            <div class="enamels-na-card__media">
+              {% if card_img != blank %}
+                <img
+                  src="{{ card_img | image_url: width: 600 }}"
+                  alt="{{ block.settings.title | escape }}"
+                  loading="lazy"
+                  width="250"
+                  height="340"
+                >
+              {% elsif prod.featured_media != blank %}
+                <img
+                  src="{{ prod.featured_media | image_url: width: 600 }}"
+                  alt="{{ block.settings.title | default: prod.title | escape }}"
+                  loading="lazy"
+                  width="250"
+                  height="340"
+                >
+              {% elsif card_fallback != blank %}
+                <img
+                  src="{{ card_fallback | asset_url }}"
+                  alt="{{ block.settings.title | escape }}"
+                  loading="lazy"
+                  width="250"
+                  height="340"
+                >
+              {% endif %}
+            </div>
+            
+            <div class="enamels-na-card__info">
+              <span class="enamels-na-card__title">
+                {{ block.settings.title | default: prod.title }}
+              </span>
+              <span class="enamels-na-card__price">
+                {% if prod != blank %}
+                  {{ prod.price | money_without_trailing_zeros }}
+                {% else %}
+                  {{ block.settings.price | default: 'Rs 5900' }}
+                {% endif %}
+              </span>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  #enamels-na-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | default: 16 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 32 }}px;
+  }
+
+  #enamels-na-{{ section.id }} .enamels-na__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .enamels-na__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  .enamels-na-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enamels-na-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enamels-na-card__media {
+    width: 100%;
+    aspect-ratio: 3 / 4.4;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    margin-bottom: 8px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .enamels-na-card:hover .enamels-na-card__media {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
+
+  .enamels-na-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .enamels-na-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .enamels-na-card__title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #444444;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .enamels-na-card__price {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #111111;
+  }
+
+  @media (max-width: 900px) {
+    .enamels-na__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    #enamels-na-{{ section.id }} .enamels-na__container {
+      padding: 0 12px;
+    }
+
+    .enamels-na__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .enamels-na-card__media {
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .enamels-na-card__title {
+      font-size: 0.75rem;
+    }
+
+    .enamels-na-card__price {
+      font-size: 0.82rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Enamels New Arrivals",
+  "tag": "section",
+  "class": "enamels-na-section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Label",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Shopify Product"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card Label / Color Name",
+          "default": "BLUE"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Display Price",
+          "default": "Rs 5900"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Card Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Asset File Name",
+          "info": "e.g. enamels-na-blue.jpg"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels New Arrivals",
+      "blocks": [
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-blue.jpg"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "BLACK",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-black.jpg"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "SEAGREEN",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-seagreen.jpg"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "OLIVE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-olive.jpg"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "RUST",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-rust.jpg"
+          }
+        },
+        {
+          "type": "product_card",
+          "settings": {
+            "title": "DARK GREEN",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-darkgreen.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

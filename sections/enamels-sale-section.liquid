@@ -1,0 +1,376 @@
+{% comment %}
+  Enamels Dedicated Sale & Promotional Section
+  Features:
+  - Genuine sale eligibility filtering: checks tag 'sale-active' or verified compare_at_price > price
+  - Excludes non-discounted products and expired promotions
+  - Full Theme Editor controls: collection picker, thumbnail, title, description, badge toggles, grid columns
+  - Calculates real discount percentage dynamically: (compare_at - price) / compare_at * 100
+  - Clean empty state when no active promotions match
+{% endcomment %}
+
+{%- liquid
+  assign target_collection = section.settings.sale_collection
+  if target_collection == blank or target_collection.all_products_count == 0
+    if collections['sale'] != blank
+      assign target_collection = collections['sale']
+    elsif collection != blank
+      assign target_collection = collection
+    else
+      assign target_collection = collections.all
+    endif
+  endif
+
+  assign heading_tag = section.settings.header_tag | default: 'VERIFIED CLINICAL PROMOTIONS' | strip
+  assign title_text = section.settings.heading | default: 'Sale & Special Promotions' | strip
+  assign desc_text = section.settings.subtext | default: 'Discover genuine promotional offers on premium medical scrubs, lab coats, and surgical caps. Every sale piece is crafted from our authentic 4-way stretch and fluid-repellent fabrics.' | strip
+
+  assign grid_cols = section.settings.grid_columns | default: 4
+  assign products_per_page = section.settings.products_per_page | default: 24
+  assign show_sale_badge = section.settings.show_sale_badge
+  if show_sale_badge == nil
+    assign show_sale_badge = true
+  endif
+  assign sale_badge_text = section.settings.sale_badge_text | default: 'SALE' | strip
+  assign sale_badge_bg = section.settings.sale_badge_color | default: '#e11d48'
+  assign show_percent = section.settings.show_discount_percentage
+  if show_percent == nil
+    assign show_percent = true
+  endif
+
+  assign filter_rule = section.settings.filter_rule | default: 'tag_or_discount'
+-%}
+
+<style>
+  #enamels-sale-grid-{{ section.id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax({% if grid_cols == 3 %}300px{% elsif grid_cols == 2 %}420px{% else %}260px{% endif %}, 1fr));
+    gap: 24px;
+  }
+  @media (max-width: 768px) {
+    #enamels-sale-grid-{{ section.id }} {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+    #enamels-sale-section-{{ section.id }} {
+      padding: 24px 12px 40px !important;
+    }
+  }
+</style>
+
+<div class="page-container enamels-sale-section-container" style="padding: 40px 0 60px;" id="enamels-sale-section-{{ section.id }}">
+  <!-- Sale Section Header -->
+  <div class="categories-section-header" style="margin-bottom: 28px; text-align: {{ section.settings.header_alignment | default: 'left' }};">
+    {% if heading_tag != blank %}
+      <span class="categories-section-tag" style="background: rgba(225, 29, 72, 0.08); color: #e11d48; border: 1px solid rgba(225, 29, 72, 0.2);">
+        {{ heading_tag | escape }}
+      </span>
+    {% endif %}
+    {% if title_text != blank %}
+      <h1 class="categories-section-title" style="margin-top: 8px;">{{ title_text | escape }}</h1>
+    {% endif %}
+    {% if desc_text != blank %}
+      <p class="categories-section-subtitle" style="max-width: 680px; margin-top: 6px;">{{ desc_text | strip_html | escape }}</p>
+    {% endif %}
+  </div>
+
+  {% if target_collection != blank and target_collection.products.size > 0 %}
+    {% paginate target_collection.products by products_per_page %}
+      {%- liquid
+        assign eligible_count = 0
+      -%}
+
+      <div
+        class="enamels-products-grid"
+        id="enamels-sale-grid-{{ section.id }}"
+      >
+        {% for product in target_collection.products %}
+          {%- liquid
+            # Genuine Sale Qualification Evaluation
+            assign is_on_sale = false
+            assign has_sale_tag = false
+            if product.tags contains 'sale-active' or product.tags contains 'sale' or product.tags contains 'badge:sale'
+              assign has_sale_tag = true
+            endif
+
+            assign has_real_discount = false
+            if product.compare_at_price > product.price
+              assign has_real_discount = true
+            endif
+
+            case filter_rule
+              when 'discount_only'
+                if has_real_discount
+                  assign is_on_sale = true
+                endif
+              when 'tag_only'
+                if has_sale_tag
+                  assign is_on_sale = true
+                endif
+              when 'tag_or_discount'
+                if has_real_discount or has_sale_tag
+                  assign is_on_sale = true
+                endif
+              when 'all_in_collection'
+                assign is_on_sale = true
+            endcase
+          -%}
+
+          {% if is_on_sale %}
+            {% assign eligible_count = eligible_count | plus: 1 %}
+            {%- liquid
+              assign discount_pct = 0
+              if product.compare_at_price > product.price
+                assign savings = product.compare_at_price | minus: product.price
+                assign discount_pct = savings | times: 100 | divided_by: product.compare_at_price
+              endif
+            -%}
+
+            <div
+              class="frubs-product-card sale-qualified-card"
+              data-product-id="{{ product.id }}"
+              data-category="{{ product.type | handleize }}"
+              data-sale-active="true"
+              onclick="if (typeof window.openProductStudio === 'function') { window.openProductStudio({{ product.id | json }}); } else { window.location.href = '{{ product.url }}'; }"
+              style="position: relative; cursor: pointer;"
+            >
+              <div class="frubs-card-media-wrap" style="position: relative; overflow: hidden; border-radius: 8px 8px 0 0; background: #f8fafc;">
+                <!-- Promotional Badges -->
+                <div style="position: absolute; top: 10px; left: 10px; z-index: 3; display: flex; flex-direction: column; gap: 4px;">
+                  {% if show_sale_badge and sale_badge_text != blank %}
+                    <span style="background: {{ sale_badge_bg }}; color: #ffffff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 2px 6px rgba(225,29,72,0.3);">
+                      {{ sale_badge_text | escape }}
+                    </span>
+                  {% endif %}
+                  {% if show_percent and discount_pct > 0 %}
+                    <span style="background: #102a43; color: #ffffff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
+                      {{ discount_pct }}% OFF
+                    </span>
+                  {% endif %}
+                </div>
+
+                {% if product.featured_image != blank %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 600 }}"
+                    alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                    class="frubs-card-img"
+                    width="300"
+                    height="380"
+                    loading="lazy"
+                    style="width: 100%; height: auto; aspect-ratio: 4/5; object-fit: cover; display: block; transition: transform 0.4s ease;"
+                  />
+                {% else %}
+                  <div style="width: 100%; height: 320px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 13px;">
+                    Medical Apparel Promotion
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="frubs-card-details" style="padding: 14px;">
+                <span class="frubs-card-brand" style="font-size: 10px; font-weight: 700; color: #008779; letter-spacing: 0.05em; text-transform: uppercase;">
+                  {{ product.vendor | default: 'ENAMELS MEDICAL' | escape }}
+                </span>
+                <h3 class="frubs-card-title" style="font-size: 14px; font-weight: 700; color: #102a43; margin: 4px 0 8px; line-height: 1.4;">
+                  {{ product.title | escape }}
+                </h3>
+                <div class="frubs-card-price-row" style="display: flex; align-items: baseline; gap: 8px;">
+                  <span class="frubs-card-price" style="font-size: 15px; font-weight: 700; color: #e11d48;">
+                    {{ product.price | money }}
+                  </span>
+                  {% if product.compare_at_price > product.price %}
+                    <span class="frubs-card-compare-price" style="font-size: 13px; color: #94a3b8; text-decoration: line-through;">
+                      {{ product.compare_at_price | money }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        {% if eligible_count == 0 %}
+          <!-- Clean Empty State When No Products Qualify as Active Sale -->
+          <div style="grid-column: 1 / -1; padding: 64px 24px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">
+            <div style="font-size: 40px; margin-bottom: 12px;">🏷️</div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 8px;">
+              {{ section.settings.empty_state_heading | default: 'No Active Sale Promotions At This Moment' | escape }}
+            </h3>
+            <p style="font-size: 13px; color: #64748b; margin: 0 auto 20px; max-width: 480px; line-height: 1.6;">
+              {{ section.settings.empty_state_text | default: 'All current promotional items have been claimed or offer periods have concluded. Please explore our regular catalogue or subscribe to receive early notifications on upcoming seasonal flash sales.' | escape }}
+            </p>
+            <a href="/collections/all" class="btn-proceed-checkout" style="display: inline-block; width: auto; padding: 12px 28px; text-decoration: none; background: #102a43; color: #ffffff; border-radius: 6px;">
+              Browse Full Catalogue →
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if paginate.pages > 1 and eligible_count > 0 %}
+        <div style="margin-top: 40px; text-align: center;">
+          {{ paginate | default_pagination }}
+        </div>
+      {% endif %}
+    {% endpaginate %}
+  {% else %}
+    <!-- Empty Collection State -->
+    <div style="padding: 64px 24px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px;">
+      <div style="font-size: 40px; margin-bottom: 12px;">🏷️</div>
+      <h3 style="font-size: 18px; font-weight: 700; color: #102a43; margin: 0 0 8px;">
+        {{ section.settings.empty_state_heading | default: 'No Sale Products Designated' | escape }}
+      </h3>
+      <p style="font-size: 13px; color: #64748b; margin: 0 auto 20px; max-width: 480px;">
+        {{ section.settings.empty_state_text | default: 'Select a collection with active sale products or assign the "sale-active" tag in Shopify Admin.' | escape }}
+      </p>
+      <a href="/collections/all" class="btn-proceed-checkout" style="display: inline-block; width: auto; padding: 12px 28px; text-decoration: none; background: #102a43; color: #ffffff; border-radius: 6px;">
+        Explore All Scrubs →
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Sale Products Showcase",
+  "class": "enamels-sale-section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection & Product Eligibility"
+    },
+    {
+      "type": "collection",
+      "id": "sale_collection",
+      "label": "Sale Collection Source",
+      "info": "Select the dedicated Sale collection, or leave blank to automatically query the store's sale catalogue."
+    },
+    {
+      "type": "select",
+      "id": "filter_rule",
+      "label": "Sale Eligibility Verification Rule",
+      "options": [
+        {
+          "value": "tag_or_discount",
+          "label": "Verified Discount or 'sale-active' Tag"
+        },
+        {
+          "value": "discount_only",
+          "label": "Strict Compare-At Discount Only"
+        },
+        {
+          "value": "tag_only",
+          "label": "Tagged 'sale-active' Only"
+        },
+        {
+          "value": "all_in_collection",
+          "label": "All Products in Collection"
+        }
+      ],
+      "default": "tag_or_discount",
+      "info": "Prevents non-discounted products or expired promotions from appearing."
+    },
+    {
+      "type": "header",
+      "content": "Headings & Content"
+    },
+    {
+      "type": "text",
+      "id": "header_tag",
+      "label": "Section Header Tag",
+      "default": "VERIFIED CLINICAL PROMOTIONS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Sale & Special Promotions"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Introductory Supporting Text",
+      "default": "Discover genuine promotional offers on premium medical scrubs, lab coats, and surgical caps. Every sale piece is crafted from our authentic 4-way stretch and fluid-repellent fabrics."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Grid & Layout Controls"
+    },
+    {
+      "type": "range",
+      "id": "grid_columns",
+      "label": "Products Per Row (Desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products Per Page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Badges & Visual Pricing"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show Sale Badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sale_badge_text",
+      "label": "Sale Badge Text",
+      "default": "SALE"
+    },
+    {
+      "type": "color",
+      "id": "sale_badge_color",
+      "label": "Sale Badge Background Color",
+      "default": "#e11d48"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_percentage",
+      "label": "Show Calculated % Discount Badge",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Empty State Messaging"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_heading",
+      "label": "Empty State Heading",
+      "default": "No Active Sale Promotions At This Moment"
+    },
+    {
+      "type": "textarea",
+      "id": "empty_state_text",
+      "label": "Empty State Explanation",
+      "default": "All current promotional items have been claimed or offer periods have concluded. Please explore our regular catalogue or check back soon for upcoming flash sales."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Sale Section"
+    }
+  ]
+}
+{% endschema %}

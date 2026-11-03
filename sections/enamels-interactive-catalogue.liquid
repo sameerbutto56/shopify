@@ -1054,7 +1054,7 @@
     let activePrice = 'all';
     let activeSort = 'featured';
 
-    const catalogueData = window.EnamelsCatalogue || [];
+    const catalogueData = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
 
     // Filter Listeners
     document.querySelectorAll('.cat-tab').forEach(tab => {
@@ -1172,18 +1172,19 @@
   // PDP MODAL INTERACTIVE CONFIGURATOR
   // ==========================================
   window.openEnamelsPdpModal = function(productId) {
-    const product = (window.EnamelsCatalogue || []).find(p => p.id === productId);
+    const catalogue = (typeof window.getStorefrontCatalogue === 'function') ? window.getStorefrontCatalogue() : (window.EnamelsCatalogue || []);
+    const product = catalogue.find(p => p.id === productId);
     if (!product) return;
 
     const modal = document.getElementById('pdp-modal');
     const body = document.getElementById('pdp-modal-body');
     if (!modal || !body) return;
 
-    let selectedColor = product.colors[0];
-    let selectedSize = product.sizes[0];
+    let selectedColor = product.colors ? product.colors[0] : null;
+    let selectedSize = product.sizes ? product.sizes[0] : null;
     let selectedCustomization = 'none'; // 'none', 'embroidery', 'patch', 'logo'
-    let embroideryLine1 = 'Dr. Sarah Khan';
-    let embroideryLine2 = 'Cardiology';
+    let embroideryLine1 = '';
+    let embroideryLine2 = '';
     let threadColor = '#ffffff';
     let includeCompanion = false;
 
@@ -1196,7 +1197,7 @@
       let companionFee = 0;
       let companionItem = null;
       if (product.companionIds && product.companionIds.length > 0) {
-        companionItem = (window.EnamelsCatalogue || []).find(p => p.id === product.companionIds[0]);
+        companionItem = catalogue.find(p => p.id === product.companionIds[0]);
       }
       if (includeCompanion && companionItem) {
         companionFee = companionItem.basePrice;
@@ -1492,10 +1493,10 @@
 
       <h4 style="margin: 0 0 10px; color: #102a43;">Clinical Delivery Details</h4>
       <div class="checkout-form-grid">
-        <input type="text" class="checkout-input" id="chk-name" placeholder="Doctor Full Name" value="Dr. Sarah Khan">
-        <input type="text" class="checkout-input" id="chk-phone" placeholder="Mobile Number (e.g. 0300-1234567)" value="0300-1234567">
-        <input type="text" class="checkout-input checkout-form-full" id="chk-hospital" placeholder="Hospital / Clinical Institute" value="Aga Khan University Hospital (AKUH)">
-        <input type="text" class="checkout-input checkout-form-full" id="chk-address" placeholder="Delivery Street Address & Ward" value="Stadium Road, Department of Cardiology">
+        <input type="text" class="checkout-input" id="chk-name" placeholder="Full Name" value="">
+        <input type="text" class="checkout-input" id="chk-phone" placeholder="Mobile Number (e.g. 0300-1234567)" value="">
+        <input type="text" class="checkout-input checkout-form-full" id="chk-hospital" placeholder="Hospital / Clinical Institute" value="">
+        <input type="text" class="checkout-input checkout-form-full" id="chk-address" placeholder="Delivery Street Address & Ward" value="">
         <select class="checkout-input checkout-form-full" id="chk-city">
           <option value="Karachi">Karachi</option>
           <option value="Lahore">Lahore</option>

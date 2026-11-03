@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "sale_showcase": {
+      "type": "enamels-sale-section",
+      "settings": {
+        "header_tag": "VERIFIED CLINICAL PROMOTIONS",
+        "heading": "Sale & Special Promotions",
+        "subtext": "Discover genuine promotional offers on premium medical scrubs, lab coats, and surgical caps. Every sale piece is crafted from our authentic 4-way stretch and fluid-repellent fabrics.",
+        "filter_rule": "tag_or_discount",
+        "grid_columns": 4,
+        "products_per_page": 24,
+        "show_sale_badge": true,
+        "sale_badge_text": "SALE",
+        "sale_badge_color": "#e11d48",
+        "show_discount_percentage": true
+      }
+    },
+    "chromatic_lab": {
+      "type": "enamels-chromatic-lab",
+      "settings": {
+        "hide_inline_homepage": true
+      }
+    }
+  },
+  "order": [
+    "sale_showcase",
+    "chromatic_lab"
+  ]
+}

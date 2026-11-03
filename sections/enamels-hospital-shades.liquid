@@ -6,85 +6,43 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign tag_text = section.settings.palette_tag | default: 'COLOR HARMONY'
-  assign title_text = section.settings.palette_title | default: 'Shop by Hospital & Clinical Shade'
-  assign subtitle_text = section.settings.palette_subtitle | default: 'Adhere to strict hospital ward color guidelines or express individual professional style.'
+  assign tag_text = section.settings.palette_tag | strip
+  assign title_text = section.settings.palette_title | strip
+  assign subtitle_text = section.settings.palette_subtitle | strip
   assign blocks_count = section.blocks.size
 -%}
 
 {% if enable_section %}
 <section class="page-container enamels-homepage-modular-section" style="padding: 50px 0;" id="homepage-hospital-shades" aria-label="Shop by Hospital Shade">
-  <div class="section-header-wrap" style="margin-top: 0;">
-    {% if tag_text != blank %}
-      <span class="section-tag-sub">{{ tag_text | escape }}</span>
-    {% endif %}
-    {% if title_text != blank %}
-      <h2 class="section-title-main">{{ title_text | escape }}</h2>
-    {% endif %}
-    {% if subtitle_text != blank %}
-      <p class="section-title-desc">{{ subtitle_text | escape }}</p>
-    {% endif %}
-  </div>
+  {% if tag_text != blank or title_text != blank or subtitle_text != blank %}
+    <div class="section-header-wrap" style="margin-top: 0;">
+      {% if tag_text != blank %}
+        <span class="section-tag-sub">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if title_text != blank %}
+        <h2 class="section-title-main">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if subtitle_text != blank %}
+        <p class="section-title-desc">{{ subtitle_text | escape }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
 
   <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; max-width: 900px; margin: 0 auto;">
-    {% if blocks_count > 0 %}
-      {% for block in section.blocks %}
-        {% if block.type == 'color_swatch' %}
-          <button
-            type="button"
-            class="pdp-swatch-item"
-            id="shopify-block-{{ block.id }}"
-            onclick="if (typeof window.filterCatalogueByColor === 'function') { window.filterCatalogueByColor('{{ block.settings.hex_code }}', '{{ block.settings.title | escape }}'); }"
-            {{ block.shopify_attributes }}
-          >
-            <span class="pdp-swatch-color-dot" style="background: {{ block.settings.hex_code }};"></span>
-            <span>{{ block.settings.title | escape }}</span>
-          </button>
-        {% endif %}
-      {% endfor %}
-    {% else %}
-      <!-- 10 Approved Hospital Shades Default -->
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#102A43', 'Deep Navy')">
-        <span class="pdp-swatch-color-dot" style="background: #102A43;"></span>
-        <span>Deep Navy</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#1E40AF', 'Royal Blue')">
-        <span class="pdp-swatch-color-dot" style="background: #1E40AF;"></span>
-        <span>Royal Blue</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#6BA4B8', 'Ceil Blue')">
-        <span class="pdp-swatch-color-dot" style="background: #6BA4B8;"></span>
-        <span>Ceil Blue</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#581C87', 'Burgundy Maroon')">
-        <span class="pdp-swatch-color-dot" style="background: #581C87;"></span>
-        <span>Burgundy</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#3F4E3B', 'Olive Shine')">
-        <span class="pdp-swatch-color-dot" style="background: #3F4E3B;"></span>
-        <span>Olive Shine</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#14532D', 'Hunter Green')">
-        <span class="pdp-swatch-color-dot" style="background: #14532D;"></span>
-        <span>Hunter Green</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#18181B', 'Obsidian Black')">
-        <span class="pdp-swatch-color-dot" style="background: #18181B;"></span>
-        <span>Obsidian Black</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#64748B', 'Heather Grey')">
-        <span class="pdp-swatch-color-dot" style="background: #64748B;"></span>
-        <span>Heather Grey</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#00B8A9', 'Clinical Teal')">
-        <span class="pdp-swatch-color-dot" style="background: #00B8A9;"></span>
-        <span>Clinical Teal</span>
-      </button>
-      <button type="button" class="pdp-swatch-item" onclick="window.filterCatalogueByColor('#A855F7', 'Lilac Lavender')">
-        <span class="pdp-swatch-color-dot" style="background: #A855F7;"></span>
-        <span>Lilac Lavender</span>
-      </button>
-    {% endif %}
+    {% for block in section.blocks %}
+      {% if block.type == 'color_swatch' %}
+        <button
+          type="button"
+          class="pdp-swatch-item"
+          id="shopify-block-{{ block.id }}"
+          onclick="if (typeof window.filterCatalogueByColor === 'function') { window.filterCatalogueByColor('{{ block.settings.hex_code }}', '{{ block.settings.title | escape }}'); }"
+          {{ block.shopify_attributes }}
+        >
+          <span class="pdp-swatch-color-dot" style="background: {{ block.settings.hex_code }};"></span>
+          <span>{{ block.settings.title | escape }}</span>
+        </button>
+      {% endif %}
+    {% endfor %}
   </div>
 </section>
 {% endif %}
@@ -127,8 +85,7 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Shade Name",
-          "default": "Deep Navy"
+          "label": "Shade Name"
         },
         {
           "type": "color",
@@ -141,19 +98,7 @@
   ],
   "presets": [
     {
-      "name": "Hospital Color Shades",
-      "blocks": [
-        { "type": "color_swatch", "settings": { "title": "Deep Navy", "hex_code": "#102a43" } },
-        { "type": "color_swatch", "settings": { "title": "Royal Blue", "hex_code": "#1e40af" } },
-        { "type": "color_swatch", "settings": { "title": "Ceil Blue", "hex_code": "#6ba4b8" } },
-        { "type": "color_swatch", "settings": { "title": "Burgundy", "hex_code": "#581c87" } },
-        { "type": "color_swatch", "settings": { "title": "Olive Shine", "hex_code": "#3f4e3b" } },
-        { "type": "color_swatch", "settings": { "title": "Hunter Green", "hex_code": "#14532d" } },
-        { "type": "color_swatch", "settings": { "title": "Obsidian Black", "hex_code": "#18181b" } },
-        { "type": "color_swatch", "settings": { "title": "Heather Grey", "hex_code": "#64748b" } },
-        { "type": "color_swatch", "settings": { "title": "Clinical Teal", "hex_code": "#00b8a9" } },
-        { "type": "color_swatch", "settings": { "title": "Lilac Lavender", "hex_code": "#a855f7" } }
-      ]
+      "name": "Hospital Color Shades"
     }
   ]
 }

@@ -1,0 +1,317 @@
+{% comment %}
+  Enamels Frontpage Categories Section
+  "Shop by category" with 6 pills.
+  Desktop: 1 row of 6 pills.
+  Mobile: 2 columns x 3 rows grid.
+{% endcomment %}
+
+<section class="enamels-categories-section" id="enamels-cats-{{ section.id }}">
+  <div class="enamels-cats__container">
+    <!-- Header -->
+    <div class="enamels-section-head">
+      <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'Shop by category' }}</h2>
+      {% if section.settings.view_all_link != blank and section.settings.view_all_label != blank %}
+        <a href="{{ section.settings.view_all_link }}" class="enamels-section-head__link">
+          {{ section.settings.view_all_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Category Grid -->
+    <div class="enamels-cats__grid">
+      {% for block in section.blocks %}
+        {% assign pill_img = block.settings.image %}
+        {% assign pill_fallback = block.settings.fallback_asset %}
+        <a
+          href="{{ block.settings.link | default: '#' }}"
+          class="enamels-cat-pill"
+          {{ block.shopify_attributes }}
+        >
+          <span class="enamels-cat-pill__title">{{ block.settings.title }}</span>
+          <div class="enamels-cat-pill__media">
+            {% if pill_img != blank %}
+              <img
+                src="{{ pill_img | image_url: width: 300 }}"
+                alt="{{ block.settings.title | escape }}"
+                loading="lazy"
+                width="120"
+                height="70"
+              >
+            {% elsif pill_fallback != blank %}
+              <img
+                src="{{ pill_fallback | asset_url }}"
+                alt="{{ block.settings.title | escape }}"
+                loading="lazy"
+                width="120"
+                height="70"
+              >
+            {% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  #enamels-cats-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | default: 12 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 24 }}px;
+  }
+
+  #enamels-cats-{{ section.id }} .enamels-cats__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .enamels-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+
+  .enamels-section-head__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111111;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .enamels-section-head__link {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #555555;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .enamels-section-head__link:hover {
+    color: #111111;
+    text-decoration: underline;
+  }
+
+  .enamels-cats__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
+  .enamels-cat-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #dfdfdf;
+    border-radius: 8px;
+    padding: 6px 6px 6px 12px;
+    text-decoration: none;
+    overflow: hidden;
+    height: 60px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .enamels-cat-pill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .enamels-cat-pill__title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #111111;
+    text-transform: uppercase;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    flex: 1 1 auto;
+    padding-right: 6px;
+  }
+
+  .enamels-cat-pill__media {
+    flex: 0 0 65px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .enamels-cat-pill__media img {
+    height: 100%;
+    width: auto;
+    max-height: 52px;
+    object-fit: contain;
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    .enamels-cats__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    #enamels-cats-{{ section.id }} .enamels-cats__container {
+      padding: 0 12px;
+    }
+
+    .enamels-section-head__title {
+      font-size: 1.1rem;
+    }
+
+    .enamels-cats__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .enamels-cat-pill {
+      height: 54px;
+      padding: 4px 4px 4px 10px;
+    }
+
+    .enamels-cat-pill__title {
+      font-size: 0.75rem;
+    }
+
+    .enamels-cat-pill__media {
+      flex: 0 0 54px;
+    }
+
+    .enamels-cat-pill__media img {
+      max-height: 48px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Enamels Category Pills",
+  "tag": "section",
+  "class": "enamels-category-section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Shop by category"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Label",
+      "default": "View all"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category_pill",
+      "name": "Category Pill",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title",
+          "default": "MEN"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Category Link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Asset File Name",
+          "info": "e.g. enamels-cat-men.jpg"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Category Pills",
+      "blocks": [
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "MEN",
+            "link": "/collections/men-scrubs",
+            "fallback_asset": "enamels-cat-men.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "WOMEN",
+            "link": "/collections/women-scrubs",
+            "fallback_asset": "enamels-cat-women.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "NEW ARRIVALS",
+            "link": "/collections/new-arrivals",
+            "fallback_asset": "enamels-cat-new-arrivals.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "CUSTOMIZE SCRUBS",
+            "link": "/pages/customizer",
+            "fallback_asset": "enamels-cat-customize.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "INTERNATIONAL ORDER",
+            "link": "/pages/bulk-orders",
+            "fallback_asset": "enamels-cat-intl-order.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "LABCOATS",
+            "link": "/collections/lab-coats",
+            "fallback_asset": "enamels-cat-labcoats.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

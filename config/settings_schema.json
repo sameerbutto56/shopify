@@ -2118,14 +2118,59 @@
     ]
   },
   {
-    "name": "Free Shipping & Cart Upsells",
+    "name": "Delivery & Shipping Pricing Rules",
     "settings": [
+      {
+        "type": "header",
+        "content": "Pakistan Domestic Shipping Rules"
+      },
       {
         "type": "number",
         "id": "free_shipping_threshold",
-        "label": "Free Shipping Threshold (in store currency)",
-        "default": 2999,
-        "info": "Example: 2999 for Rs. 2,999. If cart total reaches this amount, customers get free shipping."
+        "label": "Pakistan Free Shipping Threshold (PKR)",
+        "default": 7000,
+        "info": "Orders equal to or above this amount receive free nationwide delivery in Pakistan."
+      },
+      {
+        "type": "number",
+        "id": "shipping_pakistan_rate",
+        "label": "Pakistan Standard Courier Rate (PKR)",
+        "default": 250,
+        "info": "Applicable for domestic Pakistan deliveries below the free shipping threshold."
+      },
+      {
+        "type": "textarea",
+        "id": "shipping_pakistan_message",
+        "label": "Customer Message (Pakistan Deliveries)",
+        "default": "Pakistan delivery charges are calculated using our applicable domestic shipping rates."
+      },
+      {
+        "type": "header",
+        "content": "International Delivery Rules"
+      },
+      {
+        "type": "number",
+        "id": "shipping_intl_scrub_rate",
+        "label": "International Charge Per Scrub (PKR)",
+        "default": 4000,
+        "info": "Applied per scrub set in international orders (Q × PKR 4,000)."
+      },
+      {
+        "type": "number",
+        "id": "shipping_intl_addon_rate",
+        "label": "International Charge Per Add-on Unit (PKR)",
+        "default": 1800,
+        "info": "Applied per chargeable add-on unit (A × PKR 1,800), e.g. custom embroidery, caps, sleeves."
+      },
+      {
+        "type": "textarea",
+        "id": "shipping_intl_message",
+        "label": "Customer Message (International Deliveries)",
+        "default": "International shipping: PKR 4,000 per scrub, plus PKR 1,800 for each applicable add-on unit."
+      },
+      {
+        "type": "header",
+        "content": "Cart Upsells"
       },
       {
         "type": "collection",

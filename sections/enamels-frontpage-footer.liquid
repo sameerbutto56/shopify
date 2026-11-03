@@ -1,0 +1,438 @@
+{% comment %}
+  Enamels Frontpage Beige Footer Section
+  Warm camel/beige background (#cbbaa6) with 4 structured navigation columns,
+  newsletter signup, social icons, and subfooter copyright with payment badges.
+{% endcomment %}
+
+<footer class="enamels-footer-section" id="enamels-footer-{{ section.id }}">
+  <div class="enamels-footer__container">
+    <div class="enamels-footer__grid">
+      <!-- Column 1: SHOP -->
+      <div class="enamels-footer__col">
+        <h3 class="enamels-footer__heading">{{ section.settings.col1_title | default: 'SHOP' }}</h3>
+        <ul class="enamels-footer__menu">
+          <li><a href="/collections/men-scrubs">Men Scrubs</a></li>
+          <li><a href="/collections/women-scrubs">Women Scrubs</a></li>
+          <li><a href="/collections/lab-coats">Lab Coats</a></li>
+          <li><a href="/collections/accessories">Accessories</a></li>
+          <li><a href="/collections/winter-collection">Winter Collection</a></li>
+          <li><a href="/collections/trending">Trending</a></li>
+          <li><a href="/pages/size-guide">Size Guide</a></li>
+          <li><a href="/pages/about-us">About Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 2: INFORMATION -->
+      <div class="enamels-footer__col">
+        <h3 class="enamels-footer__heading">{{ section.settings.col2_title | default: 'INFORMATION' }}</h3>
+        <ul class="enamels-footer__menu">
+          <li><a href="/pages/size-guide">Size Guide</a></li>
+          <li><a href="/pages/exchanges-returns">Exchanges & Returns</a></li>
+          <li><a href="/pages/terms-conditions">Terms & Conditions</a></li>
+          <li><a href="/pages/privacy-policy">Privacy Policy</a></li>
+          <li><a href="/pages/shipping-handling">Shipping & Handling</a></li>
+          <li><a href="/pages/order-cancellation-policy">Order Cancellation Policy</a></li>
+          <li><a href="/pages/faqs">FAQ'S</a></li>
+          <li><a href="/pages/order-delivery-process">Order Delivery Process</a></li>
+          <li><a href="/pages/contact">CONTACT US</a></li>
+          <li><a href="/pages/locations">Locations</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: TERMS AND POLICY -->
+      <div class="enamels-footer__col">
+        <h3 class="enamels-footer__heading">{{ section.settings.col3_title | default: 'TERMS AND POLICY' }}</h3>
+        <ul class="enamels-footer__menu">
+          <li><a href="/policies/terms-of-service">Terms Of Service</a></li>
+          <li><a href="/policies/refund-policy">Refund Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 4: NEWSLETTER SIGN UP -->
+      <div class="enamels-footer__col enamels-footer__col--newsletter">
+        <h3 class="enamels-footer__heading">{{ section.settings.col4_title | default: 'NEWSLETTER SIGN UP' }}</h3>
+        <p class="enamels-footer__text">
+          {{ section.settings.newsletter_text | default: 'Sign up for exclusive updates, new arrivals & insider only discounts' }}
+        </p>
+        
+        {% form 'customer', class: 'enamels-footer__form' %}
+          <div class="enamels-footer__input-wrap">
+            <input
+              type="email"
+              name="contact[email]"
+              placeholder="{{ section.settings.email_placeholder | default: 'enter your email address' }}"
+              class="enamels-footer__input"
+              required
+            >
+            <button type="submit" class="enamels-footer__submit">
+              {{ section.settings.submit_label | default: 'SUBMIT' }}
+            </button>
+          </div>
+        {% endform %}
+
+        <div class="enamels-footer__socials">
+          <a href="{{ section.settings.fb_url | default: 'https://facebook.com' }}" target="_blank" rel="noopener" class="enamels-social-icon" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95C18.05 21.45 22 17.2 22 12z"/>
+            </svg>
+          </a>
+          <a href="{{ section.settings.ig_url | default: 'https://instagram.com' }}" target="_blank" rel="noopener" class="enamels-social-icon" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar / Subfooter -->
+    <div class="enamels-footer__bottom">
+      <div class="enamels-footer__copy">
+        {{ section.settings.copyright | default: 'Enamels. All Rights Reserved. Manage By Softlight.' }}
+      </div>
+      <div class="enamels-footer__payments">
+        <!-- Payment Badges matching screenshot -->
+        <span class="enamels-pay-badge enamels-pay-badge--visa">VISA</span>
+        <span class="enamels-pay-badge enamels-pay-badge--mc">
+          <span class="mc-c1"></span>
+          <span class="mc-c2"></span>
+        </span>
+        <span class="enamels-pay-badge enamels-pay-badge--apple">Pay</span>
+        <span class="enamels-pay-badge enamels-pay-badge--gpay">G Pay</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  #enamels-footer-{{ section.id }} {
+    background-color: {{ section.settings.bg_color | default: '#cbbaa6' }};
+    color: #1a1a1a;
+    padding-top: {{ section.settings.padding_top | default: 40 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 24 }}px;
+    font-family: inherit;
+  }
+
+  #enamels-footer-{{ section.id }} .enamels-footer__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .enamels-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr 1.6fr;
+    gap: 32px;
+    padding-bottom: 36px;
+  }
+
+  .enamels-footer__heading {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111111;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 16px 0;
+  }
+
+  .enamels-footer__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .enamels-footer__menu a {
+    color: #262320;
+    text-decoration: none;
+    font-size: 0.76rem;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+
+  .enamels-footer__menu a:hover {
+    color: #000000;
+    text-decoration: underline;
+  }
+
+  .enamels-footer__text {
+    font-size: 0.76rem;
+    color: #262320;
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+    max-width: 320px;
+  }
+
+  .enamels-footer__form {
+    margin-bottom: 20px;
+  }
+
+  .enamels-footer__input-wrap {
+    display: flex;
+    max-width: 380px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .enamels-footer__input {
+    flex: 1 1 auto;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 0.74rem;
+    color: #111111;
+    outline: none;
+  }
+
+  .enamels-footer__input::placeholder {
+    color: #555555;
+  }
+
+  .enamels-footer__submit {
+    background-color: #222222;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .enamels-footer__submit:hover {
+    background-color: #000000;
+  }
+
+  .enamels-footer__socials {
+    display: flex;
+    gap: 12px;
+  }
+
+  .enamels-social-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #222222;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .enamels-social-icon:hover {
+    transform: translateY(-2px);
+    background-color: #000000;
+  }
+
+  .enamels-footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0,0,0,0.12);
+    font-size: 0.72rem;
+    color: #262320;
+    font-weight: 500;
+  }
+
+  .enamels-footer__payments {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .enamels-pay-badge {
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.02em;
+  }
+
+  .enamels-pay-badge--visa {
+    background: #1a1f71;
+    color: #ffffff;
+    font-style: italic;
+    font-family: serif;
+    font-weight: 900;
+  }
+
+  .enamels-pay-badge--mc {
+    background: #222222;
+    padding: 0 6px;
+    position: relative;
+    width: 34px;
+    height: 22px;
+  }
+
+  .enamels-pay-badge--mc .mc-c1 {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #eb001b;
+    position: absolute;
+    left: 6px;
+  }
+
+  .enamels-pay-badge--mc .mc-c2 {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: #f79e1b;
+    position: absolute;
+    left: 15px;
+    mix-blend-mode: screen;
+  }
+
+  .enamels-pay-badge--apple {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  .enamels-pay-badge--gpay {
+    background: #ffffff;
+    color: #444444;
+    border: 1px solid #ccc;
+  }
+
+  @media (max-width: 840px) {
+    .enamels-footer__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    #enamels-footer-{{ section.id }} .enamels-footer__container {
+      padding: 0 16px;
+    }
+
+    .enamels-footer__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .enamels-footer__bottom {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Enamels Beige Footer",
+  "tag": "section",
+  "class": "enamels-footer-section-wrapper",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Footer Background Color",
+      "default": "#cbbaa6"
+    },
+    {
+      "type": "text",
+      "id": "col1_title",
+      "label": "Column 1 Title",
+      "default": "SHOP"
+    },
+    {
+      "type": "text",
+      "id": "col2_title",
+      "label": "Column 2 Title",
+      "default": "INFORMATION"
+    },
+    {
+      "type": "text",
+      "id": "col3_title",
+      "label": "Column 3 Title",
+      "default": "TERMS AND POLICY"
+    },
+    {
+      "type": "text",
+      "id": "col4_title",
+      "label": "Column 4 Title",
+      "default": "NEWSLETTER SIGN UP"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_text",
+      "label": "Newsletter Text",
+      "default": "Sign up for exclusive updates, new arrivals & insider only discounts"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email Placeholder",
+      "default": "enter your email address"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit Button Text",
+      "default": "SUBMIT"
+    },
+    {
+      "type": "text",
+      "id": "fb_url",
+      "label": "Facebook URL",
+      "default": "https://facebook.com"
+    },
+    {
+      "type": "text",
+      "id": "ig_url",
+      "label": "Instagram URL",
+      "default": "https://instagram.com"
+    },
+    {
+      "type": "textarea",
+      "id": "copyright",
+      "label": "Copyright Text",
+      "default": "Enamels. All Rights Reserved. Manage By Softlight."
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Enamels Beige Footer"
+    }
+  ]
+}
+{% endschema %}

@@ -467,3 +467,87 @@ input:checked + .studio-slider:before {
   opacity: 1;
   visibility: visible;
 }
+
+/* Studio Button Group / Segmented Alignment Controls */
+.studio-btn-group {
+  display: flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-top: 4px;
+}
+
+.studio-btn-group-item {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.studio-btn-group-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+  color: #0f172a;
+}
+
+.studio-btn-group-item.active {
+  background: #ffffff;
+  color: #008779;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Studio Switch Row */
+.studio-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.studio-switch-row:last-child {
+  border-bottom: none;
+}
+
+.studio-switch-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Range input with live value */
+.studio-range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.studio-range-wrap input[type="range"] {
+  flex: 1;
+  accent-color: #008779;
+}
+
+.studio-range-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #008779;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  min-width: 44px;
+  text-align: center;
+}

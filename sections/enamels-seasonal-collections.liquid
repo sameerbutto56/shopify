@@ -6,59 +6,69 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign tag_text = section.settings.section_tag | default: 'CLIMATIC ENDURANCE APPAREL'
-  assign title_text = section.settings.section_title | default: 'Seasonal Wardrobes'
-  assign subtitle_text = section.settings.section_subtitle | default: 'Engineered for temperature variation throughout hospital shifts, from air-conditioned surgical suites to humid wards.'
+  assign tag_text = section.settings.section_tag | strip
+  assign title_text = section.settings.section_title | strip
+  assign subtitle_text = section.settings.section_subtitle | strip
   
   if section.settings.summer_image != blank
     assign summer_bg = section.settings.summer_image | image_url: width: 800
   else
-    assign summer_bg = 'cat-velora.jpg' | asset_url
+    assign summer_bg = ''
   endif
 
   if section.settings.winter_image != blank
     assign winter_bg = section.settings.winter_image | image_url: width: 800
   else
-    assign winter_bg = 'cat-crown.jpg' | asset_url
+    assign winter_bg = ''
   endif
 -%}
 
 {% if enable_section %}
-<section class="page-container enamels-homepage-modular-section" style="padding: 32px 0 56px;" id="homepage-seasonal-editions" aria-label="Seasonal Clinical Collections">
-  <div class="categories-section-header">
-    {% if tag_text != blank %}
-      <span class="categories-section-tag">{{ tag_text | escape }}</span>
-    {% endif %}
-    {% if title_text != blank %}
-      <h2 class="categories-section-title">{{ title_text | escape }}</h2>
-    {% endif %}
-    {% if subtitle_text != blank %}
-      <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
-    {% endif %}
-  </div>
+<section class="page-container enamels-homepage-modular-section" style="padding-top: {{ section.settings.padding_top | default: 32 }}px; padding-bottom: {{ section.settings.padding_bottom | default: 56 }}px;" id="homepage-seasonal-editions" aria-label="Seasonal Clinical Collections">
+  {% if tag_text != blank or title_text != blank or subtitle_text != blank %}
+    <div class="categories-section-header" style="margin-bottom: {{ section.settings.header_margin_bottom | default: 16 }}px;">
+      {% if tag_text != blank %}
+        <span class="categories-section-tag">{{ tag_text | escape }}</span>
+      {% endif %}
+      {% if title_text != blank %}
+        <h2 class="categories-section-title">{{ title_text | escape }}</h2>
+      {% endif %}
+      {% if subtitle_text != blank %}
+        <p class="categories-section-subtitle">{{ subtitle_text | escape }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
 
-  <div class="frubs-gender-split-grid" style="margin-top: 24px;">
+  <div class="frubs-gender-split-grid" style="margin-top: {{ section.settings.thumbnail_margin_top | default: 0 }}px;">
     <!-- Summer Collection Card -->
     <a
       href="{{ section.settings.summer_link | default: '#summer-collection' }}"
       class="frubs-gender-hero-card"
       onclick="if (typeof window.navigateToSeasonalCollection === 'function') { window.navigateToSeasonalCollection('summer'); return false; }"
-      style="background-image: url('{{ summer_bg }}'); min-height: 380px;"
+      style="{% if summer_bg != blank %}background-image: url('{{ summer_bg }}');{% else %}background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);{% endif %} min-height: 380px;"
       aria-label="Shop Summer {{ section.settings.summer_title | escape }}"
     >
       <div class="frubs-gender-content">
-        <span class="frubs-gender-tag" style="background: rgba(0, 184, 169, 0.4);">
-          {{ section.settings.summer_tag | default: 'AEROCOOL™ EDITION' | escape }}
-        </span>
-        <h3 class="frubs-gender-title" style="font-size: 26px;">
-          {{ section.settings.summer_title | default: 'Summer Collection' | escape }}
-        </h3>
-        <p class="frubs-gender-desc">
-          {{ section.settings.summer_desc | default: 'Ultra-lightweight, moisture-wicking fabrics engineered for peak breathability and cooling through intense summer rotations.' | escape }}
-        </p>
-        <span class="frubs-gender-btn">
-          {{ section.settings.summer_cta | default: 'Shop Summer Edition →' | escape }}
-        </span>
+        {% if section.settings.summer_tag != blank %}
+          <span class="frubs-gender-tag" style="background: rgba(0, 184, 169, 0.4);">
+            {{ section.settings.summer_tag | escape }}
+          </span>
+        {% endif %}
+        {% if section.settings.summer_title != blank %}
+          <h3 class="frubs-gender-title" style="font-size: 26px;">
+            {{ section.settings.summer_title | escape }}
+          </h3>
+        {% endif %}
+        {% if section.settings.summer_desc != blank %}
+          <p class="frubs-gender-desc">
+            {{ section.settings.summer_desc | escape }}
+          </p>
+        {% endif %}
+        {% if section.settings.summer_cta != blank %}
+          <span class="frubs-gender-btn">
+            {{ section.settings.summer_cta | escape }}
+          </span>
+        {% endif %}
       </div>
     </a>
 
@@ -67,22 +77,30 @@
       href="{{ section.settings.winter_link | default: '#winter-collection' }}"
       class="frubs-gender-hero-card"
       onclick="if (typeof window.navigateToSeasonalCollection === 'function') { window.navigateToSeasonalCollection('winter'); return false; }"
-      style="background-image: url('{{ winter_bg }}'); min-height: 380px;"
+      style="{% if winter_bg != blank %}background-image: url('{{ winter_bg }}');{% else %}background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);{% endif %} min-height: 380px;"
       aria-label="Shop Winter {{ section.settings.winter_title | escape }}"
     >
       <div class="frubs-gender-content">
-        <span class="frubs-gender-tag" style="background: rgba(180, 83, 9, 0.4);">
-          {{ section.settings.winter_tag | default: 'WARM TWILL EDITION' | escape }}
-        </span>
-        <h3 class="frubs-gender-title" style="font-size: 26px;">
-          {{ section.settings.winter_title | default: 'Winter Collection' | escape }}
-        </h3>
-        <p class="frubs-gender-desc">
-          {{ section.settings.winter_desc | default: 'Thermal-retaining structured twill, mandarin collars, and layering clinical coats engineered for cooler hospital environments.' | escape }}
-        </p>
-        <span class="frubs-gender-btn">
-          {{ section.settings.winter_cta | default: 'Shop Winter Edition →' | escape }}
-        </span>
+        {% if section.settings.winter_tag != blank %}
+          <span class="frubs-gender-tag" style="background: rgba(180, 83, 9, 0.4);">
+            {{ section.settings.winter_tag | escape }}
+          </span>
+        {% endif %}
+        {% if section.settings.winter_title != blank %}
+          <h3 class="frubs-gender-title" style="font-size: 26px;">
+            {{ section.settings.winter_title | escape }}
+          </h3>
+        {% endif %}
+        {% if section.settings.winter_desc != blank %}
+          <p class="frubs-gender-desc">
+            {{ section.settings.winter_desc | escape }}
+          </p>
+        {% endif %}
+        {% if section.settings.winter_cta != blank %}
+          <span class="frubs-gender-btn">
+            {{ section.settings.winter_cta | escape }}
+          </span>
+        {% endif %}
       </div>
     </a>
   </div>
@@ -117,6 +135,50 @@
       "id": "section_subtitle",
       "label": "Section Subtitle",
       "default": "Engineered for temperature variation throughout hospital shifts, from air-conditioned surgical suites to humid wards."
+    },
+    {
+      "type": "header",
+      "content": "Section & Thumbnail Spacing (Top & Bottom)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Section Top Space (Padding Top in px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Section Bottom Space (Padding Bottom in px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 56,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_margin_bottom",
+      "label": "Space Below Heading / Above Thumbnails (px)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumbnail_margin_top",
+      "label": "Extra Space Above Thumbnails Grid (px)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
     },
     {
       "type": "header",
