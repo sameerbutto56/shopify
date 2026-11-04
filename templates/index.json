@@ -1,24 +1,93 @@
 {
   "sections": {
     "frontpage_hero": {
-      "type": "enamels-frontpage-hero",
+      "type": "enamels-slideshow",
       "settings": {
+        "enable_slideshow": true,
         "bg_color": "#e8e8e8",
         "full_width": false,
-        "banner_height": "custom",
-        "custom_height_desktop": 260,
-        "custom_height_mobile": 170,
-        "image_alignment": "right",
+        "banner_height_desktop": 270,
+        "banner_height_mobile": 175,
         "image_fit": "contain",
-        "image_position": "center center",
-        "text_alignment": "left",
-        "cta1_label": "SHOP MEN",
-        "cta1_link": "/collections/men-scrubs",
-        "cta2_label": "SHOP WOMEN",
-        "cta2_link": "/collections/women-scrubs",
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "show_arrows": true,
+        "show_dots": true
+      },
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "visible": true,
+            "fallback_asset": "enamels-frontpage-hero.jpg",
+            "cta1_label": "SHOP MEN",
+            "cta1_link": "/collections/men-scrubs",
+            "cta2_label": "SHOP WOMEN",
+            "cta2_link": "/collections/women-scrubs",
+            "text_color": "#102a43",
+            "alt": "Enamels Clinical Doctor Scrubs"
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "visible": true,
+            "fallback_asset": "banner-velora.jpg",
+            "title": "Velora Series",
+            "subtitle": "Luxury Tailored Micro-Drape Medical Scrubs",
+            "button_label": "Shop Velora →",
+            "button_link": "/collections/all",
+            "text_color": "#ffffff",
+            "alt": "Enamels Velora Medical Apparel"
+          }
+        },
+        "slide_3": {
+          "type": "slide",
+          "settings": {
+            "visible": true,
+            "fallback_asset": "banner-clogs.jpg",
+            "title": "Clinical Clogs & Footwear",
+            "subtitle": "Hospital Shock Absorption & Fluid Resistance",
+            "button_label": "Explore Footwear →",
+            "button_link": "/collections/accessories",
+            "text_color": "#ffffff",
+            "alt": "Enamels Clinical Footwear"
+          }
+        },
+        "slide_4": {
+          "type": "slide",
+          "settings": {
+            "visible": true,
+            "fallback_asset": "banner-autumn.jpg",
+            "title": "Autumn Edition",
+            "subtitle": "Athletic 4-Way Mechanical Stretch Weaves",
+            "button_label": "Shop Autumn →",
+            "button_link": "/collections/all",
+            "text_color": "#ffffff",
+            "alt": "Enamels Autumn Medical Scrubs"
+          }
+        },
+        "slide_5": {
+          "type": "slide",
+          "settings": {
+            "visible": true,
+            "fallback_asset": "banner-caps.jpg",
+            "title": "BunFit™ Caps",
+            "subtitle": "Custom Engineered Surgical Scrub Headwear",
+            "button_label": "Shop Caps →",
+            "button_link": "/collections/surgical-caps",
+            "text_color": "#ffffff",
+            "alt": "Enamels BunFit Surgical Caps"
+          }
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2",
+        "slide_3",
+        "slide_4",
+        "slide_5"
+      ]
     },
     "frontpage_announcement": {
       "type": "enamels-frontpage-announcement",

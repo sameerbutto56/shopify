@@ -1,283 +1,628 @@
 {% comment %}
-  Enamels Modular Slideshow Section
-  Provides authentic banner slideshow with responsive image sizing, automatic caption layout,
-  touch swipe gestures, Theme Editor live integration, and rock-solid height stability.
+  Enamels Authentic Multi-Banner Hero Slideshow Section
+  Restores original multi-banner slider behavior with:
+  - Responsive desktop & mobile photography with fallback studio assets
+  - Clean left-aligned "SHOP MEN" / "SHOP WOMEN" navigation links matching approved UI
+  - Smooth sliding transitions with autoplay & pause on hover
+  - Previous/Next navigation chevrons and bottom slide indicator dots
+  - Touch swipe gestures on mobile devices
+  - Rock-solid aspect ratios and height stability (no layout shift)
+  - Full Shopify Theme Editor customization for slides, images, links, speed & autoplay
 {% endcomment %}
 
 {%- liquid
-  assign enable_slideshow = section.settings.enable_slideshow
-  assign aspect_desktop = section.settings.banner_aspect_ratio_desktop | default: 'natural'
-  assign aspect_mobile = section.settings.banner_aspect_ratio_mobile | default: 'natural'
-  assign show_arrows = section.settings.show_slideshow_arrows
-  assign show_dots = section.settings.show_slideshow_dots
+  assign enable_slideshow = section.settings.enable_slideshow | default: true
+  assign bg_color = section.settings.bg_color | default: '#e8e8e8'
+  assign full_width = section.settings.full_width | default: false
+  assign height_desk = section.settings.banner_height_desktop | default: 270
+  assign height_mob = section.settings.banner_height_mobile | default: 175
+  assign image_fit = section.settings.image_fit | default: 'contain'
   assign autoplay = section.settings.autoplay
-  assign autoplay_speed = section.settings.autoplay_speed | default: 6
+  if autoplay == nil
+    assign autoplay = true
+  endif
+  assign autoplay_speed = section.settings.autoplay_speed | default: 5
+  assign show_arrows = section.settings.show_arrows
+  if show_arrows == nil
+    assign show_arrows = true
+  endif
+  assign show_dots = section.settings.show_dots
+  if show_dots == nil
+    assign show_dots = true
+  endif
 
-  assign valid_slide_count = 0
+  assign valid_slides = 0
   for block in section.blocks
-    if block.type == 'slide'
-      if block.settings.visible != false
-        assign valid_slide_count = valid_slide_count | plus: 1
-      endif
+    if block.type == 'slide' and block.settings.visible != false
+      assign valid_slides = valid_slides | plus: 1
     endif
   endfor
 -%}
 
 {% if enable_slideshow %}
 <section
-  class="enamels-slideshow-container enamels-homepage-modular-section"
-  id="enamels-hero-slideshow"
-  aria-label="Official Enamels Slideshow"
+  class="enamels-hero-slider-section"
+  id="enamels-hero-slider-{{ section.id }}"
   data-autoplay="{{ autoplay }}"
   data-autoplay-speed="{{ autoplay_speed }}"
   style="
-    --slideshow-aspect-desktop: {% case aspect_desktop %}{% when '16_9' %}16 / 9{% when '21_9' %}21 / 9{% when 'fixed_520' %}auto{% when 'fixed_600' %}auto{% else %}1500 / 575{% endcase %};
-    --slideshow-height-desktop: {% case aspect_desktop %}{% when 'fixed_520' %}520px{% when 'fixed_600' %}600px{% else %}auto{% endcase %};
-    --slideshow-aspect-mobile: {% case aspect_mobile %}{% when '16_9' %}16 / 9{% when '4_3' %}4 / 3{% when '1_1' %}1 / 1{% when 'fixed_360' %}auto{% else %}1500 / 700{% endcase %};
-    --slideshow-height-mobile: {% case aspect_mobile %}{% when 'fixed_360' %}360px{% else %}auto{% endcase %};
+    --slider-bg: {{ bg_color }};
+    --slider-h-desktop: {{ height_desk }}px;
+    --slider-h-mobile: {{ height_mob }}px;
   "
 >
-  <div class="slideshow-track" id="enamels-slideshow-track">
-    {% for block in section.blocks %}
-        {% if block.type == 'slide' and block.settings.visible != false %}
-          {%- liquid
-            assign slide_title = block.settings.title | strip
-            assign slide_sub = block.settings.subtitle | strip
-            assign slide_btn = block.settings.button_label | strip
+  <div class="enamels-hero-slider__container{% if full_width %} enamels-hero-slider__container--full{% endif %}">
+    <div class="enamels-hero-slider__viewport" id="enamels-slider-viewport-{{ section.id }}">
+      <div class="enamels-hero-slider__track" id="enamels-slider-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          {% if block.type == 'slide' and block.settings.visible != false %}
+            {%- liquid
+              assign slide_title = block.settings.title | strip
+              assign slide_sub = block.settings.subtitle | strip
+              assign slide_btn = block.settings.button_label | strip
+              assign cta1_lbl = block.settings.cta1_label | strip
+              assign cta2_lbl = block.settings.cta2_label | strip
+              assign slide_link = block.settings.link | default: block.settings.button_link | default: block.settings.cta1_link
+              assign fallback = block.settings.fallback_asset | default: 'enamels-frontpage-hero.jpg'
+              assign text_color = block.settings.text_color | default: '#102a43'
+              assign alt_text = block.settings.alt | default: slide_title | default: 'Enamels Medical Apparel' | escape
+            -%}
 
-            assign has_title = false
-            if slide_title != blank
-              assign has_title = true
-            endif
-
-            assign has_caption = false
-            if slide_sub != blank
-              assign has_caption = true
-            endif
-
-            assign has_button = false
-            if slide_btn != blank
-              assign has_button = true
-            endif
-
-            assign has_content = false
-            if has_title or has_caption or has_button
-              assign has_content = true
-            endif
-
-            assign slide_link = block.settings.link | default: block.settings.button_link | default: '#collection-sprinter'
-            assign button_target = block.settings.button_link | default: block.settings.link | default: '#collection-sprinter'
-            assign focal_point = block.settings.image_focal_point | default: 'center'
-            assign caption_pos_desk = block.settings.caption_position | default: 'center_left'
-            assign caption_pos_mob = block.settings.caption_position_mobile | default: 'bottom'
-            assign text_align = block.settings.text_align | default: 'left'
-            assign caption_style = block.settings.caption_style | default: 'subtle_glass'
-            assign text_color = block.settings.text_color | default: '#ffffff'
-            assign button_style = block.settings.button_style | default: 'primary_teal'
-            assign alt_text = block.settings.alt | default: block.settings.title | default: 'Enamels Medical Apparel' | escape
-          -%}
-
-          <div
-            class="slide-panel"
-            id="shopify-block-{{ block.id }}"
-            data-slide-index="{{ forloop.index0 }}"
-            {{ block.shopify_attributes }}
-          >
-            <!-- Media Wrap with stable aspect ratio / height -->
-            <div class="slide-media-wrap">
-              {% if slide_link != blank and has_button == false %}
-                <a href="{{ slide_link }}" class="slide-media-link" aria-label="{{ alt_text }}">
-              {% endif %}
-
-              {% if block.settings.image != blank %}
-                <picture class="slide-picture">
-                  {% if block.settings.image_mobile != blank %}
-                    <source media="(max-width: 767px)" srcset="{{ block.settings.image_mobile | image_url: width: 900 }}">
+            <div
+              class="enamels-hero-slider__slide"
+              id="shopify-block-{{ block.id }}"
+              data-slide-index="{{ forloop.index0 }}"
+              {{ block.shopify_attributes }}
+            >
+              <div class="enamels-hero-slider__slide-inner">
+                <!-- Slide Background / Image Layer -->
+                <div class="enamels-hero-slider__media-wrap">
+                  {% if block.settings.image != blank %}
+                    <picture>
+                      {% if block.settings.image_mobile != blank %}
+                        <source media="(max-width: 767px)" srcset="{{ block.settings.image_mobile | image_url: width: 900 }}">
+                      {% endif %}
+                      <img
+                        src="{{ block.settings.image | image_url: width: 2000 }}"
+                        alt="{{ alt_text }}"
+                        class="enamels-hero-slider__img"
+                        style="object-fit: {{ image_fit }};"
+                        loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                        fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}"
+                        width="1400"
+                        height="500"
+                      />
+                    </picture>
+                  {% elsif fallback != blank %}
+                    <picture>
+                      {% if fallback == 'enamels-frontpage-hero.jpg' %}
+                        <source media="(max-width: 767px)" srcset="{{ 'enamels-frontpage-hero-mobile.jpg' | asset_url }}">
+                      {% endif %}
+                      <img
+                        src="{{ fallback | asset_url }}"
+                        alt="{{ alt_text }}"
+                        class="enamels-hero-slider__img"
+                        style="object-fit: {{ image_fit }};"
+                        loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                        fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}"
+                        width="1400"
+                        height="500"
+                      />
+                    </picture>
+                  {% else %}
+                    <div class="enamels-hero-slider__placeholder">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                      </svg>
+                    </div>
                   {% endif %}
-                  <img
-                    src="{{ block.settings.image | image_url: width: 1800 }}"
-                    alt="{{ alt_text }}"
-                    class="slide-img-full"
-                    width="{{ block.settings.image.width }}"
-                    height="{{ block.settings.image.height }}"
-                    style="object-position: {{ focal_point }};"
-                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                  />
-                </picture>
-              {% else %}
-                <div class="slide-placeholder" style="background: #1e293b; width: 100%; height: 100%; min-height: 420px; display: flex; align-items: center; justify-content: center;">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5">
-                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                  </svg>
                 </div>
-              {% endif %}
 
-              {% if slide_link != blank and has_button == false %}
-                </a>
-              {% endif %}
-
-              {% comment %}
-                Automatic Caption Overlay:
-                Rendered ONLY if title, caption, or button text is actually provided.
-                If empty, zero HTML is outputted, reserving zero space and causing zero layout shift.
-              {% endcomment %}
-              {% if has_content %}
-                <div class="slide-caption-overlay pos-{{ caption_pos_desk }} mpos-{{ caption_pos_mob }}">
-                  <div
-                    class="slide-caption-card style-{{ caption_style }} align-{{ text_align }}"
-                    style="--slide-text-color: {{ text_color }};"
-                  >
-                    {% if has_title %}
-                      <h2 class="slide-caption-title">{{ block.settings.title | escape }}</h2>
-                    {% endif %}
-                    {% if has_caption %}
-                      <p class="slide-caption-sub">{{ block.settings.subtitle | escape }}</p>
-                    {% endif %}
-                    {% if has_button %}
-                      <a
-                        href="{{ button_target }}"
-                        class="slide-caption-btn btn-{{ button_style }}"
-                      >
-                        {{ block.settings.button_label | escape }}
-                      </a>
-                    {% endif %}
-                  </div>
+                <!-- Slide Foreground Content Layer -->
+                <div class="enamels-hero-slider__content-wrap">
+                  {% if cta1_lbl != blank or cta2_lbl != blank %}
+                    <!-- Exact Navigation Links (SHOP MEN / SHOP WOMEN) from reference design -->
+                    <div class="enamels-hero-slider__cta-column">
+                      {% if cta1_lbl != blank %}
+                        <a
+                          href="{{ block.settings.cta1_link | default: '/collections/men-scrubs' }}"
+                          class="enamels-hero-slider__nav-link enamels-hero-slider__nav-link--underlined"
+                          style="color: {{ text_color }};"
+                        >
+                          {{ cta1_lbl }}
+                        </a>
+                      {% endif %}
+                      {% if cta2_lbl != blank %}
+                        <a
+                          href="{{ block.settings.cta2_link | default: '/collections/women-scrubs' }}"
+                          class="enamels-hero-slider__nav-link"
+                          style="color: {{ text_color }};"
+                        >
+                          {{ cta2_lbl }}
+                        </a>
+                      {% endif %}
+                    </div>
+                  {% elsif slide_title != blank or slide_btn != blank %}
+                    <!-- Standard Slide Promotion Card -->
+                    <div class="enamels-hero-slider__promo-box" style="color: {{ text_color }};">
+                      {% if slide_sub != blank %}
+                        <span class="enamels-hero-slider__sub">{{ slide_sub | escape }}</span>
+                      {% endif %}
+                      {% if slide_title != blank %}
+                        <h2 class="enamels-hero-slider__title">{{ slide_title | escape }}</h2>
+                      {% endif %}
+                      {% if slide_btn != blank %}
+                        <a
+                          href="{{ block.settings.button_link | default: slide_link | default: '/collections/all' }}"
+                          class="enamels-hero-slider__btn"
+                        >
+                          {{ slide_btn | escape }}
+                        </a>
+                      {% endif %}
+                    </div>
+                  {% elsif slide_link != blank %}
+                    <!-- Entire slide is clickable -->
+                    <a href="{{ slide_link }}" class="enamels-hero-slider__full-link" aria-label="{{ alt_text }}"></a>
+                  {% endif %}
                 </div>
-              {% endif %}
+              </div>
             </div>
-          </div>
-        {% endif %}
-      {% endfor %}
-  </div>
+          {% endif %}
+        {% endfor %}
+      </div>
 
-  {% if show_arrows %}
-    <button type="button" class="slideshow-arrow prev" onclick="window.stepBannerSlide(-1)" aria-label="Previous Slide">‹</button>
-    <button type="button" class="slideshow-arrow next" onclick="window.stepBannerSlide(1)" aria-label="Next Slide">›</button>
-  {% endif %}
+      <!-- Arrow Navigation -->
+      {% if show_arrows and valid_slides > 1 %}
+        <button
+          type="button"
+          class="enamels-hero-slider__arrow enamels-hero-slider__arrow--prev"
+          id="enamels-slider-prev-{{ section.id }}"
+          aria-label="Previous Slide"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="enamels-hero-slider__arrow enamels-hero-slider__arrow--next"
+          id="enamels-slider-next-{{ section.id }}"
+          aria-label="Next Slide"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      {% endif %}
 
-  {% if show_dots %}
-    <div class="slideshow-dots-bar" id="slideshow-dots-bar">
-      {% assign dot_index = 0 %}
-      {% for block in section.blocks %}
-        {% if block.type == 'slide' and block.settings.visible != false %}
-          <button
-            type="button"
-            class="slideshow-dot {% if dot_index == 0 %}active{% endif %}"
-            onclick="window.jumpToBannerSlide({{ dot_index }})"
-            aria-label="Slide {{ dot_index | plus: 1 }}"
-            data-dot-index="{{ dot_index }}"
-          ></button>
-          {% assign dot_index = dot_index | plus: 1 %}
-        {% endif %}
-      {% endfor %}
+      <!-- Dot Indicators -->
+      {% if show_dots and valid_slides > 1 %}
+        <div class="enamels-hero-slider__dots" id="enamels-slider-dots-{{ section.id }}" role="tablist" aria-label="Slides">
+          {% assign dot_idx = 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'slide' and block.settings.visible != false %}
+              <button
+                type="button"
+                role="tab"
+                class="enamels-hero-slider__dot{% if dot_idx == 0 %} is-active{% endif %}"
+                data-dot-index="{{ dot_idx }}"
+                aria-label="Slide {{ dot_idx | plus: 1 }}"
+                aria-selected="{% if dot_idx == 0 %}true{% else %}false{% endif %}"
+              ></button>
+              {% assign dot_idx = dot_idx | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
 </section>
+
+<style>
+  #enamels-hero-slider-{{ section.id }} {
+    width: 100%;
+    background-color: var(--slider-bg, #e8e8e8);
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+  }
+
+  .enamels-hero-slider__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .enamels-hero-slider__container--full {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .enamels-hero-slider__viewport {
+    position: relative;
+    width: 100%;
+    height: var(--slider-h-desktop, 270px);
+    overflow: hidden;
+    background-color: var(--slider-bg, #e8e8e8);
+  }
+
+  @media (max-width: 767px) {
+    .enamels-hero-slider__viewport {
+      height: var(--slider-h-mobile, 175px);
+    }
+  }
+
+  .enamels-hero-slider__track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
+  }
+
+  .enamels-hero-slider__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--slider-bg, #e8e8e8);
+  }
+
+  .enamels-hero-slider__slide-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .enamels-hero-slider__media-wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  .enamels-hero-slider__media-wrap picture {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .enamels-hero-slider__img {
+    width: 100%;
+    height: 100%;
+    object-position: right center;
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    .enamels-hero-slider__img {
+      object-position: 85% center;
+    }
+  }
+
+  .enamels-hero-slider__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(16, 42, 67, 0.2);
+  }
+
+  .enamels-hero-slider__content-wrap {
+    position: relative;
+    z-index: 5;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: clamp(16px, 4.5vw, 48px);
+    pointer-events: auto;
+  }
+
+  /* Exact "SHOP MEN" / "SHOP WOMEN" styling matching reference */
+  .enamels-hero-slider__cta-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .enamels-hero-slider__nav-link {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: clamp(13px, 1.35vw, 17px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    line-height: 1.3;
+    padding-bottom: 2px;
+    transition: color 0.2s ease, opacity 0.2s ease;
+    display: inline-block;
+  }
+
+  .enamels-hero-slider__nav-link--underlined {
+    border-bottom: 2px solid currentColor;
+  }
+
+  .enamels-hero-slider__nav-link:hover {
+    opacity: 0.75;
+  }
+
+  /* Standard Promo Box */
+  .enamels-hero-slider__promo-box {
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .enamels-hero-slider__sub {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .enamels-hero-slider__title {
+    font-size: clamp(18px, 2.5vw, 30px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    color: inherit;
+  }
+
+  .enamels-hero-slider__btn {
+    display: inline-flex;
+    align-items: center;
+    background: #102a43;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .enamels-hero-slider__btn:hover {
+    background: #008779;
+    color: #ffffff;
+  }
+
+  .enamels-hero-slider__full-link {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+  }
+
+  /* Arrows */
+  .enamels-hero-slider__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    color: #102a43;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .enamels-hero-slider__arrow:hover {
+    background: #ffffff;
+    transform: translateY(-50%) scale(1.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .enamels-hero-slider__arrow--prev {
+    left: 14px;
+  }
+
+  .enamels-hero-slider__arrow--next {
+    right: 14px;
+  }
+
+  @media (max-width: 767px) {
+    .enamels-hero-slider__arrow {
+      width: 28px;
+      height: 28px;
+      opacity: 0.85;
+    }
+    .enamels-hero-slider__arrow--prev {
+      left: 6px;
+    }
+    .enamels-hero-slider__arrow--next {
+      right: 6px;
+    }
+  }
+
+  /* Dots */
+  .enamels-hero-slider__dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .enamels-hero-slider__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(16, 42, 67, 0.25);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+
+  .enamels-hero-slider__dot.is-active {
+    width: 22px;
+    background: #102a43;
+  }
+</style>
 
 <script>
   (function() {
-    function initEnamelsSlideshow() {
-      const container = document.getElementById('enamels-hero-slideshow');
-      const track = document.getElementById('enamels-slideshow-track');
-      if (!container || !track) return;
+    function initSlider() {
+      const container = document.getElementById('enamels-hero-slider-{{ section.id }}');
+      if (!container) return;
 
-      const panels = track.querySelectorAll('.slide-panel');
-      const count = panels.length;
-      if (count <= 1) return;
+      const track = document.getElementById('enamels-slider-track-{{ section.id }}');
+      const prevBtn = document.getElementById('enamels-slider-prev-{{ section.id }}');
+      const nextBtn = document.getElementById('enamels-slider-next-{{ section.id }}');
+      const dotsContainer = document.getElementById('enamels-slider-dots-{{ section.id }}');
+      if (!track) return;
 
-      let currentIndex = 0;
-      let autoplayTimer = null;
+      const slides = track.querySelectorAll('.enamels-hero-slider__slide');
+      const total = slides.length;
+      if (total <= 1) return;
+
+      let current = 0;
+      let timer = null;
       let isPaused = false;
-      const autoplayEnabled = container.getAttribute('data-autoplay') === 'true';
-      const speedSec = parseFloat(container.getAttribute('data-autoplay-speed')) || 6;
-      const delayMs = Math.max(2, speedSec) * 1000;
+      const isAutoplay = container.getAttribute('data-autoplay') === 'true';
+      const speedSec = parseFloat(container.getAttribute('data-autoplay-speed')) || 5;
+      const intervalMs = Math.max(2, speedSec) * 1000;
 
-      function updateSlide(idx) {
-        currentIndex = (idx + count) % count;
-        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      function goToSlide(idx) {
+        current = (idx + total) % total;
+        track.style.transform = 'translateX(-' + (current * 100) + '%)';
 
-        const dots = container.querySelectorAll('.slideshow-dot');
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('active', i === currentIndex);
-        });
-      }
-
-      window.stepBannerSlide = function(dir) {
-        updateSlide(currentIndex + dir);
-        resetAutoplay();
-      };
-
-      window.jumpToBannerSlide = function(idx) {
-        updateSlide(idx);
-        resetAutoplay();
-      };
-
-      function startAutoplay() {
-        if (!autoplayEnabled || autoplayTimer) return;
-        autoplayTimer = setInterval(() => {
-          if (!isPaused) {
-            updateSlide(currentIndex + 1);
-          }
-        }, delayMs);
-      }
-
-      function stopAutoplay() {
-        if (autoplayTimer) {
-          clearInterval(autoplayTimer);
-          autoplayTimer = null;
+        if (dotsContainer) {
+          const dots = dotsContainer.querySelectorAll('.enamels-hero-slider__dot');
+          dots.forEach((dot, i) => {
+            const active = i === current;
+            dot.classList.toggle('is-active', active);
+            dot.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
         }
       }
 
-      function resetAutoplay() {
-        stopAutoplay();
-        startAutoplay();
+      function startTimer() {
+        if (!isAutoplay || timer) return;
+        timer = setInterval(function() {
+          if (!isPaused) {
+            goToSlide(current + 1);
+          }
+        }, intervalMs);
       }
 
-      container.addEventListener('mouseenter', () => { isPaused = true; });
-      container.addEventListener('mouseleave', () => { isPaused = false; });
-      container.addEventListener('focusin', () => { isPaused = true; });
-      container.addEventListener('focusout', () => { isPaused = false; });
+      function stopTimer() {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
 
-      // Touch swipe gestures for mobile
+      function resetTimer() {
+        stopTimer();
+        startTimer();
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          goToSlide(current - 1);
+          resetTimer();
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          goToSlide(current + 1);
+          resetTimer();
+        });
+      }
+
+      if (dotsContainer) {
+        dotsContainer.addEventListener('click', function(e) {
+          const dot = e.target.closest('.enamels-hero-slider__dot');
+          if (!dot) return;
+          const idx = parseInt(dot.getAttribute('data-dot-index'), 10);
+          if (!isNaN(idx)) {
+            goToSlide(idx);
+            resetTimer();
+          }
+        });
+      }
+
+      container.addEventListener('mouseenter', function() { isPaused = true; });
+      container.addEventListener('mouseleave', function() { isPaused = false; });
+      container.addEventListener('focusin', function() { isPaused = true; });
+      container.addEventListener('focusout', function() { isPaused = false; });
+
+      // Touch swipe gestures
       let touchStartX = 0;
       let touchEndX = 0;
-      track.addEventListener('touchstart', (e) => {
+      track.addEventListener('touchstart', function(e) {
         touchStartX = e.changedTouches[0].screenX;
         isPaused = true;
       }, { passive: true });
 
-      track.addEventListener('touchend', (e) => {
+      track.addEventListener('touchend', function(e) {
         touchEndX = e.changedTouches[0].screenX;
         const diff = touchStartX - touchEndX;
-        if (Math.abs(diff) > 45) {
+        if (Math.abs(diff) > 40) {
           if (diff > 0) {
-            window.stepBannerSlide(1);
+            goToSlide(current + 1);
           } else {
-            window.stepBannerSlide(-1);
+            goToSlide(current - 1);
           }
+          resetTimer();
         }
         isPaused = false;
       }, { passive: true });
 
-      startAutoplay();
+      // Start automatic sliding
+      startTimer();
 
-      // Shopify Theme Editor live select synchronization
-      document.addEventListener('shopify:block:select', (event) => {
+      // Shopify Theme Editor synchronization
+      document.addEventListener('shopify:block:select', function(event) {
         const blockId = event.detail.blockId;
-        const targetPanel = document.getElementById(`shopify-block-${blockId}`);
-        if (targetPanel) {
-          const idx = parseInt(targetPanel.getAttribute('data-slide-index'), 10);
+        const targetSlide = document.getElementById('shopify-block-' + blockId);
+        if (targetSlide) {
+          const idx = parseInt(targetSlide.getAttribute('data-slide-index'), 10);
           if (!isNaN(idx)) {
-            window.jumpToBannerSlide(idx);
+            goToSlide(idx);
+            resetTimer();
           }
         }
       });
     }
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initEnamelsSlideshow);
+      document.addEventListener('DOMContentLoaded', initSlider);
     } else {
-      initEnamelsSlideshow();
+      initSlider();
     }
   })();
 </script>
@@ -295,42 +640,44 @@
       "default": true
     },
     {
-      "type": "select",
-      "id": "banner_aspect_ratio_desktop",
-      "label": "Desktop Banner Dimensions / Ratio",
-      "options": [
-        { "value": "natural", "label": "Natural Aspect Ratio (Adapt to Banner Image)" },
-        { "value": "16_9", "label": "16:9 Widescreen" },
-        { "value": "21_9", "label": "21:9 Ultra-Wide Cinematic" },
-        { "value": "fixed_520", "label": "Fixed Height: 520px" },
-        { "value": "fixed_600", "label": "Fixed Height: 600px" }
-      ],
-      "default": "natural"
-    },
-    {
-      "type": "select",
-      "id": "banner_aspect_ratio_mobile",
-      "label": "Mobile Banner Dimensions / Ratio",
-      "options": [
-        { "value": "natural", "label": "Natural Aspect Ratio" },
-        { "value": "16_9", "label": "16:9 Landscape" },
-        { "value": "4_3", "label": "4:3 Standard" },
-        { "value": "1_1", "label": "1:1 Square" },
-        { "value": "fixed_360", "label": "Fixed Height: 360px" }
-      ],
-      "default": "natural"
+      "type": "color",
+      "id": "bg_color",
+      "label": "Banner Background Color",
+      "default": "#e8e8e8"
     },
     {
       "type": "checkbox",
-      "id": "show_slideshow_arrows",
-      "label": "Show Arrow Navigation",
-      "default": true
+      "id": "full_width",
+      "label": "Full Width Banner",
+      "default": false
     },
     {
-      "type": "checkbox",
-      "id": "show_slideshow_dots",
-      "label": "Show Dot Pagination",
-      "default": true
+      "type": "range",
+      "id": "banner_height_desktop",
+      "label": "Desktop Height (px)",
+      "min": 180,
+      "max": 500,
+      "step": 10,
+      "default": 270
+    },
+    {
+      "type": "range",
+      "id": "banner_height_mobile",
+      "label": "Mobile Height (px)",
+      "min": 130,
+      "max": 300,
+      "step": 5,
+      "default": 175
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "contain", "label": "Contain (Preserves Whole Image)" },
+        { "value": "cover", "label": "Cover (Fills Banner Container)" }
+      ],
+      "default": "contain"
     },
     {
       "type": "checkbox",
@@ -341,11 +688,23 @@
     {
       "type": "range",
       "id": "autoplay_speed",
-      "label": "Autoplay Transition (Seconds)",
+      "label": "Autoplay Transition Speed",
       "min": 3,
       "max": 12,
       "step": 1,
-      "default": 6
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrow Navigation",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Dot Pagination",
+      "default": true
     }
   ],
   "blocks": [
@@ -362,44 +721,61 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Desktop Banner Image"
+          "label": "Desktop Image"
         },
         {
           "type": "image_picker",
           "id": "image_mobile",
-          "label": "Mobile Banner Image (Optional)"
+          "label": "Mobile Image (Optional)"
         },
         {
-          "type": "select",
-          "id": "image_focal_point",
-          "label": "Image Focal Point / Position",
-          "options": [
-            { "value": "center", "label": "Center" },
-            { "value": "top", "label": "Top" },
-            { "value": "bottom", "label": "Bottom" },
-            { "value": "left", "label": "Left" },
-            { "value": "right", "label": "Right" }
-          ],
-          "default": "center"
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Fallback Asset Name",
+          "default": "enamels-frontpage-hero.jpg"
         },
         {
           "type": "header",
-          "content": "Caption & Content (Optional)"
+          "content": "Navigation Links (Reference Style)"
+        },
+        {
+          "type": "text",
+          "id": "cta1_label",
+          "label": "CTA 1 Label (e.g. SHOP MEN)"
+        },
+        {
+          "type": "url",
+          "id": "cta1_link",
+          "label": "CTA 1 Link"
+        },
+        {
+          "type": "text",
+          "id": "cta2_label",
+          "label": "CTA 2 Label (e.g. SHOP WOMEN)"
+        },
+        {
+          "type": "url",
+          "id": "cta2_link",
+          "label": "CTA 2 Link"
+        },
+        {
+          "type": "header",
+          "content": "Promo Card Content (Optional)"
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Caption Heading (Leave blank for no heading)"
+          "label": "Slide Heading"
         },
         {
           "type": "textarea",
           "id": "subtitle",
-          "label": "Caption Description (Leave blank for no text)"
+          "label": "Slide Subtitle"
         },
         {
           "type": "text",
           "id": "button_label",
-          "label": "Button Label (Leave blank for no button)"
+          "label": "Button Label"
         },
         {
           "type": "url",
@@ -409,85 +785,19 @@
         {
           "type": "url",
           "id": "link",
-          "label": "Slide Direct Link (Active when button is blank)"
-        },
-        {
-          "type": "header",
-          "content": "Caption Layout & Styling"
-        },
-        {
-          "type": "select",
-          "id": "caption_position",
-          "label": "Desktop Caption Position",
-          "options": [
-            { "value": "center_left", "label": "Center Left" },
-            { "value": "center", "label": "Center" },
-            { "value": "center_right", "label": "Center Right" },
-            { "value": "bottom_left", "label": "Bottom Left" },
-            { "value": "bottom_center", "label": "Bottom Center" },
-            { "value": "bottom_right", "label": "Bottom Right" },
-            { "value": "top_left", "label": "Top Left" }
-          ],
-          "default": "center_left"
-        },
-        {
-          "type": "select",
-          "id": "caption_position_mobile",
-          "label": "Mobile Caption Position",
-          "options": [
-            { "value": "bottom", "label": "Bottom" },
-            { "value": "center", "label": "Center" },
-            { "value": "top", "label": "Top" }
-          ],
-          "default": "bottom"
-        },
-        {
-          "type": "select",
-          "id": "text_align",
-          "label": "Text Alignment",
-          "options": [
-            { "value": "left", "label": "Left" },
-            { "value": "center", "label": "Center" },
-            { "value": "right", "label": "Right" }
-          ],
-          "default": "left"
-        },
-        {
-          "type": "select",
-          "id": "caption_style",
-          "label": "Caption Backdrop Style",
-          "options": [
-            { "value": "subtle_glass", "label": "Subtle Glass Card (Recommended)" },
-            { "value": "dark_card", "label": "Dark Solid Card" },
-            { "value": "light_card", "label": "Light Crisp Card" },
-            { "value": "gradient_overlay", "label": "Soft Gradient Vignette" },
-            { "value": "none", "label": "No Card (Text Directly Over Image)" }
-          ],
-          "default": "subtle_glass"
+          "label": "Slide Direct Link"
         },
         {
           "type": "color",
           "id": "text_color",
           "label": "Text Color",
-          "default": "#ffffff"
-        },
-        {
-          "type": "select",
-          "id": "button_style",
-          "label": "Button Style",
-          "options": [
-            { "value": "primary_teal", "label": "Enamels Teal" },
-            { "value": "solid_white", "label": "Solid White" },
-            { "value": "navy", "label": "Deep Navy" },
-            { "value": "outline_white", "label": "White Outline" }
-          ],
-          "default": "primary_teal"
+          "default": "#102a43"
         },
         {
           "type": "text",
           "id": "alt",
           "label": "Image Alt Text",
-          "default": "Enamels Medical Apparel"
+          "default": "Enamels Medical Scrubs"
         }
       ]
     }

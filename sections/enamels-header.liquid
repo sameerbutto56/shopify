@@ -542,10 +542,77 @@
   </div>
 </div>
 
+<script>
+  (function() {
+    window.toggleMobileNavDrawer = function() {
+      const backdrop = document.getElementById('mobile-nav-backdrop');
+      const drawer = document.getElementById('mobile-nav-drawer');
+      if (backdrop) {
+        const isShown = backdrop.style.display === 'flex' || backdrop.classList.contains('open');
+        if (isShown) {
+          backdrop.classList.remove('open');
+          backdrop.style.display = 'none';
+          document.body.style.overflow = '';
+          if (drawer) drawer.classList.remove('open');
+        } else {
+          backdrop.classList.add('open');
+          backdrop.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          if (drawer) drawer.classList.add('open');
+        }
+      }
+    };
+
+    window.openCartDrawer = function() {
+      const dawnCartDrawer = document.querySelector('cart-drawer');
+      if (dawnCartDrawer && typeof dawnCartDrawer.open === 'function') {
+        dawnCartDrawer.open();
+        return;
+      }
+      const enamelsDrawer = document.getElementById('enamels-cart-drawer');
+      if (enamelsDrawer) {
+        enamelsDrawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        return;
+      }
+      window.location.href = '{{ routes.cart_url }}';
+    };
+
+    window.searchStorefrontCatalogue = function(term) {
+      if (!term || !term.trim()) return;
+      window.location.href = '{{ routes.search_url }}?q=' + encodeURIComponent(term.trim());
+    };
+
+    function updateEnamelsCartCount() {
+      fetch('{{ routes.cart_url }}.js')
+        .then(function(res) { return res.json(); })
+        .then(function(cart) {
+          const badge = document.getElementById('enamels-cart-count');
+          if (badge) {
+            badge.textContent = cart.item_count || 0;
+            badge.style.display = (cart.item_count > 0) ? 'flex' : 'none';
+          }
+        })
+        .catch(function() {});
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateEnamelsCartCount);
+    } else {
+      updateEnamelsCartCount();
+    }
+
+    document.addEventListener('cart:updated', updateEnamelsCartCount);
+  })();
+</script>
+
 {% schema %}
 {
   "name": "Header & Navigation",
   "class": "enamels-header-section-wrapper",
+  "enabled_on": {
+    "groups": ["header"]
+  },
   "settings": [
     {
       "type": "header",

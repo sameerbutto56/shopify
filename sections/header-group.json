@@ -1,132 +1,39 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "type": "header",
-  "name": "t:names.header",
+  "name": "Header",
   "sections": {
-    "header_announcements_9jGBFp": {
-      "type": "header-announcements",
-      "blocks": {
-        "announcement_1": {
-          "type": "_announcement",
-          "settings": {
-            "text": "✨ FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.75rem",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
-        },
-        "announcement_2": {
-          "type": "_announcement",
-          "settings": {
-            "text": "💵 CASH ON DELIVERY AVAILABLE ACROSS ALL CITIES IN PAKISTAN",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.75rem",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
-        },
-        "announcement_3": {
-          "type": "_announcement",
-          "settings": {
-            "text": "⚡ 7-DAY EASY SIZE EXCHANGE & DEDICATED WHATSAPP ASSISTANCE",
-            "font": "var(--font-subheading--family)",
-            "font_size": "0.75rem",
-            "letter_spacing": "normal",
-            "case": "none"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "announcement_1",
-        "announcement_2",
-        "announcement_3"
-      ],
-      "name": "t:names.announcement_bar",
+    "enamels_header": {
+      "type": "enamels-header",
       "settings": {
-        "speed": 5,
-        "section_width": "page-width",
-        "background_color": "{{ settings.color_palette.background }}",
-        "divider_width": 1,
-        "divider_color": "{{ settings.color_palette.color2 }}",
-        "padding-block-start": 15,
-        "padding-block-end": 15
-      }
-    },
-    "header_section": {
-      "type": "header",
-      "blocks": {
-        "header-logo": {
-          "type": "_header-logo",
-          "static": true,
-          "settings": {
-            "hide_logo_on_home_page": false,
-            "padding-block-start": 0,
-            "padding-block-end": 0
-          },
-          "blocks": {}
-        },
-        "header-menu": {
-          "type": "_header-menu",
-          "static": true,
-          "settings": {
-            "menu": "main-menu",
-            "type_font_primary_size": "0.875rem",
-            "menu_font_style": "inverse",
-            "type_font_primary_link": "body",
-            "type_case_primary_link": "none",
-            "menu_style": "featured_products",
-            "featured_products_aspect_ratio": "4 / 5",
-            "featured_collections_aspect_ratio": "16 / 9",
-            "image_border_radius": 0,
-            "navigation_bar": false,
-            "drawer_accordion": false,
-            "drawer_accordion_expand_first": false,
-            "drawer_dividers": false
-          },
-          "blocks": {}
-        }
-      },
-      "settings": {
-        "logo_position": "left",
-        "menu_position": "left",
-        "menu_row": "top",
+        "logo_max_width": 105,
         "show_search": true,
-        "search_position": "right",
-        "search_row": "top",
-        "show_country": true,
-        "country_selector_style": false,
-        "show_language": true,
-        "localization_font": "heading",
-        "localization_font_size": "0.875rem",
-        "localization_position": "right",
-        "localization_row": "top",
-        "section_width": "page-width",
-        "section_height": "standard",
-        "enable_sticky_header": "always",
-        "divider_width": 0,
-        "divider_size": "page-width",
-        "border_width": 0,
-        "background_color_top": "{{ settings.color_palette.background }}",
-        "enable_transparent_header_home": false,
-        "enable_transparent_header_product": false,
-        "enable_transparent_header_collection": false
+        "search_placeholder": "Search scrubs, lab coats, surgical caps, sleeves...",
+        "show_phone": true,
+        "phone_number": "+92 301 13 31 133",
+        "phone_tel": "+923011331133",
+        "show_account": true,
+        "show_wishlist": true,
+        "enable_sticky_header": true,
+        "show_nav_scrubs": true,
+        "show_nav_men": true,
+        "show_nav_women": true,
+        "show_nav_lab_coats": true,
+        "show_nav_caps": true,
+        "show_nav_sleeves": true,
+        "show_nav_accessories": true,
+        "show_nav_ready_to_wear": true,
+        "show_nav_home_service": true,
+        "nav_studio_label": "Design Studio",
+        "nav_studio_badge": "BESPOKE",
+        "nav_home_fitting_label": "Home Fitting",
+        "nav_home_fitting_badge": "LAHORE",
+        "header_bg": "#ffffff",
+        "nav_bg": "#ffffff",
+        "nav_text_color": "#102a43"
       }
     }
   },
   "order": [
-    "header_announcements_9jGBFp",
-    "header_section"
+    "enamels_header"
   ]
 }
