@@ -257,9 +257,8 @@
           {% if show_men %}
           <li class="enamels-nav-item" id="nav-item-men">
             <a
-              href="#men"
+              href="{{ routes.collections_url }}/all?category=men"
               class="enamels-nav-link"
-              onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
             >
               <span class="nav-link-text">Men</span>
             </a>
@@ -270,9 +269,8 @@
           {% if show_women %}
           <li class="enamels-nav-item" id="nav-item-women">
             <a
-              href="#women"
+              href="{{ routes.collections_url }}/all?category=women"
               class="enamels-nav-link"
-              onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
             >
               <span class="nav-link-text">Women</span>
             </a>
@@ -283,9 +281,8 @@
           {% if show_lab_coats %}
           <li class="enamels-nav-item" id="nav-item-lab-coats">
             <a
-              href="#collection-lab-coats"
+              href="{{ routes.collections_url }}/all?category=lab-coats"
               class="enamels-nav-link"
-              onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('lab-coat', 'category'); return false; }"
             >
               <span class="nav-link-text">Lab Coats</span>
             </a>
@@ -296,9 +293,8 @@
           {% if show_caps %}
           <li class="enamels-nav-item" id="nav-item-caps">
             <a
-              href="#collection-caps"
+              href="{{ routes.collections_url }}/all?category=caps"
               class="enamels-nav-link"
-              onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('caps', 'category'); return false; }"
             >
               <span class="nav-link-text">Caps</span>
             </a>
@@ -309,9 +305,8 @@
           {% if show_sleeves %}
           <li class="enamels-nav-item" id="nav-item-sleeves">
             <a
-              href="#collection-sleeves"
+              href="{{ routes.collections_url }}/all?category=sleeves"
               class="enamels-nav-link"
-              onclick="if (typeof window.navigateToCollection === 'function') { window.navigateToCollection('sleeves', 'feature'); return false; }"
             >
               <span class="nav-link-text">Sleeves</span>
             </a>
@@ -322,9 +317,8 @@
           {% if show_accessories %}
           <li class="enamels-nav-item" id="nav-item-accessories">
             <a
-              href="#accessories"
+              href="{{ routes.collections_url }}/all?category=accessories"
               class="enamels-nav-link"
-              onclick="if (typeof window.navigateToAccessories === 'function') { window.navigateToAccessories(); return false; }"
             >
               <span class="nav-link-text">Accessories</span>
             </a>
@@ -430,7 +424,7 @@
           <!-- 2. Men -->
           {% if show_men %}
           <li class="mobile-nav-item">
-            <a href="#men" onclick="if(typeof window.navigateToGender==='function') window.navigateToGender('men'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?category=men" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Men</span>
             </a>
           </li>
@@ -439,7 +433,7 @@
           <!-- 3. Women -->
           {% if show_women %}
           <li class="mobile-nav-item">
-            <a href="#women" onclick="if(typeof window.navigateToGender==='function') window.navigateToGender('women'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?category=women" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Women</span>
             </a>
           </li>
@@ -448,7 +442,7 @@
           <!-- 4. Lab Coats -->
           {% if show_lab_coats %}
           <li class="mobile-nav-item">
-            <a href="#lab-coats" onclick="if(typeof window.navigateToCollection==='function') window.navigateToCollection('lab-coat', 'category'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?category=lab-coats" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Lab Coats</span>
             </a>
           </li>
@@ -457,7 +451,7 @@
           <!-- 5. Caps -->
           {% if show_caps %}
           <li class="mobile-nav-item">
-            <a href="#caps" onclick="if(typeof window.navigateToCollection==='function') window.navigateToCollection('caps', 'category'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?category=caps" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Caps</span>
             </a>
           </li>
@@ -466,7 +460,7 @@
           <!-- 6. Sleeves -->
           {% if show_sleeves %}
           <li class="mobile-nav-item">
-            <a href="#sleeves" onclick="if(typeof window.navigateToCollection==='function') window.navigateToCollection('sleeves', 'feature'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?category=sleeves" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Sleeves</span>
             </a>
           </li>
@@ -475,7 +469,7 @@
           <!-- 7. Accessories -->
           {% if show_accessories %}
           <li class="mobile-nav-item">
-            <a href="#accessories" onclick="if(typeof window.navigateToAccessories==='function') window.navigateToAccessories(); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?category=accessories" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Accessories</span>
             </a>
           </li>

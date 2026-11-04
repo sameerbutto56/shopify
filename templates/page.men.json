@@ -1,22 +1,81 @@
 {
   "sections": {
-    "collection": {
-      "type": "enamels-collection-template",
+    "collection_page": {
+      "type": "enamels-collection-page",
       "settings": {
-        "header_tag": "MEN'S CLINICAL COLLECTION",
-        "custom_title": "Men's Medical Scrubs & Apparel",
-        "custom_desc": "Engineered for male clinicians: 4-way stretch, athletic cargo joggers, executive mandarin collars, and tailored technical lab coats."
-      }
-    },
-    "chromatic_lab": {
-      "type": "enamels-chromatic-lab",
-      "settings": {
-        "hide_inline_homepage": true
-      }
+        "title": "Men's Collection",
+        "banner_height_desktop": 270,
+        "banner_height_mobile": 175,
+        "banner_radius": 16,
+        "banner_bg": "#e8e8e8"
+      },
+      "blocks": {
+        "p1": {
+          "type": "card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-blue.jpg",
+            "link": "/collections/all"
+          }
+        },
+        "p2": {
+          "type": "card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-black.jpg",
+            "link": "/collections/all"
+          }
+        },
+        "p3": {
+          "type": "card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-seagreen.jpg",
+            "link": "/collections/all"
+          }
+        },
+        "p4": {
+          "type": "card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-olive.jpg",
+            "link": "/collections/all"
+          }
+        },
+        "p5": {
+          "type": "card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-rust.jpg",
+            "link": "/collections/all"
+          }
+        },
+        "p6": {
+          "type": "card",
+          "settings": {
+            "title": "BLUE",
+            "price": "Rs 5900",
+            "fallback_asset": "enamels-na-darkgreen.jpg",
+            "link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "p1",
+        "p2",
+        "p3",
+        "p4",
+        "p5",
+        "p6"
+      ]
     }
   },
   "order": [
-    "collection",
-    "chromatic_lab"
+    "collection_page"
   ]
 }

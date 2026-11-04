@@ -21,9 +21,9 @@
             "visible": true,
             "fallback_asset": "enamels-frontpage-hero.jpg",
             "cta1_label": "SHOP MEN",
-            "cta1_link": "/collections/men-scrubs",
+            "cta1_link": "/collections/all?category=men",
             "cta2_label": "SHOP WOMEN",
-            "cta2_link": "/collections/women-scrubs",
+            "cta2_link": "/collections/all?category=women",
             "text_color": "#102a43",
             "alt": "Enamels Clinical Doctor Scrubs"
           }
@@ -169,7 +169,7 @@
           "settings": {
             "title": "MEN",
             "subtitle": "Clinical Stretch Scrubs",
-            "link": "/collections/men-scrubs",
+            "link": "/collections/all?category=men",
             "fallback_asset": "enamels-cat-men.jpg"
           }
         },
@@ -178,7 +178,7 @@
           "settings": {
             "title": "WOMEN",
             "subtitle": "Tailored & FlexFit Scrubs",
-            "link": "/collections/women-scrubs",
+            "link": "/collections/all?category=women",
             "fallback_asset": "enamels-cat-women.jpg"
           }
         },

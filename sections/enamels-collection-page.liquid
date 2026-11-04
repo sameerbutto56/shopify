@@ -1,0 +1,541 @@
+{% comment %}
+  Enamels Dedicated Category / Collection Page Template Section
+  Matches exact layout from reference design (media_1793779461369_efe24deb.jpg):
+  1. Top Hero Category Banner (rounded corners, clean responsive height)
+  2. Category Navigation Bar (MEN, WOMEN, NEW ARRIVALS, CUSTOMIZE SCRUBS, INTERNATIONAL ORDER, LABCOATS)
+  3. Section Heading ("New Arrivals" / "Men's Collection" / "Women's Collection")
+  4. 6-Product Responsive Grid (6 cards row on desktop, 2 cols on mobile)
+  5. Full Shopify collection support + curated fallback items matching reference
+{% endcomment %}
+
+{%- liquid
+  assign current_cat = 'all'
+  assign query_str = request.path | append: '?' | append: request.query_string
+  if query_str contains 'category=men' or query_str contains 'gender=men' or collection.handle contains 'men'
+    assign current_cat = 'men'
+  elsif query_str contains 'category=women' or query_str contains 'gender=women' or collection.handle contains 'women'
+    assign current_cat = 'women'
+  elsif query_str contains 'category=lab-coats' or collection.handle contains 'lab'
+    assign current_cat = 'lab-coats'
+  endif
+
+  assign title_text = section.settings.title | default: 'New Arrivals'
+  if current_cat == 'men' and section.settings.title == 'New Arrivals'
+    assign title_text = "Men's Collection"
+  elsif current_cat == 'women' and section.settings.title == 'New Arrivals'
+    assign title_text = "Women's Collection"
+  endif
+
+  assign banner_img = section.settings.banner_image
+  assign banner_img_mob = section.settings.banner_image_mobile
+  assign banner_h_desk = section.settings.banner_height_desktop | default: 270
+  assign banner_h_mob = section.settings.banner_height_mobile | default: 175
+  assign banner_radius = section.settings.banner_radius | default: 16
+  assign banner_bg = section.settings.banner_bg | default: '#e8e8e8'
+-%}
+
+<div class="enamels-cat-page" id="enamels-cat-page-{{ section.id }}">
+  <div class="enamels-cat-page__container">
+
+    <!-- 1. Top Hero Category Banner -->
+    <div
+      class="enamels-cat-page__banner"
+      style="
+        --banner-h-desk: {{ banner_h_desk }}px;
+        --banner-h-mob: {{ banner_h_mob }}px;
+        --banner-radius: {{ banner_radius }}px;
+        --banner-bg: {{ banner_bg }};
+      "
+    >
+      {% if banner_img != blank %}
+        <picture>
+          {% if banner_img_mob != blank %}
+            <source media="(max-width: 767px)" srcset="{{ banner_img_mob | image_url: width: 900 }}">
+          {% endif %}
+          <img
+            src="{{ banner_img | image_url: width: 2000 }}"
+            alt="{{ collection.title | default: title_text | escape }}"
+            class="enamels-cat-page__banner-img"
+            loading="eager"
+            fetchpriority="high"
+            width="1400"
+            height="500"
+          >
+        </picture>
+      {% else %}
+        <!-- Default High-Fidelity Studio Category Photography -->
+        <picture>
+          {% if current_cat == 'men' %}
+            <source media="(max-width: 767px)" srcset="{{ 'enamels-frontpage-hero-mobile.jpg' | asset_url }}">
+            <img
+              src="{{ 'enamels-frontpage-hero.jpg' | asset_url }}"
+              alt="Enamels Men's Scrubs"
+              class="enamels-cat-page__banner-img"
+              loading="eager"
+              fetchpriority="high"
+              width="1400"
+              height="500"
+            >
+          {% elsif current_cat == 'women' %}
+            <source media="(max-width: 767px)" srcset="{{ 'banner-autumn.jpg' | asset_url }}">
+            <img
+              src="{{ 'banner-autumn.jpg' | asset_url }}"
+              alt="Enamels Women's Scrubs"
+              class="enamels-cat-page__banner-img"
+              loading="eager"
+              fetchpriority="high"
+              width="1400"
+              height="500"
+            >
+          {% else %}
+            <source media="(max-width: 767px)" srcset="{{ 'enamels-frontpage-hero-mobile.jpg' | asset_url }}">
+            <img
+              src="{{ 'enamels-frontpage-hero.jpg' | asset_url }}"
+              alt="Enamels Medical Apparel"
+              class="enamels-cat-page__banner-img"
+              loading="eager"
+              fetchpriority="high"
+              width="1400"
+              height="500"
+            >
+          {% endif %}
+        </picture>
+      {% endif %}
+    </div>
+
+    <!-- 2. Category Navigation Bar -->
+    <div class="enamels-cat-page__nav-strip">
+      <div class="enamels-cat-page__nav-grid">
+        <!-- MEN -->
+        <a
+          href="/collections/all?category=men"
+          class="enamels-cat-nav-pill{% if current_cat == 'men' %} is-active{% endif %}"
+        >
+          <span class="enamels-cat-nav-pill__text">MEN</span>
+          <img src="{{ 'enamels-cat-men.jpg' | asset_url }}" alt="Men" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
+        </a>
+
+        <!-- WOMEN -->
+        <a
+          href="/collections/all?category=women"
+          class="enamels-cat-nav-pill{% if current_cat == 'women' %} is-active{% endif %}"
+        >
+          <span class="enamels-cat-nav-pill__text">WOMEN</span>
+          <img src="{{ 'enamels-cat-women.jpg' | asset_url }}" alt="Women" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
+        </a>
+
+        <!-- NEW ARRIVALS -->
+        <a
+          href="/collections/all"
+          class="enamels-cat-nav-pill{% if current_cat == 'all' %} is-active{% endif %}"
+        >
+          <span class="enamels-cat-nav-pill__text">NEW<br>ARRIVALS</span>
+          <img src="{{ 'enamels-cat-new-arrivals.jpg' | asset_url }}" alt="New Arrivals" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
+        </a>
+
+        <!-- CUSTOMIZE SCRUBS -->
+        <a
+          href="/pages/customizer"
+          class="enamels-cat-nav-pill"
+        >
+          <span class="enamels-cat-nav-pill__text">CUSTOMIZE<br>SCRUBS</span>
+          <img src="{{ 'enamels-cat-customize.jpg' | asset_url }}" alt="Customize Scrubs" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
+        </a>
+
+        <!-- INTERNATIONAL ORDER -->
+        <a
+          href="/pages/bulk-orders"
+          class="enamels-cat-nav-pill"
+        >
+          <span class="enamels-cat-nav-pill__text">INTERNATIONAL<br>ORDER</span>
+          <img src="{{ 'enamels-cat-intl-order.jpg' | asset_url }}" alt="International Order" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
+        </a>
+
+        <!-- LABCOATS -->
+        <a
+          href="/collections/all?category=lab-coats"
+          class="enamels-cat-nav-pill{% if current_cat == 'lab-coats' %} is-active{% endif %}"
+        >
+          <span class="enamels-cat-nav-pill__text">LABCOATS</span>
+          <img src="{{ 'enamels-cat-labcoats.jpg' | asset_url }}" alt="Labcoats" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
+        </a>
+      </div>
+    </div>
+
+    <!-- 3. Section Title -->
+    <div class="enamels-cat-page__head">
+      <h1 class="enamels-cat-page__title">{{ title_text }}</h1>
+    </div>
+
+    <!-- 4. Product Cards Grid -->
+    <div class="enamels-cat-page__grid">
+      {%- assign rendered_count = 0 -%}
+      {%- if collection.products.size > 0 -%}
+        {% for prod in collection.products limit: 12 %}
+          {%- assign rendered_count = rendered_count | plus: 1 -%}
+          <div class="enamels-cat-card">
+            <a href="{{ prod.url }}" class="enamels-cat-card__link">
+              <div class="enamels-cat-card__media">
+                {% if prod.featured_media != blank %}
+                  <img
+                    src="{{ prod.featured_media | image_url: width: 600 }}"
+                    alt="{{ prod.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="340"
+                  >
+                {% else %}
+                  <div class="enamels-cat-card__placeholder"></div>
+                {% endif %}
+              </div>
+              <div class="enamels-cat-card__info">
+                <span class="enamels-cat-card__title">{{ prod.title | escape }}</span>
+                <span class="enamels-cat-card__price">{{ prod.price | money_without_trailing_zeros }}</span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {%- endif -%}
+
+      {%- if rendered_count == 0 -%}
+        <!-- Curated Reference Products (Matches exact layout of media_1793779461369_efe24deb.jpg) -->
+        {% for block in section.blocks %}
+          {% assign card_img = block.settings.image %}
+          {% assign card_fallback = block.settings.fallback_asset %}
+          {% assign card_link = block.settings.link | default: '/collections/all' %}
+
+          <div class="enamels-cat-card" {{ block.shopify_attributes }}>
+            <a href="{{ card_link }}" class="enamels-cat-card__link">
+              <div class="enamels-cat-card__media">
+                {% if card_img != blank %}
+                  <img
+                    src="{{ card_img | image_url: width: 600 }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="340"
+                  >
+                {% elsif card_fallback != blank %}
+                  <img
+                    src="{{ card_fallback | asset_url }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="340"
+                  >
+                {% endif %}
+              </div>
+              <div class="enamels-cat-card__info">
+                <span class="enamels-cat-card__title">{{ block.settings.title | escape }}</span>
+                <span class="enamels-cat-card__price">{{ block.settings.price | escape }}</span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {%- endif -%}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .enamels-cat-page {
+    width: 100%;
+    padding: 16px 0 48px;
+    background-color: #ffffff;
+  }
+
+  .enamels-cat-page__container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* 1. Hero Banner with Rounded Corners */
+  .enamels-cat-page__banner {
+    position: relative;
+    width: 100%;
+    height: var(--banner-h-desk, 270px);
+    border-radius: var(--banner-radius, 16px);
+    overflow: hidden;
+    background-color: var(--banner-bg, #e8e8e8);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 767px) {
+    .enamels-cat-page__banner {
+      height: var(--banner-h-mob, 175px);
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+  }
+
+  .enamels-cat-page__banner picture,
+  .enamels-cat-page__banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: right center;
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    .enamels-cat-page__banner-img {
+      object-position: 85% center;
+    }
+  }
+
+  /* 2. Category Navigation Bar */
+  .enamels-cat-page__nav-strip {
+    margin-bottom: 24px;
+    width: 100%;
+  }
+
+  .enamels-cat-page__nav-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .enamels-cat-page__nav-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .enamels-cat-page__nav-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .enamels-cat-nav-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #dfdfdf;
+    border-radius: 8px;
+    padding: 6px 10px;
+    text-decoration: none;
+    color: #102a43;
+    min-height: 52px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .enamels-cat-nav-pill:hover,
+  .enamels-cat-nav-pill.is-active {
+    background-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .enamels-cat-nav-pill__text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1.25;
+  }
+
+  .enamels-cat-nav-pill__img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* 3. Section Title */
+  .enamels-cat-page__head {
+    margin-bottom: 14px;
+  }
+
+  .enamels-cat-page__title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    font-weight: 600;
+    color: #111111;
+    margin: 0;
+  }
+
+  /* 4. Product Cards Grid */
+  .enamels-cat-page__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  @media (max-width: 1024px) {
+    .enamels-cat-page__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .enamels-cat-page__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+  }
+
+  .enamels-cat-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enamels-cat-card__link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enamels-cat-card__media {
+    width: 100%;
+    aspect-ratio: 3 / 4.4;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    margin-bottom: 8px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .enamels-cat-card:hover .enamels-cat-card__media {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
+
+  .enamels-cat-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .enamels-cat-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .enamels-cat-card__title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: #111111;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .enamels-cat-card__price {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #444444;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Collection Page",
+  "class": "enamels-collection-page-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image (Desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image_mobile",
+      "label": "Banner Image (Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "banner_height_desktop",
+      "label": "Desktop Height (px)",
+      "min": 180,
+      "max": 500,
+      "step": 10,
+      "default": 270
+    },
+    {
+      "type": "range",
+      "id": "banner_height_mobile",
+      "label": "Mobile Height (px)",
+      "min": 130,
+      "max": 300,
+      "step": 5,
+      "default": 175
+    },
+    {
+      "type": "range",
+      "id": "banner_radius",
+      "label": "Banner Corner Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "banner_bg",
+      "label": "Banner Background Color",
+      "default": "#e8e8e8"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Product Title / Color",
+          "default": "BLUE"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "Rs 5900"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Product Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_asset",
+          "label": "Fallback Asset Name",
+          "default": "enamels-na-blue.jpg"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Product Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Page"
+    }
+  ]
+}
+{% endschema %}
