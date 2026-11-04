@@ -725,16 +725,27 @@
       "type": "enamels-frontpage-categories",
       "settings": {
         "title": "Shop by category",
+        "subtitle": "Explore our specialized medical uniform collections",
+        "enable_view_all": true,
         "view_all_label": "View all",
-        "view_all_link": "/collections/all",
-        "padding_top": 12,
-        "padding_bottom": 24
+        "show_less_label": "Show less",
+        "anim_speed": 0.4,
+        "grid_cols_desktop": "6",
+        "grid_cols_tablet": "3",
+        "grid_cols_mobile": "2",
+        "card_bg": "#dfdfdf",
+        "card_radius": 8,
+        "card_gap": 10,
+        "image_fit": "contain",
+        "padding_top": 16,
+        "padding_bottom": 28
       },
       "blocks": {
         "pill_men": {
           "type": "category_pill",
           "settings": {
             "title": "MEN",
+            "subtitle": "Clinical Stretch Scrubs",
             "link": "/collections/men-scrubs",
             "fallback_asset": "enamels-cat-men.jpg"
           }
@@ -743,6 +754,7 @@
           "type": "category_pill",
           "settings": {
             "title": "WOMEN",
+            "subtitle": "Tailored & FlexFit Scrubs",
             "link": "/collections/women-scrubs",
             "fallback_asset": "enamels-cat-women.jpg"
           }
@@ -751,6 +763,8 @@
           "type": "category_pill",
           "settings": {
             "title": "NEW ARRIVALS",
+            "subtitle": "Autumn 2026 Editions",
+            "badge_text": "NEW",
             "link": "/collections/new-arrivals",
             "fallback_asset": "enamels-cat-new-arrivals.jpg"
           }
@@ -759,6 +773,8 @@
           "type": "category_pill",
           "settings": {
             "title": "CUSTOMIZE SCRUBS",
+            "subtitle": "Bespoke Doctor Embroidery",
+            "badge_text": "BESPOKE",
             "link": "/pages/customizer",
             "fallback_asset": "enamels-cat-customize.jpg"
           }
@@ -767,6 +783,7 @@
           "type": "category_pill",
           "settings": {
             "title": "INTERNATIONAL ORDER",
+            "subtitle": "Worldwide Express Dispatch",
             "link": "/pages/bulk-orders",
             "fallback_asset": "enamels-cat-intl-order.jpg"
           }
@@ -775,8 +792,46 @@
           "type": "category_pill",
           "settings": {
             "title": "LABCOATS",
+            "subtitle": "Helium & Tailored Coats",
             "link": "/collections/lab-coats",
             "fallback_asset": "enamels-cat-labcoats.jpg"
+          }
+        },
+        "pill_caps": {
+          "type": "category_pill",
+          "settings": {
+            "title": "SURGICAL CAPS",
+            "subtitle": "BunFit\u2122 & Printed Caps",
+            "link": "/collections/caps",
+            "fallback_asset": "cat-caps.jpg"
+          }
+        },
+        "pill_sleeves": {
+          "type": "category_pill",
+          "settings": {
+            "title": "ARM SLEEVES",
+            "subtitle": "Gradient Compression",
+            "link": "/collections/accessories",
+            "fallback_asset": "cat-sprinter.jpg"
+          }
+        },
+        "pill_clogs": {
+          "type": "category_pill",
+          "settings": {
+            "title": "CLINICAL CLOGS",
+            "subtitle": "Ergonomic Shock Absorption",
+            "link": "/collections/accessories",
+            "fallback_asset": "cat-clogs.jpg"
+          }
+        },
+        "pill_homeservice": {
+          "type": "category_pill",
+          "settings": {
+            "title": "HOME SERVICE",
+            "subtitle": "Lahore VIP Fitting Visit",
+            "badge_text": "VIP",
+            "link": "/pages/home-service",
+            "fallback_asset": "cat-home-service.jpg"
           }
         }
       },
@@ -786,7 +841,11 @@
         "pill_new_arrivals",
         "pill_customize",
         "pill_intl",
-        "pill_labcoats"
+        "pill_labcoats",
+        "pill_caps",
+        "pill_sleeves",
+        "pill_clogs",
+        "pill_homeservice"
       ]
     },
     "frontpage_colors": {

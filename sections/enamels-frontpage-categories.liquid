@@ -1,62 +1,202 @@
 {% comment %}
   Enamels Frontpage Categories Section
-  "Shop by category" with 6 pills.
-  Desktop: 1 row of 6 pills.
-  Mobile: 2 columns x 3 rows grid.
+  Shop by category with an interactive expandable "View All" & "Show Less" experience.
+  - Initial state: Horizontally scrolling category carousel with desktop arrow navigation & mobile swipe.
+  - Expanded state: Smoothly animates open revealing all configured category cards in a responsive grid.
+  - Show Less state: Collapses smoothly back to initial carousel with graceful scroll positioning.
 {% endcomment %}
 
-<section class="enamels-categories-section" id="enamels-cats-{{ section.id }}">
+<section
+  class="enamels-categories-section"
+  id="enamels-cats-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+>
   <div class="enamels-cats__container">
     <!-- Header -->
     <div class="enamels-section-head">
-      <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'Shop by category' }}</h2>
-      {% if section.settings.view_all_link != blank and section.settings.view_all_label != blank %}
-        <a href="{{ section.settings.view_all_link }}" class="enamels-section-head__link">
-          {{ section.settings.view_all_label }}
-        </a>
+      <div class="enamels-section-head__title-group">
+        <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'Shop by category' }}</h2>
+        {% if section.settings.subtitle != blank %}
+          <p class="enamels-section-head__subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Interactive View All / Show Less Toggle Button -->
+      {% if section.settings.enable_view_all and section.blocks.size > 0 %}
+        <button
+          type="button"
+          class="enamels-cat-toggle-btn"
+          aria-expanded="false"
+          aria-controls="enamels-cats-drawer-{{ section.id }}"
+          data-cat-toggle
+        >
+          <span
+            class="enamels-cat-toggle-btn__label"
+            data-label-collapsed="{{ section.settings.view_all_label | default: 'View all' | escape }}"
+            data-label-expanded="{{ section.settings.show_less_label | default: 'Show less' | escape }}"
+          >
+            {{ section.settings.view_all_label | default: 'View all' }}
+          </span>
+          <span class="enamels-cat-toggle-btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </span>
+        </button>
       {% endif %}
     </div>
 
-    <!-- Category Grid -->
-    <div class="enamels-cats__grid">
-      {% for block in section.blocks %}
-        {% assign pill_img = block.settings.image %}
-        {% assign pill_fallback = block.settings.fallback_asset %}
-        <a
-          href="{{ block.settings.link | default: '#' }}"
-          class="enamels-cat-pill"
-          {{ block.shopify_attributes }}
-        >
-          <span class="enamels-cat-pill__title">{{ block.settings.title }}</span>
-          <div class="enamels-cat-pill__media">
-            {% if pill_img != blank %}
-              <img
-                src="{{ pill_img | image_url: width: 300 }}"
-                alt="{{ block.settings.title | escape }}"
-                loading="lazy"
-                width="120"
-                height="70"
-              >
-            {% elsif pill_fallback != blank %}
-              <img
-                src="{{ pill_fallback | asset_url }}"
-                alt="{{ block.settings.title | escape }}"
-                loading="lazy"
-                width="120"
-                height="70"
-              >
+    <!-- 1. Initial Collapsed Carousel -->
+    <div class="enamels-cats-carousel-wrap" data-carousel-wrap>
+      <button
+        type="button"
+        class="enamels-cat-arrow enamels-cat-arrow--left"
+        aria-label="Scroll left"
+        data-cat-prev
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="enamels-cats-track" data-carousel-track tabindex="0" role="region" aria-label="Category carousel">
+        {% for block in section.blocks %}
+          {% assign col = block.settings.collection %}
+          {% assign card_title = block.settings.title | default: col.title %}
+          {% assign card_subtitle = block.settings.subtitle %}
+          {% assign card_badge = block.settings.badge_text %}
+          {% assign card_link = block.settings.link | default: col.url | default: '#' %}
+          {% assign card_img = block.settings.image %}
+          {% if card_img == blank and col.featured_image != blank %}
+            {% assign card_img = col.featured_image %}
+          {% endif %}
+          {% assign card_fallback = block.settings.fallback_asset %}
+
+          <a
+            href="{{ card_link }}"
+            class="enamels-cat-card enamels-cat-card--carousel"
+            {{ block.shopify_attributes }}
+          >
+            {% if card_badge != blank %}
+              <span class="enamels-cat-card__badge">{{ card_badge }}</span>
             {% endif %}
-          </div>
-        </a>
-      {% endfor %}
+
+            <div class="enamels-cat-card__content">
+              <span class="enamels-cat-card__title">{{ card_title }}</span>
+              {% if card_subtitle != blank %}
+                <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
+              {% endif %}
+            </div>
+
+            <div class="enamels-cat-card__media">
+              {% if card_img != blank %}
+                <img
+                  src="{{ card_img | image_url: width: 320 }}"
+                  alt="{{ card_title | escape }}"
+                  loading="lazy"
+                  width="120"
+                  height="70"
+                >
+              {% elsif card_fallback != blank %}
+                <img
+                  src="{{ card_fallback | asset_url }}"
+                  alt="{{ card_title | escape }}"
+                  loading="lazy"
+                  width="120"
+                  height="70"
+                >
+              {% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+      <button
+        type="button"
+        class="enamels-cat-arrow enamels-cat-arrow--right"
+        aria-label="Scroll right"
+        data-cat-next
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- 2. Expandable Grid View (Reveals underneath smoothly) -->
+    <div
+      id="enamels-cats-drawer-{{ section.id }}"
+      class="enamels-cats-drawer"
+      data-cat-drawer
+      aria-hidden="true"
+    >
+      <div class="enamels-cats-drawer__inner">
+        <div class="enamels-cats-drawer__header">
+          <span class="enamels-cats-drawer__count">{{ section.blocks.size }} Categories Available</span>
+          <span class="enamels-cats-drawer__hint">Click any category to explore its full collection</span>
+        </div>
+
+        <div class="enamels-cats-grid enamels-cats-grid--desktop-{{ section.settings.grid_cols_desktop | default: 6 }} enamels-cats-grid--tablet-{{ section.settings.grid_cols_tablet | default: 3 }} enamels-cats-grid--mobile-{{ section.settings.grid_cols_mobile | default: 2 }}">
+          {% for block in section.blocks %}
+            {% assign col = block.settings.collection %}
+            {% assign card_title = block.settings.title | default: col.title %}
+            {% assign card_subtitle = block.settings.subtitle %}
+            {% assign card_badge = block.settings.badge_text %}
+            {% assign card_link = block.settings.link | default: col.url | default: '#' %}
+            {% assign card_img = block.settings.image %}
+            {% if card_img == blank and col.featured_image != blank %}
+              {% assign card_img = col.featured_image %}
+            {% endif %}
+            {% assign card_fallback = block.settings.fallback_asset %}
+
+            <a
+              href="{{ card_link }}"
+              class="enamels-cat-card enamels-cat-card--grid"
+              style="--stagger-index: {{ forloop.index }};"
+            >
+              {% if card_badge != blank %}
+                <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+              {% endif %}
+
+              <div class="enamels-cat-card__content">
+                <span class="enamels-cat-card__title">{{ card_title }}</span>
+                {% if card_subtitle != blank %}
+                  <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
+                {% endif %}
+              </div>
+
+              <div class="enamels-cat-card__media">
+                {% if card_img != blank %}
+                  <img
+                    src="{{ card_img | image_url: width: 360 }}"
+                    alt="{{ card_title | escape }}"
+                    loading="lazy"
+                    width="140"
+                    height="80"
+                  >
+                {% elsif card_fallback != blank %}
+                  <img
+                    src="{{ card_fallback | asset_url }}"
+                    alt="{{ card_title | escape }}"
+                    loading="lazy"
+                    width="140"
+                    height="80"
+                  >
+                {% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   #enamels-cats-{{ section.id }} {
-    padding-top: {{ section.settings.padding_top | default: 12 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | default: 24 }}px;
+    padding-top: {{ section.settings.padding_top | default: 16 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 28 }}px;
+    position: relative;
   }
 
   #enamels-cats-{{ section.id }} .enamels-cats__container {
@@ -65,11 +205,19 @@
     padding: 0 16px;
   }
 
+  /* Header */
   .enamels-section-head {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     margin-bottom: 14px;
+    gap: 12px;
+  }
+
+  .enamels-section-head__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
   .enamels-section-head__title {
@@ -80,77 +228,312 @@
     letter-spacing: -0.01em;
   }
 
-  .enamels-section-head__link {
+  .enamels-section-head__subtitle {
+    font-size: 0.8rem;
+    color: #666666;
+    margin: 0;
+  }
+
+  /* Interactive View All Toggle Button */
+  .enamels-cat-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: #333333;
+    font-family: inherit;
     font-size: 0.85rem;
-    font-weight: 500;
-    color: #555555;
-    text-decoration: none;
-    transition: color 0.2s ease;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
   }
 
-  .enamels-section-head__link:hover {
+  .enamels-cat-toggle-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
     color: #111111;
-    text-decoration: underline;
   }
 
-  .enamels-cats__grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+  .enamels-cat-toggle-btn:active {
+    transform: scale(0.97);
   }
 
-  .enamels-cat-pill {
+  .enamels-cat-toggle-btn__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .enamels-cat-toggle-btn[aria-expanded="true"] .enamels-cat-toggle-btn__icon {
+    transform: rotate(180deg);
+  }
+
+  .enamels-cat-toggle-btn[aria-expanded="true"] {
+    background-color: #111111;
+    color: #ffffff;
+  }
+
+  .enamels-cat-toggle-btn[aria-expanded="true"]:hover {
+    background-color: #222222;
+    color: #ffffff;
+  }
+
+  /* Carousel Wrapper */
+  .enamels-cats-carousel-wrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .enamels-cat-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #222222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    padding: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.9;
+  }
+
+  .enamels-cat-arrow:hover {
+    background-color: #f7f7f7;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  .enamels-cat-arrow--left {
+    left: -12px;
+  }
+
+  .enamels-cat-arrow--right {
+    right: -12px;
+  }
+
+  /* Carousel Track */
+  .enamels-cats-track {
+    display: flex;
+    gap: {{ section.settings.card_gap | default: 10 }}px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 4px 2px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .enamels-cats-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Category Card Base */
+  .enamels-cat-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #dfdfdf;
-    border-radius: 8px;
-    padding: 6px 6px 6px 12px;
+    background-color: {{ section.settings.card_bg | default: '#dfdfdf' }};
+    border-radius: {{ section.settings.card_radius | default: 8 }}px;
+    padding: 6px 8px 6px 14px;
     text-decoration: none;
     overflow: hidden;
-    height: 60px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    min-height: 60px;
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.2, 0, 0.2, 1), background-color 0.2s ease;
   }
 
-  .enamels-cat-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  .enamels-cat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   }
 
-  .enamels-cat-pill__title {
+  .enamels-cat-card--carousel {
+    flex: 0 0 calc((100% - ({{ section.settings.card_gap | default: 10 }}px * 5)) / 6);
+    min-width: 190px;
+  }
+
+  .enamels-cat-card__content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 8px;
+    min-width: 0;
+    z-index: 2;
+  }
+
+  .enamels-cat-card__title {
     font-size: 0.82rem;
     font-weight: 700;
     color: #111111;
     text-transform: uppercase;
     line-height: 1.15;
     letter-spacing: 0.02em;
-    flex: 1 1 auto;
-    padding-right: 6px;
+    word-break: break-word;
   }
 
-  .enamels-cat-pill__media {
+  .enamels-cat-card__subtitle {
+    font-size: 0.68rem;
+    color: #666666;
+    margin-top: 2px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .enamels-cat-card__badge {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 3px;
+    z-index: 3;
+  }
+
+  .enamels-cat-card__media {
     flex: 0 0 65px;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    position: relative;
   }
 
-  .enamels-cat-pill__media img {
+  .enamels-cat-card__media img {
     height: 100%;
     width: auto;
     max-height: 52px;
-    object-fit: contain;
+    object-fit: {{ section.settings.image_fit | default: 'contain' }};
     display: block;
+    transition: transform 0.3s ease;
   }
 
-  @media (max-width: 900px) {
-    .enamels-cats__grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+  .enamels-cat-card:hover .enamels-cat-card__media img {
+    transform: scale(1.05);
+  }
+
+  /* 2. Expandable Drawer Section */
+  .enamels-cats-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows {{ section.settings.anim_speed | default: 0.4 }}s cubic-bezier(0.4, 0, 0.2, 1), opacity {{ section.settings.anim_speed | default: 0.4 }}s ease;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .enamels-cats-drawer[aria-hidden="false"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .enamels-cats-drawer__inner {
+    overflow: hidden;
+    padding-top: 16px;
+  }
+
+  .enamels-cats-drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0 14px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.15);
+    margin-bottom: 12px;
+  }
+
+  .enamels-cats-drawer__count {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #111111;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .enamels-cats-drawer__hint {
+    font-size: 0.72rem;
+    color: #777777;
+    font-style: italic;
+  }
+
+  /* Responsive Expanded Grid Layouts */
+  .enamels-cats-grid {
+    display: grid;
+    gap: {{ section.settings.card_gap | default: 10 }}px;
+  }
+
+  .enamels-cats-grid--desktop-6 {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .enamels-cats-grid--desktop-5 {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .enamels-cats-grid--desktop-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Card in Expanded Grid with subtle cascade entry */
+  .enamels-cats-drawer[aria-hidden="false"] .enamels-cat-card--grid {
+    animation: enamelsCardFadeIn 0.4s ease forwards;
+    animation-delay: calc(var(--stagger-index, 1) * 0.03s);
+  }
+
+  @keyframes enamelsCardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
+  /* Tablet Adjustments */
+  @media (max-width: 1024px) {
+    .enamels-cat-card--carousel {
+      flex: 0 0 calc((100% - ({{ section.settings.card_gap | default: 10 }}px * 2)) / 3);
+      min-width: 180px;
+    }
+
+    .enamels-cats-grid--tablet-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .enamels-cats-grid--tablet-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .enamels-cats-grid--tablet-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Mobile Adjustments */
   @media (max-width: 640px) {
     #enamels-cats-{{ section.id }} .enamels-cats__container {
       padding: 0 12px;
@@ -160,29 +543,148 @@
       font-size: 1.1rem;
     }
 
-    .enamels-cats__grid {
+    .enamels-cat-toggle-btn {
+      font-size: 0.78rem;
+      padding: 4px 8px;
+    }
+
+    .enamels-cat-arrow {
+      display: none;
+    }
+
+    .enamels-cat-card--carousel {
+      flex: 0 0 72%;
+      min-width: 170px;
+    }
+
+    .enamels-cat-card {
+      min-height: 54px;
+      padding: 4px 6px 4px 10px;
+    }
+
+    .enamels-cat-card__title {
+      font-size: 0.75rem;
+    }
+
+    .enamels-cat-card__subtitle {
+      font-size: 0.62rem;
+    }
+
+    .enamels-cat-card__media {
+      flex: 0 0 54px;
+    }
+
+    .enamels-cat-card__media img {
+      max-height: 48px;
+    }
+
+    .enamels-cats-grid--mobile-2 {
       grid-template-columns: repeat(2, 1fr);
       gap: 8px;
     }
 
-    .enamels-cat-pill {
-      height: 54px;
-      padding: 4px 4px 4px 10px;
+    .enamels-cats-grid--mobile-1 {
+      grid-template-columns: 1fr;
+      gap: 8px;
     }
 
-    .enamels-cat-pill__title {
-      font-size: 0.75rem;
+    .enamels-cats-drawer__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+    }
+  }
+
+  /* Accessibility: Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .enamels-cats-drawer {
+      transition: none !important;
     }
 
-    .enamels-cat-pill__media {
-      flex: 0 0 54px;
+    .enamels-cat-toggle-btn__icon {
+      transition: none !important;
     }
 
-    .enamels-cat-pill__media img {
-      max-height: 48px;
+    .enamels-cat-card {
+      transition: none !important;
+    }
+
+    .enamels-cats-drawer[aria-hidden="false"] .enamels-cat-card--grid {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
     }
   }
 </style>
+
+<script>
+  (function () {
+    const section = document.getElementById('enamels-cats-{{ section.id }}');
+    if (!section) return;
+
+    const toggleBtn = section.querySelector('[data-cat-toggle]');
+    const drawer = section.querySelector('[data-cat-drawer]');
+    const labelSpan = section.querySelector('.enamels-cat-toggle-btn__label');
+    const track = section.querySelector('[data-carousel-track]');
+    const prevBtn = section.querySelector('[data-cat-prev]');
+    const nextBtn = section.querySelector('[data-cat-next]');
+
+    // Carousel Arrow Navigation
+    if (track && prevBtn && nextBtn) {
+      const scrollStep = () => track.clientWidth * 0.75;
+
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+      });
+
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+      });
+
+      // Update arrow visibility based on scroll position
+      const updateArrows = () => {
+        const atStart = track.scrollLeft <= 5;
+        const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
+        prevBtn.style.opacity = atStart ? '0.3' : '1';
+        prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
+        nextBtn.style.opacity = atEnd ? '0.3' : '1';
+        nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+      };
+
+      track.addEventListener('scroll', updateArrows, { passive: true });
+      window.addEventListener('resize', updateArrows, { passive: true });
+      updateArrows();
+    }
+
+    // View All / Show Less Expand & Collapse
+    if (toggleBtn && drawer && labelSpan) {
+      const labelCollapsed = labelSpan.getAttribute('data-label-collapsed') || 'View all';
+      const labelExpanded = labelSpan.getAttribute('data-label-expanded') || 'Show less';
+
+      toggleBtn.addEventListener('click', function () {
+        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+
+        if (!isExpanded) {
+          // EXPAND
+          toggleBtn.setAttribute('aria-expanded', 'true');
+          drawer.setAttribute('aria-hidden', 'false');
+          labelSpan.textContent = labelExpanded;
+        } else {
+          // COLLAPSE
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          drawer.setAttribute('aria-hidden', 'true');
+          labelSpan.textContent = labelCollapsed;
+
+          // Graceful scroll adjustment if customer scrolled past the header
+          const rect = section.getBoundingClientRect();
+          if (rect.top < 0) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    }
+  })();
+</script>
 
 {% schema %}
 {
@@ -198,14 +700,121 @@
     },
     {
       "type": "text",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "info": "Optional description under title"
+    },
+    {
+      "type": "header",
+      "content": "Interactive Expand Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_view_all",
+      "label": "Enable Expandable View All",
+      "default": true
+    },
+    {
+      "type": "text",
       "id": "view_all_label",
-      "label": "View All Label",
+      "label": "View All Button Label",
       "default": "View all"
     },
     {
-      "type": "url",
-      "id": "view_all_link",
-      "label": "View All Link"
+      "type": "text",
+      "id": "show_less_label",
+      "label": "Show Less Button Label",
+      "default": "Show less"
+    },
+    {
+      "type": "range",
+      "id": "anim_speed",
+      "min": 0.2,
+      "max": 0.8,
+      "step": 0.1,
+      "unit": "s",
+      "label": "Expansion Animation Speed",
+      "default": 0.4
+    },
+    {
+      "type": "header",
+      "content": "Expanded Grid Columns"
+    },
+    {
+      "type": "select",
+      "id": "grid_cols_desktop",
+      "label": "Desktop Columns",
+      "options": [
+        { "value": "4", "label": "4 Columns" },
+        { "value": "5", "label": "5 Columns" },
+        { "value": "6", "label": "6 Columns" }
+      ],
+      "default": "6"
+    },
+    {
+      "type": "select",
+      "id": "grid_cols_tablet",
+      "label": "Tablet Columns",
+      "options": [
+        { "value": "2", "label": "2 Columns" },
+        { "value": "3", "label": "3 Columns" },
+        { "value": "4", "label": "4 Columns" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "grid_cols_mobile",
+      "label": "Mobile Columns",
+      "options": [
+        { "value": "1", "label": "1 Column" },
+        { "value": "2", "label": "2 Columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "header",
+      "content": "Card Styling & Appearance"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Corner Radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 6,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Spacing / Gap",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "contain", "label": "Contain" },
+        { "value": "cover", "label": "Cover" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
     },
     {
       "type": "range",
@@ -215,7 +824,7 @@
       "step": 4,
       "unit": "px",
       "label": "Padding Top",
-      "default": 12
+      "default": 16
     },
     {
       "type": "range",
@@ -225,13 +834,13 @@
       "step": 4,
       "unit": "px",
       "label": "Padding Bottom",
-      "default": 24
+      "default": 28
     }
   ],
   "blocks": [
     {
       "type": "category_pill",
-      "name": "Category Pill",
+      "name": "Category Card",
       "settings": [
         {
           "type": "text",
@@ -240,14 +849,31 @@
           "default": "MEN"
         },
         {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Category Subtitle",
+          "info": "Optional tagline shown below title"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Text",
+          "info": "e.g. NEW, BESPOKE, SALE"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Shopify Collection"
+        },
+        {
           "type": "url",
           "id": "link",
-          "label": "Category Link"
+          "label": "Custom Link URL"
         },
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Custom Image"
+          "label": "Custom Category Image"
         },
         {
           "type": "text",
@@ -266,6 +892,7 @@
           "type": "category_pill",
           "settings": {
             "title": "MEN",
+            "subtitle": "Clinical Stretch Scrubs",
             "link": "/collections/men-scrubs",
             "fallback_asset": "enamels-cat-men.jpg"
           }
@@ -274,6 +901,7 @@
           "type": "category_pill",
           "settings": {
             "title": "WOMEN",
+            "subtitle": "Tailored & FlexFit Scrubs",
             "link": "/collections/women-scrubs",
             "fallback_asset": "enamels-cat-women.jpg"
           }
@@ -282,6 +910,8 @@
           "type": "category_pill",
           "settings": {
             "title": "NEW ARRIVALS",
+            "subtitle": "Autumn 2026 Editions",
+            "badge_text": "NEW",
             "link": "/collections/new-arrivals",
             "fallback_asset": "enamels-cat-new-arrivals.jpg"
           }
@@ -290,6 +920,8 @@
           "type": "category_pill",
           "settings": {
             "title": "CUSTOMIZE SCRUBS",
+            "subtitle": "Bespoke Doctor Embroidery",
+            "badge_text": "BESPOKE",
             "link": "/pages/customizer",
             "fallback_asset": "enamels-cat-customize.jpg"
           }
@@ -298,6 +930,7 @@
           "type": "category_pill",
           "settings": {
             "title": "INTERNATIONAL ORDER",
+            "subtitle": "Worldwide Express Dispatch",
             "link": "/pages/bulk-orders",
             "fallback_asset": "enamels-cat-intl-order.jpg"
           }
@@ -306,8 +939,46 @@
           "type": "category_pill",
           "settings": {
             "title": "LABCOATS",
+            "subtitle": "Helium & Tailored Coats",
             "link": "/collections/lab-coats",
             "fallback_asset": "enamels-cat-labcoats.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "SURGICAL CAPS",
+            "subtitle": "BunFit™ & Printed Caps",
+            "link": "/collections/caps",
+            "fallback_asset": "cat-caps.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "ARM SLEEVES",
+            "subtitle": "Gradient Compression",
+            "link": "/collections/accessories",
+            "fallback_asset": "cat-sprinter.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "CLINICAL CLOGS",
+            "subtitle": "Ergonomic Shock Absorption",
+            "link": "/collections/accessories",
+            "fallback_asset": "cat-clogs.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "HOME SERVICE",
+            "subtitle": "Lahore VIP Fitting Visit",
+            "badge_text": "VIP",
+            "link": "/pages/home-service",
+            "fallback_asset": "cat-home-service.jpg"
           }
         }
       ]
