@@ -1,224 +1,491 @@
 {% comment %}
-  Enamels Frontpage Hero Banner Section
-  Matches the exact Enamels aesthetic from desktop & mobile UI design.
+  Enamels Main Promotional Hero Banner Section
+  Dedicated Shopify Hero Banner positioned immediately below the navbar.
+  Supports responsive desktop and mobile photography, configurable heights,
+  promotional headings, and primary navigation CTAs (SHOP MEN / SHOP WOMEN).
 {% endcomment %}
 
-<section class="enamels-hero-section" id="enamels-hero-{{ section.id }}">
-  <div class="enamels-hero__container">
-    <div class="enamels-hero__grid">
-      <!-- Left: Navigation Links -->
-      <div class="enamels-hero__left">
-        <nav class="enamels-hero__nav" aria-label="Hero navigation">
-          {% if section.settings.men_label != blank %}
-            <a href="{{ section.settings.men_link | default: '/collections/men-scrubs' }}" class="enamels-hero__link enamels-hero__link--underline">
-              {{ section.settings.men_label }}
-            </a>
-          {% endif %}
-          {% if section.settings.women_label != blank %}
-            <a href="{{ section.settings.women_link | default: '/collections/women-scrubs' }}" class="enamels-hero__link">
-              {{ section.settings.women_label }}
-            </a>
-          {% endif %}
-        </nav>
-      </div>
-
-      <!-- Right: Model Photography -->
-      <div class="enamels-hero__right">
-        {% if section.settings.image != blank %}
+<section
+  class="enamels-hero-banner-section"
+  id="enamels-hero-banner-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="enamels-hero-banner__container{% if section.settings.full_width %} enamels-hero-banner__container--full{% endif %}">
+    <div
+      class="enamels-hero-banner__wrapper enamels-hero-banner__wrapper--{{ section.settings.banner_height }}"
+      style="--banner-min-height-desktop: {{ section.settings.custom_height_desktop }}px; --banner-min-height-mobile: {{ section.settings.custom_height_mobile }}px;"
+    >
+      <!-- Background / Studio Image Layer -->
+      <div class="enamels-hero-banner__media-box enamels-hero-banner__media-box--{{ section.settings.image_alignment }}">
+        {% if section.settings.image_desktop != blank %}
           <picture>
-            {% if section.settings.mobile_image != blank %}
-              <source media="(max-width: 767px)" srcset="{{ section.settings.mobile_image | image_url: width: 800 }}">
+            {% if section.settings.image_mobile != blank %}
+              <source media="(max-width: 767px)" srcset="{{ section.settings.image_mobile | image_url: width: 900 }}">
             {% endif %}
             <img
-              src="{{ section.settings.image | image_url: width: 1400 }}"
-              alt="{{ section.settings.image.alt | default: 'Enamels Medical Scrubs' }}"
-              class="enamels-hero__image"
+              src="{{ section.settings.image_desktop | image_url: width: 2000 }}"
+              alt="{{ section.settings.image_desktop.alt | default: section.settings.heading | default: 'Enamels Medical Scrubs' | escape }}"
+              class="enamels-hero-banner__img"
               loading="eager"
               fetchpriority="high"
-              width="700"
-              height="300"
+              width="1400"
+              height="500"
+              style="object-position: {{ section.settings.image_position }};"
             >
           </picture>
         {% else %}
-          <!-- Fallback high-fidelity asset -->
+          <!-- High-fidelity default studio assets -->
           <picture>
             <source media="(max-width: 767px)" srcset="{{ 'enamels-frontpage-hero-mobile.jpg' | asset_url }}">
             <img
               src="{{ 'enamels-frontpage-hero.jpg' | asset_url }}"
-              alt="Shop Men and Women Scrubs"
-              class="enamels-hero__image"
+              alt="Enamels Clinical Doctor Scrubs"
+              class="enamels-hero-banner__img"
               loading="eager"
               fetchpriority="high"
-              width="700"
-              height="300"
+              width="1400"
+              height="500"
             >
           </picture>
         {% endif %}
+      </div>
+
+      <!-- Banner Foreground Content / Navigation CTAs -->
+      <div class="enamels-hero-banner__content enamels-hero-banner__content--{{ section.settings.text_alignment }}">
+        <div class="enamels-hero-banner__text-inner">
+          {% if section.settings.subheading != blank %}
+            <span class="enamels-hero-banner__subheading">{{ section.settings.subheading }}</span>
+          {% endif %}
+
+          {% if section.settings.heading != blank %}
+            <h1 class="enamels-hero-banner__heading">{{ section.settings.heading }}</h1>
+          {% endif %}
+
+          <!-- Primary Navigation Links (SHOP MEN / SHOP WOMEN) -->
+          <div class="enamels-hero-banner__cta-group">
+            {% if section.settings.cta1_label != blank %}
+              <a
+                href="{{ section.settings.cta1_link | default: '/collections/men-scrubs' }}"
+                class="enamels-hero-banner__cta-link enamels-hero-banner__cta-link--underlined"
+              >
+                {{ section.settings.cta1_label }}
+              </a>
+            {% endif %}
+
+            {% if section.settings.cta2_label != blank %}
+              <a
+                href="{{ section.settings.cta2_link | default: '/collections/women-scrubs' }}"
+                class="enamels-hero-banner__cta-link"
+              >
+                {{ section.settings.cta2_label }}
+              </a>
+            {% endif %}
+
+            {% if section.settings.extra_button_label != blank and section.settings.extra_button_link != blank %}
+              <a
+                href="{{ section.settings.extra_button_link }}"
+                class="enamels-hero-banner__btn"
+              >
+                {{ section.settings.extra_button_label }}
+              </a>
+            {% endif %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <style>
-  #enamels-hero-{{ section.id }} {
+  #enamels-hero-banner-{{ section.id }} {
     background-color: {{ section.settings.bg_color | default: '#e8e8e8' }};
     padding-top: {{ section.settings.padding_top | default: 0 }}px;
     padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
-    margin-bottom: 28px;
     width: 100%;
+    position: relative;
     overflow: hidden;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__container {
-    max-width: 1320px;
+  #enamels-hero-banner-{{ section.id }} .enamels-hero-banner__container {
+    max-width: 1360px;
     margin: 0 auto;
     padding: 0 16px;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__grid {
+  #enamels-hero-banner-{{ section.id }} .enamels-hero-banner__container--full {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .enamels-hero-banner__wrapper {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    min-height: 180px;
+    width: 100%;
+    overflow: hidden;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__left {
-    flex: 0 0 auto;
-    padding-left: 20px;
+  /* Height variants */
+  .enamels-hero-banner__wrapper--small {
+    min-height: 240px;
+  }
+
+  .enamels-hero-banner__wrapper--medium {
+    min-height: 320px;
+  }
+
+  .enamels-hero-banner__wrapper--large {
+    min-height: 420px;
+  }
+
+  .enamels-hero-banner__wrapper--custom {
+    min-height: var(--banner-min-height-desktop, 280px);
+  }
+
+  /* Media Box */
+  .enamels-hero-banner__media-box {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 65%;
+    display: flex;
+    align-items: center;
+    z-index: 1;
+  }
+
+  .enamels-hero-banner__media-box--right {
+    right: 0;
+    justify-content: flex-end;
+  }
+
+  .enamels-hero-banner__media-box--center {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    justify-content: center;
+  }
+
+  .enamels-hero-banner__media-box--left {
+    left: 0;
+    justify-content: flex-start;
+  }
+
+  .enamels-hero-banner__img {
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+    object-fit: {{ section.settings.image_fit | default: 'contain' }};
+    display: block;
+  }
+
+  /* Content Overlay */
+  .enamels-hero-banner__content {
+    position: relative;
     z-index: 2;
+    width: 100%;
+    padding: 32px 24px;
+    display: flex;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__nav {
+  .enamels-hero-banner__content--left {
+    justify-content: flex-start;
+  }
+
+  .enamels-hero-banner__content--center {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .enamels-hero-banner__content--right {
+    justify-content: flex-end;
+  }
+
+  .enamels-hero-banner__text-inner {
+    max-width: 480px;
+  }
+
+  .enamels-hero-banner__subheading {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555555;
+    margin-bottom: 8px;
+  }
+
+  .enamels-hero-banner__heading {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #111111;
+    margin: 0 0 18px 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Navigation CTA Links */
+  .enamels-hero-banner__cta-group {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    align-items: flex-start;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__link {
+  .enamels-hero-banner__content--center .enamels-hero-banner__cta-group {
+    align-items: center;
+  }
+
+  .enamels-hero-banner__cta-link {
     font-family: inherit;
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
     color: #111111;
     text-decoration: none;
     text-transform: uppercase;
     display: inline-block;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    width: fit-content;
+    line-height: 1.1;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__link:hover {
-    opacity: 0.8;
+  .enamels-hero-banner__cta-link:hover {
+    opacity: 0.75;
+    transform: translateX(2px);
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__link--underline {
-    position: relative;
-    padding-bottom: 5px;
-    border-bottom: 2px solid #111111;
+  .enamels-hero-banner__cta-link--underlined {
+    padding-bottom: 4px;
+    border-bottom: 2.5px solid #111111;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__right {
-    flex: 1 1 auto;
-    display: flex;
-    justify-content: flex-end;
+  .enamels-hero-banner__btn {
+    display: inline-flex;
     align-items: center;
-    max-height: 240px;
-    overflow: hidden;
+    justify-content: center;
+    background-color: #111111;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 4px;
+    margin-top: 6px;
+    transition: background-color 0.2s ease;
   }
 
-  #enamels-hero-{{ section.id }} .enamels-hero__image {
-    width: auto;
-    max-height: 240px;
-    object-fit: contain;
-    display: block;
+  .enamels-hero-banner__btn:hover {
+    background-color: #2b2b2b;
+  }
+
+  /* Responsive Rules */
+  @media (max-width: 900px) {
+    .enamels-hero-banner__media-box {
+      width: 60%;
+    }
+
+    .enamels-hero-banner__cta-link {
+      font-size: 1.05rem;
+    }
   }
 
   @media (max-width: 767px) {
-    #enamels-hero-{{ section.id }} {
-      margin-bottom: 20px;
-    }
-
-    #enamels-hero-{{ section.id }} .enamels-hero__container {
+    #enamels-hero-banner-{{ section.id }} .enamels-hero-banner__container {
       padding: 0 12px;
     }
 
-    #enamels-hero-{{ section.id }} .enamels-hero__grid {
-      min-height: 140px;
+    .enamels-hero-banner__wrapper--custom {
+      min-height: var(--banner-min-height-mobile, 180px);
     }
 
-    #enamels-hero-{{ section.id }} .enamels-hero__left {
-      padding-left: 8px;
+    .enamels-hero-banner__wrapper--small,
+    .enamels-hero-banner__wrapper--medium,
+    .enamels-hero-banner__wrapper--large {
+      min-height: 170px;
     }
 
-    #enamels-hero-{{ section.id }} .enamels-hero__link {
+    .enamels-hero-banner__content {
+      padding: 18px 10px;
+    }
+
+    .enamels-hero-banner__media-box {
+      width: 58%;
+    }
+
+    .enamels-hero-banner__cta-link {
       font-size: 0.95rem;
-      letter-spacing: 0.03em;
     }
 
-    #enamels-hero-{{ section.id }} .enamels-hero__nav {
+    .enamels-hero-banner__cta-group {
       gap: 12px;
-    }
-
-    #enamels-hero-{{ section.id }} .enamels-hero__right {
-      max-height: 160px;
-    }
-
-    #enamels-hero-{{ section.id }} .enamels-hero__image {
-      max-height: 160px;
     }
   }
 </style>
 
 {% schema %}
 {
-  "name": "Enamels Hero Banner",
+  "name": "Enamels Main Hero Banner",
   "tag": "section",
-  "class": "enamels-hero-section-wrapper",
+  "class": "enamels-hero-banner-section-wrapper",
   "settings": [
     {
       "type": "color",
       "id": "bg_color",
-      "label": "Background Color",
+      "label": "Banner Background Color",
       "default": "#e8e8e8"
     },
     {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width (Edge-to-Edge)",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "banner_height",
+      "label": "Banner Height",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "custom", "label": "Custom (Adjust Sliders)" }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "custom_height_desktop",
+      "min": 180,
+      "max": 650,
+      "step": 10,
+      "unit": "px",
+      "label": "Custom Desktop Height",
+      "default": 240
+    },
+    {
+      "type": "range",
+      "id": "custom_height_mobile",
+      "min": 120,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Custom Mobile Height",
+      "default": 170
+    },
+    {
+      "type": "header",
+      "content": "Promotional Photography"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "Desktop Hero Banner Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile Hero Banner Image"
+    },
+    {
+      "type": "select",
+      "id": "image_alignment",
+      "label": "Image Placement",
+      "options": [
+        { "value": "right", "label": "Right Aligned" },
+        { "value": "center", "label": "Centered" },
+        { "value": "left", "label": "Left Aligned" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Sizing Fit",
+      "options": [
+        { "value": "contain", "label": "Contain (Preserve Model Integrity)" },
+        { "value": "cover", "label": "Cover (Fill Entire Area)" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Focal Point Alignment",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" },
+        { "value": "right center", "label": "Right" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "header",
+      "content": "Navigation & Headings"
+    },
+    {
       "type": "text",
-      "id": "men_label",
-      "label": "First Link Label",
+      "id": "subheading",
+      "label": "Optional Subheading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Optional Main Headline"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Block Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "cta1_label",
+      "label": "Primary CTA Label",
       "default": "SHOP MEN"
     },
     {
       "type": "url",
-      "id": "men_link",
-      "label": "First Link URL"
+      "id": "cta1_link",
+      "label": "Primary CTA Link"
     },
     {
       "type": "text",
-      "id": "women_label",
-      "label": "Second Link Label",
+      "id": "cta2_label",
+      "label": "Secondary CTA Label",
       "default": "SHOP WOMEN"
     },
     {
       "type": "url",
-      "id": "women_link",
-      "label": "Second Link URL"
+      "id": "cta2_link",
+      "label": "Secondary CTA Link"
     },
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "Desktop Model Image"
+      "type": "text",
+      "id": "extra_button_label",
+      "label": "Optional Solid Button Label"
     },
     {
-      "type": "image_picker",
-      "id": "mobile_image",
-      "label": "Mobile Model Image"
+      "type": "url",
+      "id": "extra_button_link",
+      "label": "Optional Solid Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
     },
     {
       "type": "range",
       "id": "padding_top",
       "min": 0,
-      "max": 60,
-      "step": 4,
+      "max": 50,
+      "step": 2,
       "unit": "px",
       "label": "Padding Top",
       "default": 0
@@ -227,8 +494,8 @@
       "type": "range",
       "id": "padding_bottom",
       "min": 0,
-      "max": 60,
-      "step": 4,
+      "max": 50,
+      "step": 2,
       "unit": "px",
       "label": "Padding Bottom",
       "default": 0
@@ -236,7 +503,7 @@
   ],
   "presets": [
     {
-      "name": "Enamels Hero Banner"
+      "name": "Enamels Main Hero Banner"
     }
   ]
 }

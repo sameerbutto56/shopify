@@ -1,0 +1,244 @@
+{% comment %}
+  Enamels Promotional Scrolling Announcement Line
+  Positioned between the Hero Banner and Shop by Category.
+  Smooth, continuous marquee ticker with medical guarantees and delivery offers.
+{% endcomment %}
+
+<section
+  class="enamels-ticker-section"
+  id="enamels-ticker-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="enamels-ticker__track-wrap">
+    <div
+      class="enamels-ticker__track"
+      style="--ticker-speed: {{ section.settings.speed | default: 28 }}s;"
+      {% if section.settings.pause_on_hover %}data-pause-hover="true"{% endif %}
+    >
+      <!-- Repeat twice for continuous seamless loop -->
+      {% for i in (1..2) %}
+        <div class="enamels-ticker__content" aria-hidden="{% if forloop.index == 2 %}true{% else %}false{% endif %}">
+          {% for block in section.blocks %}
+            <div class="enamels-ticker__item" {{ block.shopify_attributes }}>
+              {% if block.settings.icon != blank %}
+                <span class="enamels-ticker__icon">{{ block.settings.icon }}</span>
+              {% endif %}
+              <span class="enamels-ticker__text">{{ block.settings.text }}</span>
+              <span class="enamels-ticker__separator">•</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  #enamels-ticker-{{ section.id }} {
+    background-color: {{ section.settings.bg_color | default: '#111111' }};
+    color: {{ section.settings.text_color | default: '#ffffff' }};
+    padding: {{ section.settings.padding_y | default: 9 }}px 0;
+    overflow: hidden;
+    user-select: none;
+    border-top: 1px solid {{ section.settings.border_color | default: 'transparent' }};
+    border-bottom: 1px solid {{ section.settings.border_color | default: 'transparent' }};
+  }
+
+  .enamels-ticker__track-wrap {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .enamels-ticker__track {
+    display: flex;
+    width: max-content;
+    animation: enamelsTickerScroll var(--ticker-speed, 28s) linear infinite;
+  }
+
+  .enamels-ticker__track[data-pause-hover="true"]:hover {
+    animation-play-state: paused;
+  }
+
+  .enamels-ticker__content {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .enamels-ticker__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    white-space: nowrap;
+    font-size: {{ section.settings.font_size | default: 12 }}px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .enamels-ticker__icon {
+    font-size: 1.1em;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .enamels-ticker__separator {
+    margin-left: 16px;
+    opacity: 0.4;
+    font-size: 0.9em;
+  }
+
+  @keyframes enamelsTickerScroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .enamels-ticker__item {
+      font-size: 11px;
+      padding: 0 12px;
+    }
+    .enamels-ticker__separator {
+      margin-left: 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .enamels-ticker__track {
+      animation: none;
+      overflow-x: auto;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Ticker Announcement",
+  "tag": "section",
+  "class": "enamels-ticker-section-wrapper",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "transparent"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "unit": "s",
+      "label": "Scroll Duration (Lower = Faster)",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Font Size",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical Padding",
+      "default": 9
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause Scrolling on Hover",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Ticker Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon Emoji or Symbol",
+          "default": "✨"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Announcement Text",
+          "default": "FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ticker Announcement",
+      "blocks": [
+        {
+          "type": "message",
+          "settings": {
+            "icon": "✨",
+            "text": "FREE NATIONWIDE DELIVERY ON ORDERS OVER RS. 7,000"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "icon": "💵",
+            "text": "CASH ON DELIVERY AVAILABLE ACROSS ALL CITIES IN PAKISTAN"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "icon": "⚡",
+            "text": "7-DAY EASY SIZE EXCHANGE & DEDICATED WHATSAPP ASSISTANCE"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "icon": "🩺",
+            "text": "100% MEDICAL GRADE 4-WAY STRETCH APPAREL"
+          }
+        },
+        {
+          "type": "message",
+          "settings": {
+            "icon": "🧵",
+            "text": "BESPOKE CLINICAL NAME EMBROIDERY & LOGO ENGRAVING"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
