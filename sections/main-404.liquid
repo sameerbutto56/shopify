@@ -1,106 +1,169 @@
+{% comment %}
+  Enamels Intelligent 404 Interceptor & Fallback Router
+  1. If visitor navigates to /pages/customizer (or any URL containing customizer),
+     immediately mounts the full 7-step Make Your Own Scrub Wizard.
+  2. If visitor navigates to /pages/bulk-orders (or any URL containing bulk),
+     immediately mounts the Multi-Category Institutional Bulk Orders Workflow.
+  3. If visitor navigates to /pages/order-confirmation (or any URL containing order/confirm),
+     immediately mounts the Order Confirmation & 9-Section Admin Order Details Docket.
+  4. If visitor navigates to /pages/international-delivery,
+     immediately mounts the International Delivery Workflow.
+  5. For genuine missing pages, displays a clean medical apparel 404 screen
+     with direct 1-click links to Men, Women, Scrubs, Customizer, and Bulk Orders.
+{% endcomment %}
 
+<!-- 1. Dedicated Portal Mount Containers (Hidden by default, unhidden immediately by routing script) -->
 
-{% liquid
-  if section.settings.background_color != blank
-    render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
-  endif
-
-  assign is_customizer = false
-  assign is_bulk = false
-  assign is_intl = false
-  assign is_order_verif = false
-
-  if request.path contains 'customizer' or request.path contains 'customize'
-    assign is_customizer = true
-  elsif request.path contains 'bulk'
-    assign is_bulk = true
-  elsif request.path contains 'international' or request.path contains 'intl'
-    assign is_intl = true
-  elsif request.path contains 'order' or request.path contains 'confirm' or request.path contains 'verif'
-    assign is_order_verif = true
-  endif
-%}
-
-{%- if is_customizer -%}
-  <div class="customizer-full-page" style="width: 100%; max-width: 1140px; margin: 30px auto; padding: 0 16px;">
-    {% render 'enamels-customization-wizard' %}
-  </div>
-{%- elsif is_bulk -%}
-  <div class="bulk-full-page" style="width: 100%; max-width: 1140px; margin: 30px auto; padding: 0 16px;">
-    {% render 'enamels-bulk-orders-workflow' %}
-  </div>
-{%- elsif is_order_verif -%}
-  <div class="order-verif-full-page" style="width: 100%; max-width: 1020px; margin: 30px auto; padding: 0 16px;">
-    {% render 'enamels-order-verification' %}
-  </div>
-{%- elsif is_intl -%}
-  <div class="intl-full-page" style="width: 100%; max-width: 800px; margin: 40px auto; padding: 0 16px;">
-    <script>
-      if (typeof window.enamelsSetIntlMode === 'function') {
-        window.enamelsSetIntlMode(true);
-      }
-      setTimeout(function() {
-        if (typeof window.openInternationalModal === 'function') {
-          window.openInternationalModal();
-        }
-      }, 100);
-    </script>
-    <div style="text-align: center; padding: 40px 20px;">
-      <h1 style="color: #0f172a; font-size: 28px; font-weight: 800; margin-bottom: 12px;">🌍 International Delivery Active</h1>
-      <p style="color: #64748b; font-size: 15px; margin-bottom: 24px;">Flat PKR 4,000 per scrub unit worldwide express courier dispatch (DHL / FedEx Express).</p>
-      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-        <a href="#customizer" onclick="window.openCustomizerModal(); return false;" style="background: #008779; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">Customize Your Scrub →</a>
-        <a href="/collections/all" style="background: #0f172a; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">Shop Ready Collections →</a>
-      </div>
+<!-- Customizer Studio Portal -->
+<div id="enamels-portal-customizer" class="enamels-portal-view" style="display: none; width: 100%; max-width: 1200px; margin: 30px auto; padding: 0 16px;">
+  <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+    <div>
+      <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: #008779; text-transform: uppercase;">Official Enamels Studio</span>
+      <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 4px 0 0 0;">Customize Your Own Scrub</h1>
     </div>
+    <a href="/collections/all" style="font-size: 12px; font-weight: 600; color: #64748b; text-decoration: none;">← Back to Catalog</a>
   </div>
-{%- else -%}
-<div
-  class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
-></div>
-<div
-  class="
-    section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}
-    {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
-  "
->
-  <div>
-    <div
-      class="
-        spacing-style
-        layout-panel-flex
-        layout-panel-flex--column
-        section-content-wrapper
-        mobile-column
-      "
-      style="
-        {% render 'layout-panel-style', settings: section.settings %}
-        {% render 'spacing-style', settings: section.settings %}
-      "
-    >
-      {% content_for 'blocks' %}
+  {% render 'enamels-customization-wizard' %}
+</div>
+
+<!-- Bulk Orders Institutional Portal -->
+<div id="enamels-portal-bulk" class="enamels-portal-view" style="display: none; width: 100%; max-width: 1200px; margin: 30px auto; padding: 0 16px;">
+  <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+    <div>
+      <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: #0284c7; text-transform: uppercase;">Institutional Procurement</span>
+      <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 4px 0 0 0;">Bulk Orders & Institutional Quotation (10+ Units)</h1>
+    </div>
+    <a href="/collections/all" style="font-size: 12px; font-weight: 600; color: #64748b; text-decoration: none;">← Back to Catalog</a>
+  </div>
+  {% render 'enamels-bulk-orders-workflow' %}
+</div>
+
+<!-- Order Confirmation & Verification Portal -->
+<div id="enamels-portal-order" class="enamels-portal-view" style="display: none; width: 100%; max-width: 1100px; margin: 30px auto; padding: 0 16px;">
+  <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+    <div>
+      <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: #16a34a; text-transform: uppercase;">Customer Verification & Admin Docket</span>
+      <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin: 4px 0 0 0;">Order Confirmation & Admin Preview</h1>
+    </div>
+    <a href="/collections/all" style="font-size: 12px; font-weight: 600; color: #64748b; text-decoration: none;">← Continue Shopping</a>
+  </div>
+  {% render 'enamels-order-verification' %}
+</div>
+
+<!-- International Delivery Portal -->
+<div id="enamels-portal-intl" class="enamels-portal-view" style="display: none; width: 100%; max-width: 800px; margin: 40px auto; padding: 0 16px;">
+  <div style="text-align: center; padding: 40px 20px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
+    <div style="font-size: 48px; margin-bottom: 16px;">🌍</div>
+    <h1 style="color: #0f172a; font-size: 28px; font-weight: 800; margin-bottom: 12px;">International Delivery Active</h1>
+    <p style="color: #64748b; font-size: 15px; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+      Enamels delivers worldwide via DHL & FedEx Express. Flat PKR 4,000 per scrub unit shipping worldwide with full parcel tracking.
+    </p>
+    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+      <a href="/pages/customizer" onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}" style="background: #008779; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">Customize Your Scrub →</a>
+      <a href="/collections/all" style="background: #0f172a; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">Browse All Collections →</a>
     </div>
   </div>
 </div>
-{%- endif -%}
 
+<!-- 2. Standard 404 Fallback Content (Hidden if any portal matches) -->
+<div id="enamels-404-default-wrapper">
+  <div class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"></div>
+  <div
+    class="
+      section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}
+      {% if section.settings.section_height != "" %} {{ section.settings.section_height | prepend: "section--height-" }}{% endif %}
+    "
+  >
+    <div>
+      <div
+        class="
+          spacing-style
+          layout-panel-flex
+          layout-panel-flex--column
+          section-content-wrapper
+          mobile-column
+        "
+        style="
+          {% render 'layout-panel-style', settings: section.settings %}
+          {% render 'spacing-style', settings: section.settings %}
+          text-align: center;
+          padding: 60px 20px;
+        "
+      >
+        <div style="font-size: 56px; margin-bottom: 16px;">🩺</div>
+        <h1 style="font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 10px;">Page Not Found</h1>
+        <p style="color: #64748b; font-size: 16px; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+          The clinical apparel page you are looking for may have moved or is temporarily unavailable. Explore our official collections below:
+        </p>
+
+        <!-- Quick Direct Navigation Buttons -->
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;">
+          <a href="/collections/all?gender=men" style="background: #102a43; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
+            Men's Scrubs →
+          </a>
+          <a href="/collections/all?gender=women" style="background: #102a43; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
+            Women's Scrubs →
+          </a>
+          <a href="/pages/customizer" onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}" style="background: #008779; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
+            Customize Your Scrub ✨
+          </a>
+          <a href="/pages/bulk-orders" onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}" style="background: #0284c7; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
+            Bulk Orders (10+) 🏥
+          </a>
+        </div>
+
+        <a href="/" style="color: #64748b; font-size: 13px; text-decoration: underline;">Back to Homepage</a>
+
+        {% comment %}Theme blocks fallback{% endcomment %}
+        <div style="display: none;">
+          {% content_for 'blocks' %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Immediate Synchronous Route Interceptor -->
 <script>
-  (function handle404CustomizerRouting() {
-    var path = window.location.pathname.toLowerCase();
-    var hash = window.location.hash.toLowerCase();
-    var href = window.location.href.toLowerCase();
+  (function intercept404Portals() {
+    var path = (window.location.pathname || '').toLowerCase();
+    var search = (window.location.search || '').toLowerCase();
+    var hash = (window.location.hash || '').toLowerCase();
+    var href = (window.location.href || '').toLowerCase();
 
-    if (path.indexOf('customizer') !== -1 || hash.indexOf('customizer') !== -1 || href.indexOf('customizer') !== -1) {
-      // Hide any default 404 text blocks
-      var contentWrapper = document.querySelector('.section-content-wrapper');
-      if (contentWrapper) {
-        contentWrapper.style.display = 'none';
+    var isCustomizer = path.indexOf('customizer') !== -1 || path.indexOf('customize') !== -1 || hash.indexOf('customizer') !== -1 || search.indexOf('customizer') !== -1;
+    var isBulk = path.indexOf('bulk') !== -1 || hash.indexOf('bulk') !== -1 || search.indexOf('bulk') !== -1;
+    var isOrder = path.indexOf('order-confirmation') !== -1 || path.indexOf('order_confirmation') !== -1 || search.indexOf('demo=1') !== -1 || search.indexOf('order') !== -1 || hash.indexOf('order') !== -1;
+    var isIntl = path.indexOf('international') !== -1 || path.indexOf('intl') !== -1 || hash.indexOf('intl') !== -1;
+
+    if (isCustomizer || isBulk || isOrder || isIntl) {
+      // 1. Hide default 404 message
+      var defWrapper = document.getElementById('enamels-404-default-wrapper');
+      if (defWrapper) defWrapper.style.display = 'none';
+
+      // 2. Hide surrounding theme layout wrappers if needed
+      var layoutWrapper = document.querySelector('.section-content-wrapper');
+      if (layoutWrapper && defWrapper && defWrapper.contains(layoutWrapper)) {
+        layoutWrapper.style.display = 'none';
       }
 
-      // If full page not rendered server-side, open modal
-      var inlineCustomizer = document.querySelector('.customizer-full-page');
-      if (!inlineCustomizer && typeof window.openCustomizerModal === 'function') {
-        window.openCustomizerModal();
+      // 3. Mount active portal
+      if (isCustomizer) {
+        document.title = "Customize Your Own Scrubs | Enamels Medical Apparel";
+        var c = document.getElementById('enamels-portal-customizer');
+        if (c) c.style.display = 'block';
+      } else if (isBulk) {
+        document.title = "Bulk Orders & Institutional Procurement | Enamels";
+        var b = document.getElementById('enamels-portal-bulk');
+        if (b) b.style.display = 'block';
+      } else if (isOrder) {
+        document.title = "Order Confirmation & Verification | Enamels";
+        var o = document.getElementById('enamels-portal-order');
+        if (o) o.style.display = 'block';
+      } else if (isIntl) {
+        document.title = "International Worldwide Delivery | Enamels";
+        var i = document.getElementById('enamels-portal-intl');
+        if (i) i.style.display = 'block';
       }
     }
   })();
@@ -146,11 +209,11 @@
       "options": [
         {
           "value": "page-width",
-          "label": "t:options.page"
+          "label": "t:options.page_width"
         },
         {
           "value": "full-width",
-          "label": "t:options.full"
+          "label": "t:options.full_width"
         }
       ],
       "default": "page-width"
@@ -162,19 +225,7 @@
       "options": [
         {
           "value": "",
-          "label": "t:options.auto"
-        },
-        {
-          "value": "small",
-          "label": "t:options.small"
-        },
-        {
-          "value": "medium",
-          "label": "t:options.medium"
-        },
-        {
-          "value": "large",
-          "label": "t:options.large"
+          "label": "t:options.default"
         },
         {
           "value": "full-screen",
@@ -184,84 +235,10 @@
       "default": ""
     },
     {
-      "type": "select",
-      "id": "horizontal_alignment_flex_direction_column",
-      "label": "t:settings.alignment",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.direction_start"
-        },
-        {
-          "value": "center",
-          "label": "t:options.direction_center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.direction_end"
-        }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "select",
-      "id": "vertical_alignment_flex_direction_column",
-      "label": "t:settings.position",
-      "options": [
-        {
-          "value": "flex-start",
-          "label": "t:options.top"
-        },
-        {
-          "value": "center",
-          "label": "t:options.center"
-        },
-        {
-          "value": "flex-end",
-          "label": "t:options.bottom"
-        }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "range",
-      "id": "gap",
-      "label": "t:settings.gap",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 12
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:settings.background_color",
-      "placeholder": "t:settings.default"
-    },
-    {
-      "type": "header",
-      "content": "t:content.padding"
-    },
-    {
-      "type": "range",
-      "id": "padding-block-start",
-      "label": "t:settings.top",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "padding-block-end",
-      "label": "t:settings.bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
     }
   ]
 }
