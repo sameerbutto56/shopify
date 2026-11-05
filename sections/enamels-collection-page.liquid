@@ -393,45 +393,41 @@
 
         {%- comment -%} Priority 3: Automatic Discovery from genuine store collections {%- endcomment -%}
         {%- if rendered_cat_pills == 0 -%}
-          {%- liquid
-            assign default_cat_handles = 'scrubs,basic-scrubs,male-scrubs,female-scrubs,lab-coats,white-coats,surgical-caps,caps,sleeves,accessories,clogs' | split: ','
-            for h in default_cat_handles
-              assign c = collections[h]
-              if c != blank and c.products_count > 0
-                assign c_title = c.title
-                assign c_key = h
-                if h contains 'scrub'
-                  assign c_key = 'scrubs'
-                elsif h contains 'lab' or h contains 'white'
-                  assign c_key = 'lab-coats'
-                elsif h contains 'cap'
-                  assign c_key = 'caps'
-                elsif h contains 'sleeve'
-                  assign c_key = 'sleeves'
-                elsif h contains 'clog' or h contains 'access'
-                  assign c_key = 'accessories'
-                endif
-                -%}
-                <button
-                  type="button"
-                  class="enamels-carousel-item{% if current_cat == c_key %} is-active{% endif %}"
-                  data-category-target="{{ c_key }}"
-                >
-                  <div class="enamels-carousel-item__thumb">
-                    {%- if c.featured_image != blank -%}
-                      <img src="{{ c.featured_image | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
-                    {%- elsif c.products.first.featured_media != blank -%}
-                      <img src="{{ c.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
-                    {%- else -%}
-                      <div class="enamels-cat-thumb-placeholder">🩺</div>
-                    {%- endif -%}
-                  </div>
-                  <span class="enamels-carousel-item__name">{{ c_title }}</span>
-                </button>
-                {%- liquid
-              endif
-            endfor
-          -%}
+          {%- assign default_cat_handles = 'scrubs,basic-scrubs,male-scrubs,female-scrubs,lab-coats,white-coats,surgical-caps,caps,sleeves,accessories,clogs' | split: ',' -%}
+          {%- for h in default_cat_handles -%}
+            {%- assign c = collections[h] -%}
+            {%- if c != blank and c.products_count > 0 -%}
+              {%- assign c_title = c.title -%}
+              {%- assign c_key = h -%}
+              {%- if h contains 'scrub' -%}
+                {%- assign c_key = 'scrubs' -%}
+              {%- elsif h contains 'lab' or h contains 'white' -%}
+                {%- assign c_key = 'lab-coats' -%}
+              {%- elsif h contains 'cap' -%}
+                {%- assign c_key = 'caps' -%}
+              {%- elsif h contains 'sleeve' -%}
+                {%- assign c_key = 'sleeves' -%}
+              {%- elsif h contains 'clog' or h contains 'access' -%}
+                {%- assign c_key = 'accessories' -%}
+              {%- endif -%}
+              <button
+                type="button"
+                class="enamels-carousel-item{% if current_cat == c_key %} is-active{% endif %}"
+                data-category-target="{{ c_key }}"
+              >
+                <div class="enamels-carousel-item__thumb">
+                  {%- if c.featured_image != blank -%}
+                    <img src="{{ c.featured_image | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
+                  {%- elsif c.products.first.featured_media != blank -%}
+                    <img src="{{ c.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
+                  {%- else -%}
+                    <div class="enamels-cat-thumb-placeholder">🩺</div>
+                  {%- endif -%}
+                </div>
+                <span class="enamels-carousel-item__name">{{ c_title }}</span>
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
         {%- endif -%}
 
         <!-- Universal "View All" Pill -->
