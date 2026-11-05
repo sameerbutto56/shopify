@@ -1,0 +1,41 @@
+{% comment %}
+  Enamels Order Confirmation & Online Payment Verification Section
+{% endcomment %}
+
+<div class="enamels-order-confirmation-section" style="padding-top: {{ section.settings.padding_top | default: 30 }}px; padding-bottom: {{ section.settings.padding_bottom | default: 60 }}px;">
+  {% render 'enamels-order-verification' %}
+</div>
+
+{% schema %}
+{
+  "name": "Order Verification Desk",
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Order Verification Desk"
+    }
+  ]
+}
+{% endschema %}
+

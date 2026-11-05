@@ -1965,3 +1965,134 @@
 .pdp-stock-text {
   font-weight: 700;
 }
+
+/* ==========================================================================
+   PDP Custom Sizing & Automatic Measurement Detection
+   ========================================================================== */
+.pdp-custom-size-pill {
+  border-color: #0d9488 !important;
+  color: #0d9488 !important;
+  background: #f0fdfa !important;
+  font-weight: 700 !important;
+}
+
+.pdp-custom-size-pill.selected,
+.pdp-custom-size-pill.active {
+  background: #008779 !important;
+  color: #ffffff !important;
+  border-color: #008779 !important;
+}
+
+.pdp-custom-sizing-box {
+  margin-top: 14px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 16px;
+  animation: fadeInDown 0.25s ease forwards;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pdp-custom-sizing-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pdp-custom-sizing-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #102a43;
+  margin: 0;
+}
+
+.pdp-custom-sizing-subtitle {
+  font-size: 11px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.pdp-unit-switcher {
+  display: flex;
+  background: #e2e8f0;
+  border-radius: 6px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.pdp-unit-btn {
+  border: none;
+  background: none;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.pdp-unit-btn.active {
+  background: #ffffff;
+  color: #008779;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.pdp-custom-alert {
+  background: #e6fffa;
+  border: 1px solid #99f6e4;
+  color: #008779;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  animation: fadeInDown 0.2s ease;
+}
+
+.pdp-measurements-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .pdp-measurements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pdp-m-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp-m-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+.pdp-m-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+.pdp-m-input:focus {
+  border-color: #008779;
+  box-shadow: 0 0 0 2px rgba(0, 135, 121, 0.15);
+}
+

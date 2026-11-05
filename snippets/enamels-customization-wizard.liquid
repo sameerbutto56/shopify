@@ -1,1065 +1,2508 @@
 {% comment %}
-  Enamels Step-by-Step Product Customization & Embroidery Wizard
-  Medical apparel personalization engine with real-time chest pocket embroidery preview.
+  Enamels Rebuilt 7-Step Bespoke Scrub Customization Workflow
+  Sequence:
+  1. Fabric Selection (Thumbnail cards with "Select & Next")
+  2. Color & Contrast (Main color + Contrast (If Applicable) with "Select & Next")
+  3. Design Selection (Collection-based dynamic system: Vilora, Crown, etc. with "Select & Next")
+  4. Size & Fit (XS-2XL + Custom, Enamels standard size charts, auto-custom detection, "Select & Next")
+  5. Personalization (Name engraving, logo, placement, thread, "Continue to Review")
+  6. Review (Summary of all choices, transparent price breakdown, edit links)
+  7. Payment & Order Submission (100% advance payment, Card 4% vs Online Transfer 2% discount, PK vs Intl shipping, No COD)
 {% endcomment %}
 
-<div class="enamels-wizard-card" id="enamels-customizer-root">
-  <div class="wizard-header">
-    <div class="wizard-title-group">
-      <span class="wizard-tag">Enamels Tailored</span>
-      <h3 class="wizard-heading">Custom Fit & Name Personalization</h3>
-      <p class="wizard-desc">Configure your medical uniform, select technical fit, and add official hospital embroidery.</p>
-      {% render 'fabric-tech-badges' %}
+<div class="enamels-customizer-engine" id="enamels-customizer-app">
+  
+  <!-- 1. Continuous Red Payment Alert Marquee Banner -->
+  <div class="enamels-payment-alert-marquee" role="alert" aria-live="polite">
+    <div class="marquee-track">
+      <span class="marquee-item">🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.</span>
+      <span class="marquee-item">🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.</span>
+      <span class="marquee-item">🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.</span>
     </div>
   </div>
 
-  <!-- Step Tabs -->
-  <div class="wizard-steps-nav" role="tablist">
-    <button type="button" class="wizard-step-tab active" data-step="1" role="tab" aria-selected="true">
-      <span class="step-num">1</span>
-      <span class="step-label">Color & Sleeve</span>
-    </button>
-    <button type="button" class="wizard-step-tab" data-step="2" role="tab" aria-selected="false">
-      <span class="step-num">2</span>
-      <span class="step-label">Size & Fit</span>
-    </button>
-    <button type="button" class="wizard-step-tab" data-step="3" role="tab" aria-selected="false">
-      <span class="step-num">3</span>
-      <span class="step-label">Embroidery</span>
-    </button>
-    <button type="button" class="wizard-step-tab" data-step="4" role="tab" aria-selected="false">
-      <span class="step-num">4</span>
-      <span class="step-label">Review</span>
-    </button>
+  <!-- Stepper Progress Bar -->
+  <div class="enamels-stepper-bar-wrap">
+    <div class="enamels-stepper-bar" role="tablist">
+      <button type="button" class="enamels-step-btn active" data-step="1" id="step-btn-1">
+        <span class="step-circle">1</span>
+        <span class="step-name">Fabric</span>
+      </button>
+      <button type="button" class="enamels-step-btn" data-step="2" id="step-btn-2">
+        <span class="step-circle">2</span>
+        <span class="step-name">Color & Contrast</span>
+      </button>
+      <button type="button" class="enamels-step-btn" data-step="3" id="step-btn-3">
+        <span class="step-circle">3</span>
+        <span class="step-name">Design</span>
+      </button>
+      <button type="button" class="enamels-step-btn" data-step="4" id="step-btn-4">
+        <span class="step-circle">4</span>
+        <span class="step-name">Size & Fit</span>
+      </button>
+      <button type="button" class="enamels-step-btn" data-step="5" id="step-btn-5">
+        <span class="step-circle">5</span>
+        <span class="step-name">Personalization</span>
+      </button>
+      <button type="button" class="enamels-step-btn" data-step="6" id="step-btn-6">
+        <span class="step-circle">6</span>
+        <span class="step-name">Review</span>
+      </button>
+      <button type="button" class="enamels-step-btn" data-step="7" id="step-btn-7">
+        <span class="step-circle">7</span>
+        <span class="step-name">Payment</span>
+      </button>
+    </div>
   </div>
 
-  <div class="wizard-body">
-    <!-- STEP 1: Color & Sleeve -->
-    <div class="wizard-step-panel active" data-step-panel="1">
-      <h4 class="step-panel-title">1. Select Garment Color & Sleeve Style</h4>
-      
-      <!-- Color Swatches -->
-      <div class="swatch-group">
-        <label class="swatch-label">Available Medical Shades: <span id="selected-color-name" class="swatch-value-highlight">Burgundy</span></label>
-        <div class="enamels-color-grid">
-          <button type="button" class="color-swatch-btn active" data-color="Burgundy" style="--swatch-hex: #581c87;" title="Burgundy"></button>
-          <button type="button" class="color-swatch-btn" data-color="Royal Navy" style="--swatch-hex: #0f172a;" title="Royal Navy"></button>
-          <button type="button" class="color-swatch-btn" data-color="Olive Shine" style="--swatch-hex: #3f4e3b;" title="Olive Shine"></button>
-          <button type="button" class="color-swatch-btn" data-color="Ceil Blue" style="--swatch-hex: #6ba4b8;" title="Ceil Blue"></button>
-          <button type="button" class="color-swatch-btn" data-color="Hunter Green" style="--swatch-hex: #14532d;" title="Hunter Green"></button>
-          <button type="button" class="color-swatch-btn" data-color="Obsidian Black" style="--swatch-hex: #18181b;" title="Obsidian Black"></button>
-          <button type="button" class="color-swatch-btn" data-color="Heather Grey" style="--swatch-hex: #64748b;" title="Heather Grey"></button>
-        </div>
+  <!-- Mobile Step Pill Indicator -->
+  <div class="enamels-mobile-step-pill-indicator">
+    <span>Step <strong id="enamels-mob-curr-num">1</strong> of 7:</span>
+    <strong id="enamels-mob-curr-title" style="color: #008779;">Fabric Selection</strong>
+  </div>
+
+  <!-- Main Customizer Content Area -->
+  <div class="enamels-customizer-main">
+    
+    <!-- =========================================================================
+         STEP 1: FABRIC SELECTION
+         ========================================================================= -->
+    <div class="enamels-wizard-pane active" id="wizard-pane-1" data-step-index="1">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 1 of 7</span>
+        <h3 class="pane-title">Select Technical Clinical Fabric</h3>
+        <p class="pane-subtitle">Choose the medical-grade textile tailored for your shift duration and hospital environment.</p>
       </div>
 
-      <!-- Sleeve Length Selection -->
-      <div class="sleeve-selection-group">
-        <label class="sleeve-label">Sleeve Length:</label>
-        <div class="sleeve-options-grid">
-          <label class="sleeve-option-card active">
-            <input type="radio" name="wizard_sleeve" value="Half Sleeve (Standard)" checked>
-            <span class="sleeve-card-title">Half Sleeve</span>
-            <span class="sleeve-card-sub">Standard Clinical Scrub</span>
-          </label>
-          <label class="sleeve-option-card">
-            <input type="radio" name="wizard_sleeve" value="Full Sleeve (Modest Cut)">
-            <span class="sleeve-card-title">Full Sleeve</span>
-            <span class="sleeve-card-sub">Comfort Full Length (+Rs. 250)</span>
-          </label>
+      <div class="enamels-fabric-grid">
+        <!-- Fabric 1 -->
+        <div class="enamels-fabric-card active" data-fabric-id="flex-twill" data-fabric-name="4-Way Flex Twill" data-fabric-fee="0">
+          <div class="fabric-card-media">
+            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="4-Way Flex Twill" width="320" height="220" loading="eager">
+            <span class="fabric-badge">Standard Included</span>
+          </div>
+          <div class="fabric-card-body">
+            <div class="fabric-header">
+              <h4 class="fabric-title">4-Way Flex Twill</h4>
+              <span class="fabric-price">+PKR 0</span>
+            </div>
+            <p class="fabric-desc">72% Polyester, 21% Rayon, 7% Spandex. Lightweight, wrinkle-free, breathable weave for dynamic clinical mobility.</p>
+            <div class="tech-tag-row">
+              <span class="tech-tag">4-Way Stretch</span>
+              <span class="tech-tag">Wrinkle-Free</span>
+              <span class="tech-tag">Anti-Static</span>
+              <span class="tech-tag">Breathable</span>
+            </div>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('flex-twill', '4-Way Flex Twill', 0, this)">
+              Select & Next →
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div class="wizard-nav-btns">
-        <button type="button" class="wizard-next-btn button" onclick="window.enamelsWizardGoTo(2)">Continue to Size & Fit →</button>
+        <!-- Fabric 2 -->
+        <div class="enamels-fabric-card" data-fabric-id="aerocool" data-fabric-name="Aerocool™ Micro-Drape" data-fabric-fee="500">
+          <div class="fabric-card-media">
+            <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Aerocool Micro-Drape" width="320" height="220" loading="lazy">
+            <span class="fabric-badge badge-pro">ICU & ER Grade</span>
+          </div>
+          <div class="fabric-card-body">
+            <div class="fabric-header">
+              <h4 class="fabric-title">Aerocool™ Micro-Drape</h4>
+              <span class="fabric-price">+PKR 500</span>
+            </div>
+            <p class="fabric-desc">88% Technical Micro-Poly, 12% Lycra with laser ventilation micropores. Antimicrobial fluid barrier, quick-dry performance.</p>
+            <div class="tech-tag-row">
+              <span class="tech-tag">Ultra-Breathable</span>
+              <span class="tech-tag">Anti-Microbial</span>
+              <span class="tech-tag">Fluid Repellent</span>
+              <span class="tech-tag">Fast-Drying</span>
+            </div>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('aerocool', 'Aerocool™ Micro-Drape', 500, this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Fabric 3 -->
+        <div class="enamels-fabric-card" data-fabric-id="executive" data-fabric-name="Executive Heavyweight Stretch" data-fabric-fee="750">
+          <div class="fabric-card-media">
+            <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Executive Heavyweight Stretch" width="320" height="220" loading="lazy">
+            <span class="fabric-badge badge-vip">Consultant Edition</span>
+          </div>
+          <div class="fabric-card-body">
+            <div class="fabric-header">
+              <h4 class="fabric-title">Executive Heavyweight Stretch</h4>
+              <span class="fabric-price">+PKR 750</span>
+            </div>
+            <p class="fabric-desc">65% Poly-Rayon, 30% Long-Staple Cotton, 5% Elastane. Holds an authoritative, sharp tailored drape through 24-hour rounds.</p>
+            <div class="tech-tag-row">
+              <span class="tech-tag">Autoclave Safe</span>
+              <span class="tech-tag">Fade-Resistant</span>
+              <span class="tech-tag">Crisp Drape</span>
+              <span class="tech-tag">Fluid Barrier</span>
+            </div>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('executive', 'Executive Heavyweight Stretch', 750, this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- STEP 2: Size & Size Guide -->
-    <div class="wizard-step-panel" data-step-panel="2">
-      <div class="step-title-with-action">
-        <h4 class="step-panel-title">2. Select Your Scrub Size</h4>
-        <button type="button" class="size-guide-trigger-btn" onclick="window.enamelsOpenSizeGuide()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M2 12h20M2 12l5-5m-5 5l5 5"/>
-          </svg>
-          View Detailed Size Guide
+    <!-- =========================================================================
+         STEP 2: COLOR & CONTRAST (COMBINED)
+         ========================================================================= -->
+    <div class="enamels-wizard-pane" id="wizard-pane-2" data-step-index="2">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 2 of 7</span>
+        <h3 class="pane-title">Color & Contrast</h3>
+        <p class="pane-subtitle">Select your base scrub shade, followed by optional contrast trim styling.</p>
+      </div>
+
+      <!-- Section A: Main Color -->
+      <div class="color-selection-section">
+        <div class="color-section-header">
+          <h4 class="sub-heading-title">A. Main Color</h4>
+          <span class="selected-shade-pill">Selected: <strong id="active-main-color-label">Ceil Blue</strong></span>
+        </div>
+
+        <div class="enamels-swatch-circles-grid" role="radiogroup" aria-label="Main Scrub Color">
+          <button type="button" class="cust-swatch-circle active" data-color-name="Ceil Blue" data-color-hex="#6ba4b8" style="--swatch-bg: #6ba4b8;" title="Ceil Blue">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Royal Navy" data-color-hex="#0f172a" style="--swatch-bg: #0f172a;" title="Royal Navy">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Obsidian Black" data-color-hex="#18181b" style="--swatch-bg: #18181b;" title="Obsidian Black">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Olive Green" data-color-hex="#3f4e3b" style="--swatch-bg: #3f4e3b;" title="Olive Green">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Hunter Green" data-color-hex="#14532d" style="--swatch-bg: #14532d;" title="Hunter Green">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Burgundy" data-color-hex="#581c87" style="--swatch-bg: #581c87;" title="Burgundy">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Terracotta Rust" data-color-hex="#a0522d" style="--swatch-bg: #a0522d;" title="Terracotta Rust">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Slate Grey" data-color-hex="#64748b" style="--swatch-bg: #64748b;" title="Slate Grey">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Teal Blue" data-color-hex="#008779" style="--swatch-bg: #008779;" title="Teal Blue">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="cust-swatch-circle" data-color-name="Lilac Purple" data-color-hex="#9370db" style="--swatch-bg: #9370db;" title="Lilac Purple">
+            <span class="swatch-check">✓</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Section B: Contrast (If Applicable) -->
+      <div class="contrast-selection-section" style="margin-top: 32px; padding-top: 24px; border-top: 1px dashed #cbd5e1;">
+        <div class="color-section-header">
+          <h4 class="sub-heading-title">B. Contrast (If Applicable)</h4>
+          <span class="selected-shade-pill">Contrast: <strong id="active-contrast-label">None / Monochrome</strong></span>
+        </div>
+        <p style="font-size: 12px; color: #64748b; margin: 4px 0 14px;">Select an optional contrast shade for neckline piping, pocket borders, or sleeve trim. (Leave as None for standard monochrome).</p>
+
+        <div class="enamels-contrast-swatches-grid" role="radiogroup" aria-label="Contrast Color">
+          <button type="button" class="contrast-swatch-circle active" data-contrast-name="None / Monochrome" data-contrast-hex="transparent" style="--swatch-bg: #ffffff; border: 2px dashed #94a3b8;" title="None">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b;">None</span>
+          </button>
+          <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Pure White" data-contrast-hex="#ffffff" style="--swatch-bg: #ffffff;" title="White">
+            <span class="swatch-check" style="color: #0f172a;">✓</span>
+          </button>
+          <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Obsidian Black" data-contrast-hex="#18181b" style="--swatch-bg: #18181b;" title="Black">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Royal Navy" data-contrast-hex="#0f172a" style="--swatch-bg: #0f172a;" title="Navy">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Ceil Blue" data-contrast-hex="#6ba4b8" style="--swatch-bg: #6ba4b8;" title="Ceil Blue">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Medical Gold" data-contrast-hex="#d4af37" style="--swatch-bg: #d4af37;" title="Gold">
+            <span class="swatch-check">✓</span>
+          </button>
+          <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Enamels Teal" data-contrast-hex="#008779" style="--swatch-bg: #008779;" title="Teal">
+            <span class="swatch-check">✓</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Button directly on this step -->
+      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(1)">← Back to Fabric</button>
+        <button type="button" class="btn-select-next" style="width: auto; padding: 14px 32px;" onclick="window.enamelsSaveColorsAndNext()">
+          Select & Next →
         </button>
       </div>
+    </div>
 
-      <div class="enamels-size-selector">
-        {% assign sizes = "X-SMALL,SMALL,MEDIUM,LARGE,X-LARGE,XX-LARGE" | split: "," %}
-        {% for s in sizes %}
-          <label class="size-pill-option{% if forloop.index == 2 %} active{% endif %}">
-            <input type="radio" name="wizard_size" value="{{ s }}" {% if forloop.index == 2 %}checked{% endif %}>
-            <span class="size-pill-text">{{ s }}</span>
-          </label>
-        {% endfor %}
+    <!-- =========================================================================
+         STEP 3: DESIGN SELECTION (COLLECTION-BASED SYSTEM)
+         ========================================================================= -->
+    <div class="enamels-wizard-pane" id="wizard-pane-3" data-step-index="3">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 3 of 7</span>
+        <h3 class="pane-title">Select Scrub Design Collection</h3>
+        <p class="pane-subtitle">Browse collections dynamically from Shopify Admin. Click any collection to view its designs.</p>
       </div>
 
-      <div class="size-fit-tip">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-        </svg>
-        <span><strong>Fit Note:</strong> Enamels Scrubs are tailored with athletic 4-way stretch. For an athletic fitted look, order your true size. For a relaxed fit, size up one size.</span>
+      <!-- 3A. Collection Category Selector -->
+      <div class="design-collection-selector-wrap">
+        <div class="collection-pills-row" id="design-collections-track">
+          <!-- Dynamically populated or rendered collection categories -->
+          <button type="button" class="design-cat-pill active" data-col-handle="vilora" onclick="window.enamelsSwitchDesignCollection('vilora', 'Vilora Series')">
+            <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Vilora" class="pill-thumb" width="36" height="36">
+            <span>Vilora Collection</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="crown" onclick="window.enamelsSwitchDesignCollection('crown', 'Crown Series')">
+            <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Crown" class="pill-thumb" width="36" height="36">
+            <span>Crown Collection</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="sprinter" onclick="window.enamelsSwitchDesignCollection('sprinter', 'Sprinter Series')">
+            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="Sprinter" class="pill-thumb" width="36" height="36">
+            <span>Sprinter Collection</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="all" onclick="window.enamelsSwitchDesignCollection('all', 'All Clinical Scrubs')">
+            <img src="{{ 'enamels-cat-men.jpg' | asset_url }}" alt="All Scrubs" class="pill-thumb" width="36" height="36">
+            <span>All Designs</span>
+          </button>
+        </div>
       </div>
 
-      <div class="wizard-nav-btns">
-        <button type="button" class="wizard-back-btn button button--secondary" onclick="window.enamelsWizardGoTo(1)">← Back</button>
-        <button type="button" class="wizard-next-btn button" onclick="window.enamelsWizardGoTo(3)">Personalization Options →</button>
+      <!-- 3B. Dynamic Designs Grid for the Selected Collection -->
+      <div class="selected-collection-banner" style="margin: 20px 0 14px; font-size: 14px; color: #475569;">
+        Showing Designs from: <strong id="active-collection-title-display" style="color: #102a43;">Vilora Collection</strong>
+      </div>
+
+      <div class="enamels-designs-grid" id="customizer-designs-container">
+        <!-- Design Card 1: Vilora Classic V-Neck -->
+        <div class="enamels-design-card active" data-design-id="des_vilora_vneck" data-design-name="Vilora Luxury Micro-Drape V-Neck" data-design-price="6400" data-design-img="{{ 'enamels-na-seagreen.jpg' | asset_url }}" data-col="vilora">
+          <div class="design-card-media">
+            <img src="{{ 'enamels-na-seagreen.jpg' | asset_url }}" alt="Vilora V-Neck" width="300" height="380" loading="eager">
+          </div>
+          <div class="design-card-body">
+            <h4 class="design-card-title">Vilora Classic V-Neck</h4>
+            <span class="design-card-sub">Fluid Micro-Drape Silhouette</span>
+            <span class="design-card-price">PKR 6,400</span>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_vilora_vneck', 'Vilora Luxury Micro-Drape V-Neck', 6400, '{{ 'enamels-na-seagreen.jpg' | asset_url }}', this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Design Card 2: Vilora Mandarin -->
+        <div class="enamels-design-card" data-design-id="des_vilora_mandarin" data-design-name="Vilora Executive Mandarin Collar" data-design-price="6600" data-design-img="{{ 'enamels-na-olive.jpg' | asset_url }}" data-col="vilora">
+          <div class="design-card-media">
+            <img src="{{ 'enamels-na-olive.jpg' | asset_url }}" alt="Vilora Mandarin" width="300" height="380" loading="lazy">
+          </div>
+          <div class="design-card-body">
+            <h4 class="design-card-title">Vilora Mandarin Collar</h4>
+            <span class="design-card-sub">Standing Collar with Concealed Placket</span>
+            <span class="design-card-price">PKR 6,600</span>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_vilora_mandarin', 'Vilora Executive Mandarin Collar', 6600, '{{ 'enamels-na-olive.jpg' | asset_url }}', this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Design Card 3: Crown Executive -->
+        <div class="enamels-design-card" data-design-id="des_crown_exec" data-design-name="Crown Series Structured Mandarin" data-design-price="6800" data-design-img="{{ 'enamels-na-black.jpg' | asset_url }}" data-col="crown">
+          <div class="design-card-media">
+            <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Crown Executive" width="300" height="380" loading="lazy">
+          </div>
+          <div class="design-card-body">
+            <h4 class="design-card-title">Crown Structured Mandarin</h4>
+            <span class="design-card-sub">Chest Badge Loop & Double Welt Pockets</span>
+            <span class="design-card-price">PKR 6,800</span>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_crown_exec', 'Crown Series Structured Mandarin', 6800, '{{ 'enamels-na-black.jpg' | asset_url }}', this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Design Card 4: Crown Athletic -->
+        <div class="enamels-design-card" data-design-id="des_crown_ath" data-design-name="Crown Raglan Athletic Cut" data-design-price="6800" data-design-img="{{ 'enamels-na-darkgreen.jpg' | asset_url }}" data-col="crown">
+          <div class="design-card-media">
+            <img src="{{ 'enamels-na-darkgreen.jpg' | asset_url }}" alt="Crown Raglan" width="300" height="380" loading="lazy">
+          </div>
+          <div class="design-card-body">
+            <h4 class="design-card-title">Crown Raglan Athletic Cut</h4>
+            <span class="design-card-sub">Raglan Sleeve Architecture for OR Mobility</span>
+            <span class="design-card-price">PKR 6,800</span>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_crown_ath', 'Crown Raglan Athletic Cut', 6800, '{{ 'enamels-na-darkgreen.jpg' | asset_url }}', this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Design Card 5: Sprinter Athletic -->
+        <div class="enamels-design-card" data-design-id="des_sprinter_flex" data-design-name="Sprinter 4-Way Mechanical Stretch" data-design-price="5900" data-design-img="{{ 'enamels-na-blue.jpg' | asset_url }}" data-col="sprinter">
+          <div class="design-card-media">
+            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="Sprinter 4-Way" width="300" height="380" loading="lazy">
+          </div>
+          <div class="design-card-body">
+            <h4 class="design-card-title">Sprinter Dynamic Scrub</h4>
+            <span class="design-card-sub">Triple Needle Reinforced Cargo Fit</span>
+            <span class="design-card-price">PKR 5,900</span>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_sprinter_flex', 'Sprinter 4-Way Mechanical Stretch', 5900, '{{ 'enamels-na-blue.jpg' | asset_url }}', this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Design Card 6: Earth Edition -->
+        <div class="enamels-design-card" data-design-id="des_earth_brown" data-design-name="Brown Series Earth Tones Scrub" data-design-price="5900" data-design-img="{{ 'enamels-na-rust.jpg' | asset_url }}" data-col="sprinter">
+          <div class="design-card-media">
+            <img src="{{ 'enamels-na-rust.jpg' | asset_url }}" alt="Brown Series Earth" width="300" height="380" loading="lazy">
+          </div>
+          <div class="design-card-body">
+            <h4 class="design-card-title">Earth Edition Comfort Scrub</h4>
+            <span class="design-card-sub">Terracotta & Earth Tones Reactive Dye</span>
+            <span class="design-card-price">PKR 5,900</span>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_earth_brown', 'Brown Series Earth Tones Scrub', 5900, '{{ 'enamels-na-rust.jpg' | asset_url }}', this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(2)">← Back to Color & Contrast</button>
       </div>
     </div>
 
-    <!-- STEP 3: Personalization & Live Embroidery Simulator -->
-    <div class="wizard-step-panel" data-step-panel="3">
-      <h4 class="step-panel-title">3. Choose Official Personalization</h4>
-
-      <div class="personalization-tier-cards">
-        <label class="tier-card active">
-          <input type="radio" name="wizard_personalization_tier" value="none" checked onchange="window.enamelsUpdatePersonalizationTier(this.value)">
-          <div class="tier-card-content">
-            <div class="tier-top">
-              <span class="tier-title">Plain Uniform</span>
-              <span class="tier-price">Included (Rs. 0)</span>
-            </div>
-            <p class="tier-sub">No embroidery or patches added.</p>
-          </div>
-        </label>
-
-        <label class="tier-card">
-          <input type="radio" name="wizard_personalization_tier" value="embroidery" onchange="window.enamelsUpdatePersonalizationTier(this.value)">
-          <div class="tier-card-content">
-            <div class="tier-top">
-              <span class="tier-title">Direct Name Embroidery</span>
-              <span class="tier-price">+Rs. 450</span>
-            </div>
-            <p class="tier-sub">Precision thread stitched directly onto the chest pocket.</p>
-          </div>
-        </label>
-
-        <label class="tier-card">
-          <input type="radio" name="wizard_personalization_tier" value="patch" onchange="window.enamelsUpdatePersonalizationTier(this.value)">
-          <div class="tier-card-content">
-            <div class="tier-top">
-              <span class="tier-title">Velcro / Stitched Name Patch</span>
-              <span class="tier-price">+Rs. 350</span>
-            </div>
-            <p class="tier-sub">Detachable or stitched border badge with custom doctor title.</p>
-          </div>
-        </label>
-
-        <label class="tier-card">
-          <input type="radio" name="wizard_personalization_tier" value="logo" onchange="window.enamelsUpdatePersonalizationTier(this.value)">
-          <div class="tier-card-content">
-            <div class="tier-top">
-              <span class="tier-title">Hospital / Clinic Logo</span>
-              <span class="tier-price">+Rs. 650</span>
-            </div>
-            <p class="tier-sub">Official hospital or department crest embroidery (Right or Left Chest).</p>
-          </div>
-        </label>
+    <!-- =========================================================================
+         STEP 4: SIZE & FIT (STANDARD MEASUREMENTS & AUTO CUSTOM DETECTION)
+         ========================================================================= -->
+    <div class="enamels-wizard-pane" id="wizard-pane-4" data-step-index="4">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 4 of 7</span>
+        <h3 class="pane-title">Size & Fit Selection</h3>
+        <p class="pane-subtitle">Choose your size. The official Enamels measurement chart populates below. Altering any value automatically customizes your fit.</p>
       </div>
 
-      <!-- Live Interactive Chest Pocket Embroidery Simulator -->
-      <div class="embroidery-custom-box hidden" id="embroidery-inputs-box">
-        <div class="embroidery-split-view">
+      <!-- Size Selection Chips -->
+      <div class="size-chips-bar" role="radiogroup" aria-label="Standard Sizes">
+        <button type="button" class="size-chip-btn" data-size="XS" onclick="window.enamelsSelectStandardSize('XS')">XS</button>
+        <button type="button" class="size-chip-btn" data-size="S" onclick="window.enamelsSelectStandardSize('S')">S</button>
+        <button type="button" class="size-chip-btn active" data-size="M" onclick="window.enamelsSelectStandardSize('M')">M</button>
+        <button type="button" class="size-chip-btn" data-size="L" onclick="window.enamelsSelectStandardSize('L')">L</button>
+        <button type="button" class="size-chip-btn" data-size="XL" onclick="window.enamelsSelectStandardSize('XL')">XL</button>
+        <button type="button" class="size-chip-btn" data-size="2XL" onclick="window.enamelsSelectStandardSize('2XL')">2XL</button>
+        <button type="button" class="size-chip-btn size-chip-custom" data-size="Custom" id="size-chip-custom-btn" onclick="window.enamelsSelectCustomDirectly()">Custom</button>
+      </div>
+
+      <!-- Measurements Container (Pre-populated from Enamels Size Chart) -->
+      <div class="custom-measurements-panel" id="measurements-container-step4">
+        <div class="measurements-header">
+          <div>
+            <h4 class="measurements-title" id="m-chart-heading">Medium (M) Standard Measurements</h4>
+            <p class="measurements-desc">Alter any measurement field to automatically customize your scrub fit.</p>
+          </div>
+          <div class="unit-toggle-group">
+            <button type="button" class="unit-btn active" data-unit="in" onclick="window.enamelsSetUnit('in')">Inches (in)</button>
+            <button type="button" class="unit-btn" data-unit="cm" onclick="window.enamelsSetUnit('cm')">Centimeters (cm)</button>
+          </div>
+        </div>
+
+        <div class="auto-custom-alert" id="auto-custom-pill-alert" style="display: none;">
+          ✨ Measurement changed! Selected size has automatically switched to <strong>Custom</strong>.
+        </div>
+
+        <!-- 8 Measurements Inputs Grid -->
+        <div class="measurements-inputs-grid">
+          <!-- Top Length -->
+          <div class="measurement-field">
+            <label class="m-label">Top Length <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_top_length" class="m-input" value="29" oninput="window.enamelsHandleMeasurementInput('topLength', this.value)">
+            <span class="m-hint">Shoulder to lower hem</span>
+          </div>
+          <!-- Chest / Bust -->
+          <div class="measurement-field">
+            <label class="m-label">Chest / Bust <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_chest" class="m-input" value="40" oninput="window.enamelsHandleMeasurementInput('chest', this.value)">
+            <span class="m-hint">Circumference around chest</span>
+          </div>
+          <!-- Shoulder -->
+          <div class="measurement-field">
+            <label class="m-label">Shoulder Width <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_shoulder" class="m-input" value="18.5" oninput="window.enamelsHandleMeasurementInput('shoulder', this.value)">
+            <span class="m-hint">Shoulder seam tip to tip</span>
+          </div>
+          <!-- Sleeve -->
+          <div class="measurement-field">
+            <label class="m-label">Sleeve Length <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_sleeve" class="m-input" value="8.5" oninput="window.enamelsHandleMeasurementInput('sleeve', this.value)">
+            <span class="m-hint">Shoulder down to sleeve cuff</span>
+          </div>
+          <!-- Pant Waist -->
+          <div class="measurement-field">
+            <label class="m-label">Pant Waist <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_pant_waist" class="m-input" value="33" oninput="window.enamelsHandleMeasurementInput('pantWaist', this.value)">
+            <span class="m-hint">Natural waist circumference</span>
+          </div>
+          <!-- Pant Hip -->
+          <div class="measurement-field">
+            <label class="m-label">Pant Hips <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_pant_hip" class="m-input" value="42" oninput="window.enamelsHandleMeasurementInput('pantHip', this.value)">
+            <span class="m-hint">Fullest circumference around hips</span>
+          </div>
+          <!-- Pant Inseam -->
+          <div class="measurement-field">
+            <label class="m-label">Pant Length / Inseam <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_pant_inseam" class="m-input" value="30.5" oninput="window.enamelsHandleMeasurementInput('pantInseam', this.value)">
+            <span class="m-hint">Crotch straight to bottom cuff</span>
+          </div>
+          <!-- Thigh -->
+          <div class="measurement-field">
+            <label class="m-label">Thigh Width <span class="m-unit-lbl">(in)</span></label>
+            <input type="number" step="0.5" id="wiz_m_thigh" class="m-input" value="24.5" oninput="window.enamelsHandleMeasurementInput('thigh', this.value)">
+            <span class="m-hint">Upper thigh circumference</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button directly on this step -->
+      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(3)">← Back to Design</button>
+        <button type="button" class="btn-select-next" style="width: auto; padding: 14px 32px;" onclick="window.enamelsSaveSizeAndNext()">
+          Select & Next →
+        </button>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         STEP 5: PERSONALIZATION
+         ========================================================================= -->
+    <div class="enamels-wizard-pane" id="wizard-pane-5" data-step-index="5">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 5 of 7</span>
+        <h3 class="pane-title">Doctor & Staff Personalization</h3>
+        <p class="pane-subtitle">Add official computerized embroidery: Doctor Name, credentials, and hospital crest.</p>
+      </div>
+
+      <div class="enamels-personalization-box">
+        <!-- Placement Radio Group -->
+        <div class="form-group">
+          <label class="form-label">Name Embroidery Placement:</label>
+          <div class="placement-options-grid">
+            <label class="placement-pill active" onclick="window.enamelsSetPlacement('none', 0, this)">
+              <input type="radio" name="wiz_emb_placement" value="none" checked>
+              <span class="placement-text">None (No Embroidery)</span>
+              <span class="placement-price">+PKR 0</span>
+            </label>
+            <label class="placement-pill" onclick="window.enamelsSetPlacement('left_chest', 500, this)">
+              <input type="radio" name="wiz_emb_placement" value="left_chest">
+              <span class="placement-text">Left Chest (Above Pocket)</span>
+              <span class="placement-price">+PKR 500</span>
+            </label>
+            <label class="placement-pill" onclick="window.enamelsSetPlacement('right_chest', 500, this)">
+              <input type="radio" name="wiz_emb_placement" value="right_chest">
+              <span class="placement-text">Right Chest</span>
+              <span class="placement-price">+PKR 500</span>
+            </label>
+            <label class="placement-pill" onclick="window.enamelsSetPlacement('sleeve', 400, this)">
+              <input type="radio" name="wiz_emb_placement" value="sleeve">
+              <span class="placement-text">Left Sleeve</span>
+              <span class="placement-price">+PKR 400</span>
+            </label>
+            <label class="placement-pill" onclick="window.enamelsSetPlacement('both', 800, this)">
+              <input type="radio" name="wiz_emb_placement" value="both">
+              <span class="placement-text">Both Chest & Sleeve</span>
+              <span class="placement-price">+PKR 800</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Name & Thread (Hidden when None) -->
+        <div id="wiz-emb-fields-wrapper" style="display: none; margin-top: 24px;">
+          <div class="form-group">
+            <label for="wiz-cust-name" class="form-label">Doctor / Staff Name & Credentials:</label>
+            <input type="text" id="wiz-cust-name" class="form-input" placeholder="e.g. Dr. Sarah Ahmed, MD - Chief of Surgery" maxlength="45" oninput="window.enamelsUpdateEmbText(this.value)">
+            <span class="form-hint">Maximum 45 characters. Embroidered exactly as typed.</span>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label class="form-label">Thread Color:</label>
+            <div class="thread-color-grid">
+              <button type="button" class="thread-chip active" data-thread="Pure White" onclick="window.enamelsSetThread('Pure White', '#ffffff', this)">
+                <span class="thread-dot" style="background: #ffffff; border: 1px solid #ccc;"></span> White
+              </button>
+              <button type="button" class="thread-chip" data-thread="Medical Gold" onclick="window.enamelsSetThread('Medical Gold', '#d4af37', this)">
+                <span class="thread-dot" style="background: #d4af37;"></span> Gold
+              </button>
+              <button type="button" class="thread-chip" data-thread="Silver Grey" onclick="window.enamelsSetThread('Silver Grey', '#c0c0c0', this)">
+                <span class="thread-dot" style="background: #c0c0c0;"></span> Silver
+              </button>
+              <button type="button" class="thread-chip" data-thread="Navy Blue" onclick="window.enamelsSetThread('Navy Blue', '#0f172a', this)">
+                <span class="thread-dot" style="background: #0f172a;"></span> Navy
+              </button>
+              <button type="button" class="thread-chip" data-thread="Black" onclick="window.enamelsSetThread('Black', '#000000', this)">
+                <span class="thread-dot" style="background: #000000;"></span> Black
+              </button>
+              <button type="button" class="thread-chip" data-thread="Enamels Teal" onclick="window.enamelsSetThread('Enamels Teal', '#008779', this)">
+                <span class="thread-dot" style="background: #008779;"></span> Teal
+              </button>
+            </div>
+          </div>
+
           <!-- Live Preview Canvas -->
-          <div class="embroidery-visual-pocket" id="pocket-preview-container">
-            <div class="pocket-seam"></div>
-            <div class="pocket-embroidery-content">
-              <div class="simulated-stitch-text line-1 font-block" id="sim-text-line1"></div>
-              <div class="simulated-stitch-text line-2 font-block" id="sim-text-line2"></div>
+          <div class="embroidery-preview-canvas" style="margin-top: 18px;">
+            <div class="preview-badge">Live Pocket Embroidery Preview</div>
+            <div class="scrub-pocket-mockup">
+              <div class="pocket-stitch-line"></div>
+              <div class="preview-embroidered-text" id="wiz-emb-live-text">DR. SARAH AHMED, MD</div>
             </div>
-            <span class="preview-badge-watermark">Live Pocket Simulation</span>
           </div>
+        </div>
 
-          <!-- Configuration Form -->
-          <div class="embroidery-controls-form">
-            <div class="form-field">
-              <label for="emb-line1">Line 1 (Doctor Name / Title):</label>
-              <input type="text" id="emb-line1" maxlength="30" placeholder="e.g. Dr. Full Name, MD" value="" oninput="window.enamelsUpdateStitchPreview()">
-            </div>
-
-            <div class="form-field">
-              <label for="emb-line2">Line 2 (Speciality / Hospital):</label>
-              <input type="text" id="emb-line2" maxlength="35" placeholder="e.g. Cardiology / Hospital" value="" oninput="window.enamelsUpdateStitchPreview()">
-            </div>
-
-            <div class="form-row">
-              <div class="form-field half">
-                <label>Thread Color:</label>
-                <div class="thread-swatch-row">
-                  <button type="button" class="thread-dot active" data-color="#ffffff" style="background: #ffffff; border: 1px solid #ccc;" title="Stark White" onclick="window.enamelsSetThreadColor(this, '#ffffff')"></button>
-                  <button type="button" class="thread-dot" data-color="#f59e0b" style="background: #f59e0b;" title="Medical Gold" onclick="window.enamelsSetThreadColor(this, '#f59e0b')"></button>
-                  <button type="button" class="thread-dot" data-color="#0f172a" style="background: #0f172a;" title="Royal Navy" onclick="window.enamelsSetThreadColor(this, '#0f172a')"></button>
-                  <button type="button" class="thread-dot" data-color="#0d9488" style="background: #0d9488;" title="Teal" onclick="window.enamelsSetThreadColor(this, '#0d9488')"></button>
-                </div>
-              </div>
-
-              <div class="form-field half">
-                <label>Font Typography:</label>
-                <select id="emb-font" onchange="window.enamelsSetThreadFont(this.value)">
-                  <option value="font-block">Classic Clean Sans</option>
-                  <option value="font-serif">Formal Medical Serif</option>
-                  <option value="font-script">Signature Script</option>
-                </select>
-              </div>
-            </div>
+        <!-- Custom Logo Option -->
+        <div class="form-group" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+          <label class="form-label">Hospital / Clinic Logo Embroidery:</label>
+          <div class="logo-options-grid">
+            <label class="logo-chip active" onclick="window.enamelsSetLogo('none', 0, this)">
+              <input type="radio" name="wiz_logo_type" value="none" checked>
+              <span>No Logo (+PKR 0)</span>
+            </label>
+            <label class="logo-chip" onclick="window.enamelsSetLogo('crest', 450, this)">
+              <input type="radio" name="wiz_logo_type" value="crest">
+              <span>Official Hospital Crest (+PKR 450)</span>
+            </label>
+            <label class="logo-chip" onclick="window.enamelsSetLogo('patch', 550, this)">
+              <input type="radio" name="wiz_logo_type" value="patch">
+              <span>Silicone Molded Logo Patch (+PKR 550)</span>
+            </label>
           </div>
         </div>
       </div>
 
-      <!-- Logo Artwork Upload Field (Conditional) -->
-      <div class="logo-upload-box hidden" id="logo-upload-box">
-        <label>Upload Clinic / Hospital Artwork (PNG, JPG, PDF):</label>
-        <input type="file" id="logo-file-input" accept=".png,.jpg,.jpeg,.pdf">
-        <small class="helper-text">High-resolution logo file for custom hospital digitizing.</small>
-      </div>
-
-      <div class="wizard-nav-btns">
-        <button type="button" class="wizard-back-btn button button--secondary" onclick="window.enamelsWizardGoTo(2)">← Back</button>
-        <button type="button" class="wizard-next-btn button" onclick="window.enamelsWizardGoTo(4)">Review Custom Order →</button>
-      </div>
-    </div>
-
-    <!-- STEP 4: Review & Add to Cart -->
-    <div class="wizard-step-panel" data-step-panel="4">
-      <h4 class="step-panel-title">4. Review Your Tailored Scrub Order</h4>
-
-      <div class="review-order-summary">
-        <div class="summary-line">
-          <span class="label">Product:</span>
-          <span class="value" id="rev-product-title">{{ product.title }}</span>
-        </div>
-        <div class="summary-line">
-          <span class="label">Color:</span>
-          <span class="value" id="rev-color">Burgundy</span>
-        </div>
-        <div class="summary-line">
-          <span class="label">Size:</span>
-          <span class="value" id="rev-size">SMALL</span>
-        </div>
-        <div class="summary-line">
-          <span class="label">Sleeve Cut:</span>
-          <span class="value" id="rev-sleeve">Half Sleeve</span>
-        </div>
-        <div class="summary-line">
-          <span class="label">Personalization:</span>
-          <span class="value" id="rev-personalization">Plain Uniform</span>
-        </div>
-        <div class="summary-line hidden" id="rev-embroidery-details-row">
-          <span class="label">Embroidery Text:</span>
-          <span class="value" id="rev-embroidery-text">-</span>
-        </div>
-        <div class="summary-line total-price-row">
-          <span class="label">Estimated Unit Total:</span>
-          <span class="value wizard-summary-price" id="rev-final-price">{{ product.price | money }}</span>
-        </div>
-      </div>
-
-      <!-- Smart Cross-Sell Add-ons Inside Wizard -->
-      <div class="wizard-addons-section">
-        <span class="addons-heading">Complete Your Clinical Uniform:</span>
-        <div class="addons-quick-grid">
-          <label class="addon-card">
-            <input type="checkbox" id="addon-cap" value="Matching Sprinter Cap (+Rs. 800)">
-            <div class="addon-details">
-              <span class="addon-name">Matching Sprinter Surgical Cap</span>
-              <span class="addon-price">+Rs. 800</span>
-            </div>
-          </label>
-          <label class="addon-card">
-            <input type="checkbox" id="addon-sleeves" value="Enamels Med Sleeves (+Rs. 750)">
-            <div class="addon-details">
-              <span class="addon-name">Enamels Med Sleeves (Pair)</span>
-              <span class="addon-price">+Rs. 750</span>
-            </div>
-          </label>
-        </div>
-      </div>
-
-      <div class="wizard-nav-btns">
-        <button type="button" class="wizard-back-btn button button--secondary" onclick="window.enamelsWizardGoTo(3)">← Modify</button>
-        <button type="button" class="wizard-submit-atc-btn button" id="wizard-submit-btn" onclick="window.enamelsSubmitCustomScrub()">
-          Add Configured Uniform to Cart
+      <!-- Action Button directly on this step -->
+      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(4)">← Back to Size & Fit</button>
+        <button type="button" class="btn-select-next" style="width: auto; padding: 14px 32px;" onclick="window.enamelsSavePersonalizationAndNext()">
+          Continue to Review →
         </button>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Size Guide Modal -->
-<div class="enamels-modal" id="enamels-size-guide-modal" aria-hidden="true">
-  <div class="enamels-modal-backdrop" onclick="window.enamelsCloseSizeGuide()"></div>
-  <div class="enamels-modal-dialog">
-    <div class="enamels-modal-header">
-      <h3 class="modal-title">Enamels Size Guide & Measurements</h3>
-      <button type="button" class="modal-close-btn" onclick="window.enamelsCloseSizeGuide()">✕</button>
-    </div>
-    <div class="enamels-modal-body">
-      <p class="size-guide-intro">All measurements are in inches. Crafted with 4-way stretch fabric for flexible hospital mobility.</p>
-      <div class="size-table-responsive">
-        <table class="size-table">
-          <thead>
-            <tr>
-              <th>Size</th>
-              <th>Chest (in)</th>
-              <th>Waist (in)</th>
-              <th>Hip (in)</th>
-              <th>Inseam (in)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>XS</strong></td><td>34 - 36</td><td>26 - 28</td><td>35 - 37</td><td>29.5</td></tr>
-            <tr><td><strong>S</strong></td><td>37 - 39</td><td>29 - 31</td><td>38 - 40</td><td>30.0</td></tr>
-            <tr><td><strong>M</strong></td><td>40 - 42</td><td>32 - 34</td><td>41 - 43</td><td>30.5</td></tr>
-            <tr><td><strong>L</strong></td><td>43 - 45</td><td>35 - 37</td><td>44 - 46</td><td>31.0</td></tr>
-            <tr><td><strong>XL</strong></td><td>46 - 48</td><td>38 - 41</td><td>47 - 49</td><td>31.5</td></tr>
-            <tr><td><strong>XXL</strong></td><td>49 - 52</td><td>42 - 45</td><td>50 - 53</td><td>32.0</td></tr>
-          </tbody>
-        </table>
+    <!-- =========================================================================
+         STEP 6: REVIEW
+         ========================================================================= -->
+    <div class="enamels-wizard-pane" id="wizard-pane-6" data-step-index="6">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 6 of 7</span>
+        <h3 class="pane-title">Review Your Customized Scrub</h3>
+        <p class="pane-subtitle">Verify every specification before proceeding to payment and order confirmation.</p>
+      </div>
+
+      <div class="review-summary-card">
+        <div class="review-card-top">
+          <div class="review-article-preview">
+            <img id="rev-design-thumb" src="{{ 'enamels-na-seagreen.jpg' | asset_url }}" alt="Design Preview" width="100" height="130">
+            <div>
+              <h4 id="rev-design-name" class="review-item-title">Vilora Luxury Micro-Drape V-Neck</h4>
+              <span id="rev-col-name" class="review-item-sub">Collection: Vilora Collection</span>
+              <div id="rev-design-base-price" style="font-size: 13px; font-weight: 700; color: #008779; margin-top: 4px;">Base Price: PKR 6,400</div>
+            </div>
+          </div>
+          <button type="button" class="btn-edit-step" onclick="window.enamelsGoStep(3)">Edit Design ✎</button>
+        </div>
+
+        <div class="review-items-list">
+          <!-- Fabric -->
+          <div class="review-row">
+            <div class="review-row-left">
+              <span class="review-lbl">Fabric:</span>
+              <strong id="rev-fabric-name">4-Way Flex Twill</strong>
+            </div>
+            <div class="review-row-right">
+              <span id="rev-fabric-fee" class="review-fee">+PKR 0</span>
+              <button type="button" class="btn-edit-step" onclick="window.enamelsGoStep(1)">Edit ✎</button>
+            </div>
+          </div>
+
+          <!-- Color & Contrast -->
+          <div class="review-row">
+            <div class="review-row-left">
+              <span class="review-lbl">Color & Contrast:</span>
+              <span class="review-color-badge">
+                <span id="rev-color-dot" class="review-dot" style="background: #6ba4b8;"></span>
+                <strong id="rev-color-name">Ceil Blue</strong>
+                <span id="rev-contrast-badge" style="font-size: 12px; color: #64748b; margin-left: 6px;">(Contrast: None)</span>
+              </span>
+            </div>
+            <div class="review-row-right">
+              <span class="review-fee">+PKR 0</span>
+              <button type="button" class="btn-edit-step" onclick="window.enamelsGoStep(2)">Edit ✎</button>
+            </div>
+          </div>
+
+          <!-- Size & Measurements -->
+          <div class="review-row">
+            <div class="review-row-left">
+              <span class="review-lbl">Size & Fit:</span>
+              <strong id="rev-size-name">Size M (Standard)</strong>
+            </div>
+            <div class="review-row-right">
+              <span class="review-fee">+PKR 0</span>
+              <button type="button" class="btn-edit-step" onclick="window.enamelsGoStep(4)">Edit ✎</button>
+            </div>
+          </div>
+
+          <!-- Measurements Summary Table -->
+          <div id="rev-measurements-breakdown" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; margin: 6px 0 10px;">
+            <div style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Fit Specifications:</div>
+            <div id="rev-measurements-text" style="font-size: 12px; color: #334155; line-height: 1.6;">
+              Length: 29", Chest: 40", Shoulder: 18.5", Sleeve: 8.5", Waist: 33", Hips: 42", Inseam: 30.5", Thigh: 24.5"
+            </div>
+          </div>
+
+          <!-- Personalization -->
+          <div class="review-row">
+            <div class="review-row-left">
+              <span class="review-lbl">Personalization:</span>
+              <strong id="rev-emb-name">None</strong>
+            </div>
+            <div class="review-row-right">
+              <span id="rev-emb-fee" class="review-fee">+PKR 0</span>
+              <button type="button" class="btn-edit-step" onclick="window.enamelsGoStep(5)">Edit ✎</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="review-price-breakdown">
+          <div class="price-row">
+            <span>Product Base Value:</span>
+            <span id="rev-pbreak-base">PKR 6,400</span>
+          </div>
+          <div class="price-row">
+            <span>Fabric Add-On:</span>
+            <span id="rev-pbreak-fabric">+PKR 0</span>
+          </div>
+          <div class="price-row">
+            <span>Personalization & Logo:</span>
+            <span id="rev-pbreak-emb">+PKR 0</span>
+          </div>
+          <div class="price-row total-row">
+            <strong>Subtotal (Garment Value):</strong>
+            <strong id="rev-pbreak-subtotal" style="color: #008779;">PKR 6,400</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(5)">← Back to Personalization</button>
+        <button type="button" class="btn-select-next" style="width: auto; padding: 14px 36px;" onclick="window.enamelsGoStep(7)">
+          Proceed to Payment & Delivery →
+        </button>
       </div>
     </div>
+
+    <!-- =========================================================================
+         STEP 7: PAYMENT, DELIVERY & ORDER SUBMISSION
+         ========================================================================= -->
+    <div class="enamels-wizard-pane" id="wizard-pane-7" data-step-index="7">
+      <div class="enamels-pane-head">
+        <span class="pane-eyebrow">Step 7 of 7</span>
+        <h3 class="pane-title">Payment & Delivery Method</h3>
+        <p class="pane-subtitle">Customized scrubs require 100% advance payment. Cash on Delivery is strictly unavailable.</p>
+      </div>
+
+      <div class="payment-rules-card">
+        
+        <!-- Delivery Country Selection -->
+        <div class="delivery-destination-block" style="margin-bottom: 24px;">
+          <label class="form-label">Delivery Destination:</label>
+          <div class="delivery-options-grid">
+            <label class="delivery-chip active" onclick="window.enamelsSetDestination('pk')">
+              <input type="radio" name="wiz_delivery_dest" value="pk" checked>
+              <div class="delivery-chip-content">
+                <strong>🇵🇰 Pakistan Delivery</strong>
+                <span>Standard Delivery: PKR 250 flat</span>
+              </div>
+            </label>
+            <label class="delivery-chip" onclick="window.enamelsSetDestination('intl')">
+              <input type="radio" name="wiz_delivery_dest" value="intl">
+              <div class="delivery-chip-content">
+                <strong>🌍 International Worldwide Delivery</strong>
+                <span>PKR 4,000 per scrub unit</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <div class="payment-selection-block" style="margin-bottom: 24px;">
+          <label class="form-label">Select Advance Payment Method:</label>
+          
+          <!-- OPTION A: Card Payment -->
+          <label class="payment-method-card active" onclick="window.enamelsSetPaymentMethod('card')">
+            <input type="radio" name="wiz_payment_method" value="card" checked>
+            <div class="pm-card-body">
+              <div class="pm-card-header">
+                <span class="pm-card-title">💳 Card Payment (Debit / Credit / Visa / Mastercard)</span>
+                <span class="pm-card-fee-badge">+4% Bank Charge</span>
+              </div>
+              <p class="pm-card-note">4% additional bank charges apply to card payments.</p>
+            </div>
+          </label>
+
+          <!-- OPTION B: Online Bank Transfer -->
+          <label class="payment-method-card" onclick="window.enamelsSetPaymentMethod('bank_transfer')">
+            <input type="radio" name="wiz_payment_method" value="bank_transfer">
+            <div class="pm-card-body">
+              <div class="pm-card-header">
+                <span class="pm-card-title">🏦 Online Bank Transfer (Direct IBAN / Raast / Nayapay)</span>
+                <span class="pm-card-discount-badge">Get 2% Discount</span>
+              </div>
+              <p class="pm-card-note">Get 2% Discount on Online Transfer (applied to product value only).</p>
+            </div>
+          </label>
+        </div>
+
+        <!-- Strict COD Restriction Notice -->
+        <div class="cod-restriction-notice">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+          </svg>
+          <div>
+            <strong>Cash on Delivery (COD) Not Available</strong>
+            <p style="margin: 2px 0 0; font-size: 11px;">Because your medical scrub is custom-tailored with bespoke sizing and personalized doctor embroidery, 100% advance payment is required.</p>
+          </div>
+        </div>
+
+        <!-- Final Transparent Calculation Box -->
+        <div class="final-calculation-summary" style="margin-top: 24px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 20px;">
+          <div style="font-size: 14px; font-weight: 800; color: #102a43; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            Order Calculation Breakdown
+          </div>
+          
+          <div class="calc-row">
+            <span>Product Base Value:</span>
+            <span id="calc-base-val">PKR 6,400</span>
+          </div>
+          <div class="calc-row">
+            <span>Fabric Surcharge:</span>
+            <span id="calc-fabric-val">+PKR 0</span>
+          </div>
+          <div class="calc-row">
+            <span>Personalization / Logo:</span>
+            <span id="calc-emb-val">+PKR 0</span>
+          </div>
+          <div class="calc-row" id="calc-discount-row" style="display: none; color: #16a34a; font-weight: 600;">
+            <span>Online Transfer 2% Discount (Product only):</span>
+            <span id="calc-discount-val">-PKR 128</span>
+          </div>
+          <div class="calc-row" id="calc-card-fee-row" style="color: #475569;">
+            <span>Card Bank Charges (4%):</span>
+            <span id="calc-card-fee-val">+PKR 256</span>
+          </div>
+          <div class="calc-row">
+            <span>Delivery Charges:</span>
+            <span id="calc-delivery-val">+PKR 250</span>
+          </div>
+          
+          <div class="calc-row final-total-row">
+            <strong>Final Payable Amount:</strong>
+            <strong id="calc-final-total" class="final-highlight">PKR 6,906</strong>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div style="margin-top: 24px;">
+          <button type="button" class="btn-submit-custom-order" id="btn-submit-order-final" onclick="window.enamelsFinalizeOrderSubmission()">
+            <span class="btn-submit-text">Confirm & Pay <span id="btn-final-price-display">PKR 6,906</span> →</span>
+            <span class="btn-submit-loader" style="display: none;">Securing Order & Redirecting...</span>
+          </button>
+        </div>
+
+        <!-- Sample Demonstration Previews Link (Mandatory Requirement) -->
+        <div style="margin-top: 14px; text-align: center;">
+          <a href="/pages/order-confirmation?demo=1" target="_blank" style="font-size: 13px; font-weight: 700; color: #008779; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: #f0fdfa; border: 1.5px solid #99f6e4; border-radius: 8px;">
+            <span>👁 Preview Sample Customer Confirmation & Admin Order View →</span>
+          </a>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(6)">← Back to Review</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <style>
-  .enamels-wizard-card {
+  /* =========================================================================
+     CUSTOMIZER ENGINE MASTER STYLESHEET
+     ========================================================================= */
+  .enamels-customizer-engine {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
-    padding: 24px;
-    margin: 28px 0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-  .wizard-tag {
-    font-size: 11px;
-    font-weight: 700;
+
+  /* 1. Continuous Red Payment Alert Marquee */
+  .enamels-payment-alert-marquee {
+    background: #b91c1c;
+    color: #ffffff;
+    padding: 9px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 2px solid #991b1b;
+  }
+  .marquee-track {
+    display: inline-block;
+    animation: marqueeScroll 22s linear infinite;
+  }
+  .marquee-item {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #0d9488;
-    background: #f0fdfa;
-    padding: 4px 8px;
-    border-radius: 4px;
+    margin-right: 50px;
+    display: inline-block;
   }
-  .wizard-heading {
-    margin: 8px 0 4px;
-    font-size: 20px;
-    font-weight: 700;
-    color: #0f172a;
+  @keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
   }
-  .wizard-desc {
-    margin: 0 0 20px;
-    font-size: 13px;
-    color: #64748b;
-  }
-  .wizard-steps-nav {
-    display: flex;
-    gap: 8px;
+
+  /* Stepper Navigation */
+  .enamels-stepper-bar-wrap {
+    background: #f8fafc;
     border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 12px;
-    margin-bottom: 24px;
+    padding: 12px 20px;
     overflow-x: auto;
+    scrollbar-width: none;
   }
-  .wizard-step-tab {
+  .enamels-stepper-bar-wrap::-webkit-scrollbar { display: none; }
+  .enamels-stepper-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
+    justify-content: space-between;
+    min-width: 720px;
+    gap: 6px;
+  }
+  .enamels-step-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
     border: none;
-    background: transparent;
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    color: #64748b;
+    padding: 6px 12px;
+    border-radius: 999px;
     transition: all 0.2s ease;
   }
-  .wizard-step-tab.active {
-    background: #0f172a;
-    color: #ffffff;
-  }
-  .step-num {
+  .enamels-step-btn:hover { background: #edf2f7; }
+  .enamels-step-btn.active { background: #e6fffa; }
+  .step-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    font-size: 11px;
   }
-  .wizard-step-panel {
+  .enamels-step-btn.active .step-circle,
+  .enamels-step-btn.completed .step-circle {
+    background: #008779;
+    color: #ffffff;
+  }
+  .step-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+  }
+  .enamels-step-btn.active .step-name {
+    color: #008779;
+    font-weight: 700;
+  }
+
+  /* Main Wizard Body */
+  .enamels-customizer-main {
+    padding: 28px 32px 40px;
+  }
+  @media (max-width: 640px) {
+    .enamels-customizer-main { padding: 18px 14px 28px; }
+  }
+
+  .enamels-wizard-pane {
     display: none;
+    animation: fadeInPane 0.25s ease forwards;
   }
-  .wizard-step-panel.active {
-    display: block;
-    animation: fadeInStep 0.25s ease;
-  }
-  @keyframes fadeInStep {
-    from { opacity: 0; transform: translateY(4px); }
+  .enamels-wizard-pane.active { display: block; }
+  @keyframes fadeInPane {
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .step-panel-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #0f172a;
-    margin: 0 0 16px;
+
+  .enamels-pane-head {
+    margin-bottom: 24px;
+    text-align: left;
   }
-  /* Color swatches */
-  .swatch-group {
-    margin-bottom: 20px;
-  }
-  .swatch-label {
+  .pane-eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #008779;
     display: block;
+    margin-bottom: 4px;
+  }
+  .pane-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #102a43;
+    margin: 0 0 6px 0;
+  }
+  .pane-subtitle {
     font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 10px;
+    color: #64748b;
+    margin: 0;
   }
-  .swatch-value-highlight {
-    color: #0d9488;
-  }
-  .enamels-color-grid {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .color-swatch-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: var(--swatch-hex);
-    border: 2px solid #ffffff;
-    box-shadow: 0 0 0 1px #cbd5e1;
+
+  /* Universal "Select & Next" Buttons */
+  .btn-select-next {
+    width: 100%;
+    margin-top: 10px;
+    background: #008779;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .color-swatch-btn:hover {
-    transform: scale(1.1);
-  }
-  .color-swatch-btn.active {
-    box-shadow: 0 0 0 2px #0f172a;
-    transform: scale(1.15);
-  }
-  /* Sleeve Options */
-  .sleeve-options-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-  .sleeve-option-card {
     display: flex;
-    flex-direction: column;
-    padding: 12px 14px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #f8fafc;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 135, 121, 0.25);
     transition: all 0.2s ease;
   }
-  .sleeve-option-card input {
-    display: none;
+  .btn-select-next:hover {
+    background: #006d62;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 135, 121, 0.35);
   }
-  .sleeve-option-card.active {
-    border-color: #0f172a;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(15,23,42,0.06);
-  }
-  .sleeve-card-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #0f172a;
-  }
-  .sleeve-card-sub {
-    font-size: 12px;
-    color: #64748b;
-  }
-  /* Size Selector */
-  .step-title-with-action {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  .size-guide-trigger-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: transparent;
-    border: none;
-    color: #0d9488;
+
+  .btn-step-prev {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 12px 20px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    text-decoration: underline;
+    transition: all 0.2s ease;
   }
-  .enamels-size-selector {
+  .btn-step-prev:hover { background: #e2e8f0; }
+
+  /* STEP 1: Fabric Cards */
+  .enamels-fabric-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .size-pill-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-  }
-  .size-pill-option input {
-    display: none;
-  }
-  .size-pill-option.active {
-    background: #0f172a;
-    color: #ffffff;
-    border-color: #0f172a;
-  }
-  .size-fit-tip {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px;
-    background: #f0fdfa;
-    border: 1px solid #ccfbf1;
-    border-radius: 8px;
-    font-size: 12px;
-    line-height: 1.4;
-    color: #134e4a;
-  }
-  /* Personalization Tiers */
-  .personalization-tier-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .tier-card {
-    display: flex;
-    align-items: center;
-    padding: 14px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: #f8fafc;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .tier-card input {
-    margin-right: 12px;
-    accent-color: #0f172a;
-    width: 18px;
-    height: 18px;
-  }
-  .tier-card.active {
-    border-color: #0f172a;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(15,23,42,0.06);
-  }
-  .tier-card-content {
-    flex: 1;
-  }
-  .tier-top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: 700;
-    color: #0f172a;
-  }
-  .tier-price {
-    color: #0d9488;
-  }
-  .tier-sub {
-    margin: 4px 0 0;
-    font-size: 12px;
-    color: #64748b;
-  }
-  /* Live Embroidery Simulator */
-  .embroidery-custom-box {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 20px;
-  }
-  .embroidery-split-view {
-    display: grid;
-    grid-template-columns: 200px 1fr;
     gap: 18px;
   }
-  .embroidery-visual-pocket {
+  @media (max-width: 800px) {
+    .enamels-fabric-grid { grid-template-columns: 1fr; }
+  }
+  .enamels-fabric-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+  }
+  .enamels-fabric-card:hover {
+    border-color: #99f6e4;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+  .enamels-fabric-card.active {
+    border-color: #008779;
+    box-shadow: 0 0 0 2px rgba(0, 135, 121, 0.25);
+  }
+  .fabric-card-media {
+    width: 100%;
+    aspect-ratio: 16 / 10;
     position: relative;
-    height: 160px;
-    background: #581c87;
-    border-radius: 0 0 18px 18px;
-    box-shadow: inset 0 -4px 10px rgba(0,0,0,0.25), 0 4px 12px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 12px;
-    text-align: center;
-    transition: background 0.3s ease;
+    background: #f1f5f9;
   }
-  .pocket-seam {
+  .fabric-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fabric-badge {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    border-bottom: 2px dashed rgba(255,255,255,0.3);
-  }
-  .simulated-stitch-text {
-    font-weight: 700;
+    top: 10px;
+    left: 10px;
+    background: #111111;
     color: #ffffff;
-    letter-spacing: 0.04em;
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.4);
-    word-break: break-word;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
   }
-  .simulated-stitch-text.line-1 { font-size: 12px; }
-  .simulated-stitch-text.line-2 { font-size: 10px; margin-top: 3px; font-weight: 500; }
-  .font-block { font-family: 'Poppins', sans-serif; text-transform: uppercase; }
-  .font-serif { font-family: 'Georgia', serif; font-style: italic; }
-  .font-script { font-family: 'Brush Script MT', cursive; font-size: 14px; }
-  .preview-badge-watermark {
-    position: absolute;
-    bottom: 6px;
-    font-size: 9px;
-    color: rgba(255,255,255,0.6);
-    text-transform: uppercase;
-  }
-  .embroidery-controls-form {
+  .badge-pro { background: #0284c7; }
+  .badge-vip { background: #b45309; }
+  .fabric-card-body {
+    padding: 16px;
+    flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+  }
+  .fabric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .fabric-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0;
+  }
+  .fabric-price {
+    font-size: 13px;
+    font-weight: 800;
+    color: #008779;
+  }
+  .fabric-desc {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.45;
+    margin: 0 0 10px 0;
+  }
+  .tech-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .tech-tag {
+    font-size: 10px;
+    font-weight: 600;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* STEP 2: Color & Contrast */
+  .color-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .sub-heading-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0;
+  }
+  .selected-shade-pill {
+    font-size: 13px;
+    color: #475569;
+  }
+  .selected-shade-pill strong { color: #008779; }
+
+  .enamels-swatch-circles-grid,
+  .enamels-contrast-swatches-grid {
+    display: flex;
+    flex-wrap: wrap;
     gap: 12px;
   }
-  .embroidery-controls-form input,
-  .embroidery-controls-form select {
+  .cust-swatch-circle,
+  .contrast-swatch-circle {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: var(--swatch-bg);
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 2px #cbd5e1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+  .cust-swatch-circle:hover,
+  .contrast-swatch-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 2px #008779;
+  }
+  .cust-swatch-circle.active,
+  .contrast-swatch-circle.active {
+    box-shadow: 0 0 0 3px #008779;
+    transform: scale(1.1);
+  }
+  .swatch-check {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    display: none;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+  .cust-swatch-circle.active .swatch-check,
+  .contrast-swatch-circle.active .swatch-check {
+    display: block;
+  }
+
+  /* STEP 3: Designs Grid */
+  .collection-pills-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 2px;
+    scrollbar-width: none;
+  }
+  .collection-pills-row::-webkit-scrollbar { display: none; }
+  .design-cat-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 5px 16px 5px 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .design-cat-pill:hover { border-color: #008779; }
+  .design-cat-pill.active {
+    background: #008779;
+    color: #ffffff;
+    border-color: #008779;
+  }
+  .pill-thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .enamels-designs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 768px) {
+    .enamels-designs-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  }
+  .enamels-design-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+  }
+  .enamels-design-card:hover {
+    border-color: #99f6e4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  }
+  .enamels-design-card.active {
+    border-color: #008779;
+    box-shadow: 0 0 0 2px rgba(0, 135, 121, 0.25);
+  }
+  .design-card-media {
     width: 100%;
-    padding: 8px 12px;
+    aspect-ratio: 3 / 4;
+    background: #f8fafc;
+  }
+  .design-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .design-card-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    justify-content: space-between;
+  }
+  .design-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0;
+  }
+  .design-card-sub {
+    font-size: 11px;
+    color: #64748b;
+  }
+  .design-card-price {
+    font-size: 13px;
+    font-weight: 800;
+    color: #008779;
+    margin: 4px 0 6px;
+  }
+
+  /* STEP 4: Size & Measurements */
+  .size-chips-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .size-chip-btn {
+    padding: 10px 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .size-chip-btn:hover { border-color: #99f6e4; }
+  .size-chip-btn.active {
+    border-color: #008779;
+    background: #008779;
+    color: #ffffff;
+  }
+  .size-chip-custom {
+    border-color: #0d9488;
+    color: #0d9488;
+    background: #f0fdfa;
+  }
+  .size-chip-custom.active {
+    background: #008779;
+    color: #ffffff;
+  }
+
+  .custom-measurements-panel {
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .measurements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .measurements-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0;
+  }
+  .measurements-desc {
+    font-size: 12px;
+    color: #64748b;
+    margin: 2px 0 0 0;
+  }
+  .unit-toggle-group {
+    display: flex;
+    background: #e2e8f0;
+    border-radius: 6px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .unit-btn {
+    border: none;
+    background: none;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #475569;
+  }
+  .unit-btn.active {
+    background: #ffffff;
+    color: #008779;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .auto-custom-alert {
+    background: #e6fffa;
+    border: 1px solid #99f6e4;
+    color: #008779;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+    animation: fadeInPane 0.2s ease;
+  }
+
+  .measurements-inputs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 768px) {
+    .measurements-inputs-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .measurement-field {
+    display: flex;
+    flex-direction: column;
+  }
+  .m-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #102a43;
+    margin-bottom: 4px;
+  }
+  .m-input {
+    padding: 8px 10px;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     font-size: 13px;
+    outline: none;
+    background: #ffffff;
   }
-  .form-row {
-    display: flex;
-    gap: 12px;
+  .m-input:focus { border-color: #008779; }
+  .m-hint {
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 3px;
   }
-  .form-field.half { flex: 1; }
-  .thread-swatch-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
+
+  /* STEP 5: Personalization */
+  .placement-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 8px;
   }
-  .thread-dot {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: none;
+  @media (max-width: 640px) {
+    .placement-options-grid { grid-template-columns: 1fr; }
+  }
+  .placement-pill {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
     cursor: pointer;
-  }
-  .thread-dot.active {
-    box-shadow: 0 0 0 2px #0f172a;
-  }
-  /* Review Summary */
-  .review-order-summary {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-  .summary-line {
     display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    font-size: 13px;
-    border-bottom: 1px solid #f1f5f9;
+    flex-direction: column;
+    background: #ffffff;
+    transition: all 0.2s ease;
   }
-  .summary-line.total-price-row {
-    border-bottom: none;
-    font-size: 16px;
+  .placement-pill input { display: none; }
+  .placement-pill:hover { border-color: #99f6e4; }
+  .placement-pill.active {
+    border-color: #008779;
+    background: #f0fdfa;
+  }
+  .placement-text {
+    font-size: 12px;
     font-weight: 700;
-    padding-top: 12px;
-    color: #0f172a;
+    color: #102a43;
   }
-  .summary-line.total-price-row .price {
-    color: #0d9488;
+  .placement-price {
+    font-size: 11px;
+    color: #008779;
+    font-weight: 700;
+    margin-top: 2px;
   }
-  .wizard-addons-section {
-    margin-bottom: 20px;
-  }
-  .addons-heading {
+
+  .form-label {
     display: block;
     font-size: 13px;
     font-weight: 700;
-    margin-bottom: 10px;
-    color: #0f172a;
+    color: #102a43;
+    margin-bottom: 6px;
   }
-  .addons-quick-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  .form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
   }
-  .addon-card {
+  .form-input:focus { border-color: #008779; }
+  .form-hint {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 4px;
+  }
+
+  .thread-color-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .thread-chip {
     display: flex;
     align-items: center;
+    gap: 6px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+  .thread-chip.active {
+    border-color: #008779;
+    background: #f0fdfa;
+    color: #008779;
+  }
+  .thread-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .logo-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    padding: 10px 12px;
+    margin-top: 8px;
+  }
+  @media (max-width: 640px) {
+    .logo-options-grid { grid-template-columns: 1fr; }
+  }
+  .logo-chip {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+  .logo-chip input { display: none; }
+  .logo-chip.active {
+    border-color: #008779;
+    background: #f0fdfa;
+    color: #008779;
+  }
+
+  /* Live Preview Canvas */
+  .embroidery-preview-canvas {
+    border: 1px dashed #94a3b8;
+    border-radius: 12px;
+    padding: 20px;
+    background: #1e293b;
+    text-align: center;
+    position: relative;
+  }
+  .preview-badge {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .scrub-pocket-mockup {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 14px 24px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .preview-embroidered-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: #ffffff;
+  }
+
+  /* STEP 6: Review Summary */
+  .review-summary-card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  .addon-card input { accent-color: #0f172a; }
-  .addon-name { display: block; font-size: 12px; font-weight: 600; color: #0f172a; }
-  .addon-price { font-size: 11px; color: #0d9488; font-weight: 600; }
-  /* Navigation buttons */
-  .wizard-nav-btns {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-  }
-  .wizard-next-btn, .wizard-submit-atc-btn {
-    background: #0f172a;
-    color: #ffffff;
-    font-weight: 600;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  .wizard-next-btn:hover, .wizard-submit-atc-btn:hover {
-    background: #1e293b;
-  }
-  .wizard-back-btn {
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #cbd5e1;
-    font-weight: 600;
-    padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  /* Size Guide Modal */
-  .enamels-modal {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-  .enamels-modal.open {
-    display: flex;
-  }
-  .enamels-modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(15,23,42,0.6);
-    backdrop-filter: blur(4px);
-  }
-  .enamels-modal-dialog {
-    position: relative;
-    background: #ffffff;
-    width: 90%;
-    max-width: 600px;
-    border-radius: 16px;
+    border-radius: 12px;
     padding: 24px;
-    z-index: 10;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
   }
-  .enamels-modal-header {
+  .review-card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
   }
-  .modal-title { margin: 0; font-size: 18px; font-weight: 700; }
-  .modal-close-btn { background: none; border: none; font-size: 20px; cursor: pointer; }
-  .size-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-  .size-table th, .size-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
-  .size-table th { background: #f8fafc; font-weight: 600; }
-  @media screen and (max-width: 768px) {
-    .embroidery-split-view { grid-template-columns: 1fr; }
-    .sleeve-options-grid, .addons-quick-grid { grid-template-columns: 1fr; }
-    .enamels-size-selector { grid-template-columns: repeat(3, 1fr); }
+  .review-article-preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .review-article-preview img {
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .review-item-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0;
+  }
+  .review-item-sub {
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .review-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+  }
+  .review-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+  .review-row-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .review-lbl { color: #64748b; }
+  .review-color-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .review-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .review-row-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .review-fee {
+    font-weight: 700;
+    color: #008779;
+  }
+  .btn-edit-step {
+    border: none;
+    background: none;
+    color: #008779;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .review-price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #475569;
+  }
+  .total-row {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1.5px dashed #cbd5e1;
+    font-size: 15px;
+    color: #102a43;
+  }
+
+  /* STEP 7: Payment & Delivery */
+  .delivery-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 640px) {
+    .delivery-options-grid { grid-template-columns: 1fr; }
+  }
+  .delivery-chip {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+  }
+  .delivery-chip input { display: none; }
+  .delivery-chip.active {
+    border-color: #008779;
+    background: #f0fdfa;
+  }
+  .delivery-chip-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .delivery-chip-content strong {
+    font-size: 13px;
+    color: #102a43;
+  }
+  .delivery-chip-content span {
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  .payment-method-card {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+  }
+  .payment-method-card input { display: none; }
+  .payment-method-card:hover { border-color: #99f6e4; }
+  .payment-method-card.active {
+    border-color: #008779;
+    background: #f0fdfa;
+  }
+  .pm-card-body { flex: 1; }
+  .pm-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .pm-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #102a43;
+  }
+  .pm-card-fee-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .pm-card-discount-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #166534;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .pm-card-note {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+  }
+
+  .cod-restriction-notice {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    color: #991b1b;
+    font-size: 12px;
+  }
+
+  .calc-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+  .final-total-row {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px dashed #cbd5e1;
+    font-size: 16px;
+    color: #102a43;
+  }
+  .final-highlight {
+    font-size: 22px;
+    font-weight: 900;
+    color: #008779;
+  }
+
+  .btn-submit-custom-order {
+    width: 100%;
+    background: #008779;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 135, 121, 0.35);
+    transition: all 0.2s ease;
+  }
+  .btn-submit-custom-order:hover {
+    background: #006d62;
+    transform: translateY(-2px);
+  }
+
+  /* Mobile-First Responsiveness & Touch Optimization */
+  .enamels-mobile-step-pill-indicator {
+    display: none;
+    background: #f0fdfa;
+    border-bottom: 1.5px solid #ccfbf1;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #102a43;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-mobile-step-pill-indicator {
+      display: flex;
+    }
+    .enamels-stepper-bar-wrap {
+      padding: 8px 12px;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+    }
+    .enamels-step-btn {
+      scroll-snap-align: center;
+      padding: 6px 10px;
+      min-height: 44px;
+    }
+    /* iOS input auto-zoom prevention */
+    .m-input,
+    .form-input,
+    .bulk-form-input,
+    .size-input-field,
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="email"],
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+    /* Large comfortable touch targets */
+    .cust-swatch-circle,
+    .contrast-swatch-circle {
+      width: 44px;
+      height: 44px;
+    }
+    .size-chip-btn {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    .thread-chip {
+      min-height: 44px;
+      padding: 8px 14px;
+    }
+    .btn-select-next,
+    .btn-step-prev {
+      min-height: 46px;
+      padding: 12px 20px;
+    }
+    .design-category-filters {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 4px 0 8px;
+    }
+    .design-category-filters::-webkit-scrollbar { display: none; }
   }
 </style>
 
 <script>
-  (function() {
-    let wizardState = {
-      color: 'Burgundy',
-      colorHex: '#581c87',
-      sleeve: 'Half Sleeve (Standard)',
-      size: 'SMALL',
-      personalizationTier: 'none',
-      personalizationCost: 0,
-      line1: '',
-      line2: '',
-      threadColor: '#ffffff',
-      threadFont: 'font-block',
-      basePrice: {{ product.price | default: 515000 }},
-      addonCost: 0
+  (function initRebuiltCustomizer() {
+    // Official Enamels Size Chart (Inches)
+    var ENAMELS_SIZE_CHART = {
+      'XS': { topLength: 27, chest: 36, shoulder: 16.5, sleeve: 7.5, pantWaist: 28, pantHip: 37, pantInseam: 29, thigh: 22 },
+      'S':  { topLength: 28, chest: 38, shoulder: 17.5, sleeve: 8.0, pantWaist: 30, pantHip: 39, pantInseam: 30, thigh: 23 },
+      'M':  { topLength: 29, chest: 40, shoulder: 18.5, sleeve: 8.5, pantWaist: 33, pantHip: 42, pantInseam: 30.5, thigh: 24.5 },
+      'L':  { topLength: 30, chest: 43, shoulder: 19.5, sleeve: 9.0, pantWaist: 36, pantHip: 45, pantInseam: 31, thigh: 26 },
+      'XL': { topLength: 31, chest: 46, shoulder: 20.5, sleeve: 9.5, pantWaist: 40, pantHip: 48, pantInseam: 31.5, thigh: 27.5 },
+      '2XL':{ topLength: 32, chest: 49, shoulder: 21.5, sleeve: 10.0, pantWaist: 44, pantHip: 51, pantInseam: 32, thigh: 29 }
     };
 
-    window.enamelsWizardGoTo = function(stepNum) {
-      document.querySelectorAll('.wizard-step-tab').forEach(t => {
-        t.classList.toggle('active', parseInt(t.dataset.step) === stepNum);
-        t.setAttribute('aria-selected', parseInt(t.dataset.step) === stepNum);
-      });
-      document.querySelectorAll('.wizard-step-panel').forEach(p => {
-        p.classList.toggle('active', parseInt(p.dataset.stepPanel) === stepNum);
-      });
-      if (stepNum === 4) {
-        updateReviewSummary();
-      }
+    var state = {
+      currentStep: 1,
+      // Step 1: Fabric
+      fabric: {
+        id: 'flex-twill',
+        name: '4-Way Flex Twill',
+        fee: 0
+      },
+      // Step 2: Color & Contrast
+      color: {
+        name: 'Ceil Blue',
+        hex: '#6ba4b8'
+      },
+      contrast: {
+        name: 'None / Monochrome',
+        hex: 'transparent'
+      },
+      // Step 3: Design
+      collection: {
+        handle: 'vilora',
+        title: 'Vilora Collection'
+      },
+      design: {
+        id: 'des_vilora_vneck',
+        name: 'Vilora Luxury Micro-Drape V-Neck',
+        basePrice: 6400,
+        img: "{{ 'enamels-na-seagreen.jpg' | asset_url }}"
+      },
+      // Step 4: Size & Fit
+      size: 'M',
+      isCustomSize: false,
+      unit: 'in',
+      measurements: {
+        topLength: 29,
+        chest: 40,
+        shoulder: 18.5,
+        sleeve: 8.5,
+        pantWaist: 33,
+        pantHip: 42,
+        pantInseam: 30.5,
+        thigh: 24.5
+      },
+      // Step 5: Personalization
+      personalization: {
+        placement: 'none',
+        name: '',
+        thread: 'Pure White',
+        fee: 0,
+        logoType: 'none',
+        logoFee: 0
+      },
+      // Step 7: Payment & Delivery
+      deliveryDest: 'pk', // 'pk' or 'intl'
+      paymentMethod: 'card' // 'card' or 'bank_transfer'
     };
 
-    window.enamelsUpdatePersonalizationTier = function(tier) {
-      wizardState.personalizationTier = tier;
-      const embBox = document.getElementById('embroidery-inputs-box');
-      const logoBox = document.getElementById('logo-upload-box');
+    // Safe financial calculations
+    function calculateFinancials() {
+      var base = state.design.basePrice || 6400;
+      var fabricFee = state.fabric.fee || 0;
+      var embFee = (state.personalization.fee || 0) + (state.personalization.logoFee || 0);
+      var productValue = base + fabricFee;
 
-      if (tier === 'embroidery') {
-        wizardState.personalizationCost = 45000;
-        embBox.classList.remove('hidden');
-        logoBox.classList.add('hidden');
-      } else if (tier === 'patch') {
-        wizardState.personalizationCost = 35000;
-        embBox.classList.remove('hidden');
-        logoBox.classList.add('hidden');
-      } else if (tier === 'logo') {
-        wizardState.personalizationCost = 65000;
-        embBox.classList.add('hidden');
-        logoBox.classList.remove('hidden');
-      } else {
-        wizardState.personalizationCost = 0;
-        embBox.classList.add('hidden');
-        logoBox.classList.add('hidden');
-      }
-      document.querySelectorAll('.tier-card').forEach(c => {
-        const inp = c.querySelector('input');
-        c.classList.toggle('active', inp && inp.value === tier);
-      });
-    };
+      // Delivery
+      var deliveryFee = (state.deliveryDest === 'intl') ? 4000 : 250;
 
-    window.enamelsUpdateStitchPreview = function() {
-      const l1 = document.getElementById('emb-line1').value;
-      const l2 = document.getElementById('emb-line2').value;
-      document.getElementById('sim-text-line1').textContent = l1 || '';
-      document.getElementById('sim-text-line2').textContent = l2 || '';
-      wizardState.line1 = l1;
-      wizardState.line2 = l2;
-    };
+      // Card Bank Charges (4%) vs Online Transfer Discount (2% on product only)
+      var cardFee = 0;
+      var onlineDiscount = 0;
 
-    window.enamelsSetThreadColor = function(btn, color) {
-      document.querySelectorAll('.thread-dot').forEach(d => d.classList.remove('active'));
-      btn.classList.add('active');
-      wizardState.threadColor = color;
-      document.getElementById('sim-text-line1').style.color = color;
-      document.getElementById('sim-text-line2').style.color = color;
-    };
-
-    window.enamelsSetThreadFont = function(fontClass) {
-      wizardState.threadFont = fontClass;
-      const t1 = document.getElementById('sim-text-line1');
-      const t2 = document.getElementById('sim-text-line2');
-      t1.className = 'simulated-stitch-text line-1 ' + fontClass;
-      t2.className = 'simulated-stitch-text line-2 ' + fontClass;
-    };
-
-    function updateReviewSummary() {
-      document.getElementById('rev-color').textContent = wizardState.color;
-      document.getElementById('rev-size').textContent = wizardState.size;
-      document.getElementById('rev-sleeve').textContent = wizardState.sleeve;
-      
-      let pText = 'Plain Uniform (No Personalization)';
-      if (wizardState.personalizationTier === 'embroidery') pText = 'Direct Name Embroidery (+Rs. 450)';
-      if (wizardState.personalizationTier === 'patch') pText = 'Name Patch (+Rs. 350)';
-      if (wizardState.personalizationTier === 'logo') pText = 'Hospital Logo Embroidery (+Rs. 650)';
-      document.getElementById('rev-personalization').textContent = pText;
-
-      const embRow = document.getElementById('rev-embroidery-details-row');
-      if (wizardState.personalizationTier === 'embroidery' || wizardState.personalizationTier === 'patch') {
-        embRow.classList.remove('hidden');
-        document.getElementById('rev-embroidery-text').textContent = wizardState.line1 + (wizardState.line2 ? ' | ' + wizardState.line2 : '');
-      } else {
-        embRow.classList.add('hidden');
+      if (state.paymentMethod === 'card') {
+        // 4% additional bank charges on (productValue + embFee)
+        cardFee = Math.round((productValue + embFee) * 0.04);
+      } else if (state.paymentMethod === 'bank_transfer') {
+        // 2% discount on product value only (never on delivery or other fees)
+        onlineDiscount = Math.round(productValue * 0.02);
       }
 
-      // Compute total
-      let totalCents = wizardState.basePrice + wizardState.personalizationCost;
-      const capAddon = document.getElementById('addon-cap');
-      const sleeveAddon = document.getElementById('addon-sleeves');
-      if (capAddon && capAddon.checked) totalCents += 80000;
-      if (sleeveAddon && sleeveAddon.checked) totalCents += 75000;
+      var finalTotal = (productValue + embFee) - onlineDiscount + cardFee + deliveryFee;
 
-      const rupees = Math.round(totalCents / 100);
-      document.getElementById('rev-final-price').textContent = 'Rs. ' + rupees.toLocaleString();
+      return {
+        productValue: productValue,
+        base: base,
+        fabricFee: fabricFee,
+        embFee: embFee,
+        deliveryFee: deliveryFee,
+        cardFee: cardFee,
+        onlineDiscount: onlineDiscount,
+        finalTotal: finalTotal
+      };
     }
 
-    // Color Swatch Clicks
-    document.addEventListener('click', function(e) {
-      const swatch = e.target.closest('.color-swatch-btn');
-      if (swatch) {
-        document.querySelectorAll('.color-swatch-btn').forEach(s => s.classList.remove('active'));
-        swatch.classList.add('active');
-        wizardState.color = swatch.dataset.color;
-        wizardState.colorHex = swatch.style.getPropertyValue('--swatch-hex');
-        document.getElementById('selected-color-name').textContent = wizardState.color;
-        const pocket = document.getElementById('pocket-preview-container');
-        if (pocket) pocket.style.backgroundColor = wizardState.colorHex;
+    function updateReviewAndPaymentUI() {
+      var f = calculateFinancials();
+
+      // Review UI updates
+      var rThumb = document.getElementById('rev-design-thumb');
+      var rName = document.getElementById('rev-design-name');
+      var rCol = document.getElementById('rev-col-name');
+      var rBaseP = document.getElementById('rev-design-base-price');
+      if (rThumb) rThumb.src = state.design.img;
+      if (rName) rName.textContent = state.design.name;
+      if (rCol) rCol.textContent = 'Collection: ' + state.collection.title;
+      if (rBaseP) rBaseP.textContent = 'Base Price: PKR ' + state.design.basePrice.toLocaleString();
+
+      var rFabName = document.getElementById('rev-fabric-name');
+      var rFabFee = document.getElementById('rev-fabric-fee');
+      if (rFabName) rFabName.textContent = state.fabric.name;
+      if (rFabFee) rFabFee.textContent = state.fabric.fee > 0 ? '+PKR ' + state.fabric.fee.toLocaleString() : '+PKR 0';
+
+      var rColName = document.getElementById('rev-color-name');
+      var rColDot = document.getElementById('rev-color-dot');
+      var rConBadge = document.getElementById('rev-contrast-badge');
+      if (rColName) rColName.textContent = state.color.name;
+      if (rColDot) rColDot.style.backgroundColor = state.color.hex;
+      if (rConBadge) {
+        rConBadge.textContent = state.contrast.name.indexOf('None') !== -1 ? '(Contrast: None)' : '(Contrast: ' + state.contrast.name + ')';
       }
 
-      const sizeOption = e.target.closest('.size-pill-option');
-      if (sizeOption) {
-        document.querySelectorAll('.size-pill-option').forEach(s => s.classList.remove('active'));
-        sizeOption.classList.add('active');
-        const inp = sizeOption.querySelector('input');
-        if (inp) {
-          inp.checked = true;
-          wizardState.size = inp.value;
+      var rSize = document.getElementById('rev-size-name');
+      var rMText = document.getElementById('rev-measurements-text');
+      if (rSize) {
+        rSize.textContent = state.isCustomSize ? 'Custom Tailored Fit' : 'Size ' + state.size + ' (Standard)';
+      }
+      if (rMText) {
+        var m = state.measurements;
+        var u = state.unit;
+        rMText.textContent = 'Length: ' + m.topLength + u + ', Chest: ' + m.chest + u + ', Shoulder: ' + m.shoulder + u + ', Sleeve: ' + m.sleeve + u + ', Waist: ' + m.pantWaist + u + ', Hips: ' + m.pantHip + u + ', Inseam: ' + m.pantInseam + u + ', Thigh: ' + m.thigh + u;
+      }
+
+      var rEmbName = document.getElementById('rev-emb-name');
+      var rEmbFee = document.getElementById('rev-emb-fee');
+      if (rEmbName) {
+        var embParts = [];
+        if (state.personalization.placement !== 'none' && state.personalization.name) {
+          embParts.push('"' + state.personalization.name + '" (' + state.personalization.placement + ', ' + state.personalization.thread + ')');
         }
-      }
-
-      const sleeveCard = e.target.closest('.sleeve-option-card');
-      if (sleeveCard) {
-        document.querySelectorAll('.sleeve-option-card').forEach(s => s.classList.remove('active'));
-        sleeveCard.classList.add('active');
-        const inp = sleeveCard.querySelector('input');
-        if (inp) {
-          inp.checked = true;
-          wizardState.sleeve = inp.value;
+        if (state.personalization.logoType !== 'none') {
+          embParts.push(state.personalization.logoType === 'crest' ? 'Hospital Crest Logo' : 'Silicone Logo Patch');
         }
+        rEmbName.textContent = embParts.length > 0 ? embParts.join(' + ') : 'None';
       }
-    });
+      if (rEmbFee) rEmbFee.textContent = f.embFee > 0 ? '+PKR ' + f.embFee.toLocaleString() : '+PKR 0';
 
-    window.enamelsOpenSizeGuide = function() {
-      const modal = document.getElementById('enamels-size-guide-modal');
-      if (modal) modal.classList.add('open');
+      var rSub = document.getElementById('rev-pbreak-subtotal');
+      var rBase = document.getElementById('rev-pbreak-base');
+      var rFabP = document.getElementById('rev-pbreak-fabric');
+      var rEmbP = document.getElementById('rev-pbreak-emb');
+      if (rSub) rSub.textContent = 'PKR ' + (f.productValue + f.embFee).toLocaleString();
+      if (rBase) rBase.textContent = 'PKR ' + f.base.toLocaleString();
+      if (rFabP) rFabP.textContent = f.fabricFee > 0 ? '+PKR ' + f.fabricFee.toLocaleString() : '+PKR 0';
+      if (rEmbP) rEmbP.textContent = f.embFee > 0 ? '+PKR ' + f.embFee.toLocaleString() : '+PKR 0';
+
+      // Step 7: Final Calculations UI
+      var cBase = document.getElementById('calc-base-val');
+      var cFab = document.getElementById('calc-fabric-val');
+      var cEmb = document.getElementById('calc-emb-val');
+      var cDiscRow = document.getElementById('calc-discount-row');
+      var cDiscVal = document.getElementById('calc-discount-val');
+      var cCardRow = document.getElementById('calc-card-fee-row');
+      var cCardVal = document.getElementById('calc-card-fee-val');
+      var cDel = document.getElementById('calc-delivery-val');
+      var cTotal = document.getElementById('calc-final-total');
+      var btnTotal = document.getElementById('btn-final-price-display');
+
+      if (cBase) cBase.textContent = 'PKR ' + f.base.toLocaleString();
+      if (cFab) cFab.textContent = f.fabricFee > 0 ? '+PKR ' + f.fabricFee.toLocaleString() : '+PKR 0';
+      if (cEmb) cEmb.textContent = f.embFee > 0 ? '+PKR ' + f.embFee.toLocaleString() : '+PKR 0';
+
+      if (state.paymentMethod === 'bank_transfer') {
+        if (cDiscRow) cDiscRow.style.display = 'flex';
+        if (cDiscVal) cDiscVal.textContent = '-PKR ' + f.onlineDiscount.toLocaleString();
+        if (cCardRow) cCardRow.style.display = 'none';
+      } else {
+        if (cDiscRow) cDiscRow.style.display = 'none';
+        if (cCardRow) cCardRow.style.display = 'flex';
+        if (cCardVal) cCardVal.textContent = '+PKR ' + f.cardFee.toLocaleString();
+      }
+
+      if (cDel) cDel.textContent = '+PKR ' + f.deliveryFee.toLocaleString() + (state.deliveryDest === 'intl' ? ' (Intl)' : ' (PK Flat)');
+      if (cTotal) cTotal.textContent = 'PKR ' + f.finalTotal.toLocaleString();
+      if (btnTotal) btnTotal.textContent = 'PKR ' + f.finalTotal.toLocaleString();
+    }
+
+    // Step Navigation
+    var STEP_TITLES = {
+      1: 'Fabric Selection',
+      2: 'Color & Contrast',
+      3: 'Design Selection',
+      4: 'Size & Fit',
+      5: 'Personalization',
+      6: 'Order Review',
+      7: 'Payment & Delivery'
     };
-    window.enamelsCloseSizeGuide = function() {
-      const modal = document.getElementById('enamels-size-guide-modal');
-      if (modal) modal.classList.remove('open');
+
+    window.enamelsGoStep = function(stepNum) {
+      if (stepNum < 1) stepNum = 1;
+      if (stepNum > 7) stepNum = 7;
+      state.currentStep = stepNum;
+
+      var panes = document.querySelectorAll('.enamels-wizard-pane');
+      panes.forEach(function(p) {
+        p.classList.remove('active');
+        if (p.getAttribute('data-step-index') == stepNum) {
+          p.classList.add('active');
+        }
+      });
+
+      var stepBtns = document.querySelectorAll('.enamels-step-btn');
+      stepBtns.forEach(function(btn) {
+        var b = parseInt(btn.getAttribute('data-step'), 10);
+        btn.classList.remove('active', 'completed');
+        if (b === stepNum) {
+          btn.classList.add('active');
+          if (typeof btn.scrollIntoView === 'function') {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        } else if (b < stepNum) {
+          btn.classList.add('completed');
+        }
+      });
+
+      // Update mobile step indicator
+      var mobNum = document.getElementById('enamels-mob-curr-num');
+      var mobTitle = document.getElementById('enamels-mob-curr-title');
+      if (mobNum) mobNum.textContent = stepNum;
+      if (mobTitle) mobTitle.textContent = STEP_TITLES[stepNum] || '';
+
+      updateReviewAndPaymentUI();
+
+      var root = document.getElementById('enamels-customizer-app');
+      if (root) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    window.enamelsSubmitCustomScrub = async function() {
-      const submitBtn = document.getElementById('wizard-submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Adding Tailored Uniform...';
+    // 1. Fabric Selection & Next
+    window.enamelsSelectFabricAndNext = function(fabricId, fabricName, fee, btnEl) {
+      state.fabric.id = fabricId;
+      state.fabric.name = fabricName;
+      state.fabric.fee = fee || 0;
 
-      // Find matching or first available variant ID
-      const variantSelect = document.querySelector('select[name="id"], input[name="id"]');
-      const variantId = variantSelect ? parseInt(variantSelect.value) : {{ product.selected_or_first_available_variant.id }};
+      var cards = document.querySelectorAll('.enamels-fabric-card');
+      cards.forEach(function(c) {
+        c.classList.remove('active');
+        if (c.getAttribute('data-fabric-id') === fabricId) c.classList.add('active');
+      });
 
-      const lineItemProps = {
-        'Color': wizardState.color,
-        'Size': wizardState.size,
-        'Sleeve Cut': wizardState.sleeve,
-        '_Personalization': wizardState.personalizationTier
+      window.enamelsGoStep(2);
+    };
+
+    // 2. Color & Contrast Selection
+    window.enamelsSaveColorsAndNext = function() {
+      // Validate that color is selected
+      if (!state.color.name) {
+        alert('Please choose a garment color.');
+        return;
+      }
+      window.enamelsGoStep(3);
+    };
+
+    // 3. Design Selection (Collection-driven)
+    window.enamelsSwitchDesignCollection = function(colHandle, colTitle) {
+      state.collection.handle = colHandle;
+      state.collection.title = colTitle;
+
+      var pills = document.querySelectorAll('.design-cat-pill');
+      pills.forEach(function(p) {
+        p.classList.remove('active');
+        if (p.getAttribute('data-col-handle') === colHandle) p.classList.add('active');
+      });
+
+      var labelEl = document.getElementById('active-collection-title-display');
+      if (labelEl) labelEl.textContent = colTitle;
+
+      // Filter design cards by collection
+      var cards = document.querySelectorAll('.enamels-design-card');
+      cards.forEach(function(c) {
+        var cardCol = c.getAttribute('data-col');
+        if (colHandle === 'all' || cardCol === colHandle) {
+          c.style.display = 'flex';
+        } else {
+          c.style.display = 'none';
+        }
+      });
+    };
+
+    window.enamelsSelectDesignAndNext = function(designId, designName, price, imgUrl, btnEl) {
+      state.design.id = designId;
+      state.design.name = designName;
+      state.design.basePrice = price || 6400;
+      state.design.img = imgUrl;
+
+      var cards = document.querySelectorAll('.enamels-design-card');
+      cards.forEach(function(c) {
+        c.classList.remove('active');
+        if (c.getAttribute('data-design-id') === designId) c.classList.add('active');
+      });
+
+      window.enamelsGoStep(4);
+    };
+
+    // 4. Size & Fit Selection (with Enamels Standard Size Chart & Auto Custom Detection)
+    window.enamelsSelectStandardSize = function(sizeKey) {
+      state.size = sizeKey;
+      state.isCustomSize = false;
+
+      var chips = document.querySelectorAll('.size-chip-btn');
+      chips.forEach(function(c) {
+        c.classList.remove('active');
+        if (c.getAttribute('data-size') === sizeKey) c.classList.add('active');
+      });
+
+      var alertBox = document.getElementById('auto-custom-pill-alert');
+      if (alertBox) alertBox.style.display = 'none';
+
+      var heading = document.getElementById('m-chart-heading');
+      if (heading) heading.textContent = sizeKey + ' Standard Measurements';
+
+      // Populate form with Enamels size chart values
+      var chart = ENAMELS_SIZE_CHART[sizeKey];
+      if (chart) {
+        state.measurements.topLength = chart.topLength;
+        state.measurements.chest = chart.chest;
+        state.measurements.shoulder = chart.shoulder;
+        state.measurements.sleeve = chart.sleeve;
+        state.measurements.pantWaist = chart.pantWaist;
+        state.measurements.pantHip = chart.pantHip;
+        state.measurements.pantInseam = chart.pantInseam;
+        state.measurements.thigh = chart.thigh;
+
+        document.getElementById('wiz_m_top_length').value = chart.topLength;
+        document.getElementById('wiz_m_chest').value = chart.chest;
+        document.getElementById('wiz_m_shoulder').value = chart.shoulder;
+        document.getElementById('wiz_m_sleeve').value = chart.sleeve;
+        document.getElementById('wiz_m_pant_waist').value = chart.pantWaist;
+        document.getElementById('wiz_m_pant_hip').value = chart.pantHip;
+        document.getElementById('wiz_m_pant_inseam').value = chart.pantInseam;
+        document.getElementById('wiz_m_thigh').value = chart.thigh;
+      }
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSelectCustomDirectly = function() {
+      state.size = 'Custom';
+      state.isCustomSize = true;
+
+      var chips = document.querySelectorAll('.size-chip-btn');
+      chips.forEach(function(c) {
+        c.classList.remove('active');
+        if (c.getAttribute('data-size') === 'Custom') c.classList.add('active');
+      });
+
+      var heading = document.getElementById('m-chart-heading');
+      if (heading) heading.textContent = 'Custom Bespoke Measurements';
+
+      var alertBox = document.getElementById('auto-custom-pill-alert');
+      if (alertBox) alertBox.style.display = 'block';
+
+      updateReviewAndPaymentUI();
+    };
+
+    // Automatic Custom Size Detection: if user alters any measurement input
+    window.enamelsHandleMeasurementInput = function(fieldKey, value) {
+      state.measurements[fieldKey] = parseFloat(value) || value;
+
+      // Automatically switch to Custom if not already
+      if (!state.isCustomSize) {
+        state.isCustomSize = true;
+        state.size = 'Custom';
+
+        var chips = document.querySelectorAll('.size-chip-btn');
+        chips.forEach(function(c) {
+          c.classList.remove('active');
+          if (c.getAttribute('data-size') === 'Custom') c.classList.add('active');
+        });
+
+        var heading = document.getElementById('m-chart-heading');
+        if (heading) heading.textContent = 'Custom Bespoke Measurements';
+
+        var alertBox = document.getElementById('auto-custom-pill-alert');
+        if (alertBox) alertBox.style.display = 'block';
+      }
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSetUnit = function(unit) {
+      state.unit = unit;
+      var unitBtns = document.querySelectorAll('.unit-btn');
+      unitBtns.forEach(function(b) {
+        b.classList.remove('active');
+        if (b.getAttribute('data-unit') === unit) b.classList.add('active');
+      });
+
+      var unitLabels = document.querySelectorAll('.m-unit-lbl');
+      unitLabels.forEach(function(lbl) {
+        lbl.textContent = '(' + unit + ')';
+      });
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSaveSizeAndNext = function() {
+      window.enamelsGoStep(5);
+    };
+
+    // 5. Personalization
+    window.enamelsSetPlacement = function(placement, fee, el) {
+      state.personalization.placement = placement;
+      state.personalization.fee = fee || 0;
+
+      var pills = document.querySelectorAll('.placement-pill');
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      if (el) el.classList.add('active');
+
+      var fields = document.getElementById('wiz-emb-fields-wrapper');
+      if (fields) {
+        fields.style.display = (placement === 'none') ? 'none' : 'block';
+      }
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsUpdateEmbText = function(text) {
+      state.personalization.name = text.trim();
+      var liveText = document.getElementById('wiz-emb-live-text');
+      if (liveText) {
+        liveText.textContent = text.trim() ? text.trim().toUpperCase() : 'YOUR NAME / TITLE';
+      }
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSetThread = function(threadName, threadHex, el) {
+      state.personalization.thread = threadName;
+      var chips = document.querySelectorAll('.thread-chip');
+      chips.forEach(function(c) { c.classList.remove('active'); });
+      if (el) el.classList.add('active');
+
+      var liveText = document.getElementById('wiz-emb-live-text');
+      if (liveText) liveText.style.color = threadHex;
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSetLogo = function(logoType, logoFee, el) {
+      state.personalization.logoType = logoType;
+      state.personalization.logoFee = logoFee || 0;
+
+      var chips = document.querySelectorAll('.logo-chip');
+      chips.forEach(function(c) { c.classList.remove('active'); });
+      if (el) el.classList.add('active');
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSavePersonalizationAndNext = function() {
+      window.enamelsGoStep(6);
+    };
+
+    // 7. Payment & Delivery Method Handlers
+    window.enamelsSetDestination = function(destKey) {
+      state.deliveryDest = destKey;
+      var chips = document.querySelectorAll('.delivery-chip');
+      chips.forEach(function(c) {
+        c.classList.remove('active');
+        var input = c.querySelector('input');
+        if (input && input.value === destKey) {
+          c.classList.add('active');
+          input.checked = true;
+        }
+      });
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsSetPaymentMethod = function(pmKey) {
+      state.paymentMethod = pmKey;
+      var cards = document.querySelectorAll('.payment-method-card');
+      cards.forEach(function(c) {
+        c.classList.remove('active');
+        var input = c.querySelector('input');
+        if (input && input.value === pmKey) {
+          c.classList.add('active');
+          input.checked = true;
+        }
+      });
+      updateReviewAndPaymentUI();
+    };
+
+    // 8. Order Submission via Shopify AJAX API
+    window.enamelsFinalizeOrderSubmission = function() {
+      var btn = document.getElementById('btn-submit-order-final');
+      var btnText = btn ? btn.querySelector('.btn-submit-text') : null;
+      var btnLoader = btn ? btn.querySelector('.btn-submit-loader') : null;
+
+      if (btn) btn.disabled = true;
+      if (btnText) btnText.style.display = 'none';
+      if (btnLoader) btnLoader.style.display = 'inline-block';
+
+      var f = calculateFinancials();
+
+      // Collect line item properties with full audit trail
+      var props = {
+        'Customization Type': 'Bespoke Scrub Customizer',
+        'Fabric': state.fabric.name + (state.fabric.fee > 0 ? ' (+PKR ' + state.fabric.fee + ')' : ''),
+        'Design Collection': state.collection.title,
+        'Design Silhouette': state.design.name,
+        'Main Color': state.color.name,
+        'Contrast Option': state.contrast.name,
+        'Size Fit': state.isCustomSize ? 'Custom Tailored Fit' : 'Standard ' + state.size,
+        'Custom Sizing': state.isCustomSize ? 'Yes' : 'No'
       };
 
-      if (wizardState.personalizationTier === 'embroidery' || wizardState.personalizationTier === 'patch') {
-        lineItemProps['Embroidery Line 1 (Name)'] = wizardState.line1;
-        if (wizardState.line2) lineItemProps['Embroidery Line 2'] = wizardState.line2;
-        lineItemProps['Thread Color'] = wizardState.threadColor;
+      // Add measurements
+      var m = state.measurements;
+      var u = state.unit;
+      props['Measurement Specs'] = 'Length ' + m.topLength + u + ', Chest ' + m.chest + u + ', Shoulder ' + m.shoulder + u + ', Sleeve ' + m.sleeve + u + ', Waist ' + m.pantWaist + u + ', Hips ' + m.pantHip + u + ', Inseam ' + m.pantInseam + u + ', Thigh ' + m.thigh + u;
+
+      // Personalization
+      if (state.personalization.placement !== 'none' && state.personalization.name) {
+        props['Personalization Name'] = state.personalization.name;
+        props['Personalization Placement'] = state.personalization.placement;
+        props['Thread Color'] = state.personalization.thread;
+      }
+      if (state.personalization.logoType !== 'none') {
+        props['Logo Option'] = state.personalization.logoType === 'crest' ? 'Hospital Crest (+PKR 450)' : 'Silicone Patch (+PKR 550)';
       }
 
-      const capAddon = document.getElementById('addon-cap');
-      if (capAddon && capAddon.checked) {
-        lineItemProps['Includes Addon'] = 'Matching Sprinter Cap (+Rs. 800)';
-      }
+      // Payment & Delivery terms
+      props['Payment Method'] = state.paymentMethod === 'card' ? 'Card Payment (+4% Bank Charge)' : 'Online Bank Transfer (2% Product Discount Applied)';
+      props['Delivery Destination'] = state.deliveryDest === 'intl' ? 'International Worldwide Dispatch (PKR 4,000 / unit)' : 'Pakistan Standard (PKR 250)';
+      props['Advance Payment Rule'] = '100% Advance Payment Required — Cash on Delivery Not Allowed';
+      props['Calculated Final Total'] = 'PKR ' + f.finalTotal.toLocaleString();
 
-      const sleeveAddon = document.getElementById('addon-sleeves');
-      if (sleeveAddon && sleeveAddon.checked) {
-        lineItemProps['Includes Sleeves'] = 'Med Sleeves (+Rs. 750)';
-      }
+      var postData = {
+        quantity: 1,
+        properties: props
+      };
 
-      const itemsToAdd = [
-        {
-          id: variantId,
-          quantity: 1,
-          properties: lineItemProps
-        }
-      ];
-
-      {% liquid
-        assign emb_id = embroidery_product.selected_or_first_available_variant.id | default: 0
-        assign patch_id = patch_product.selected_or_first_available_variant.id | default: 0
-        assign logo_id = logo_product.selected_or_first_available_variant.id | default: 0
-        assign cap_id = cap_product.selected_or_first_available_variant.id | default: 0
-        assign sleeves_id = sleeves_product.selected_or_first_available_variant.id | default: 0
-      %}
-
-      let companionId = null;
-      if (wizardState.personalizationTier === 'embroidery' && {{ emb_id }} > 0) {
-        companionId = {{ emb_id }};
-      } else if (wizardState.personalizationTier === 'patch' && {{ patch_id }} > 0) {
-        companionId = {{ patch_id }};
-      } else if (wizardState.personalizationTier === 'logo' && {{ logo_id }} > 0) {
-        companionId = {{ logo_id }};
-      }
-
-      if (companionId) {
-        itemsToAdd.push({
-          id: companionId,
-          quantity: 1,
-          properties: {
-            '_Customization For': 'Item ' + variantId,
-            'Name Details': wizardState.line1 + (wizardState.line2 ? ' | ' + wizardState.line2 : '')
-          }
-        });
-      }
-
-      if (capAddon && capAddon.checked && {{ cap_id }} > 0) {
-        itemsToAdd.push({
-          id: {{ cap_id }},
-          quantity: 1,
-          properties: {
-            'Color Match': wizardState.color
-          }
-        });
-      }
-
-      if (sleeveAddon && sleeveAddon.checked && {{ sleeves_id }} > 0) {
-        itemsToAdd.push({
-          id: {{ sleeves_id }},
-          quantity: 1
-        });
-      }
-
-      try {
-        const res = await fetch('/cart/add.js', {
+      function sendToCart(variantId) {
+        postData.id = variantId;
+        fetch('/cart/add.js', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items: itemsToAdd })
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(postData)
+        })
+        .then(function(res) {
+          if (!res.ok) throw new Error('Cart add response error');
+          return res.json();
+        })
+        .then(function() {
+          if (btnLoader) btnLoader.textContent = '✓ Order Confirmed! Redirecting to Checkout...';
+          // Store payment instructions in sessionStorage
+          try {
+            sessionStorage.setItem('enamels_payment_method', state.paymentMethod);
+            sessionStorage.setItem('enamels_delivery_dest', state.deliveryDest);
+          } catch(e) {}
+          setTimeout(function() {
+            window.location.href = '/checkout';
+          }, 500);
+        })
+        .catch(function(err) {
+          console.warn('Customizer cart submit fallback:', err);
+          window.location.href = '/cart';
         });
-
-        if (res.ok) {
-          submitBtn.textContent = 'Uniform Added!';
-          submitBtn.style.background = '#0d9488';
-          const cartTrigger = document.querySelector('[data-testid="cart-drawer-trigger"], #cart-icon-bubble, .header-actions__cart, [aria-controls="cart-drawer"]');
-          if (cartTrigger) {
-            cartTrigger.click();
-          } else {
-            window.location.reload();
-          }
-        } else {
-          submitBtn.textContent = 'Error Adding';
-          submitBtn.disabled = false;
-        }
-      } catch(e) {
-        submitBtn.textContent = 'Add to Cart';
-        submitBtn.disabled = false;
       }
+
+      // Find first valid variant ID
+      fetch('/products.json?limit=1')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.products && data.products[0] && data.products[0].variants && data.products[0].variants[0]) {
+            sendToCart(data.products[0].variants[0].id);
+          } else {
+            window.location.href = '/cart';
+          }
+        })
+        .catch(function() {
+          window.location.href = '/cart';
+        });
     };
+
+    // Initialize DOM handlers
+    document.addEventListener('DOMContentLoaded', function() {
+      // Step 2 Color Swatches
+      var colorSwatches = document.querySelectorAll('.cust-swatch-circle');
+      var colorLabel = document.getElementById('active-main-color-label');
+      colorSwatches.forEach(function(swatch) {
+        swatch.addEventListener('click', function() {
+          colorSwatches.forEach(function(s) { s.classList.remove('active'); });
+          swatch.classList.add('active');
+          state.color.name = swatch.getAttribute('data-color-name');
+          state.color.hex = swatch.getAttribute('data-color-hex');
+          if (colorLabel) colorLabel.textContent = state.color.name;
+          updateReviewAndPaymentUI();
+        });
+      });
+
+      // Step 2 Contrast Swatches
+      var contrastSwatches = document.querySelectorAll('.contrast-swatch-circle');
+      var contrastLabel = document.getElementById('active-contrast-label');
+      contrastSwatches.forEach(function(cSwatch) {
+        cSwatch.addEventListener('click', function() {
+          contrastSwatches.forEach(function(s) { s.classList.remove('active'); });
+          cSwatch.classList.add('active');
+          state.contrast.name = cSwatch.getAttribute('data-contrast-name');
+          state.contrast.hex = cSwatch.getAttribute('data-contrast-hex');
+          if (contrastLabel) contrastLabel.textContent = state.contrast.name;
+          updateReviewAndPaymentUI();
+        });
+      });
+
+      // Stepper button clicks
+      var stepBtns = document.querySelectorAll('.enamels-step-btn');
+      stepBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = parseInt(btn.getAttribute('data-step'), 10);
+          window.enamelsGoStep(target);
+        });
+      });
+
+      // Pre-populate medium measurements on load
+      window.enamelsSelectStandardSize('M');
+    });
+
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      updateReviewAndPaymentUI();
+    }
   })();
 </script>

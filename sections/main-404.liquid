@@ -4,8 +4,57 @@
   if section.settings.background_color != blank
     render 'contrast-override', background_color: section.settings.background_color, section_id: section.id
   endif
+
+  assign is_customizer = false
+  assign is_bulk = false
+  assign is_intl = false
+  assign is_order_verif = false
+
+  if request.path contains 'customizer' or request.path contains 'customize'
+    assign is_customizer = true
+  elsif request.path contains 'bulk'
+    assign is_bulk = true
+  elsif request.path contains 'international' or request.path contains 'intl'
+    assign is_intl = true
+  elsif request.path contains 'order' or request.path contains 'confirm' or request.path contains 'verif'
+    assign is_order_verif = true
+  endif
 %}
 
+{%- if is_customizer -%}
+  <div class="customizer-full-page" style="width: 100%; max-width: 1140px; margin: 30px auto; padding: 0 16px;">
+    {% render 'enamels-customization-wizard' %}
+  </div>
+{%- elsif is_bulk -%}
+  <div class="bulk-full-page" style="width: 100%; max-width: 1140px; margin: 30px auto; padding: 0 16px;">
+    {% render 'enamels-bulk-orders-workflow' %}
+  </div>
+{%- elsif is_order_verif -%}
+  <div class="order-verif-full-page" style="width: 100%; max-width: 1020px; margin: 30px auto; padding: 0 16px;">
+    {% render 'enamels-order-verification' %}
+  </div>
+{%- elsif is_intl -%}
+  <div class="intl-full-page" style="width: 100%; max-width: 800px; margin: 40px auto; padding: 0 16px;">
+    <script>
+      if (typeof window.enamelsSetIntlMode === 'function') {
+        window.enamelsSetIntlMode(true);
+      }
+      setTimeout(function() {
+        if (typeof window.openInternationalModal === 'function') {
+          window.openInternationalModal();
+        }
+      }, 100);
+    </script>
+    <div style="text-align: center; padding: 40px 20px;">
+      <h1 style="color: #0f172a; font-size: 28px; font-weight: 800; margin-bottom: 12px;">🌍 International Delivery Active</h1>
+      <p style="color: #64748b; font-size: 15px; margin-bottom: 24px;">Flat PKR 4,000 per scrub unit worldwide express courier dispatch (DHL / FedEx Express).</p>
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="#customizer" onclick="window.openCustomizerModal(); return false;" style="background: #008779; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">Customize Your Scrub →</a>
+        <a href="/collections/all" style="background: #0f172a; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700;">Shop Ready Collections →</a>
+      </div>
+    </div>
+  </div>
+{%- else -%}
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
@@ -33,6 +82,29 @@
     </div>
   </div>
 </div>
+{%- endif -%}
+
+<script>
+  (function handle404CustomizerRouting() {
+    var path = window.location.pathname.toLowerCase();
+    var hash = window.location.hash.toLowerCase();
+    var href = window.location.href.toLowerCase();
+
+    if (path.indexOf('customizer') !== -1 || hash.indexOf('customizer') !== -1 || href.indexOf('customizer') !== -1) {
+      // Hide any default 404 text blocks
+      var contentWrapper = document.querySelector('.section-content-wrapper');
+      if (contentWrapper) {
+        contentWrapper.style.display = 'none';
+      }
+
+      // If full page not rendered server-side, open modal
+      var inlineCustomizer = document.querySelector('.customizer-full-page');
+      if (!inlineCustomizer && typeof window.openCustomizerModal === 'function') {
+        window.openCustomizerModal();
+      }
+    }
+  })();
+</script>
 
 {% schema %}
 {

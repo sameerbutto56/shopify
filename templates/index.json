@@ -6,9 +6,13 @@
         "enable_slideshow": true,
         "bg_color": "#e8e8e8",
         "full_width": false,
-        "banner_height_desktop": 270,
-        "banner_height_mobile": 175,
+        "banner_width_desktop": 2000,
+        "banner_height_desktop": 770,
+        "banner_height_tablet": 520,
+        "banner_height_mobile": 320,
+        "custom_aspect_ratio": "2000 / 767",
         "image_fit": "contain",
+        "image_position": "center",
         "autoplay": true,
         "autoplay_speed": 5,
         "show_arrows": true,
@@ -182,24 +186,33 @@
             "fallback_asset": "enamels-cat-women.jpg"
           }
         },
+        "pill_customize": {
+          "type": "category_pill",
+          "settings": {
+            "title": "CUSTOMIZE YOUR OWN SCRUB",
+            "subtitle": "Bespoke Doctor Personalization",
+            "badge_text": "CUSTOM",
+            "link": "#customizer",
+            "fallback_asset": "enamels-cat-customize.jpg"
+          }
+        },
+        "pill_bulk": {
+          "type": "category_pill",
+          "settings": {
+            "title": "BULK ORDERS",
+            "subtitle": "Hospital & Clinic Bulk Supply",
+            "link": "#bulk-orders",
+            "fallback_asset": "enamels-cat-intl-order.jpg"
+          }
+        },
         "pill_new_arrivals": {
           "type": "category_pill",
           "settings": {
             "title": "NEW ARRIVALS",
             "subtitle": "Autumn 2026 Editions",
             "badge_text": "NEW",
-            "link": "/collections/new-arrivals",
+            "link": "/collections/all",
             "fallback_asset": "enamels-cat-new-arrivals.jpg"
-          }
-        },
-        "pill_customize": {
-          "type": "category_pill",
-          "settings": {
-            "title": "CUSTOMIZE SCRUBS",
-            "subtitle": "Bespoke Doctor Embroidery",
-            "badge_text": "BESPOKE",
-            "link": "/pages/customizer",
-            "fallback_asset": "enamels-cat-customize.jpg"
           }
         },
         "pill_intl": {
@@ -207,7 +220,7 @@
           "settings": {
             "title": "INTERNATIONAL ORDER",
             "subtitle": "Worldwide Express Dispatch",
-            "link": "/pages/bulk-orders",
+            "link": "#international-delivery",
             "fallback_asset": "enamels-cat-intl-order.jpg"
           }
         },
@@ -216,7 +229,7 @@
           "settings": {
             "title": "LABCOATS",
             "subtitle": "Helium & Tailored Coats",
-            "link": "/collections/lab-coats",
+            "link": "/collections/all?category=lab-coats",
             "fallback_asset": "enamels-cat-labcoats.jpg"
           }
         },
@@ -261,8 +274,9 @@
       "block_order": [
         "pill_men",
         "pill_women",
-        "pill_new_arrivals",
         "pill_customize",
+        "pill_bulk",
+        "pill_new_arrivals",
         "pill_intl",
         "pill_labcoats",
         "pill_caps",
@@ -387,75 +401,12 @@
       "type": "enamels-frontpage-new-arrivals",
       "settings": {
         "title": "New Arrivals",
-        "view_all_label": "",
-        "view_all_link": "/collections/new-arrivals",
+        "collection": "all",
+        "view_all_label": "View All",
+        "view_all_link": "/collections/all",
         "padding_top": 16,
         "padding_bottom": 32
-      },
-      "blocks": {
-        "na_1": {
-          "type": "product_card",
-          "settings": {
-            "title": "BLUE",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-blue.jpg",
-            "link": "/products/sprinter-autumn-edition"
-          }
-        },
-        "na_2": {
-          "type": "product_card",
-          "settings": {
-            "title": "BLACK",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-black.jpg",
-            "link": "/products/sprinter-autumn-edition"
-          }
-        },
-        "na_3": {
-          "type": "product_card",
-          "settings": {
-            "title": "SEAGREEN",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-seagreen.jpg",
-            "link": "/products/sprinter-autumn-edition"
-          }
-        },
-        "na_4": {
-          "type": "product_card",
-          "settings": {
-            "title": "OLIVE",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-olive.jpg",
-            "link": "/products/sprinter-autumn-edition"
-          }
-        },
-        "na_5": {
-          "type": "product_card",
-          "settings": {
-            "title": "RUST",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-rust.jpg",
-            "link": "/products/sprinter-autumn-edition"
-          }
-        },
-        "na_6": {
-          "type": "product_card",
-          "settings": {
-            "title": "DARK GREEN",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-darkgreen.jpg",
-            "link": "/products/sprinter-autumn-edition"
-          }
-        }
-      },
-      "block_order": [
-        "na_1",
-        "na_2",
-        "na_3",
-        "na_4",
-        "na_5",
-        "na_6"
-      ]
+      }
     },
     "frontpage_lookbook": {
       "type": "enamels-frontpage-lookbook",

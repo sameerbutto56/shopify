@@ -294,7 +294,7 @@
           </a>
 
           <!-- 4. Bulk Orders -->
-          <a href="/pages/bulk-orders" class="split-category-tile" aria-label="Bulk Hospital & Institution Orders">
+          <a href="#bulk-orders" onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}" class="split-category-tile" aria-label="Bulk Hospital & Institution Orders">
             <div class="split-category-thumb">
               <span class="customizer-banner-badge" style="background: #0284c7; color: #ffffff; font-size: 10px; padding: 2px 6px; top: 8px; left: 8px;">MIN 10</span>
               <img src="{{ 'cat-bulk-orders.jpg' | asset_url }}" alt="Enamels Hospital Bulk Uniforms" width="160" height="160" loading="lazy" />

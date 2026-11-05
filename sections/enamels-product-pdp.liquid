@@ -72,11 +72,23 @@
     --pdp-buynow-bg: {{ section.settings.buy_now_btn_bg | default: '#008779' }};
     --pdp-buynow-color: {{ section.settings.buy_now_btn_color | default: '#ffffff' }};
     --pdp-btn-radius: {{ section.settings.btn_border_radius | default: 8 }}px;
-    padding-top: {{ section.settings.padding_top | default: 20 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | default: 60 }}px;
+    --pdp-pad-top-desk: {{ section.settings.padding_top_desktop | default: section.settings.padding_top | default: 20 }}px;
+    --pdp-pad-top-mob: {{ section.settings.padding_top_mobile | default: 12 }}px;
+    --pdp-pad-bot-desk: {{ section.settings.padding_bottom_desktop | default: section.settings.padding_bottom | default: 60 }}px;
+    --pdp-pad-bot-mob: {{ section.settings.padding_bottom_mobile | default: 36 }}px;
+    padding-top: var(--pdp-pad-top-desk);
+    padding-bottom: var(--pdp-pad-bot-desk);
     {% if section.settings.background_color != blank %}background-color: {{ section.settings.background_color }};{% endif %}
   "
 >
+  <style>
+    @media (max-width: 640px) {
+      #enamels-pdp-{{ section.id }} {
+        padding-top: var(--pdp-pad-top-mob) !important;
+        padding-bottom: var(--pdp-pad-bot-mob) !important;
+      }
+    }
+  </style>
   <div class="page-container pdp-shell-container" style="max-width: {{ max_width }}px; margin: 0 auto; padding: 0 20px;">
 
     {%- if section.settings.show_breadcrumbs -%}
@@ -483,6 +495,73 @@
                               {%- endunless -%}
                             </button>
                           {%- endfor -%}
+
+                          <!-- Dedicated Custom Size Option Pill -->
+                          <button
+                            type="button"
+                            role="radio"
+                            class="pdp-size-pill pdp-size-btn pdp-custom-size-pill"
+                            data-option-index="{{ forloop.index0 }}"
+                            data-value="Custom"
+                            data-available="true"
+                            aria-checked="false"
+                            aria-label="Custom Tailored Size"
+                          >
+                            <span class="pdp-size-text">Custom</span>
+                          </button>
+                        </div>
+
+                        <!-- Dedicated Custom Sizing Measurement Form -->
+                        <div class="pdp-custom-sizing-box" id="pdp-custom-sizing-box-{{ section.id }}" style="display: none;">
+                          <div class="pdp-custom-sizing-head">
+                            <div>
+                              <h5 class="pdp-custom-sizing-title">Bespoke Custom Measurements</h5>
+                              <p class="pdp-custom-sizing-subtitle">Tailored to your exact physique. (+Rs. 0 Free Tailoring Service)</p>
+                            </div>
+                            <div class="pdp-unit-switcher">
+                              <button type="button" class="pdp-unit-btn active" data-unit="in">Inches (in)</button>
+                              <button type="button" class="pdp-unit-btn" data-unit="cm">CM</button>
+                            </div>
+                          </div>
+
+                          <div class="pdp-custom-alert" id="pdp-auto-custom-alert-{{ section.id }}" style="display: none;">
+                            ✓ Automatically switched to Custom Size based on your altered measurements
+                          </div>
+
+                          <div class="pdp-measurements-grid">
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Top Length <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-top-length-{{ section.id }}" placeholder="28">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Chest / Bust <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-chest-{{ section.id }}" placeholder="40">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Shoulder Width <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-shoulder-{{ section.id }}" placeholder="18">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Sleeve Length <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-sleeve-{{ section.id }}" placeholder="9">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Pant Waist <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-waist-{{ section.id }}" placeholder="32">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Pant Hip <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-hip-{{ section.id }}" placeholder="42">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Pant Inseam <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-inseam-{{ section.id }}" placeholder="30">
+                            </div>
+                            <div class="pdp-m-col">
+                              <label class="pdp-m-label">Thigh Width <span class="pdp-unit-lbl">(in)</span></label>
+                              <input type="number" step="0.5" class="pdp-m-input pdp-measure-input" id="pdp-m-thigh-{{ section.id }}" placeholder="24">
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -1261,10 +1340,18 @@
     // 1. VARIANT SYNCHRONIZATION
     // -------------------------------------------------------------------------
     function updateVariantUI() {
-      // Find matching variant based on selectedOptions array
-      const matchedVariant = productVariants.find(variant => {
-        return variant.options.every((optVal, idx) => optVal === selectedOptions[idx]);
+      // Find matching variant based on selectedOptions array (with Custom size fallback)
+      let matchedVariant = productVariants.find(variant => {
+        return variant.options.every((optVal, idx) => {
+          if (selectedOptions[idx] === 'Custom') return true;
+          return optVal === selectedOptions[idx];
+        });
       });
+      if (!matchedVariant) {
+        matchedVariant = productVariants.find(variant => {
+          return variant.options.some((optVal, idx) => optVal === selectedOptions[idx]);
+        }) || activeVariant || productVariants[0];
+      }
 
       if (matchedVariant) {
         activeVariant = matchedVariant;
@@ -1613,14 +1700,51 @@
       });
     });
 
-    // Size Pills
+    // Size Pills & Custom Sizing Handling
     const sizePills = container.querySelectorAll(".pdp-size-pill");
     const selectedSizeLabel = document.getElementById("pdp-selected-size-label");
+    const customSizingBox = document.getElementById("pdp-custom-sizing-box-" + sectionId);
+    const autoCustomAlert = document.getElementById("pdp-auto-custom-alert-" + sectionId);
+    let pdpCustomUnit = 'in';
+
+    function switchToCustomSize(triggeredByInput = false) {
+      sizePills.forEach(p => {
+        const pVal = p.getAttribute('data-value');
+        if (pVal === 'Custom') {
+          p.classList.add('selected', 'active');
+          p.setAttribute('aria-checked', 'true');
+          const optIdx = parseInt(p.getAttribute('data-option-index'), 10);
+          if (!isNaN(optIdx)) selectedOptions[optIdx] = 'Custom';
+        } else {
+          p.classList.remove('selected', 'active');
+          p.setAttribute('aria-checked', 'false');
+        }
+      });
+
+      if (selectedSizeLabel) selectedSizeLabel.textContent = 'Custom (Tailored Fit)';
+      if (customSizingBox) customSizingBox.style.display = 'block';
+
+      if (triggeredByInput && autoCustomAlert) {
+        autoCustomAlert.style.display = 'block';
+        clearTimeout(window._autoCustomAlertTimer);
+        window._autoCustomAlertTimer = setTimeout(() => {
+          autoCustomAlert.style.display = 'none';
+        }, 3500);
+      }
+
+      updateVariantUI();
+    }
 
     sizePills.forEach(pill => {
       pill.addEventListener('click', () => {
         const optIdx = parseInt(pill.getAttribute('data-option-index'), 10);
         const val = pill.getAttribute('data-value');
+
+        if (val === 'Custom') {
+          switchToCustomSize(false);
+          return;
+        }
+
         selectedOptions[optIdx] = val;
 
         // Update siblings within same group
@@ -1635,8 +1759,33 @@
         pill.setAttribute('aria-checked', 'true');
 
         if (selectedSizeLabel) selectedSizeLabel.textContent = val;
+        if (customSizingBox) customSizingBox.style.display = 'none';
+        if (autoCustomAlert) autoCustomAlert.style.display = 'none';
 
         updateVariantUI();
+      });
+    });
+
+    // Custom Sizing Unit Switcher
+    const unitBtns = container.querySelectorAll('.pdp-unit-btn');
+    const unitLabels = container.querySelectorAll('.pdp-unit-lbl');
+    unitBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        unitBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        pdpCustomUnit = btn.getAttribute('data-unit') || 'in';
+        unitLabels.forEach(lbl => {
+          lbl.textContent = `(${pdpCustomUnit})`;
+        });
+      });
+    });
+
+    // AUTOMATIC CUSTOM DETECTION:
+    // If customer alters any measurement field while on a standard size, auto-switch to Custom!
+    const measureInputs = container.querySelectorAll('.pdp-measure-input');
+    measureInputs.forEach(input => {
+      input.addEventListener('input', () => {
+        switchToCustomSize(true);
       });
     });
 
@@ -1681,6 +1830,36 @@
         if (threadVal) properties['Thread Color'] = threadVal;
         if (notesVal) properties['Custom Notes'] = notesVal;
       }
+
+      // Check if Custom Size is selected or measurements are entered
+      const activeSizePill = container.querySelector('.pdp-size-pill.selected.active');
+      const isCustomSize = activeSizePill && activeSizePill.getAttribute('data-value') === 'Custom';
+
+      const topLenVal = document.getElementById('pdp-m-top-length-' + sectionId)?.value.trim();
+      const chestVal = document.getElementById('pdp-m-chest-' + sectionId)?.value.trim();
+      const shoulderVal = document.getElementById('pdp-m-shoulder-' + sectionId)?.value.trim();
+      const sleeveVal = document.getElementById('pdp-m-sleeve-' + sectionId)?.value.trim();
+      const waistVal = document.getElementById('pdp-m-waist-' + sectionId)?.value.trim();
+      const hipVal = document.getElementById('pdp-m-hip-' + sectionId)?.value.trim();
+      const inseamVal = document.getElementById('pdp-m-inseam-' + sectionId)?.value.trim();
+      const thighVal = document.getElementById('pdp-m-thigh-' + sectionId)?.value.trim();
+
+      const hasMeasurements = topLenVal || chestVal || shoulderVal || sleeveVal || waistVal || hipVal || inseamVal || thighVal;
+
+      if (isCustomSize || hasMeasurements) {
+        properties['Size Option'] = 'Custom';
+        properties['Custom Tailored'] = 'Yes';
+        properties['Measurement Unit'] = pdpCustomUnit;
+        if (topLenVal) properties['Top Length'] = `${topLenVal} ${pdpCustomUnit}`;
+        if (chestVal) properties['Chest / Bust'] = `${chestVal} ${pdpCustomUnit}`;
+        if (shoulderVal) properties['Shoulder Width'] = `${shoulderVal} ${pdpCustomUnit}`;
+        if (sleeveVal) properties['Sleeve Length'] = `${sleeveVal} ${pdpCustomUnit}`;
+        if (waistVal) properties['Pant Waist'] = `${waistVal} ${pdpCustomUnit}`;
+        if (hipVal) properties['Pant Hip'] = `${hipVal} ${pdpCustomUnit}`;
+        if (inseamVal) properties['Pant Inseam'] = `${inseamVal} ${pdpCustomUnit}`;
+        if (thighVal) properties['Thigh'] = `${thighVal} ${pdpCustomUnit}`;
+      }
+
       return properties;
     }
 
@@ -1884,7 +2063,7 @@
       "type": "range",
       "id": "container_width",
       "min": 1100,
-      "max": 1600,
+      "max": 1800,
       "step": 20,
       "unit": "px",
       "label": "Max Container Width",
@@ -2062,27 +2241,53 @@
     },
     {
       "type": "header",
-      "content": "Section Spacing"
+      "content": "Section Spacing & Sizing"
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "padding_top_desktop",
       "min": 0,
-      "max": 80,
+      "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Padding Top",
+      "label": "Padding Top (Desktop)",
       "default": 20
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding_top_mobile",
       "min": 0,
-      "max": 120,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top (Mobile)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 140,
       "step": 4,
       "unit": "px",
-      "label": "Padding Bottom",
+      "label": "Padding Bottom (Desktop)",
       "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom (Mobile)",
+      "default": 36
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_atc_mobile",
+      "label": "Enable Sticky Mobile Buy Bar",
+      "default": true
     }
   ],
   "blocks": [
@@ -2125,12 +2330,22 @@
         {
           "type": "range",
           "id": "title_size",
-          "min": 20,
-          "max": 42,
+          "min": 18,
+          "max": 48,
           "step": 1,
           "unit": "px",
-          "label": "Title Font Size",
+          "label": "Title Font Size (Desktop)",
           "default": 26
+        },
+        {
+          "type": "range",
+          "id": "title_size_mobile",
+          "min": 16,
+          "max": 34,
+          "step": 1,
+          "unit": "px",
+          "label": "Title Font Size (Mobile)",
+          "default": 22
         },
         {
           "type": "checkbox",
@@ -2163,6 +2378,26 @@
       "name": "Price & Savings Badge",
       "limit": 1,
       "settings": [
+        {
+          "type": "range",
+          "id": "price_size_desktop",
+          "min": 18,
+          "max": 44,
+          "step": 1,
+          "unit": "px",
+          "label": "Current Price Size (Desktop)",
+          "default": 28
+        },
+        {
+          "type": "range",
+          "id": "price_size_mobile",
+          "min": 16,
+          "max": 36,
+          "step": 1,
+          "unit": "px",
+          "label": "Current Price Size (Mobile)",
+          "default": 24
+        },
         {
           "type": "checkbox",
           "id": "show_compare_at_price",

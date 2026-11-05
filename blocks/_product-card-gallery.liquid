@@ -60,12 +60,20 @@
       "id": "image_ratio",
       "options": [
         {
-          "value": "adapt",
-          "label": "t:options.auto"
+          "value": "2_3",
+          "label": "2:3 Portrait (1200x1800 Standard)"
         },
         {
           "value": "portrait",
           "label": "t:options.portrait"
+        },
+        {
+          "value": "3_4",
+          "label": "3:4 Portrait"
+        },
+        {
+          "value": "4_5",
+          "label": "4:5 Fashion"
         },
         {
           "value": "square",
@@ -74,11 +82,58 @@
         {
           "value": "landscape",
           "label": "t:options.landscape"
+        },
+        {
+          "value": "adapt",
+          "label": "t:options.auto"
         }
       ],
-      "default": "portrait",
-      "label": "t:settings.aspect_ratio",
-      "info": "t:info.aspect_ratio_adjusted"
+      "default": "2_3",
+      "label": "Thumbnail Aspect Ratio (1200x1800 Standard)",
+      "info": "2:3 (1200x1800px) is Enamels standard product thumbnail format."
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Thumbnail Image Fit",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Contain - Full Garment Visible (Recommended)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover - Crop to Fill Box"
+        }
+      ],
+      "default": "contain",
+      "info": "Use Contain to prevent any part of the scrubs from being cut off."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Thumbnail Image Position",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "top",
+          "label": "Top (Focus Neckline / Collar)"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "image_bg",
+      "label": "Thumbnail Background Color",
+      "default": "#f8fafc"
     },
     {
       "type": "header",

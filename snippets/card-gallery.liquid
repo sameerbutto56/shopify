@@ -48,17 +48,28 @@
     assign image_sizes = sizes_attribute | strip
   endif
 
-  assign ratio = '1'
-  case block_settings.image_ratio
-    when 'landscape'
-      assign ratio = '16 / 9'
+  assign ratio = '2 / 3'
+  assign chosen_ratio = block_settings.image_ratio | default: settings.product_card_aspect_ratio | default: '2_3'
+  case chosen_ratio
+    when '2_3'
+      assign ratio = '2 / 3'
     when 'portrait'
+      assign ratio = '2 / 3'
+    when '3_4'
+      assign ratio = '3 / 4'
+    when '4_5'
       assign ratio = '4 / 5'
     when 'square'
       assign ratio = '1'
+    when 'landscape'
+      assign ratio = '16 / 9'
     when 'adapt'
-      assign ratio = product.featured_media.preview_image.aspect_ratio | default: '1'
+      assign ratio = product.featured_media.preview_image.aspect_ratio | default: '2 / 3'
   endcase
+
+  assign card_media_fit = block_settings.image_fit | default: settings.product_card_image_fit | default: 'contain'
+  assign card_media_pos = block_settings.image_position | default: settings.product_card_image_position | default: 'center'
+  assign card_media_bg = block_settings.image_bg | default: settings.product_card_image_bg | default: '#f8fafc'
 
   if block_settings.image_ratio == 'adapt' and block_settings.constrain_to_viewport
     if block_settings.constrain_to_viewport != ''
@@ -75,6 +86,9 @@
     {% render 'border-override', settings: block_settings %}
     {% render 'spacing-style', settings: block_settings %}
     --gallery-aspect-ratio: {{ ratio }};
+    --product-media-fit: {{ card_media_fit }};
+    --product-media-position: {{ card_media_pos }};
+    background-color: {{ card_media_bg }};
   "
   data-product-id="{{ product.id }}"
   {% if settings.show_second_image_on_hover and product.media.size > 1 %}
@@ -84,7 +98,7 @@
   {% if settings.transition_to_main_product %}
     data-view-transition-to-main-product
   {% endif %}
-  data-image-ratio="{{ block_settings.image_ratio }}"
+  data-image-ratio="{{ chosen_ratio }}"
   {{ block.shopify_attributes }}
 >
   {%- if product.media.size > 0 -%}
@@ -117,7 +131,7 @@
       {%- if product.media.size == 1 -%}
         <div
           class="{{ featured_media_class }}"
-          style="--product-media-fit: {{ media_fit | default: 'cover' }};"
+          style="--product-media-fit: {{ card_media_fit | default: 'contain' }}; --product-media-position: {{ card_media_pos | default: 'center' }}; background-color: {{ card_media_bg | default: '#f8fafc' }};"
         >
           {% render 'product-media',
             media: featured_media,
@@ -185,7 +199,7 @@
                 render 'product-media', media: media, sizes: sizes, loading: loading, preview_image_only: true
               endcapture
 
-              render 'slideshow-slide', slide_id: media.id, index: forloop.index0, hidden: hidden, class: class, attributes: attributes, children: slideshow_children, media_fit: media_fit
+              render 'slideshow-slide', slide_id: media.id, index: forloop.index0, hidden: hidden, class: class, attributes: attributes, children: slideshow_children, media_fit: card_media_fit
             endfor
           endcapture
 

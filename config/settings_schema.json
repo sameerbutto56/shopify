@@ -1879,6 +1879,92 @@
         "content": "t:settings.media"
       },
       {
+        "type": "header",
+        "content": "Product Thumbnail Standard (1200x1800 Portrait)"
+      },
+      {
+        "type": "select",
+        "id": "product_card_aspect_ratio",
+        "label": "Listing Thumbnail Aspect Ratio",
+        "options": [
+          {
+            "value": "2_3",
+            "label": "2:3 Portrait (1200x1800 Standard - Default)"
+          },
+          {
+            "value": "3_4",
+            "label": "3:4 Portrait"
+          },
+          {
+            "value": "4_5",
+            "label": "4:5 Fashion"
+          },
+          {
+            "value": "square",
+            "label": "1:1 Square"
+          },
+          {
+            "value": "adapt",
+            "label": "Auto / Adapt to Original Image"
+          }
+        ],
+        "default": "2_3",
+        "info": "Standard 1200x1800px portrait ratio ensures all medical scrubs are presented uniformly across the website."
+      },
+      {
+        "type": "select",
+        "id": "product_card_image_fit",
+        "label": "Thumbnail Image Fit",
+        "options": [
+          {
+            "value": "contain",
+            "label": "Contain - Full Garment Visible (Recommended)"
+          },
+          {
+            "value": "cover",
+            "label": "Cover - Crop to Fill Container"
+          }
+        ],
+        "default": "contain",
+        "info": "Contain ensures complete scrub suits (top & trousers) remain 100% visible without unwanted cropping."
+      },
+      {
+        "type": "select",
+        "id": "product_card_image_position",
+        "label": "Thumbnail Alignment Position",
+        "options": [
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "top",
+            "label": "Top (Focus Collar / Neckline)"
+          },
+          {
+            "value": "bottom",
+            "label": "Bottom"
+          }
+        ],
+        "default": "center"
+      },
+      {
+        "type": "color",
+        "id": "product_card_image_bg",
+        "label": "Thumbnail Card Background",
+        "default": "#f8fafc"
+      },
+      {
+        "type": "range",
+        "id": "product_card_corner_radius",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "label": "Thumbnail Corner Radius",
+        "default": 8
+      },
+      {
         "type": "checkbox",
         "id": "show_second_image_on_hover",
         "label": "t:settings.show_second_image_on_hover",
@@ -2239,8 +2325,8 @@
         "type": "range",
         "id": "enamels_button_radius",
         "min": 0,
-        "max": 30,
-        "step": 2,
+        "max": 40,
+        "step": 1,
         "unit": "px",
         "label": "Button Corner Radius",
         "default": 6
@@ -2249,8 +2335,8 @@
         "type": "range",
         "id": "enamels_card_radius",
         "min": 0,
-        "max": 30,
-        "step": 2,
+        "max": 40,
+        "step": 1,
         "unit": "px",
         "label": "Card Corner Radius",
         "default": 8
@@ -2258,8 +2344,8 @@
       {
         "type": "range",
         "id": "enamels_content_max_width",
-        "min": 1000,
-        "max": 1600,
+        "min": 960,
+        "max": 1800,
         "step": 20,
         "unit": "px",
         "label": "Storefront Content Max Width",

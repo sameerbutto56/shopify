@@ -36,15 +36,12 @@
   assign use_custom_menu = section.settings.use_custom_shopify_menu | default: false
   assign custom_menu = linklists[section.settings.custom_menu]
 
-  assign nav_studio_label = section.settings.nav_studio_label
-  assign nav_studio_badge = section.settings.nav_studio_badge
-  assign nav_home_fitting_label = section.settings.nav_home_fitting_label
-  assign nav_home_fitting_badge = section.settings.nav_home_fitting_badge
-
-  assign show_scrubs = true
-  if section.settings.show_nav_scrubs == false
-    assign show_scrubs = false
-  endif
+  assign nav_studio_label = section.settings.nav_studio_label | default: 'Customize Your Own Scrubs'
+  assign nav_studio_badge = section.settings.nav_studio_badge | default: 'STUDIO'
+  assign nav_bulk_orders_label = section.settings.nav_bulk_orders_label | default: 'Bulk Orders'
+  assign nav_bulk_orders_badge = section.settings.nav_bulk_orders_badge | default: 'INSTITUTIONAL'
+  assign nav_home_fitting_label = section.settings.nav_home_fitting_label | default: 'Book a Home Fitting'
+  assign nav_home_fitting_badge = section.settings.nav_home_fitting_badge | default: 'LAHORE ONLY'
 
   assign show_men = true
   if section.settings.show_nav_men == false
@@ -54,6 +51,21 @@
   assign show_women = true
   if section.settings.show_nav_women == false
     assign show_women = false
+  endif
+
+  assign show_ready_to_wear = true
+  if section.settings.show_nav_ready_to_wear == false
+    assign show_ready_to_wear = false
+  endif
+
+  assign show_bulk_orders = true
+  if section.settings.show_nav_bulk_orders == false
+    assign show_bulk_orders = false
+  endif
+
+  assign show_scrubs = true
+  if section.settings.show_nav_scrubs == false
+    assign show_scrubs = false
   endif
 
   assign show_lab_coats = true
@@ -74,11 +86,6 @@
   assign show_accessories = true
   if section.settings.show_nav_accessories == false
     assign show_accessories = false
-  endif
-
-  assign show_ready_to_wear = true
-  if section.settings.show_nav_ready_to_wear == false
-    assign show_ready_to_wear = false
   endif
 
   assign show_home_service = true
@@ -213,11 +220,65 @@
             </li>
           {% endfor %}
         {% else %}
-          <!-- 1. SCRUBS (with Series Dropdown) -->
+          <!-- 1. MEN (Primary Category) -->
+          {% if show_men %}
+          <li class="enamels-nav-item" id="nav-item-men">
+            <a
+              href="{{ routes.collections_url }}/all?gender=men"
+              class="enamels-nav-link"
+              onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
+            >
+              <span class="nav-link-text">Men</span>
+            </a>
+          </li>
+          {% endif %}
+
+          <!-- 2. WOMEN (Primary Category) -->
+          {% if show_women %}
+          <li class="enamels-nav-item" id="nav-item-women">
+            <a
+              href="{{ routes.collections_url }}/all?gender=women"
+              class="enamels-nav-link"
+              onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
+            >
+              <span class="nav-link-text">Women</span>
+            </a>
+          </li>
+          {% endif %}
+
+          <!-- 3. CUSTOMIZE YOUR OWN SCRUBS (Dedicated Customizer Studio) -->
+          {% if show_ready_to_wear %}
+          <li class="enamels-nav-item" id="nav-item-ready-to-wear">
+            <a
+              href="/pages/customizer"
+              class="enamels-nav-link"
+              onclick="if (typeof window.openCustomizerModal === 'function') { window.openCustomizerModal(); return false; } else if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); return false; }"
+            >
+              {% if nav_studio_label != blank %}<span class="nav-link-text">{{ nav_studio_label | escape }}</span>{% endif %}
+              {% if nav_studio_badge != blank %}<span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>{% endif %}
+            </a>
+          </li>
+          {% endif %}
+
+          <!-- 4. BULK ORDERS (Institutional Multi-Category Enquiries) -->
+          {% if show_bulk_orders %}
+          <li class="enamels-nav-item" id="nav-item-bulk-orders">
+            <a
+              href="/pages/bulk-orders"
+              class="enamels-nav-link"
+              onclick="if (typeof window.openBulkOrdersModal === 'function') { window.openBulkOrdersModal(); return false; }"
+            >
+              {% if nav_bulk_orders_label != blank %}<span class="nav-link-text">{{ nav_bulk_orders_label | escape }}</span>{% endif %}
+              {% if nav_bulk_orders_badge != blank %}<span class="nav-badge-pill" style="background: #0284c7; color: #ffffff;">{{ nav_bulk_orders_badge | escape }}</span>{% endif %}
+            </a>
+          </li>
+          {% endif %}
+
+          <!-- 5. SCRUBS (with Series Dropdown) -->
           {% if show_scrubs %}
           <li class="enamels-nav-item has-dropdown" id="nav-item-scrubs">
             <a
-              href="#category-scrubs"
+              href="{{ routes.collections_url }}/all?category=scrubs"
               class="enamels-nav-link"
               onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('category-scrubs'); return false; }"
               aria-haspopup="true"
@@ -229,55 +290,31 @@
               </svg>
             </a>
             <div class="nav-dropdown-menu" role="menu">
-              <a href="#collection-sprinter" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Sprinter'); return false; }">
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=sprinter" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Sprinter'); return false; }">
                 <strong>Sprinter Series</strong>
                 <span>4-Way Athletic Mechanical Stretch</span>
               </a>
-              <a href="#collection-velora" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Velora'); return false; }">
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=vilora" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Velora'); return false; }">
                 <strong>Velora Series</strong>
                 <span>Luxury Tailored Micro-Drape</span>
               </a>
-              <a href="#collection-crown" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Crown'); return false; }">
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=crown" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Crown'); return false; }">
                 <strong>Crown Series</strong>
                 <span>Executive Structured Mandarin Collar</span>
               </a>
-              <a href="#collection-flexwell" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Flexwell'); return false; }">
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=flexwell" class="dropdown-item-link" onclick="if (typeof window.navigateToBrand === 'function') { window.navigateToBrand('Flexwell'); return false; }">
                 <strong>Flexwell Series</strong>
                 <span>Antimicrobial Laser-Perforated Aerocool</span>
               </a>
               <div class="nav-dropdown-divider"></div>
-              <a href="#category-scrubs" class="dropdown-item-link dropdown-item-all" onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('category-scrubs'); return false; }">
+              <a href="{{ routes.collections_url }}/all?category=scrubs" class="dropdown-item-link dropdown-item-all" onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('category-scrubs'); return false; }">
                 View All Scrubs Categories →
               </a>
             </div>
           </li>
           {% endif %}
 
-          <!-- 2. MEN -->
-          {% if show_men %}
-          <li class="enamels-nav-item" id="nav-item-men">
-            <a
-              href="{{ routes.collections_url }}/all?category=men"
-              class="enamels-nav-link"
-            >
-              <span class="nav-link-text">Men</span>
-            </a>
-          </li>
-          {% endif %}
-
-          <!-- 3. WOMEN -->
-          {% if show_women %}
-          <li class="enamels-nav-item" id="nav-item-women">
-            <a
-              href="{{ routes.collections_url }}/all?category=women"
-              class="enamels-nav-link"
-            >
-              <span class="nav-link-text">Women</span>
-            </a>
-          </li>
-          {% endif %}
-
-          <!-- 4. LAB COATS -->
+          <!-- 6. LAB COATS -->
           {% if show_lab_coats %}
           <li class="enamels-nav-item" id="nav-item-lab-coats">
             <a
@@ -289,7 +326,7 @@
           </li>
           {% endif %}
 
-          <!-- 5. CAPS -->
+          <!-- 7. CAPS -->
           {% if show_caps %}
           <li class="enamels-nav-item" id="nav-item-caps">
             <a
@@ -301,7 +338,7 @@
           </li>
           {% endif %}
 
-          <!-- 6. SLEEVES -->
+          <!-- 8. SLEEVES -->
           {% if show_sleeves %}
           <li class="enamels-nav-item" id="nav-item-sleeves">
             <a
@@ -313,7 +350,7 @@
           </li>
           {% endif %}
 
-          <!-- 7. ACCESSORIES -->
+          <!-- 9. ACCESSORIES -->
           {% if show_accessories %}
           <li class="enamels-nav-item" id="nav-item-accessories">
             <a
@@ -325,21 +362,7 @@
           </li>
           {% endif %}
 
-          <!-- 8. DESIGN YOUR OWN SCRUBS — STUDIO -->
-          {% if show_ready_to_wear %}
-          <li class="enamels-nav-item" id="nav-item-ready-to-wear">
-            <a
-              href="#ready-to-wear"
-              class="enamels-nav-link"
-              onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('ready-to-wear'); return false; }"
-            >
-              {% if nav_studio_label != blank %}<span class="nav-link-text">{{ nav_studio_label | escape }}</span>{% endif %}
-              {% if nav_studio_badge != blank %}<span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>{% endif %}
-            </a>
-          </li>
-          {% endif %}
-
-          <!-- 9. BOOK A HOME FITTING — LAHORE ONLY -->
+          <!-- 10. BOOK A HOME FITTING — LAHORE ONLY -->
           {% if show_home_service %}
           <li class="enamels-nav-item" id="nav-item-home-service">
             <a
@@ -406,40 +429,62 @@
             </li>
           {% endfor %}
         {% else %}
-          <!-- 1. Scrubs -->
-          {% if show_scrubs %}
-          <li class="mobile-nav-item">
-            <a href="#category-scrubs" onclick="if(typeof window.navigateToView==='function') window.navigateToView('category-scrubs'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
-              <span>Scrubs Collection</span>
-            </a>
-            <div class="mobile-nav-sublist">
-              <a href="#sprinter" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Sprinter'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Sprinter Series (4-Way Stretch)</a>
-              <a href="#velora" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Velora'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Velora Series (Micro-Drape)</a>
-              <a href="#crown" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Crown'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Crown Series (Mandarin Collar)</a>
-              <a href="#flexwell" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Flexwell'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Flexwell Series (Aerocool Flex)</a>
-            </div>
-          </li>
-          {% endif %}
-
-          <!-- 2. Men -->
+          <!-- 1. Men (Primary Category) -->
           {% if show_men %}
           <li class="mobile-nav-item">
-            <a href="{{ routes.collections_url }}/all?category=men" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?gender=men" onclick="if(typeof window.navigateToGender==='function'){window.navigateToGender('men');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Men</span>
             </a>
           </li>
           {% endif %}
 
-          <!-- 3. Women -->
+          <!-- 2. Women (Primary Category) -->
           {% if show_women %}
           <li class="mobile-nav-item">
-            <a href="{{ routes.collections_url }}/all?category=women" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
+            <a href="{{ routes.collections_url }}/all?gender=women" onclick="if(typeof window.navigateToGender==='function'){window.navigateToGender('women');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
               <span>Women</span>
             </a>
           </li>
           {% endif %}
 
-          <!-- 4. Lab Coats -->
+          <!-- 3. Customize Your Own Scrubs -->
+          {% if show_ready_to_wear %}
+          <li class="mobile-nav-item">
+            <a href="/pages/customizer" onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal();}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
+              <span>{{ nav_studio_label | default: 'CUSTOMIZE YOUR OWN SCRUBS' | escape }}</span>
+              {% if nav_studio_badge != blank %}<span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>{% endif %}
+            </a>
+          </li>
+          {% endif %}
+
+          <!-- 4. Bulk Orders -->
+          {% if show_bulk_orders %}
+          <li class="mobile-nav-item">
+            <a href="/pages/bulk-orders" onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal();}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+              <span>{{ nav_bulk_orders_label | default: 'Bulk Orders (10+ Scrubs)' | escape }}</span>
+              <span class="nav-badge-pill" style="background: #0284c7; color: #ffffff;">{{ nav_bulk_orders_badge | default: 'INSTITUTIONAL' | escape }}</span>
+            </a>
+          </li>
+          {% endif %}
+
+          <li class="mobile-nav-divider"></li>
+
+          <!-- 5. Scrubs Collection -->
+          {% if show_scrubs %}
+          <li class="mobile-nav-item">
+            <a href="{{ routes.collections_url }}/all?category=scrubs" onclick="if(typeof window.navigateToView==='function') window.navigateToView('category-scrubs'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
+              <span>Scrubs Collection</span>
+            </a>
+            <div class="mobile-nav-sublist">
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=sprinter" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Sprinter'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Sprinter Series (4-Way Stretch)</a>
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=vilora" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Velora'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Velora Series (Micro-Drape)</a>
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=crown" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Crown'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Crown Series (Mandarin Collar)</a>
+              <a href="{{ routes.collections_url }}/all?category=scrubs&article=flexwell" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Flexwell'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Flexwell Series (Aerocool Flex)</a>
+            </div>
+          </li>
+          {% endif %}
+
+          <!-- 6. Lab Coats -->
           {% if show_lab_coats %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=lab-coats" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
@@ -448,16 +493,16 @@
           </li>
           {% endif %}
 
-          <!-- 5. Caps -->
+          <!-- 7. Caps -->
           {% if show_caps %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=caps" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Caps</span>
+              <span>Caps (BunFit™)</span>
             </a>
           </li>
           {% endif %}
 
-          <!-- 6. Sleeves -->
+          <!-- 8. Sleeves -->
           {% if show_sleeves %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=sleeves" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
@@ -466,7 +511,7 @@
           </li>
           {% endif %}
 
-          <!-- 7. Accessories -->
+          <!-- 9. Accessories -->
           {% if show_accessories %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=accessories" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
@@ -475,35 +520,7 @@
           </li>
           {% endif %}
 
-          <!-- Sale & Promotions -->
-          <li class="mobile-nav-item">
-            <a href="#sale" onclick="if(typeof window.filterCollectionByTag==='function'){window.filterCollectionByTag('sale-active');}else if(typeof window.navigateToCollection==='function'){window.navigateToCollection('sale');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
-              <span>Sale & Promotions</span>
-              <span class="nav-badge-pill" style="background: #e11d48; color: #ffffff;">SALE</span>
-            </a>
-          </li>
-
-          <!-- Bulk Orders -->
-          <li class="mobile-nav-item">
-            <a href="/pages/bulk-orders" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Bulk Orders (10+ Scrubs)</span>
-              <span class="nav-badge-pill" style="background: #0284c7; color: #ffffff;">INSTITUTIONAL</span>
-            </a>
-          </li>
-
-          <li class="mobile-nav-divider"></li>
-
-          <!-- 8. Design Your Own Scrubs -->
-          {% if show_ready_to_wear %}
-          <li class="mobile-nav-item">
-            <a href="#ready-to-wear" onclick="if(typeof window.navigateToView==='function') window.navigateToView('ready-to-wear'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
-              {% if nav_studio_label != blank %}<span>{{ nav_studio_label | escape }}</span>{% endif %}
-              {% if nav_studio_badge != blank %}<span class="nav-badge-pill badge-studio">{{ nav_studio_badge | escape }}</span>{% endif %}
-            </a>
-          </li>
-          {% endif %}
-
-          <!-- 9. Book a Home Fitting -->
+          <!-- Book a Home Fitting -->
           {% if show_home_service %}
           <li class="mobile-nav-item">
             <a href="#self-service" onclick="if(typeof window.navigateToView==='function') window.navigateToView('self-service'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link mobile-nav-highlight">
@@ -642,73 +659,91 @@
     },
     {
       "type": "checkbox",
-      "id": "show_nav_scrubs",
-      "label": "Show Scrubs (with Series Dropdown)",
-      "default": true
-    },
-    {
-      "type": "checkbox",
       "id": "show_nav_men",
-      "label": "Show Men's Collection",
+      "label": "1. Show Men's Collection",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_nav_women",
-      "label": "Show Women's Collection",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_nav_lab_coats",
-      "label": "Show Lab Coats",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_nav_caps",
-      "label": "Show Caps (BunFit™)",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_nav_sleeves",
-      "label": "Show Sleeves",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_nav_accessories",
-      "label": "Show Accessories Hub",
+      "label": "2. Show Women's Collection",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_nav_ready_to_wear",
-      "label": "Show Ready to Wear / Customizer Studio",
+      "label": "3. Show Customize Your Own Scrubs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_bulk_orders",
+      "label": "4. Show Bulk Orders",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_scrubs",
+      "label": "5. Show Scrubs (with Series Dropdown)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_lab_coats",
+      "label": "6. Show Lab Coats",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_caps",
+      "label": "7. Show Caps (BunFit™)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_sleeves",
+      "label": "8. Show Sleeves",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_nav_accessories",
+      "label": "9. Show Accessories Hub",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_nav_home_service",
-      "label": "Show Home Service (Lahore Visit)",
+      "label": "10. Show Home Service (Lahore Visit)",
       "default": true
     },
     {
       "type": "header",
-      "content": "Studio & Home Fitting Badges"
+      "content": "Studio & Bulk Order Badges"
     },
     {
       "type": "text",
       "id": "nav_studio_label",
-      "label": "Studio Option Label",
-      "default": "DESIGN YOUR OWN SCRUBS"
+      "label": "Customizer Option Label",
+      "default": "Customize Your Own Scrubs"
     },
     {
       "type": "text",
       "id": "nav_studio_badge",
-      "label": "Studio Badge Text",
+      "label": "Customizer Badge Text",
       "default": "STUDIO"
+    },
+    {
+      "type": "text",
+      "id": "nav_bulk_orders_label",
+      "label": "Bulk Orders Option Label",
+      "default": "Bulk Orders"
+    },
+    {
+      "type": "text",
+      "id": "nav_bulk_orders_badge",
+      "label": "Bulk Orders Badge Text",
+      "default": "INSTITUTIONAL"
     },
     {
       "type": "text",

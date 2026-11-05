@@ -19,60 +19,104 @@
 
     <!-- Product Grid -->
     <div class="enamels-na__grid">
-      {% for block in section.blocks %}
-        {% assign prod = block.settings.product %}
-        {% assign card_img = block.settings.image %}
-        {% assign card_fallback = block.settings.fallback_asset %}
-        {% assign card_link = block.settings.link %}
-        {% if card_link == blank and prod != blank %}
-          {% assign card_link = prod.url %}
-        {% endif %}
+      {%- liquid
+        assign target_collection = nil
+        if section.settings.collection != blank
+          assign target_collection = collections[section.settings.collection]
+        elsif section.blocks.size == 0
+          assign target_collection = collections['all']
+        endif
+      -%}
 
-        <div class="enamels-na-card" {{ block.shopify_attributes }}>
-          <a href="{{ card_link | default: '#' }}" class="enamels-na-card__link">
-            <div class="enamels-na-card__media">
-              {% if card_img != blank %}
-                <img
-                  src="{{ card_img | image_url: width: 600 }}"
-                  alt="{{ block.settings.title | escape }}"
-                  loading="lazy"
-                  width="250"
-                  height="340"
-                >
-              {% elsif prod.featured_media != blank %}
-                <img
-                  src="{{ prod.featured_media | image_url: width: 600 }}"
-                  alt="{{ block.settings.title | default: prod.title | escape }}"
-                  loading="lazy"
-                  width="250"
-                  height="340"
-                >
-              {% elsif card_fallback != blank %}
-                <img
-                  src="{{ card_fallback | asset_url }}"
-                  alt="{{ block.settings.title | escape }}"
-                  loading="lazy"
-                  width="250"
-                  height="340"
-                >
-              {% endif %}
-            </div>
-            
-            <div class="enamels-na-card__info">
-              <span class="enamels-na-card__title">
-                {{ block.settings.title | default: prod.title }}
-              </span>
-              <span class="enamels-na-card__price">
-                {% if prod != blank %}
-                  {{ prod.price | money_without_trailing_zeros }}
+      {%- if target_collection != blank and target_collection.products.size > 0 -%}
+        {%- for prod in target_collection.products limit: 6 -%}
+          <div class="enamels-na-card">
+            <a href="{{ prod.url }}" class="enamels-na-card__link">
+              <div class="enamels-na-card__media">
+                {% if prod.featured_media != blank %}
+                  <img
+                    src="{{ prod.featured_media | image_url: width: 600 }}"
+                    srcset="{{ prod.featured_media | image_url: width: 360 }} 360w, {{ prod.featured_media | image_url: width: 600 }} 600w"
+                    sizes="(max-width: 640px) 50vw, 16vw"
+                    alt="{{ prod.featured_media.alt | default: prod.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="375"
+                  >
                 {% else %}
-                  {{ block.settings.price | default: 'Rs 5900' }}
+                  <div class="enamels-na-card__placeholder">
+                    <span>Enamels</span>
+                  </div>
                 {% endif %}
-              </span>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
+              </div>
+              
+              <div class="enamels-na-card__info">
+                <span class="enamels-na-card__title">
+                  {{ prod.title | escape }}
+                </span>
+                <span class="enamels-na-card__price">
+                  {{ prod.price | money_without_trailing_zeros }}
+                </span>
+              </div>
+            </a>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {% for block in section.blocks %}
+          {% assign prod = block.settings.product %}
+          {% assign card_img = block.settings.image %}
+          {% assign card_fallback = block.settings.fallback_asset %}
+          {% assign card_link = block.settings.link %}
+          {% if card_link == blank and prod != blank %}
+            {% assign card_link = prod.url %}
+          {% endif %}
+
+          <div class="enamels-na-card" {{ block.shopify_attributes }}>
+            <a href="{{ card_link | default: '#' }}" class="enamels-na-card__link">
+              <div class="enamels-na-card__media">
+                {% if card_img != blank %}
+                  <img
+                    src="{{ card_img | image_url: width: 600 }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="340"
+                  >
+                {% elsif prod.featured_media != blank %}
+                  <img
+                    src="{{ prod.featured_media | image_url: width: 600 }}"
+                    alt="{{ block.settings.title | default: prod.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="340"
+                  >
+                {% elsif card_fallback != blank %}
+                  <img
+                    src="{{ card_fallback | asset_url }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    width="250"
+                    height="340"
+                  >
+                {% endif %}
+              </div>
+              
+              <div class="enamels-na-card__info">
+                <span class="enamels-na-card__title">
+                  {{ block.settings.title | default: prod.title }}
+                </span>
+                <span class="enamels-na-card__price">
+                  {% if prod != blank %}
+                    {{ prod.price | money_without_trailing_zeros }}
+                  {% else %}
+                    {{ block.settings.price | default: 'Rs 5900' }}
+                  {% endif %}
+                </span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {%- endif -%}
     </div>
   </div>
 </section>
@@ -207,6 +251,12 @@
       "type": "url",
       "id": "view_all_link",
       "label": "View All Link"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Shopify Collection",
+      "info": "Select collection to display real products. If left blank and no manual blocks are defined, all products will be shown."
     },
     {
       "type": "range",

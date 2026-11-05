@@ -71,9 +71,29 @@
             {% assign card_img = col.featured_image %}
           {% endif %}
           {% assign card_fallback = block.settings.fallback_asset %}
+          {% assign card_title_upper = card_title | upcase %}
+          {% assign card_link_lower = card_link | downcase %}
+          {% assign is_customizer_pill = false %}
+          {% assign is_bulk_pill = false %}
+          {% assign is_intl_pill = false %}
+
+          {% if card_link_lower contains 'customizer' or card_title_upper contains 'CUSTOMIZE' %}
+            {% assign is_customizer_pill = true %}
+          {% elsif card_link_lower contains 'bulk' or card_title_upper contains 'BULK' %}
+            {% assign is_bulk_pill = true %}
+          {% elsif card_link_lower contains 'intl' or card_link_lower contains 'international' or card_title_upper contains 'INTERNATIONAL' %}
+            {% assign is_intl_pill = true %}
+          {% endif %}
 
           <a
-            href="{{ card_link }}"
+            href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
+            {% if is_customizer_pill %}
+              onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+            {% elsif is_bulk_pill %}
+              onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+            {% elsif is_intl_pill %}
+              onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
+            {% endif %}
             class="enamels-cat-card enamels-cat-card--carousel"
             {{ block.shopify_attributes }}
           >
@@ -148,9 +168,29 @@
               {% assign card_img = col.featured_image %}
             {% endif %}
             {% assign card_fallback = block.settings.fallback_asset %}
+            {% assign card_title_upper = card_title | upcase %}
+            {% assign card_link_lower = card_link | downcase %}
+            {% assign is_customizer_pill = false %}
+            {% assign is_bulk_pill = false %}
+            {% assign is_intl_pill = false %}
+
+            {% if card_link_lower contains 'customizer' or card_title_upper contains 'CUSTOMIZE' %}
+              {% assign is_customizer_pill = true %}
+            {% elsif card_link_lower contains 'bulk' or card_title_upper contains 'BULK' %}
+              {% assign is_bulk_pill = true %}
+            {% elsif card_link_lower contains 'intl' or card_link_lower contains 'international' or card_title_upper contains 'INTERNATIONAL' %}
+              {% assign is_intl_pill = true %}
+            {% endif %}
 
             <a
-              href="{{ card_link }}"
+              href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
+              {% if is_customizer_pill %}
+                onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+              {% elsif is_bulk_pill %}
+                onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+              {% elsif is_intl_pill %}
+                onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
+              {% endif %}
               class="enamels-cat-card enamels-cat-card--grid"
               style="--stagger-index: {{ forloop.index }};"
             >
@@ -194,13 +234,42 @@
 
 <style>
   #enamels-cats-{{ section.id }} {
-    padding-top: {{ section.settings.padding_top | default: 16 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | default: 28 }}px;
+    --cats-title-size-desk: {{ section.settings.title_size_desktop | default: 20 }}px;
+    --cats-title-size-mob: {{ section.settings.title_size_mobile | default: 16 }}px;
+    --cats-sub-size-desk: {{ section.settings.subtitle_size_desktop | default: 13 }}px;
+    --cats-sub-size-mob: {{ section.settings.subtitle_size_mobile | default: 11 }}px;
+    --cats-card-h-desk: {{ section.settings.card_height_desktop | default: 60 }}px;
+    --cats-card-h-mob: {{ section.settings.card_height_mobile | default: 52 }}px;
+    --cats-card-pad-v: {{ section.settings.card_padding_vertical | default: 6 }}px;
+    --cats-card-pad-h: {{ section.settings.card_padding_horizontal | default: 12 }}px;
+    --cats-card-title-size-desk: {{ section.settings.card_title_size_desktop | default: 13 }}px;
+    --cats-card-title-size-mob: {{ section.settings.card_title_size_mobile | default: 12 }}px;
+    --cats-card-sub-size-desk: {{ section.settings.card_sub_size_desktop | default: 11 }}px;
+    --cats-card-sub-size-mob: {{ section.settings.card_sub_size_mobile | default: 10 }}px;
+    --cats-card-img-max-h-desk: {{ section.settings.card_img_max_h_desktop | default: 52 }}px;
+    --cats-card-img-max-h-mob: {{ section.settings.card_img_max_h_mobile | default: 46 }}px;
+    --cats-card-radius: {{ section.settings.card_radius | default: 8 }}px;
+    --cats-card-bg: {{ section.settings.card_bg | default: '#dfdfdf' }};
+    --cats-card-title-color: {{ section.settings.card_title_color | default: '#111111' }};
+    --cats-card-sub-color: {{ section.settings.card_sub_color | default: '#666666' }};
+    --cats-gap-desk: {{ section.settings.card_gap_desktop | default: section.settings.card_gap | default: 10 }}px;
+    --cats-gap-mob: {{ section.settings.card_gap_mobile | default: 8 }}px;
+    --cats-pad-top-desk: {{ section.settings.padding_top_desktop | default: section.settings.padding_top | default: 16 }}px;
+    --cats-pad-top-mob: {{ section.settings.padding_top_mobile | default: 12 }}px;
+    --cats-pad-bot-desk: {{ section.settings.padding_bottom_desktop | default: section.settings.padding_bottom | default: 28 }}px;
+    --cats-pad-bot-mob: {{ section.settings.padding_bottom_mobile | default: 20 }}px;
+    --cats-container-max-w: {{ section.settings.container_max_width | default: 1320 }}px;
+    --cats-mob-card-w: {{ section.settings.card_width_mobile | default: 72 }}%;
+
+    padding-top: var(--cats-pad-top-desk);
+    padding-bottom: var(--cats-pad-bot-desk);
+    {% if section.settings.section_bg != blank %}background-color: {{ section.settings.section_bg }};{% endif %}
     position: relative;
+    overflow-x: clip;
   }
 
   #enamels-cats-{{ section.id }} .enamels-cats__container {
-    max-width: 1320px;
+    max-width: var(--cats-container-max-w);
     margin: 0 auto;
     padding: 0 16px;
   }
@@ -221,15 +290,15 @@
   }
 
   .enamels-section-head__title {
-    font-size: 1.25rem;
+    font-size: var(--cats-title-size-desk);
     font-weight: 700;
-    color: #111111;
+    color: {{ section.settings.title_color | default: '#111111' }};
     margin: 0;
     letter-spacing: -0.01em;
   }
 
   .enamels-section-head__subtitle {
-    font-size: 0.8rem;
+    font-size: var(--cats-sub-size-desk);
     color: #666666;
     margin: 0;
   }
@@ -241,7 +310,7 @@
     gap: 6px;
     background: transparent;
     border: none;
-    padding: 6px 10px;
+    padding: 8px 14px;
     border-radius: 20px;
     cursor: pointer;
     color: #333333;
@@ -249,6 +318,8 @@
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.01em;
+    min-height: 44px;
+    min-width: 44px;
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
   }
 
@@ -294,8 +365,8 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background-color: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.08);
@@ -318,22 +389,24 @@
   }
 
   .enamels-cat-arrow--left {
-    left: -12px;
+    left: -14px;
   }
 
   .enamels-cat-arrow--right {
-    right: -12px;
+    right: -14px;
   }
 
   /* Carousel Track */
   .enamels-cats-track {
     display: flex;
-    gap: {{ section.settings.card_gap | default: 10 }}px;
+    gap: var(--cats-gap-desk);
     overflow-x: auto;
     scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 4px 2px;
+    padding: 6px 2px;
     width: 100%;
     align-items: stretch;
   }
@@ -347,13 +420,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: {{ section.settings.card_bg | default: '#dfdfdf' }};
-    border-radius: {{ section.settings.card_radius | default: 8 }}px;
-    padding: 6px 8px 6px 14px;
+    background-color: var(--cats-card-bg);
+    border-radius: var(--cats-card-radius);
+    padding: var(--cats-card-pad-v) var(--cats-card-pad-h);
     text-decoration: none;
     overflow: hidden;
     position: relative;
-    min-height: 60px;
+    min-height: var(--cats-card-h-desk);
+    scroll-snap-align: start;
     transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.2, 0, 0.2, 1), background-color 0.2s ease;
   }
 
@@ -363,7 +437,7 @@
   }
 
   .enamels-cat-card--carousel {
-    flex: 0 0 calc((100% - ({{ section.settings.card_gap | default: 10 }}px * 5)) / 6);
+    flex: 0 0 calc((100% - (var(--cats-gap-desk) * 5)) / 6);
     min-width: 190px;
   }
 
@@ -378,9 +452,9 @@
   }
 
   .enamels-cat-card__title {
-    font-size: 0.82rem;
+    font-size: var(--cats-card-title-size-desk);
     font-weight: 700;
-    color: #111111;
+    color: var(--cats-card-title-color);
     text-transform: uppercase;
     line-height: 1.15;
     letter-spacing: 0.02em;
@@ -388,8 +462,8 @@
   }
 
   .enamels-cat-card__subtitle {
-    font-size: 0.68rem;
-    color: #666666;
+    font-size: var(--cats-card-sub-size-desk);
+    color: var(--cats-card-sub-color);
     margin-top: 2px;
     font-weight: 500;
     line-height: 1.2;
@@ -425,7 +499,7 @@
   .enamels-cat-card__media img {
     height: 100%;
     width: auto;
-    max-height: 52px;
+    max-height: var(--cats-card-img-max-h-desk);
     object-fit: {{ section.settings.image_fit | default: 'contain' }};
     display: block;
     transition: transform 0.3s ease;
@@ -481,20 +555,15 @@
   /* Responsive Expanded Grid Layouts */
   .enamels-cats-grid {
     display: grid;
-    gap: {{ section.settings.card_gap | default: 10 }}px;
+    gap: var(--cats-gap-desk);
   }
 
-  .enamels-cats-grid--desktop-6 {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  .enamels-cats-grid--desktop-5 {
-    grid-template-columns: repeat(5, 1fr);
-  }
-
-  .enamels-cats-grid--desktop-4 {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .enamels-cats-grid--desktop-8 { grid-template-columns: repeat(8, 1fr); }
+  .enamels-cats-grid--desktop-7 { grid-template-columns: repeat(7, 1fr); }
+  .enamels-cats-grid--desktop-6 { grid-template-columns: repeat(6, 1fr); }
+  .enamels-cats-grid--desktop-5 { grid-template-columns: repeat(5, 1fr); }
+  .enamels-cats-grid--desktop-4 { grid-template-columns: repeat(4, 1fr); }
+  .enamels-cats-grid--desktop-3 { grid-template-columns: repeat(3, 1fr); }
 
   /* Card in Expanded Grid with subtle cascade entry */
   .enamels-cats-drawer[aria-hidden="false"] .enamels-cat-card--grid {
@@ -516,58 +585,64 @@
   /* Tablet Adjustments */
   @media (max-width: 1024px) {
     .enamels-cat-card--carousel {
-      flex: 0 0 calc((100% - ({{ section.settings.card_gap | default: 10 }}px * 2)) / 3);
+      flex: 0 0 calc((100% - (var(--cats-gap-desk) * 2)) / 3);
       min-width: 180px;
     }
 
-    .enamels-cats-grid--tablet-4 {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .enamels-cats-grid--tablet-3 {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .enamels-cats-grid--tablet-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .enamels-cats-grid--tablet-5 { grid-template-columns: repeat(5, 1fr); }
+    .enamels-cats-grid--tablet-4 { grid-template-columns: repeat(4, 1fr); }
+    .enamels-cats-grid--tablet-3 { grid-template-columns: repeat(3, 1fr); }
+    .enamels-cats-grid--tablet-2 { grid-template-columns: repeat(2, 1fr); }
   }
 
   /* Mobile Adjustments */
   @media (max-width: 640px) {
+    #enamels-cats-{{ section.id }} {
+      padding-top: var(--cats-pad-top-mob);
+      padding-bottom: var(--cats-pad-bot-mob);
+    }
+
     #enamels-cats-{{ section.id }} .enamels-cats__container {
       padding: 0 12px;
     }
 
     .enamels-section-head__title {
-      font-size: 1.1rem;
+      font-size: var(--cats-title-size-mob);
+    }
+
+    .enamels-section-head__subtitle {
+      font-size: var(--cats-sub-size-mob);
     }
 
     .enamels-cat-toggle-btn {
       font-size: 0.78rem;
-      padding: 4px 8px;
+      padding: 6px 10px;
     }
 
     .enamels-cat-arrow {
       display: none;
     }
 
+    .enamels-cats-track {
+      gap: var(--cats-gap-mob);
+    }
+
     .enamels-cat-card--carousel {
-      flex: 0 0 72%;
-      min-width: 170px;
+      flex: 0 0 var(--cats-mob-card-w);
+      min-width: 160px;
     }
 
     .enamels-cat-card {
-      min-height: 54px;
-      padding: 4px 6px 4px 10px;
+      min-height: var(--cats-card-h-mob);
+      padding: var(--cats-card-pad-v) var(--cats-card-pad-h);
     }
 
     .enamels-cat-card__title {
-      font-size: 0.75rem;
+      font-size: var(--cats-card-title-size-mob);
     }
 
     .enamels-cat-card__subtitle {
-      font-size: 0.62rem;
+      font-size: var(--cats-card-sub-size-mob);
     }
 
     .enamels-cat-card__media {
@@ -575,17 +650,23 @@
     }
 
     .enamels-cat-card__media img {
-      max-height: 48px;
+      max-height: var(--cats-card-img-max-h-mob);
+    }
+
+    .enamels-cats-grid {
+      gap: var(--cats-gap-mob);
+    }
+
+    .enamels-cats-grid--mobile-3 {
+      grid-template-columns: repeat(3, 1fr);
     }
 
     .enamels-cats-grid--mobile-2 {
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
     }
 
     .enamels-cats-grid--mobile-1 {
       grid-template-columns: 1fr;
-      gap: 8px;
     }
 
     .enamels-cats-drawer__header {
@@ -706,6 +787,56 @@
     },
     {
       "type": "header",
+      "content": "Typography (Desktop & Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Section Title Size (Desktop)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Section Title Size (Mobile)",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#111111"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_desktop",
+      "min": 11,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle Size (Desktop)",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_mobile",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle Size (Mobile)",
+      "default": 11
+    },
+    {
+      "type": "header",
       "content": "Interactive Expand Controls"
     },
     {
@@ -745,9 +876,12 @@
       "id": "grid_cols_desktop",
       "label": "Desktop Columns",
       "options": [
+        { "value": "3", "label": "3 Columns" },
         { "value": "4", "label": "4 Columns" },
         { "value": "5", "label": "5 Columns" },
-        { "value": "6", "label": "6 Columns" }
+        { "value": "6", "label": "6 Columns" },
+        { "value": "7", "label": "7 Columns" },
+        { "value": "8", "label": "8 Columns" }
       ],
       "default": "6"
     },
@@ -758,7 +892,8 @@
       "options": [
         { "value": "2", "label": "2 Columns" },
         { "value": "3", "label": "3 Columns" },
-        { "value": "4", "label": "4 Columns" }
+        { "value": "4", "label": "4 Columns" },
+        { "value": "5", "label": "5 Columns" }
       ],
       "default": "3"
     },
@@ -768,13 +903,150 @@
       "label": "Mobile Columns",
       "options": [
         { "value": "1", "label": "1 Column" },
-        { "value": "2", "label": "2 Columns" }
+        { "value": "2", "label": "2 Columns" },
+        { "value": "3", "label": "3 Columns" }
       ],
       "default": "2"
     },
     {
       "type": "header",
-      "content": "Card Styling & Appearance"
+      "content": "Card Sizing & Layout (Desktop & Mobile)"
+    },
+    {
+      "type": "range",
+      "id": "card_height_desktop",
+      "min": 44,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Min Height (Desktop)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "min": 40,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Min Height (Mobile)",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "min": 40,
+      "max": 95,
+      "step": 5,
+      "unit": "%",
+      "label": "Mobile Carousel Card Width",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "card_padding_horizontal",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Horizontal Padding",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_padding_vertical",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Vertical Padding",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Corner Radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_gap_desktop",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Gap (Desktop)",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Gap (Mobile)",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Card Typography & Colors"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_desktop",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Title Size (Desktop)",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_mobile",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Title Size (Mobile)",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Card Title Color",
+      "default": "#111111"
+    },
+    {
+      "type": "range",
+      "id": "card_sub_size_desktop",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Subtitle Size (Desktop)",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "card_sub_size_mobile",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Subtitle Size (Mobile)",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "card_sub_color",
+      "label": "Card Subtitle Color",
+      "default": "#666666"
     },
     {
       "type": "color",
@@ -783,24 +1055,28 @@
       "default": "#dfdfdf"
     },
     {
-      "type": "range",
-      "id": "card_radius",
-      "min": 0,
-      "max": 24,
-      "step": 2,
-      "unit": "px",
-      "label": "Card Corner Radius",
-      "default": 8
+      "type": "header",
+      "content": "Image Controls"
     },
     {
       "type": "range",
-      "id": "card_gap",
-      "min": 6,
-      "max": 20,
+      "id": "card_img_max_h_desktop",
+      "min": 30,
+      "max": 90,
       "step": 2,
       "unit": "px",
-      "label": "Card Spacing / Gap",
-      "default": 10
+      "label": "Image Max Height (Desktop)",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "card_img_max_h_mobile",
+      "min": 24,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "label": "Image Max Height (Mobile)",
+      "default": 46
     },
     {
       "type": "select",
@@ -814,27 +1090,62 @@
     },
     {
       "type": "header",
-      "content": "Section Spacing"
+      "content": "Section Sizing & Padding"
     },
     {
       "type": "range",
-      "id": "padding_top",
+      "id": "container_max_width",
+      "min": 1000,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "label": "Container Max Width",
+      "default": 1320
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background Color"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
       "min": 0,
-      "max": 60,
+      "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Padding Top",
+      "label": "Padding Top (Desktop)",
       "default": 16
     },
     {
       "type": "range",
-      "id": "padding_bottom",
+      "id": "padding_top_mobile",
       "min": 0,
       "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top (Mobile)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 120,
       "step": 4,
       "unit": "px",
-      "label": "Padding Bottom",
+      "label": "Padding Bottom (Desktop)",
       "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom (Mobile)",
+      "default": 20
     }
   ],
   "blocks": [
@@ -922,8 +1233,18 @@
             "title": "CUSTOMIZE SCRUBS",
             "subtitle": "Bespoke Doctor Embroidery",
             "badge_text": "BESPOKE",
-            "link": "/pages/customizer",
+            "link": "#customizer",
             "fallback_asset": "enamels-cat-customize.jpg"
+          }
+        },
+        {
+          "type": "category_pill",
+          "settings": {
+            "title": "BULK ORDERS",
+            "subtitle": "Hospital & Clinic Bulk Supply",
+            "badge_text": "10+ UNITS",
+            "link": "#bulk-orders",
+            "fallback_asset": "enamels-cat-intl-order.jpg"
           }
         },
         {
@@ -931,7 +1252,7 @@
           "settings": {
             "title": "INTERNATIONAL ORDER",
             "subtitle": "Worldwide Express Dispatch",
-            "link": "/pages/bulk-orders",
+            "link": "#international-delivery",
             "fallback_asset": "enamels-cat-intl-order.jpg"
           }
         },

@@ -14,9 +14,16 @@
   assign enable_slideshow = section.settings.enable_slideshow | default: true
   assign bg_color = section.settings.bg_color | default: '#e8e8e8'
   assign full_width = section.settings.full_width | default: false
-  assign height_desk = section.settings.banner_height_desktop | default: 270
-  assign height_mob = section.settings.banner_height_mobile | default: 175
+
+  # Standard Hero Banner Dimensions: 2000px x 767px (Approx 2.61:1 Aspect Ratio)
+  assign width_desk = section.settings.banner_width_desktop | default: 2000
+  assign height_desk = section.settings.banner_height_desktop | default: 767
+  assign height_tab = section.settings.banner_height_tablet | default: 520
+  assign height_mob = section.settings.banner_height_mobile | default: 320
+  assign banner_aspect = section.settings.custom_aspect_ratio | default: '2000 / 767'
   assign image_fit = section.settings.image_fit | default: 'contain'
+  assign image_pos = section.settings.image_position | default: 'center'
+
   assign autoplay = section.settings.autoplay
   if autoplay == nil
     assign autoplay = true
@@ -47,8 +54,13 @@
   data-autoplay-speed="{{ autoplay_speed }}"
   style="
     --slider-bg: {{ bg_color }};
+    --slider-w-desktop: {{ width_desk }}px;
     --slider-h-desktop: {{ height_desk }}px;
+    --slider-h-tablet: {{ height_tab }}px;
     --slider-h-mobile: {{ height_mob }}px;
+    --slider-aspect: {{ banner_aspect }};
+    --slider-img-fit: {{ image_fit }};
+    --slider-img-pos: {{ image_pos }};
   "
 >
   <div class="enamels-hero-slider__container{% if full_width %} enamels-hero-slider__container--full{% endif %}">
@@ -231,7 +243,7 @@
   }
 
   .enamels-hero-slider__container {
-    max-width: 1320px;
+    max-width: var(--slider-w-desktop, 2000px);
     margin: 0 auto;
     padding: 0 16px;
   }
@@ -244,14 +256,23 @@
   .enamels-hero-slider__viewport {
     position: relative;
     width: 100%;
-    height: var(--slider-h-desktop, 270px);
+    height: var(--slider-h-desktop, 767px);
+    aspect-ratio: var(--slider-aspect, 2000 / 767);
     overflow: hidden;
     background-color: var(--slider-bg, #e8e8e8);
   }
 
+  @media (max-width: 1024px) {
+    .enamels-hero-slider__viewport {
+      height: var(--slider-h-tablet, 520px);
+      aspect-ratio: auto;
+    }
+  }
+
   @media (max-width: 767px) {
     .enamels-hero-slider__viewport {
-      height: var(--slider-h-mobile, 175px);
+      height: var(--slider-h-mobile, 320px);
+      aspect-ratio: auto;
     }
   }
 
@@ -302,14 +323,9 @@
   .enamels-hero-slider__img {
     width: 100%;
     height: 100%;
-    object-position: right center;
+    object-fit: var(--slider-img-fit, contain);
+    object-position: var(--slider-img-pos, center);
     display: block;
-  }
-
-  @media (max-width: 767px) {
-    .enamels-hero-slider__img {
-      object-position: 85% center;
-    }
   }
 
   .enamels-hero-slider__placeholder {
@@ -652,32 +668,84 @@
       "default": false
     },
     {
+      "type": "header",
+      "content": "Hero Banner Sizing (2000x767 Standard)"
+    },
+    {
+      "type": "range",
+      "id": "banner_width_desktop",
+      "label": "Banner Width Desktop (px)",
+      "min": 1000,
+      "max": 2560,
+      "step": 20,
+      "unit": "px",
+      "default": 2000
+    },
+    {
       "type": "range",
       "id": "banner_height_desktop",
-      "label": "Desktop Height (px)",
-      "min": 180,
-      "max": 500,
+      "label": "Banner Height Desktop (px)",
+      "min": 300,
+      "max": 1200,
       "step": 10,
-      "default": 270
+      "unit": "px",
+      "default": 770
+    },
+    {
+      "type": "range",
+      "id": "banner_height_tablet",
+      "label": "Banner Height Tablet (px)",
+      "min": 250,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 520
     },
     {
       "type": "range",
       "id": "banner_height_mobile",
-      "label": "Mobile Height (px)",
-      "min": 130,
-      "max": 300,
-      "step": 5,
-      "default": 175
+      "label": "Banner Height Mobile (px)",
+      "min": 150,
+      "max": 550,
+      "step": 10,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "type": "select",
+      "id": "custom_aspect_ratio",
+      "label": "Banner Aspect Ratio",
+      "options": [
+        { "value": "2000 / 767", "label": "2.61:1 (2000x767 Standard Hero)" },
+        { "value": "16 / 9", "label": "16:9 Landscape" },
+        { "value": "21 / 9", "label": "21:9 Ultra-Wide Cinematic" },
+        { "value": "3 / 1", "label": "3:1 Panoramic Banner" },
+        { "value": "auto", "label": "Auto / Adapt to Height" }
+      ],
+      "default": "2000 / 767"
     },
     {
       "type": "select",
       "id": "image_fit",
       "label": "Image Fit",
       "options": [
-        { "value": "contain", "label": "Contain (Preserves Whole Image)" },
-        { "value": "cover", "label": "Cover (Fills Banner Container)" }
+        { "value": "contain", "label": "Contain (Preserves Image)" },
+        { "value": "cover", "label": "Cover (Fills Container)" }
       ],
       "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Alignment Position",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" }
+      ],
+      "default": "center"
     },
     {
       "type": "checkbox",

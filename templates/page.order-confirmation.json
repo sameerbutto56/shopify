@@ -1,0 +1,15 @@
+{
+  "sections": {
+    "main": {
+      "type": "enamels-order-confirmation",
+      "settings": {
+        "padding_top": 30,
+        "padding_bottom": 60
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
+

@@ -1,40 +1,157 @@
 {% comment %}
   Enamels Dedicated Category / Collection Page Template Section
-  Matches exact layout from reference design (media_1793779461369_efe24deb.jpg):
-  1. Top Hero Category Banner (rounded corners, clean responsive height)
-  2. Category Navigation Bar (MEN, WOMEN, NEW ARRIVALS, CUSTOMIZE SCRUBS, INTERNATIONAL ORDER, LABCOATS)
-  3. Section Heading ("New Arrivals" / "Men's Collection" / "Women's Collection")
-  4. 6-Product Responsive Grid (6 cards row on desktop, 2 cols on mobile)
-  5. Full Shopify collection support + curated fallback items matching reference
+  Complete Category Navigation Flow & Genuine Product Browsing Engine
+  1. Top Hero Category Banner (rounded corners, responsive height, Studio editable)
+  2. Top Horizontal Scrollable Category Thumbnail Carousel:
+     - 🩺 Scrubs
+     - 🥼 White Coats
+     - 🧪 Lab Coats
+     - 🧢 Caps (BunFit™)
+     - 👟 Accessories
+     - 🌟 All Products
+  3. Interactive Article Sub-Filter Bar (under Scrubs: All Scrubs, Crown, Vilora, Sprinter, Flexwell)
+  4. Real Shopify Product Loop (1200x1800 standard 2:3 portrait cards, clinical color swatches)
+  5. Strict Gender Isolation (Men -> Men products only; Women -> Women products only)
+  6. Full Shopify Studio Editor Customization Controls
 {% endcomment %}
 
 {%- liquid
+  # 1. Target Collection Resolution
+  assign target_col = collection
+  if target_col == blank or target_col.products.size == 0
+    if section.settings.collection != blank
+      assign target_col = collections[section.settings.collection]
+    endif
+  endif
+  if target_col == blank or target_col.products.size == 0
+    assign target_col = collections['all']
+  endif
+
+  # 2. Gender Context Resolution
+  assign initial_gender = section.settings.gender_filter | default: 'auto'
+  assign query_str = request.path | append: '?' | append: request.query_string | downcase
+
+  if initial_gender == 'auto'
+    if query_str contains 'gender=men' or query_str contains 'category=men' or collection.handle contains 'men' or request.path contains '/men'
+      assign current_gender = 'men'
+    elsif query_str contains 'gender=women' or query_str contains 'category=women' or collection.handle contains 'women' or request.path contains '/women'
+      assign current_gender = 'women'
+    else
+      assign current_gender = 'all'
+    endif
+  else
+    assign current_gender = initial_gender
+  endif
+
+  # 3. Category & Article Initial Context
   assign current_cat = 'all'
-  assign query_str = request.path | append: '?' | append: request.query_string
-  if query_str contains 'category=men' or query_str contains 'gender=men' or collection.handle contains 'men'
-    assign current_cat = 'men'
-  elsif query_str contains 'category=women' or query_str contains 'gender=women' or collection.handle contains 'women'
-    assign current_cat = 'women'
-  elsif query_str contains 'category=lab-coats' or collection.handle contains 'lab'
+  if query_str contains 'category=scrubs'
+    assign current_cat = 'scrubs'
+  elsif query_str contains 'category=white-coats'
+    assign current_cat = 'white-coats'
+  elsif query_str contains 'category=lab-coats' or query_str contains 'category=lab'
     assign current_cat = 'lab-coats'
+  elsif query_str contains 'category=caps'
+    assign current_cat = 'caps'
+  elsif query_str contains 'category=accessories'
+    assign current_cat = 'accessories'
+  elsif query_str contains 'category=sleeves'
+    assign current_cat = 'sleeves'
   endif
 
-  assign title_text = section.settings.title | default: 'New Arrivals'
-  if current_cat == 'men' and section.settings.title == 'New Arrivals'
-    assign title_text = "Men's Collection"
-  elsif current_cat == 'women' and section.settings.title == 'New Arrivals'
-    assign title_text = "Women's Collection"
+  assign current_article = 'all'
+  if query_str contains 'article=sprinter'
+    assign current_article = 'sprinter'
+  elsif query_str contains 'article=vilora' or query_str contains 'article=velora'
+    assign current_article = 'vilora'
+  elsif query_str contains 'article=crown'
+    assign current_article = 'crown'
+  elsif query_str contains 'article=flexwell'
+    assign current_article = 'flexwell'
   endif
 
+  # 4. Heading & Subtitle
+  assign title_text = section.settings.title
+  if title_text == blank or title_text == 'New Arrivals' or title_text == "Collection"
+    if current_gender == 'men'
+      assign title_text = "Men's Collection"
+    elsif current_gender == 'women'
+      assign title_text = "Women's Collection"
+    else
+      assign title_text = "New Arrivals"
+    endif
+  endif
+
+  # 5. Visual Sizing Settings
   assign banner_img = section.settings.banner_image
   assign banner_img_mob = section.settings.banner_image_mobile
   assign banner_h_desk = section.settings.banner_height_desktop | default: 270
   assign banner_h_mob = section.settings.banner_height_mobile | default: 175
   assign banner_radius = section.settings.banner_radius | default: 16
   assign banner_bg = section.settings.banner_bg | default: '#e8e8e8'
+  assign container_max_w = section.settings.container_max_width | default: 1320
+  assign cols_desk = section.settings.grid_cols_desktop | default: 6
+  assign cols_tab = section.settings.grid_cols_tablet | default: 3
+  assign cols_mob = section.settings.grid_cols_mobile | default: 2
+  assign gap_desk = section.settings.grid_gap_desktop | default: 12
+  assign gap_mob = section.settings.grid_gap_mobile | default: 10
+  assign card_aspect = section.settings.card_aspect_ratio | default: '2 / 3'
+  assign card_fit = section.settings.card_image_fit | default: 'contain'
+  assign card_pos = section.settings.card_image_position | default: 'center'
+  assign card_bg = section.settings.card_image_bg | default: '#f8fafc'
+  assign card_rad = section.settings.card_radius | default: 8
+  assign pad_top_desk = section.settings.padding_top_desktop | default: 16
+  assign pad_top_mob = section.settings.padding_top_mobile | default: 12
+  assign pad_bot_desk = section.settings.padding_bottom_desktop | default: 48
+  assign pad_bot_mob = section.settings.padding_bottom_mobile | default: 30
+  assign heading_size_desk = section.settings.heading_size_desktop | default: 22
+  assign heading_size_mob = section.settings.heading_size_mobile | default: 18
+  assign heading_align = section.settings.heading_alignment | default: 'left'
+  assign show_category_carousel = section.settings.show_category_carousel
+  if show_category_carousel == nil
+    assign show_category_carousel = true
+  endif
+  assign show_article_filter = section.settings.show_article_filter
+  if show_article_filter == nil
+    assign show_article_filter = true
+  endif
+  assign show_swatches = section.settings.show_color_swatches
+  if show_swatches == nil
+    assign show_swatches = true
+  endif
 -%}
 
-<div class="enamels-cat-page" id="enamels-cat-page-{{ section.id }}">
+<div
+  class="enamels-cat-page"
+  id="enamels-cat-page-{{ section.id }}"
+  data-initial-gender="{{ current_gender }}"
+  data-initial-category="{{ current_cat }}"
+  data-initial-article="{{ current_article }}"
+  style="
+    --cat-page-max-w: {{ container_max_w }}px;
+    --cat-page-pad-top-desk: {{ pad_top_desk }}px;
+    --cat-page-pad-top-mob: {{ pad_top_mob }}px;
+    --cat-page-pad-bot-desk: {{ pad_bot_desk }}px;
+    --cat-page-pad-bot-mob: {{ pad_bot_mob }}px;
+    --cat-grid-cols-desk: {{ cols_desk }};
+    --cat-grid-cols-tab: {{ cols_tab }};
+    --cat-grid-cols-mob: {{ cols_mob }};
+    --cat-grid-gap-desk: {{ gap_desk }}px;
+    --cat-grid-gap-mob: {{ gap_mob }}px;
+    --cat-card-aspect: {{ card_aspect }};
+    --cat-card-fit: {{ card_fit }};
+    --cat-card-pos: {{ card_pos }};
+    --cat-card-bg: {{ card_bg }};
+    --cat-card-radius: {{ card_rad }}px;
+    --cat-head-size-desk: {{ heading_size_desk }}px;
+    --cat-head-size-mob: {{ heading_size_mob }}px;
+    --cat-head-align: {{ heading_align }};
+    --cat-title-size-desk: {{ section.settings.card_title_size_desktop | default: 12 }}px;
+    --cat-title-size-mob: {{ section.settings.card_title_size_mobile | default: 11 }}px;
+    --cat-price-size-desk: {{ section.settings.card_price_size_desktop | default: 12 }}px;
+    --cat-price-size-mob: {{ section.settings.card_price_size_mobile | default: 11 }}px;
+  "
+>
   <div class="enamels-cat-page__container">
 
     <!-- 1. Top Hero Category Banner -->
@@ -63,9 +180,8 @@
           >
         </picture>
       {% else %}
-        <!-- Default High-Fidelity Studio Category Photography -->
         <picture>
-          {% if current_cat == 'men' %}
+          {% if current_gender == 'men' %}
             <source media="(max-width: 767px)" srcset="{{ 'enamels-frontpage-hero-mobile.jpg' | asset_url }}">
             <img
               src="{{ 'enamels-frontpage-hero.jpg' | asset_url }}"
@@ -76,7 +192,7 @@
               width="1400"
               height="500"
             >
-          {% elsif current_cat == 'women' %}
+          {% elsif current_gender == 'women' %}
             <source media="(max-width: 767px)" srcset="{{ 'banner-autumn.jpg' | asset_url }}">
             <img
               src="{{ 'banner-autumn.jpg' | asset_url }}"
@@ -103,155 +219,884 @@
       {% endif %}
     </div>
 
-    <!-- 2. Category Navigation Bar -->
-    <div class="enamels-cat-page__nav-strip">
-      <div class="enamels-cat-page__nav-grid">
-        <!-- MEN -->
-        <a
-          href="/collections/all?category=men"
-          class="enamels-cat-nav-pill{% if current_cat == 'men' %} is-active{% endif %}"
+    <!-- 2. Gender Tab Bar (Quick Switcher) -->
+    <div class="enamels-gender-tabs">
+      <div class="enamels-gender-tabs__track">
+        <button
+          type="button"
+          class="enamels-gender-tab{% if current_gender == 'men' %} is-active{% endif %}"
+          data-gender-target="men"
+          aria-label="Filter by Men's Medical Apparel"
         >
-          <span class="enamels-cat-nav-pill__text">MEN</span>
-          <img src="{{ 'enamels-cat-men.jpg' | asset_url }}" alt="Men" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
-        </a>
-
-        <!-- WOMEN -->
-        <a
-          href="/collections/all?category=women"
-          class="enamels-cat-nav-pill{% if current_cat == 'women' %} is-active{% endif %}"
+          <span class="enamels-gender-tab__indicator"></span>
+          <span class="enamels-gender-tab__label">MEN</span>
+        </button>
+        <button
+          type="button"
+          class="enamels-gender-tab{% if current_gender == 'women' %} is-active{% endif %}"
+          data-gender-target="women"
+          aria-label="Filter by Women's Medical Apparel"
         >
-          <span class="enamels-cat-nav-pill__text">WOMEN</span>
-          <img src="{{ 'enamels-cat-women.jpg' | asset_url }}" alt="Women" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
-        </a>
-
-        <!-- NEW ARRIVALS -->
-        <a
-          href="/collections/all"
-          class="enamels-cat-nav-pill{% if current_cat == 'all' %} is-active{% endif %}"
+          <span class="enamels-gender-tab__indicator"></span>
+          <span class="enamels-gender-tab__label">WOMEN</span>
+        </button>
+        <button
+          type="button"
+          class="enamels-gender-tab{% if current_gender == 'all' %} is-active{% endif %}"
+          data-gender-target="all"
+          aria-label="Show All Medical Apparel"
         >
-          <span class="enamels-cat-nav-pill__text">NEW<br>ARRIVALS</span>
-          <img src="{{ 'enamels-cat-new-arrivals.jpg' | asset_url }}" alt="New Arrivals" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
-        </a>
-
-        <!-- CUSTOMIZE SCRUBS -->
-        <a
-          href="/pages/customizer"
-          class="enamels-cat-nav-pill"
-        >
-          <span class="enamels-cat-nav-pill__text">CUSTOMIZE<br>SCRUBS</span>
-          <img src="{{ 'enamels-cat-customize.jpg' | asset_url }}" alt="Customize Scrubs" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
-        </a>
-
-        <!-- INTERNATIONAL ORDER -->
-        <a
-          href="/pages/bulk-orders"
-          class="enamels-cat-nav-pill"
-        >
-          <span class="enamels-cat-nav-pill__text">INTERNATIONAL<br>ORDER</span>
-          <img src="{{ 'enamels-cat-intl-order.jpg' | asset_url }}" alt="International Order" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
-        </a>
-
-        <!-- LABCOATS -->
-        <a
-          href="/collections/all?category=lab-coats"
-          class="enamels-cat-nav-pill{% if current_cat == 'lab-coats' %} is-active{% endif %}"
-        >
-          <span class="enamels-cat-nav-pill__text">LABCOATS</span>
-          <img src="{{ 'enamels-cat-labcoats.jpg' | asset_url }}" alt="Labcoats" class="enamels-cat-nav-pill__img" width="48" height="48" loading="lazy">
-        </a>
+          <span class="enamels-gender-tab__indicator"></span>
+          <span class="enamels-gender-tab__label">ALL</span>
+        </button>
       </div>
     </div>
 
-    <!-- 3. Section Title -->
-    <div class="enamels-cat-page__head">
-      <h1 class="enamels-cat-page__title">{{ title_text }}</h1>
+    <!-- 3. Top Horizontal Scrollable Category Thumbnail Carousel -->
+    {% if show_category_carousel %}
+    <div class="enamels-cat-carousel-wrap">
+      <div class="enamels-cat-carousel-header">
+        <span class="enamels-cat-carousel-title">SELECT CATEGORY</span>
+        <div class="enamels-cat-carousel-arrows">
+          <button type="button" class="enamels-carousel-btn prev-btn" aria-label="Previous Categories">‹</button>
+          <button type="button" class="enamels-carousel-btn next-btn" aria-label="Next Categories">›</button>
+        </div>
+      </div>
+
+      <div class="enamels-cat-carousel" id="enamels-cat-carousel">
+        <!-- 1. Scrubs -->
+        <button
+          type="button"
+          class="enamels-carousel-item{% if current_cat == 'scrubs' or current_cat == 'all' %} is-active{% endif %}"
+          data-category-target="scrubs"
+        >
+          <div class="enamels-carousel-item__thumb">
+            {% if current_gender == 'women' %}
+              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Scrubs" width="90" height="90" loading="lazy">
+            {% else %}
+              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Scrubs" width="90" height="90" loading="lazy">
+            {% endif %}
+          </div>
+          <span class="enamels-carousel-item__name">Scrubs</span>
+        </button>
+
+        <!-- 2. White Coats -->
+        <button
+          type="button"
+          class="enamels-carousel-item{% if current_cat == 'white-coats' %} is-active{% endif %}"
+          data-category-target="white-coats"
+        >
+          <div class="enamels-carousel-item__thumb">
+            <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="White Coats" width="90" height="90" loading="lazy">
+          </div>
+          <span class="enamels-carousel-item__name">White Coats</span>
+        </button>
+
+        <!-- 3. Lab Coats -->
+        <button
+          type="button"
+          class="enamels-carousel-item{% if current_cat == 'lab-coats' %} is-active{% endif %}"
+          data-category-target="lab-coats"
+        >
+          <div class="enamels-carousel-item__thumb">
+            <img src="{{ 'demo-hang-labcoat-white.jpg' | asset_url }}" alt="Lab Coats" width="90" height="90" loading="lazy">
+          </div>
+          <span class="enamels-carousel-item__name">Lab Coats</span>
+        </button>
+
+        <!-- 4. Caps (BunFit™) -->
+        <button
+          type="button"
+          class="enamels-carousel-item{% if current_cat == 'caps' %} is-active{% endif %}"
+          data-category-target="caps"
+        >
+          <div class="enamels-carousel-item__thumb">
+            <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="Caps" width="90" height="90" loading="lazy">
+          </div>
+          <span class="enamels-carousel-item__name">Caps (BunFit™)</span>
+        </button>
+
+        <!-- 5. Sleeves -->
+        <button
+          type="button"
+          class="enamels-carousel-item{% if current_cat == 'sleeves' %} is-active{% endif %}"
+          data-category-target="sleeves"
+        >
+          <div class="enamels-carousel-item__thumb">
+            <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Sleeves" width="90" height="90" loading="lazy">
+          </div>
+          <span class="enamels-carousel-item__name">Sleeves</span>
+        </button>
+
+        <!-- 6. Accessories -->
+        <button
+          type="button"
+          class="enamels-carousel-item{% if current_cat == 'accessories' %} is-active{% endif %}"
+          data-category-target="accessories"
+        >
+          <div class="enamels-carousel-item__thumb">
+            <img src="{{ 'cat-clogs.jpg' | asset_url }}" alt="Accessories" width="90" height="90" loading="lazy">
+          </div>
+          <span class="enamels-carousel-item__name">Accessories</span>
+        </button>
+
+        <!-- 7. View All -->
+        <button
+          type="button"
+          class="enamels-carousel-item"
+          data-category-target="all"
+        >
+          <div class="enamels-carousel-item__thumb">
+            <img src="{{ 'enamels-cat-new-arrivals.jpg' | asset_url }}" alt="View All" width="90" height="90" loading="lazy">
+          </div>
+          <span class="enamels-carousel-item__name">View All</span>
+        </button>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- 4. Article Sub-Filter Bar (Under Scrubs) -->
+    {% if show_article_filter %}
+    <div class="enamels-article-filters" id="enamels-article-filters">
+      <span class="enamels-article-filters__label">SERIES / ARTICLE:</span>
+      <div class="enamels-article-filters__list">
+        <button
+          type="button"
+          class="enamels-article-pill{% if current_article == 'all' %} is-active{% endif %}"
+          data-article-target="all"
+        >
+          All Scrubs
+        </button>
+        <button
+          type="button"
+          class="enamels-article-pill{% if current_article == 'crown' %} is-active{% endif %}"
+          data-article-target="crown"
+        >
+          Crown Series <span class="enamels-pill-sub">Mandarin Collar</span>
+        </button>
+        <button
+          type="button"
+          class="enamels-article-pill{% if current_article == 'vilora' %} is-active{% endif %}"
+          data-article-target="vilora"
+        >
+          Velora Series <span class="enamels-pill-sub">Micro-Drape</span>
+        </button>
+        <button
+          type="button"
+          class="enamels-article-pill{% if current_article == 'sprinter' %} is-active{% endif %}"
+          data-article-target="sprinter"
+        >
+          Sprinter Series <span class="enamels-pill-sub">4-Way Stretch</span>
+        </button>
+        <button
+          type="button"
+          class="enamels-article-pill{% if current_article == 'flexwell' %} is-active{% endif %}"
+          data-article-target="flexwell"
+        >
+          Flexwell Series <span class="enamels-pill-sub">Aerocool Flex</span>
+        </button>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- 5. Section Heading & Active Counter Bar -->
+    <div class="enamels-cat-page__head-row">
+      <div class="enamels-cat-page__head">
+        <h1 class="enamels-cat-page__title" id="enamels-cat-page-title">{{ title_text }}</h1>
+        <p class="enamels-cat-page__counter" id="enamels-cat-product-counter">Showing products</p>
+      </div>
+      <button type="button" class="enamels-cat-clear-btn" id="enamels-clear-filter-btn" style="display: none;">
+        Clear Filters ✕
+      </button>
     </div>
 
-    <!-- 4. Product Cards Grid -->
-    <div class="enamels-cat-page__grid">
+    <!-- 6. Real Product Cards Grid -->
+    <div class="enamels-cat-page__grid" id="enamels-cat-product-grid">
+
       {%- assign rendered_count = 0 -%}
-      {%- if collection.products.size > 0 -%}
-        {% for prod in collection.products limit: 12 %}
-          {%- assign rendered_count = rendered_count | plus: 1 -%}
-          <div class="enamels-cat-card">
+      {%- if target_col.products.size > 0 -%}
+        {%- for prod in target_col.products -%}
+          {%- liquid
+            assign rendered_count = rendered_count | plus: 1
+            assign prod_title_lower = prod.title | downcase
+            assign prod_type_lower = prod.type | downcase
+            assign prod_tags_string = prod.tags | join: ' ' | downcase
+            assign prod_vendor_lower = prod.vendor | downcase
+
+            # Gender Detection
+            assign is_men = false
+            assign is_women = false
+            assign is_unisex = false
+
+            if prod_tags_string contains 'unisex' or prod_title_lower contains 'unisex'
+              assign is_unisex = true
+            endif
+
+            assign cleaned_tags_men = prod_tags_string | replace: 'women', ''
+            assign cleaned_title_men = prod_title_lower | replace: 'women', ''
+            if cleaned_tags_men contains 'men' or cleaned_title_men contains 'men' or prod_tags_string contains 'male' or prod_title_lower contains 'male'
+              assign is_men = true
+            endif
+
+            if prod_tags_string contains 'women' or prod_title_lower contains 'women' or prod_tags_string contains 'female' or prod_title_lower contains 'female' or prod_tags_string contains 'ladies' or prod_title_lower contains 'ladies'
+              assign is_women = true
+            endif
+
+            if is_men == false and is_women == false
+              assign is_unisex = true
+            endif
+
+            # Category Detection
+            assign prod_cat = 'scrubs'
+            if prod_type_lower contains 'lab' or prod_tags_string contains 'lab coat' or prod_title_lower contains 'lab coat'
+              assign prod_cat = 'lab-coats'
+            elsif prod_type_lower contains 'white' or prod_tags_string contains 'white coat' or prod_title_lower contains 'white coat'
+              assign prod_cat = 'white-coats'
+            elsif prod_type_lower contains 'cap' or prod_tags_string contains 'cap' or prod_title_lower contains 'cap' or prod_title_lower contains 'bunfit'
+              assign prod_cat = 'caps'
+            elsif prod_type_lower contains 'sleeve' or prod_tags_string contains 'sleeve' or prod_title_lower contains 'sleeve'
+              assign prod_cat = 'sleeves'
+            elsif prod_type_lower contains 'access' or prod_tags_string contains 'accessory' or prod_tags_string contains 'accessories' or prod_title_lower contains 'clog' or prod_title_lower contains 'mask' or prod_title_lower contains 'badge'
+              assign prod_cat = 'accessories'
+            endif
+
+            # Article / Series Detection
+            assign prod_article = 'other'
+            if prod_title_lower contains 'sprinter' or prod_tags_string contains 'sprinter'
+              assign prod_article = 'sprinter'
+            elsif prod_title_lower contains 'vilora' or prod_title_lower contains 'velora' or prod_tags_string contains 'vilora' or prod_tags_string contains 'velora'
+              assign prod_article = 'vilora'
+            elsif prod_title_lower contains 'crown' or prod_tags_string contains 'crown'
+              assign prod_article = 'crown'
+            elsif prod_title_lower contains 'flexwell' or prod_tags_string contains 'flexwell'
+              assign prod_article = 'flexwell'
+            endif
+
+            # Color Options & Swatches
+            assign color_values = ''
+            for option in prod.options_with_values
+              assign opt_name_lower = option.name | downcase
+              if opt_name_lower contains 'color' or opt_name_lower contains 'colour'
+                assign color_values = option.values
+                break
+              endif
+            endfor
+          -%}
+
+          <div
+            class="enamels-cat-card"
+            data-product-id="{{ prod.id }}"
+            data-gender="{% if is_unisex %}unisex{% elsif is_men %}men{% elsif is_women %}women{% else %}unisex{% endif %}"
+            data-category="{{ prod_cat }}"
+            data-article="{{ prod_article }}"
+            data-title="{{ prod.title | escape }}"
+            data-price="{{ prod.price }}"
+          >
             <a href="{{ prod.url }}" class="enamels-cat-card__link">
               <div class="enamels-cat-card__media">
                 {% if prod.featured_media != blank %}
                   <img
                     src="{{ prod.featured_media | image_url: width: 600 }}"
-                    alt="{{ prod.title | escape }}"
+                    srcset="{{ prod.featured_media | image_url: width: 360 }} 360w, {{ prod.featured_media | image_url: width: 600 }} 600w, {{ prod.featured_media | image_url: width: 900 }} 900w"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    alt="{{ prod.featured_media.alt | default: prod.title | escape }}"
                     loading="lazy"
-                    width="250"
-                    height="340"
+                    width="300"
+                    height="450"
+                    class="enamels-cat-card__primary-img"
                   >
+                  {% if prod.media.size > 1 %}
+                    <img
+                      src="{{ prod.media[1] | image_url: width: 600 }}"
+                      alt="{{ prod.title | escape }}"
+                      loading="lazy"
+                      width="300"
+                      height="450"
+                      class="enamels-cat-card__secondary-img"
+                    >
+                  {% endif %}
                 {% else %}
-                  <div class="enamels-cat-card__placeholder"></div>
+                  <div class="enamels-cat-card__placeholder">
+                    <span>Enamels</span>
+                  </div>
+                {% endif %}
+
+                {% if prod.compare_at_price > prod.price %}
+                  {% assign discount_pct = prod.compare_at_price | minus: prod.price | times: 100.0 | divided_by: prod.compare_at_price | round %}
+                  <span class="enamels-cat-card__badge-sale">SAVE {{ discount_pct }}%</span>
                 {% endif %}
               </div>
+
               <div class="enamels-cat-card__info">
+                {% if prod_article != 'other' %}
+                  <span class="enamels-cat-card__series">
+                    {% if prod_article == 'crown' %}Crown Series{% elsif prod_article == 'vilora' %}Velora Series{% elsif prod_article == 'sprinter' %}Sprinter Series{% elsif prod_article == 'flexwell' %}Flexwell Series{% endif %}
+                  </span>
+                {% endif %}
+
                 <span class="enamels-cat-card__title">{{ prod.title | escape }}</span>
-                <span class="enamels-cat-card__price">{{ prod.price | money_without_trailing_zeros }}</span>
-              </div>
-            </a>
-          </div>
-        {% endfor %}
-      {%- endif -%}
 
-      {%- if rendered_count == 0 -%}
-        <!-- Curated Reference Products (Matches exact layout of media_1793779461369_efe24deb.jpg) -->
-        {% for block in section.blocks %}
-          {% assign card_img = block.settings.image %}
-          {% assign card_fallback = block.settings.fallback_asset %}
-          {% assign card_link = block.settings.link | default: '/collections/all' %}
+                <div class="enamels-cat-card__price-row">
+                  <span class="enamels-cat-card__price">{{ prod.price | money_without_trailing_zeros }}</span>
+                  {% if prod.compare_at_price > prod.price %}
+                    <span class="enamels-cat-card__compare-price">{{ prod.compare_at_price | money_without_trailing_zeros }}</span>
+                  {% endif %}
+                </div>
 
-          <div class="enamels-cat-card" {{ block.shopify_attributes }}>
-            <a href="{{ card_link }}" class="enamels-cat-card__link">
-              <div class="enamels-cat-card__media">
-                {% if card_img != blank %}
-                  <img
-                    src="{{ card_img | image_url: width: 600 }}"
-                    alt="{{ block.settings.title | escape }}"
-                    loading="lazy"
-                    width="250"
-                    height="340"
-                  >
-                {% elsif card_fallback != blank %}
-                  <img
-                    src="{{ card_fallback | asset_url }}"
-                    alt="{{ block.settings.title | escape }}"
-                    loading="lazy"
-                    width="250"
-                    height="340"
-                  >
+                {% if show_swatches and color_values != blank and color_values.size > 0 %}
+                  <div class="enamels-cat-card__swatches" title="{{ color_values.size }} colors available">
+                    {% for color in color_values limit: 5 %}
+                      {%- liquid
+                        assign c_lower = color | downcase
+                        assign hex = '#0f172a'
+                        if c_lower contains 'navy' or c_lower contains 'dark blue'
+                          assign hex = '#0f172a'
+                        elsif c_lower contains 'royal' or c_lower contains 'blue'
+                          assign hex = '#1d4ed8'
+                        elsif c_lower contains 'ceil' or c_lower contains 'sky' or c_lower contains 'light blue'
+                          assign hex = '#7dd3fc'
+                        elsif c_lower contains 'caribbean' or c_lower contains 'aqua'
+                          assign hex = '#0284c7'
+                        elsif c_lower contains 'black'
+                          assign hex = '#18181b'
+                        elsif c_lower contains 'white'
+                          assign hex = '#ffffff'
+                        elsif c_lower contains 'wine' or c_lower contains 'burgundy' or c_lower contains 'maroon'
+                          assign hex = '#581c87'
+                        elsif c_lower contains 'plum' or c_lower contains 'purple' or c_lower contains 'violet'
+                          assign hex = '#701a75'
+                        elsif c_lower contains 'olive'
+                          assign hex = '#556b2f'
+                        elsif c_lower contains 'sage' or c_lower contains 'sea green' or c_lower contains 'seagreen'
+                          assign hex = '#84a98c'
+                        elsif c_lower contains 'hunter' or c_lower contains 'dark green' or c_lower contains 'green'
+                          assign hex = '#14532d'
+                        elsif c_lower contains 'charcoal' or c_lower contains 'grey' or c_lower contains 'gray'
+                          assign hex = '#334155'
+                        elsif c_lower contains 'rust' or c_lower contains 'terracotta' or c_lower contains 'brown'
+                          assign hex = '#9a3412'
+                        elsif c_lower contains 'khaki' or c_lower contains 'beige'
+                          assign hex = '#c2b280'
+                        elsif c_lower contains 'teal'
+                          assign hex = '#0d9488'
+                        endif
+                      -%}
+                      <span
+                        class="enamels-color-dot"
+                        style="background-color: {{ hex }}; {% if hex == '#ffffff' %}border: 1px solid #cbd5e1;{% endif %}"
+                        title="{{ color | escape }}"
+                      ></span>
+                    {% endfor %}
+                    {% if color_values.size > 5 %}
+                      <span class="enamels-color-more">+{{ color_values.size | minus: 5 }}</span>
+                    {% endif %}
+                  </div>
                 {% endif %}
               </div>
-              <div class="enamels-cat-card__info">
-                <span class="enamels-cat-card__title">{{ block.settings.title | escape }}</span>
-                <span class="enamels-cat-card__price">{{ block.settings.price | escape }}</span>
-              </div>
             </a>
           </div>
-        {% endfor %}
+        {%- endfor -%}
       {%- endif -%}
+
+      {%- comment -%}
+        Fallback Curated Cards:
+        Rendered if store products collection is empty or if development theme has not yet synced products.
+      {%- endcomment -%}
+      {%- if rendered_count == 0 -%}
+        <!-- Fallback 1: Sprinter Men Navy -->
+        <div
+          class="enamels-cat-card"
+          data-product-id="fallback-1"
+          data-gender="men"
+          data-category="scrubs"
+          data-article="sprinter"
+          data-title="Sprinter 4-Way Stretch Scrub Suit - Navy Blue"
+          data-price="590000"
+        >
+          <a href="/products/sprinter-autumn-edition" class="enamels-cat-card__link">
+            <div class="enamels-cat-card__media">
+              <img src="{{ 'demo-sprinter-navy.jpg' | asset_url }}" alt="Sprinter Scrub Suit" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
+            </div>
+            <div class="enamels-cat-card__info">
+              <span class="enamels-cat-card__series">Sprinter Series</span>
+              <span class="enamels-cat-card__title">Sprinter 4-Way Stretch Scrub Suit</span>
+              <div class="enamels-cat-card__price-row">
+                <span class="enamels-cat-card__price">Rs 5,900</span>
+              </div>
+              <div class="enamels-cat-card__swatches">
+                <span class="enamels-color-dot" style="background-color: #0f172a;" title="Navy"></span>
+                <span class="enamels-color-dot" style="background-color: #18181b;" title="Black"></span>
+                <span class="enamels-color-dot" style="background-color: #14532d;" title="Hunter Green"></span>
+                <span class="enamels-color-more">+4</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Fallback 2: Velora Women Teal -->
+        <div
+          class="enamels-cat-card"
+          data-product-id="fallback-2"
+          data-gender="women"
+          data-category="scrubs"
+          data-article="vilora"
+          data-title="Velora Micro-Drape Tailored Scrub Suit - Teal"
+          data-price="650000"
+        >
+          <a href="/products/velora-luxury-scrub-suit" class="enamels-cat-card__link">
+            <div class="enamels-cat-card__media">
+              <img src="{{ 'demo-velora-teal.jpg' | asset_url }}" alt="Velora Scrub Suit" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
+            </div>
+            <div class="enamels-cat-card__info">
+              <span class="enamels-cat-card__series">Velora Series</span>
+              <span class="enamels-cat-card__title">Velora Micro-Drape Scrub Suit</span>
+              <div class="enamels-cat-card__price-row">
+                <span class="enamels-cat-card__price">Rs 6,500</span>
+              </div>
+              <div class="enamels-cat-card__swatches">
+                <span class="enamels-color-dot" style="background-color: #0d9488;" title="Teal"></span>
+                <span class="enamels-color-dot" style="background-color: #581c87;" title="Wine"></span>
+                <span class="enamels-color-dot" style="background-color: #7dd3fc;" title="Ceil Blue"></span>
+                <span class="enamels-color-more">+5</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Fallback 3: Crown Executive Burgundy (Unisex) -->
+        <div
+          class="enamels-cat-card"
+          data-product-id="fallback-3"
+          data-gender="unisex"
+          data-category="scrubs"
+          data-article="crown"
+          data-title="Crown Executive Mandarin Collar Scrub Suit"
+          data-price="680000"
+        >
+          <a href="/products/crown-mandarin-collar-scrub-suit" class="enamels-cat-card__link">
+            <div class="enamels-cat-card__media">
+              <img src="{{ 'demo-crown-burgundy.jpg' | asset_url }}" alt="Crown Scrub Suit" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
+            </div>
+            <div class="enamels-cat-card__info">
+              <span class="enamels-cat-card__series">Crown Series</span>
+              <span class="enamels-cat-card__title">Crown Mandarin Collar Scrub Suit</span>
+              <div class="enamels-cat-card__price-row">
+                <span class="enamels-cat-card__price">Rs 6,800</span>
+              </div>
+              <div class="enamels-cat-card__swatches">
+                <span class="enamels-color-dot" style="background-color: #581c87;" title="Burgundy"></span>
+                <span class="enamels-color-dot" style="background-color: #0f172a;" title="Navy"></span>
+                <span class="enamels-color-dot" style="background-color: #556b2f;" title="Olive"></span>
+                <span class="enamels-color-more">+3</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Fallback 4: White Coat Unisex -->
+        <div
+          class="enamels-cat-card"
+          data-product-id="fallback-4"
+          data-gender="unisex"
+          data-category="white-coats"
+          data-article="other"
+          data-title="Doctor Professional White Coat"
+          data-price="480000"
+        >
+          <a href="/collections/all?category=white-coats" class="enamels-cat-card__link">
+            <div class="enamels-cat-card__media">
+              <img src="{{ 'demo-hang-labcoat-white.jpg' | asset_url }}" alt="Doctor White Coat" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
+            </div>
+            <div class="enamels-cat-card__info">
+              <span class="enamels-cat-card__title">Doctor Professional White Coat</span>
+              <div class="enamels-cat-card__price-row">
+                <span class="enamels-cat-card__price">Rs 4,800</span>
+              </div>
+              <div class="enamels-cat-card__swatches">
+                <span class="enamels-color-dot" style="background-color: #ffffff; border: 1px solid #cbd5e1;" title="White"></span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Fallback 5: Clinical Lab Coat -->
+        <div
+          class="enamels-cat-card"
+          data-product-id="fallback-5"
+          data-gender="unisex"
+          data-category="lab-coats"
+          data-article="other"
+          data-title="Antimicrobial Clinical Lab Coat"
+          data-price="520000"
+        >
+          <a href="/collections/all?category=lab-coats" class="enamels-cat-card__link">
+            <div class="enamels-cat-card__media">
+              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Clinical Lab Coat" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
+            </div>
+            <div class="enamels-cat-card__info">
+              <span class="enamels-cat-card__title">Antimicrobial Clinical Lab Coat</span>
+              <div class="enamels-cat-card__price-row">
+                <span class="enamels-cat-card__price">Rs 5,200</span>
+              </div>
+              <div class="enamels-cat-card__swatches">
+                <span class="enamels-color-dot" style="background-color: #ffffff; border: 1px solid #cbd5e1;" title="White"></span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Fallback 6: BunFit Surgical Cap -->
+        <div
+          class="enamels-cat-card"
+          data-product-id="fallback-6"
+          data-gender="unisex"
+          data-category="caps"
+          data-article="other"
+          data-title="BunFit™ Surgical Medical Cap"
+          data-price="120000"
+        >
+          <a href="/collections/all?category=caps" class="enamels-cat-card__link">
+            <div class="enamels-cat-card__media">
+              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Cap" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
+            </div>
+            <div class="enamels-cat-card__info">
+              <span class="enamels-cat-card__title">BunFit™ Surgical Medical Cap</span>
+              <div class="enamels-cat-card__price-row">
+                <span class="enamels-cat-card__price">Rs 1,200</span>
+              </div>
+              <div class="enamels-cat-card__swatches">
+                <span class="enamels-color-dot" style="background-color: #0f172a;" title="Navy"></span>
+                <span class="enamels-color-dot" style="background-color: #0d9488;" title="Teal"></span>
+                <span class="enamels-color-dot" style="background-color: #581c87;" title="Wine"></span>
+              </div>
+            </div>
+          </a>
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    <!-- Empty Filter State Notice -->
+    <div class="enamels-cat-empty" id="enamels-cat-empty-notice" style="display: none;">
+      <div class="enamels-cat-empty__icon">🩺</div>
+      <h3 class="enamels-cat-empty__title">No products match your selected filter</h3>
+      <p class="enamels-cat-empty__text">Try switching the category or resetting your filters to see all available clinical apparel.</p>
+      <button type="button" class="enamels-cat-empty__btn" id="enamels-cat-reset-btn">Reset All Filters</button>
     </div>
 
   </div>
 </div>
 
+<script>
+  (function initEnamelsCategoryBrowsingFlow() {
+    var container = document.getElementById('enamels-cat-page-{{ section.id }}');
+    if (!container) return;
+
+    var state = {
+      gender: container.getAttribute('data-initial-gender') || 'all',
+      category: container.getAttribute('data-initial-category') || 'all',
+      article: container.getAttribute('data-initial-article') || 'all'
+    };
+
+    function readUrlParams() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var g = params.get('gender') || params.get('category');
+        if (g && (g === 'men' || g === 'women')) {
+          state.gender = g;
+        } else if (window.location.pathname.indexOf('men') !== -1 && window.location.pathname.indexOf('women') === -1) {
+          state.gender = 'men';
+        } else if (window.location.pathname.indexOf('women') !== -1) {
+          state.gender = 'women';
+        }
+
+        var cat = params.get('cat') || params.get('category');
+        if (cat && cat !== 'men' && cat !== 'women') {
+          state.category = cat;
+        }
+
+        var art = params.get('article');
+        if (art) {
+          state.article = art;
+        }
+      } catch(e) {}
+    }
+
+    function updateUrlState() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        if (state.gender && state.gender !== 'all') {
+          params.set('gender', state.gender);
+        } else {
+          params.delete('gender');
+        }
+
+        if (state.category && state.category !== 'all') {
+          params.set('category', state.category);
+        } else {
+          params.delete('category');
+        }
+
+        if (state.article && state.article !== 'all') {
+          params.set('article', state.article);
+        } else {
+          params.delete('article');
+        }
+
+        var newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        window.history.replaceState({ ...state }, '', newUrl);
+      } catch(e) {}
+    }
+
+    function renderFilterUI() {
+      // 1. Gender Tabs UI
+      var genderTabs = container.querySelectorAll('.enamels-gender-tab');
+      genderTabs.forEach(function(tab) {
+        var target = tab.getAttribute('data-gender-target');
+        if (target === state.gender) {
+          tab.classList.add('is-active');
+        } else {
+          tab.classList.remove('is-active');
+        }
+      });
+
+      // 2. Category Carousel UI
+      var catItems = container.querySelectorAll('.enamels-carousel-item');
+      catItems.forEach(function(item) {
+        var target = item.getAttribute('data-category-target');
+        if (target === state.category) {
+          item.classList.add('is-active');
+        } else {
+          item.classList.remove('is-active');
+        }
+      });
+
+      // 3. Article Sub-Filter Bar Visibility & Active State
+      var articleBar = container.querySelector('#enamels-article-filters');
+      if (articleBar) {
+        // Only display article sub-filter when looking at Scrubs or All
+        if (state.category === 'scrubs' || state.category === 'all') {
+          articleBar.style.display = 'flex';
+          var pills = articleBar.querySelectorAll('.enamels-article-pill');
+          pills.forEach(function(pill) {
+            var target = pill.getAttribute('data-article-target');
+            if (target === state.article) {
+              pill.classList.add('is-active');
+            } else {
+              pill.classList.remove('is-active');
+            }
+          });
+        } else {
+          articleBar.style.display = 'none';
+        }
+      }
+
+      // 4. Update Section Heading & Counter
+      var titleEl = container.querySelector('#enamels-cat-page-title');
+      var counterEl = container.querySelector('#enamels-cat-product-counter');
+      var clearBtn = container.querySelector('#enamels-clear-filter-btn');
+
+      var genderLabel = state.gender === 'men' ? "Men's" : (state.gender === 'women' ? "Women's" : "");
+      var catLabel = "Medical Apparel";
+      if (state.category === 'scrubs') catLabel = "Scrubs";
+      else if (state.category === 'white-coats') catLabel = "White Coats";
+      else if (state.category === 'lab-coats') catLabel = "Lab Coats";
+      else if (state.category === 'caps') catLabel = "Caps (BunFit™)";
+      else if (state.category === 'sleeves') catLabel = "Sleeves";
+      else if (state.category === 'accessories') catLabel = "Accessories";
+
+      var fullHeading = (genderLabel ? genderLabel + ' ' : '') + catLabel;
+      if (state.article && state.article !== 'all') {
+        var artName = state.article.charAt(0).toUpperCase() + state.article.slice(1);
+        fullHeading += ' — ' + artName + ' Series';
+      }
+
+      if (titleEl) {
+        titleEl.textContent = fullHeading;
+      }
+
+      // 5. Filter Product Cards
+      var cards = container.querySelectorAll('.enamels-cat-card');
+      var visibleCount = 0;
+
+      cards.forEach(function(card) {
+        var cardGender = card.getAttribute('data-gender') || 'unisex';
+        var cardCategory = card.getAttribute('data-category') || 'scrubs';
+        var cardArticle = card.getAttribute('data-article') || 'other';
+
+        // Gender check (Strict Isolation)
+        var matchGender = false;
+        if (state.gender === 'all') {
+          matchGender = true;
+        } else if (state.gender === 'men') {
+          matchGender = (cardGender === 'men' || cardGender === 'unisex');
+        } else if (state.gender === 'women') {
+          matchGender = (cardGender === 'women' || cardGender === 'unisex');
+        }
+
+        // Category check
+        var matchCat = false;
+        if (state.category === 'all') {
+          matchCat = true;
+        } else if (state.category === cardCategory) {
+          matchCat = true;
+        }
+
+        // Article check
+        var matchArticle = false;
+        if (state.article === 'all') {
+          matchArticle = true;
+        } else if (state.article === cardArticle) {
+          matchArticle = true;
+        }
+
+        if (matchGender && matchCat && matchArticle) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update counter
+      if (counterEl) {
+        counterEl.textContent = 'Showing ' + visibleCount + ' ' + (visibleCount === 1 ? 'product' : 'products');
+      }
+
+      // Empty State
+      var emptyEl = container.querySelector('#enamels-cat-empty-notice');
+      if (emptyEl) {
+        emptyEl.style.display = (visibleCount === 0) ? 'block' : 'none';
+      }
+
+      // Clear Filters button
+      var hasFilter = (state.gender !== 'all' || state.category !== 'all' || state.article !== 'all');
+      if (clearBtn) {
+        clearBtn.style.display = hasFilter ? 'inline-flex' : 'none';
+      }
+    }
+
+    function setupEventListeners() {
+      // Gender tabs
+      var genderTabs = container.querySelectorAll('.enamels-gender-tab');
+      genderTabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          state.gender = tab.getAttribute('data-gender-target') || 'all';
+          updateUrlState();
+          renderFilterUI();
+        });
+      });
+
+      // Category carousel items
+      var catItems = container.querySelectorAll('.enamels-carousel-item');
+      catItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+          var targetCat = item.getAttribute('data-category-target') || 'all';
+          state.category = targetCat;
+          // If switching away from scrubs, reset article filter to 'all'
+          if (targetCat !== 'scrubs' && targetCat !== 'all') {
+            state.article = 'all';
+          }
+          updateUrlState();
+          renderFilterUI();
+        });
+      });
+
+      // Article pills
+      var pills = container.querySelectorAll('.enamels-article-pill');
+      pills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          state.article = pill.getAttribute('data-article-target') || 'all';
+          updateUrlState();
+          renderFilterUI();
+        });
+      });
+
+      // Clear filter button & empty reset button
+      var clearBtn = container.querySelector('#enamels-clear-filter-btn');
+      var resetBtn = container.querySelector('#enamels-cat-reset-btn');
+      function resetAllFilters() {
+        state.category = 'all';
+        state.article = 'all';
+        updateUrlState();
+        renderFilterUI();
+      }
+      if (clearBtn) clearBtn.addEventListener('click', resetAllFilters);
+      if (resetBtn) resetBtn.addEventListener('click', resetAllFilters);
+
+      // Category carousel arrow scrolling
+      var carousel = container.querySelector('#enamels-cat-carousel');
+      var prevBtn = container.querySelector('.enamels-carousel-btn.prev-btn');
+      var nextBtn = container.querySelector('.enamels-carousel-btn.next-btn');
+
+      if (carousel && prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', function() {
+          carousel.scrollBy({ left: -240, behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', function() {
+          carousel.scrollBy({ left: 240, behavior: 'smooth' });
+        });
+      }
+    }
+
+    // Expose global navigation hooks for top navbar integration
+    window.navigateToGender = function(g) {
+      if (g === 'men' || g === 'women' || g === 'all') {
+        state.gender = g;
+        state.category = 'all';
+        state.article = 'all';
+        updateUrlState();
+        renderFilterUI();
+        var mainEl = document.getElementById('enamels-cat-page-{{ section.id }}');
+        if (mainEl) {
+          mainEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    };
+
+    window.navigateToCategory = function(cat) {
+      state.category = cat;
+      state.article = 'all';
+      updateUrlState();
+      renderFilterUI();
+    };
+
+    window.navigateToBrand = function(brand) {
+      state.category = 'scrubs';
+      state.article = brand.toLowerCase();
+      updateUrlState();
+      renderFilterUI();
+    };
+
+    // Initialize
+    readUrlParams();
+    setupEventListeners();
+    renderFilterUI();
+
+    window.addEventListener('popstate', function() {
+      readUrlParams();
+      renderFilterUI();
+    });
+  })();
+</script>
+
 <style>
   .enamels-cat-page {
     width: 100%;
-    padding: 16px 0 48px;
+    padding-top: var(--cat-page-pad-top-desk, 16px);
+    padding-bottom: var(--cat-page-pad-bot-desk, 48px);
     background-color: #ffffff;
+    overflow-x: clip;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
   .enamels-cat-page__container {
-    max-width: 1320px;
+    max-width: var(--cat-page-max-w, 1320px);
     margin: 0 auto;
     padding: 0 16px;
   }
 
-  /* 1. Hero Banner with Rounded Corners */
+  /* 1. Hero Banner */
   .enamels-cat-page__banner {
     position: relative;
     width: 100%;
@@ -262,13 +1107,17 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 
   @media (max-width: 767px) {
+    .enamels-cat-page {
+      padding-top: var(--cat-page-pad-top-mob, 12px);
+      padding-bottom: var(--cat-page-pad-bot-mob, 30px);
+    }
     .enamels-cat-page__banner {
       height: var(--banner-h-mob, 175px);
-      border-radius: 12px;
+      border-radius: calc(var(--banner-radius, 16px) * 0.75);
       margin-bottom: 14px;
     }
   }
@@ -288,104 +1137,324 @@
     }
   }
 
-  /* 2. Category Navigation Bar */
-  .enamels-cat-page__nav-strip {
-    margin-bottom: 24px;
-    width: 100%;
+  /* 2. Gender Tabs */
+  .enamels-gender-tabs {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: flex-start;
   }
 
-  .enamels-cat-page__nav-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+  .enamels-gender-tabs__track {
+    display: inline-flex;
+    background: #f1f5f9;
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 3px;
+    border: 1px solid #e2e8f0;
   }
 
-  @media (max-width: 900px) {
-    .enamels-cat-page__nav-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
+  .enamels-gender-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 18px;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  @media (max-width: 540px) {
-    .enamels-cat-page__nav-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .enamels-gender-tab.is-active {
+    background: #102a43;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(16, 42, 67, 0.18);
   }
 
-  .enamels-cat-nav-pill {
+  .enamels-gender-tab__indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.8;
+  }
+
+  /* 3. Category Carousel */
+  .enamels-cat-carousel-wrap {
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .enamels-cat-carousel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .enamels-cat-carousel-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #475569;
+    text-transform: uppercase;
+  }
+
+  .enamels-cat-carousel-arrows {
+    display: flex;
+    gap: 6px;
+  }
+
+  .enamels-carousel-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #102a43;
+    font-size: 16px;
+    line-height: 1;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background-color: #dfdfdf;
-    border-radius: 8px;
-    padding: 6px 10px;
-    text-decoration: none;
-    color: #102a43;
-    min-height: 52px;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
 
-  .enamels-cat-nav-pill:hover,
-  .enamels-cat-nav-pill.is-active {
-    background-color: #cbd5e1;
-    transform: translateY(-1px);
+  .enamels-carousel-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
   }
 
-  .enamels-cat-nav-pill__text {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    line-height: 1.25;
+  .enamels-cat-carousel {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 2px 10px;
   }
 
-  .enamels-cat-nav-pill__img {
-    width: 44px;
-    height: 44px;
+  .enamels-cat-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .enamels-carousel-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    flex: 0 0 auto;
+    width: 100px;
+    text-align: center;
+    transition: transform 0.2s ease;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-carousel-item {
+      width: 82px;
+      gap: 6px;
+    }
+  }
+
+  .enamels-carousel-item:hover {
+    transform: translateY(-2px);
+  }
+
+  .enamels-carousel-item__thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f1f5f9;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-carousel-item__thumb {
+      width: 68px;
+      height: 68px;
+      border-radius: 10px;
+    }
+  }
+
+  .enamels-carousel-item.is-active .enamels-carousel-item__thumb {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+  }
+
+  .enamels-carousel-item__thumb img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 4px;
-    flex-shrink: 0;
+    display: block;
   }
 
-  /* 3. Section Title */
-  .enamels-cat-page__head {
+  .enamels-carousel-item__name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #334155;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .enamels-carousel-item.is-active .enamels-carousel-item__name {
+    color: #0284c7;
+    font-weight: 700;
+  }
+
+  /* 4. Article Sub-Filter Bar */
+  .enamels-article-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+  }
+
+  .enamels-article-filters__label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+
+  .enamels-article-filters__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .enamels-article-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .enamels-article-pill:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  .enamels-article-pill.is-active {
+    background: #102a43;
+    border-color: #102a43;
+    color: #ffffff;
+  }
+
+  .enamels-pill-sub {
+    font-size: 9px;
+    font-weight: 400;
+    opacity: 0.75;
+  }
+
+  /* 5. Section Heading & Counter */
+  .enamels-cat-page__head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
     margin-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 8px;
+  }
+
+  .enamels-cat-page__head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .enamels-cat-page__title {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: clamp(16px, 1.8vw, 22px);
-    font-weight: 600;
+    font-size: var(--cat-head-size-desk, 22px);
+    font-weight: 700;
     color: #111111;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .enamels-cat-page__counter {
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
     margin: 0;
   }
 
-  /* 4. Product Cards Grid */
+  .enamels-cat-clear-btn {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e11d48;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .enamels-cat-clear-btn:hover {
+    background: #ffe4e6;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-cat-page__title {
+      font-size: var(--cat-head-size-mob, 18px);
+    }
+  }
+
+  /* 6. Product Cards Grid (1200x1800 Standard) */
   .enamels-cat-page__grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(var(--cat-grid-cols-desk, 6), 1fr);
+    gap: var(--cat-grid-gap-desk, 12px);
   }
 
   @media (max-width: 1024px) {
     .enamels-cat-page__grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(var(--cat-grid-cols-tab, 3), 1fr);
+      gap: var(--cat-grid-gap-desk, 12px);
     }
   }
 
   @media (max-width: 640px) {
     .enamels-cat-page__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      grid-template-columns: repeat(var(--cat-grid-cols-mob, 2), 1fr);
+      gap: var(--cat-grid-gap-mob, 10px);
     }
   }
 
   .enamels-cat-card {
     display: flex;
     flex-direction: column;
+    position: relative;
   }
 
   .enamels-cat-card__link {
@@ -393,28 +1462,74 @@
     color: inherit;
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
 
   .enamels-cat-card__media {
     width: 100%;
-    aspect-ratio: 3 / 4.4;
-    border-radius: 8px;
+    aspect-ratio: var(--cat-card-aspect, 2 / 3);
+    border-radius: var(--cat-card-radius, 8px);
     overflow: hidden;
-    background-color: #f0f0f0;
+    background-color: var(--cat-card-bg, #f8fafc);
     margin-bottom: 8px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
 
   .enamels-cat-card:hover .enamels-cat-card__media {
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
 
-  .enamels-cat-card__media img {
+  .enamels-cat-card__primary-img,
+  .enamels-cat-card__secondary-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: var(--cat-card-fit, contain);
+    object-position: var(--cat-card-pos, center);
     display: block;
+    transition: opacity 0.3s ease;
+  }
+
+  .enamels-cat-card__secondary-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .enamels-cat-card:hover .enamels-cat-card__secondary-img {
+    opacity: 1;
+  }
+
+  .enamels-cat-card__badge-sale {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #e11d48;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 3px 6px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+
+  .enamels-cat-card__placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 14px;
   }
 
   .enamels-cat-card__info {
@@ -423,21 +1538,118 @@
     gap: 3px;
   }
 
+  .enamels-cat-card__series {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #0284c7;
+    text-transform: uppercase;
+  }
+
   .enamels-cat-card__title {
-    font-size: 0.72rem;
+    font-size: var(--cat-title-size-desk, 12px);
     font-weight: 600;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     color: #111111;
     text-transform: uppercase;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .enamels-cat-card__price-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .enamels-cat-card__price {
-    font-size: 0.72rem;
+    font-size: var(--cat-price-size-desk, 12px);
+    font-weight: 700;
+    color: #102a43;
+  }
+
+  .enamels-cat-card__compare-price {
+    font-size: 11px;
     font-weight: 500;
-    color: #444444;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+
+  .enamels-cat-card__swatches {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .enamels-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .enamels-color-more {
+    font-size: 9px;
+    font-weight: 700;
+    color: #64748b;
+    margin-left: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-cat-card__title {
+      font-size: var(--cat-title-size-mob, 11px);
+    }
+    .enamels-cat-card__price {
+      font-size: var(--cat-price-size-mob, 11px);
+    }
+  }
+
+  /* Empty State */
+  .enamels-cat-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+
+  .enamels-cat-empty__icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .enamels-cat-empty__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 6px;
+  }
+
+  .enamels-cat-empty__text {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 16px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .enamels-cat-empty__btn {
+    background: #102a43;
+    color: #ffffff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .enamels-cat-empty__btn:hover {
+    background: #1e3a5f;
   }
 </style>
 
@@ -447,10 +1659,93 @@
   "class": "enamels-collection-page-wrapper",
   "settings": [
     {
+      "type": "header",
+      "content": "Shopify Collection Source"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Shopify Collection",
+      "info": "Overrides default collection loop. If blank, automatically uses current collection or all store products."
+    },
+    {
+      "type": "select",
+      "id": "gender_filter",
+      "label": "Default Gender Context",
+      "options": [
+        { "value": "auto", "label": "Auto-Detect from URL / Template" },
+        { "value": "men", "label": "Men's Medical Apparel" },
+        { "value": "women", "label": "Women's Medical Apparel" },
+        { "value": "all", "label": "All Apparel" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "header",
+      "content": "Section Heading & Typography"
+    },
+    {
       "type": "text",
       "id": "title",
       "label": "Section Heading",
       "default": "New Arrivals"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size (Desktop)",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size (Mobile)",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Category Carousel & Filters"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category_carousel",
+      "label": "Show Category Thumbnail Carousel",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_article_filter",
+      "label": "Show Article Sub-Filter (Scrubs)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_swatches",
+      "label": "Show Clinical Color Swatches on Cards",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Hero Banner Sizing & Image"
     },
     {
       "type": "image_picker",
@@ -466,7 +1761,7 @@
       "type": "range",
       "id": "banner_height_desktop",
       "label": "Desktop Height (px)",
-      "min": 180,
+      "min": 140,
       "max": 500,
       "step": 10,
       "default": 270
@@ -475,8 +1770,8 @@
       "type": "range",
       "id": "banner_height_mobile",
       "label": "Mobile Height (px)",
-      "min": 130,
-      "max": 300,
+      "min": 100,
+      "max": 350,
       "step": 5,
       "default": 175
     },
@@ -485,7 +1780,7 @@
       "id": "banner_radius",
       "label": "Banner Corner Radius (px)",
       "min": 0,
-      "max": 32,
+      "max": 40,
       "step": 2,
       "default": 16
     },
@@ -494,42 +1789,204 @@
       "id": "banner_bg",
       "label": "Banner Background Color",
       "default": "#e8e8e8"
-    }
-  ],
-  "blocks": [
+    },
     {
-      "type": "card",
-      "name": "Product Card",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Product Title / Color",
-          "default": "BLUE"
-        },
-        {
-          "type": "text",
-          "id": "price",
-          "label": "Price",
-          "default": "Rs 5900"
-        },
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Product Image"
-        },
-        {
-          "type": "text",
-          "id": "fallback_asset",
-          "label": "Fallback Asset Name",
-          "default": "enamels-na-blue.jpg"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Product Link"
-        }
-      ]
+      "type": "header",
+      "content": "Product Grid Columns & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "grid_cols_desktop",
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "label": "Desktop Columns",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "grid_cols_tablet",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Tablet Columns",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "grid_cols_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Mobile Columns",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Grid Gap (Desktop)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Grid Gap (Mobile)",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail Standard (1200x1800 Portrait)"
+    },
+    {
+      "type": "select",
+      "id": "card_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "2 / 3", "label": "2:3 (1200x1800 Standard Portrait - Recommended)" },
+        { "value": "3 / 4", "label": "3:4 (Standard Portrait)" },
+        { "value": "4 / 5", "label": "4:5 (Classic Fashion)" },
+        { "value": "1 / 1", "label": "1:1 (Square)" }
+      ],
+      "default": "2 / 3"
+    },
+    {
+      "type": "select",
+      "id": "card_image_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "contain", "label": "Contain - Full Garment Visible (Recommended)" },
+        { "value": "cover", "label": "Cover - Crop to Fill Box" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "card_image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top (Focus Collar / Neckline)" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "card_image_bg",
+      "label": "Thumbnail Card Background",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Corner Radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_desktop",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Product Title Size (Desktop)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_mobile",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Product Title Size (Mobile)",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "card_price_size_desktop",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Price Size (Desktop)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_price_size_mobile",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Price Size (Mobile)",
+      "default": 11
+    },
+    {
+      "type": "header",
+      "content": "Section Sizing & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "container_max_width",
+      "min": 1000,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "label": "Container Max Width",
+      "default": 1320
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top (Desktop)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top (Mobile)",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom (Desktop)",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom (Mobile)",
+      "default": 30
     }
   ],
   "presets": [

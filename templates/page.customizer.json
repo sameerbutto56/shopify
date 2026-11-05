@@ -1,20 +1,16 @@
 {
   "sections": {
-    "customizer": {
-      "type": "enamels-ready-to-wear-section",
+    "customizer_hero": {
+      "type": "enamels-customizer-section",
       "settings": {
-        "heading": "Make Your Own Scrubs Studio"
-      }
-    },
-    "chromatic_lab": {
-      "type": "enamels-chromatic-lab",
-      "settings": {
-        "hide_inline_homepage": true
+        "show_header": true,
+        "badge": "Customize Your Own Scrub",
+        "title": "Bespoke Scrub Customization Studio",
+        "subtitle": "Choose your article, technical fabric, custom collar design, contrast accents, personalized embroidery, and tailored sizing."
       }
     }
   },
   "order": [
-    "customizer",
-    "chromatic_lab"
+    "customizer_hero"
   ]
 }

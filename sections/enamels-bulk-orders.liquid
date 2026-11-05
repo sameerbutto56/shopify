@@ -1,564 +1,12 @@
 {% comment %}
-  Enamels Dedicated Bulk Orders Page & Form Section
-  Features:
-  - Compliant with Shopify contact form endpoint (100% secure, no exposed credentials)
-  - Strict minimum quantity validation (10 scrubs) both client-side and server-side
-  - Intelligent size breakdown reconciliation with declared order volume
-  - Duplicate submission prevention via single-click lock
-  - Captures full customer profile, hospital/clinic, intended fit, embroidery, colors, and target date
-  - Theme Editor configurable headings, supporting copy, and field labels
+  Enamels Dedicated 5-Step Institutional Bulk Orders Section
 {% endcomment %}
 
-{%- liquid
-  assign min_qty = section.settings.min_order_quantity | default: 10
-  assign heading = section.settings.heading | default: 'Bulk Orders' | strip
-  assign subtext = section.settings.subtext | default: 'Planning a bulk order? Submit your requirements using the form below. Minimum order quantity: 10 scrubs.' | strip
-  assign success_title = section.settings.success_heading | default: 'Bulk Order Enquiry Received' | strip
-  assign success_msg = section.settings.success_message | default: 'Thank you for your bulk enquiry. Our institutional sales desk has received your uniform specifications and will contact you via email or WhatsApp within 24 business hours with an official quotation and sizing logistics.' | strip
--%}
-
-<style>
-  @media (max-width: 640px) {
-    .enamels-bulk-orders-container {
-      padding: 24px 12px 50px !important;
-    }
-    .bulk-form-card {
-      padding: 18px 14px !important;
-      border-radius: 10px !important;
-    }
-    #bulk-sizes-grid {
-      grid-template-columns: repeat(4, 1fr) !important;
-      gap: 8px !important;
-    }
-    .bulk-size-input {
-      font-size: 15px !important;
-      height: 38px !important;
-      padding: 4px !important;
-    }
-  }
-  @media (max-width: 400px) {
-    #bulk-sizes-grid {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 8px !important;
-    }
-  }
-</style>
-
-<div class="page-container enamels-bulk-orders-container" style="max-width: 860px; margin: 0 auto; padding: 40px 20px 80px;" id="enamels-bulk-orders-section">
-  <!-- Header -->
-  <div class="bulk-header-wrap" style="text-align: center; margin-bottom: 36px;">
-    <span class="categories-section-tag" style="background: rgba(3, 105, 161, 0.08); color: #0284c7; border: 1px solid rgba(3, 105, 161, 0.2);">
-      INSTITUTIONAL & HOSPITAL UNIFORMS
-    </span>
-    <h1 class="categories-section-title" style="font-size: 32px; font-weight: 800; color: #102a43; margin-top: 10px; margin-bottom: 8px;">
-      {{ heading | escape }}
-    </h1>
-    <p class="categories-section-subtitle" style="font-size: 15px; color: #64748b; max-width: 620px; margin: 0 auto; line-height: 1.6;">
-      {{ subtext | escape }}
-    </p>
-    <div style="display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #15803d;">
-      <span>✓ Minimum Order: {{ min_qty }} Scrubs</span>
-      <span>•</span>
-      <span>Direct Factory Sizing & Logo Embroidery Available</span>
-    </div>
-  </div>
-
-  <!-- Form Card -->
-  <div class="bulk-form-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 32px; box-shadow: 0 4px 20px rgba(16,42,67,0.06);">
-    {% form 'contact', id: 'bulk-orders-enquiry-form', class: 'enamels-bulk-form' %}
-      <!-- Submission Timestamp & Metadata -->
-      <input type="hidden" name="contact[Enquiry Type]" value="Institutional Bulk Order (Min {{ min_qty }} Scrubs)" />
-      <input type="hidden" name="contact[Submission Timestamp]" id="bulk-submission-time" value="{{ 'now' | date: '%Y-%m-%d %H:%M:%S' }}" />
-
-      <!-- Success State -->
-      {% if form.posted_successfully? %}
-        <div class="bulk-alert-success" style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 24px;">
-          <div style="font-size: 40px; margin-bottom: 8px;">✅</div>
-          <h3 style="font-size: 20px; font-weight: 700; color: #166534; margin: 0 0 8px;">
-            {{ success_title | escape }}
-          </h3>
-          <p style="font-size: 14px; color: #15803d; line-height: 1.6; margin: 0 auto; max-width: 580px;">
-            {{ success_msg | escape }}
-          </p>
-          <div style="margin-top: 20px;">
-            <a href="/" class="btn-proceed-checkout" style="display: inline-block; width: auto; padding: 10px 24px; text-decoration: none; background: #102a43; color: #ffffff; border-radius: 6px; font-size: 13px;">
-              Return to Storefront
-            </a>
-          </div>
-        </div>
-      {% endif %}
-
-      <!-- Error State -->
-      {% if form.errors %}
-        <div class="bulk-alert-error" style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
-          <div style="font-weight: 700; color: #991b1b; margin-bottom: 6px;">Please review the following errors:</div>
-          <ul style="margin: 0; padding-left: 20px; color: #b91c1c; font-size: 13px;">
-            {% for field in form.errors %}
-              <li>{{ field | capitalize }} {{ form.errors.messages[field] }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endif %}
-
-      <div id="bulk-client-error-box" style="display: none; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 14px; margin-bottom: 20px; color: #991b1b; font-size: 13px; font-weight: 600;"></div>
-
-      <fieldset style="border: none; padding: 0; margin: 0;" {% if form.posted_successfully? %}disabled{% endif %}>
-        <!-- Section 1: Customer & Organization Profile -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #102a43; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.05em;">
-          1. Contact & Organization Details
-        </h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-          <div class="form-field-group">
-            <label for="bulk-name" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Full Name <span style="color: #e11d48;">*</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-name"
-              name="contact[name]"
-              class="form-field-input"
-              placeholder="Dr. / Prof. / Officer Name"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-org" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Company, Hospital, Clinic, or University <span style="font-weight: 400; color: #64748b;">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-org"
-              name="contact[Organization / Hospital]"
-              class="form-field-input"
-              placeholder="e.g. Services Hospital, Shalamar Medical, Aga Khan"
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-email" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Email Address <span style="color: #e11d48;">*</span>
-            </label>
-            <input
-              type="email"
-              id="bulk-email"
-              name="contact[email]"
-              class="form-field-input"
-              placeholder="doctor@hospital.org"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-phone" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Phone Number / WhatsApp <span style="color: #e11d48;">*</span>
-            </label>
-            <input
-              type="tel"
-              id="bulk-phone"
-              name="contact[phone]"
-              class="form-field-input"
-              placeholder="e.g. 0300 1234567 or +92 300 1234567"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-        </div>
-
-        <!-- Section 2: Location & Destination -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #102a43; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.05em;">
-          2. Destination & Delivery Location
-        </h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-          <div class="form-field-group">
-            <label for="bulk-country" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Country <span style="color: #e11d48;">*</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-country"
-              name="contact[Country]"
-              class="form-field-input"
-              value="Pakistan"
-              placeholder="Pakistan or Destination Country"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-city" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              City <span style="color: #e11d48;">*</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-city"
-              name="contact[City]"
-              class="form-field-input"
-              placeholder="e.g. Lahore, Karachi, Islamabad, Dubai, London"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group" style="grid-column: 1 / -1;">
-            <label for="bulk-address" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Delivery Address <span style="font-weight: 400; color: #64748b;">(Optional at enquiry stage)</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-address"
-              name="contact[Delivery Address]"
-              class="form-field-input"
-              placeholder="Hospital ward, clinic address, or residential delivery point"
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-        </div>
-
-        <!-- Section 3: Uniform Volume & Specifications -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #102a43; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.05em;">
-          3. Uniform Volume & Fit Specifications
-        </h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-          <div class="form-field-group">
-            <label for="bulk-qty" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Estimated Quantity of Scrubs <span style="color: #e11d48;">* (Min. {{ min_qty }})</span>
-            </label>
-            <input
-              type="number"
-              id="bulk-qty"
-              name="contact[Estimated Quantity of Scrubs]"
-              class="form-field-input"
-              min="{{ min_qty }}"
-              value="{{ min_qty }}"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-              oninput="window.validateBulkQuantityLive()"
-            />
-            <small id="bulk-qty-hint" style="display: block; font-size: 11px; color: #64748b; margin-top: 4px;">
-              Minimum order requirement is {{ min_qty }} scrubs.
-            </small>
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-fit" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Gender or Intended Fit <span style="color: #e11d48;">*</span>
-            </label>
-            <select
-              id="bulk-fit"
-              name="contact[Gender or Intended Fit]"
-              class="form-field-select"
-              required
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #ffffff;"
-            >
-              <option value="Mixed Department (Men & Women)">Mixed Department (Men & Women)</option>
-              <option value="Men's Fit Only">Men's Fit Only</option>
-              <option value="Women's Fit Only">Women's Fit Only</option>
-              <option value="Unisex Cut Only">Unisex Cut Only</option>
-            </select>
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-articles" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Preferred Articles or Designs <span style="font-weight: 400; color: #64748b;">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-articles"
-              name="contact[Preferred Articles or Designs]"
-              class="form-field-input"
-              placeholder="e.g. Sprinter 4-Way Stretch, Velora, Crown, Lab Coats"
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-colors" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Preferred Hospital Colours <span style="font-weight: 400; color: #64748b;">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-colors"
-              name="contact[Preferred Colours]"
-              class="form-field-input"
-              placeholder="e.g. Deep Navy, Ceil Blue, Olive, Burgundy, Royal Blue"
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-        </div>
-
-        <!-- Section 4: Size Breakdown (Optional / Reconciled) -->
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
-            <label style="font-size: 14px; font-weight: 700; color: #102a43;">
-              Size Breakdown by Quantity
-            </label>
-            <label style="font-size: 12px; color: #0284c7; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-              <input type="checkbox" id="bulk-size-later" name="contact[Size Breakdown Later]" value="Yes" onchange="window.toggleBulkSizeBreakdown(this.checked)" />
-              <span>Provide exact size breakdown later / Sizing assistance required</span>
-            </label>
-          </div>
-          <p style="font-size: 12px; color: #64748b; margin-top: 0; margin-bottom: 14px; line-height: 1.5;">
-            Enter quantities per size if known. The total must equal your estimated quantity of scrubs above, unless you choose to provide sizes later.
-          </p>
-
-          <div id="bulk-sizes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 10px;">
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">XS</span>
-              <input type="number" min="0" value="0" id="size-qty-xs" name="contact[Size XS]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">S</span>
-              <input type="number" min="0" value="2" id="size-qty-s" name="contact[Size S]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">M</span>
-              <input type="number" min="0" value="4" id="size-qty-m" name="contact[Size M]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">L</span>
-              <input type="number" min="0" value="3" id="size-qty-l" name="contact[Size L]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">XL</span>
-              <input type="number" min="0" value="1" id="size-qty-xl" name="contact[Size XL]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">2XL</span>
-              <input type="number" min="0" value="0" id="size-qty-2xl" name="contact[Size 2XL]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">3XL</span>
-              <input type="number" min="0" value="0" id="size-qty-3xl" name="contact[Size 3XL]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-            <div style="text-align: center;">
-              <span style="font-size: 11px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Custom (C)</span>
-              <input type="number" min="0" value="0" id="size-qty-c" name="contact[Size Custom]" class="bulk-size-input" style="width: 100%; text-align: center; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" oninput="window.calcBulkSizeSum()" />
-            </div>
-          </div>
-
-          <div id="bulk-size-sum-indicator" style="margin-top: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
-            <span id="bulk-size-sum-text" style="color: #059669;">Breakdown Sum: 10 / Declared Order: 10 ✓</span>
-            <span id="bulk-size-reconciled-badge" style="color: #059669; font-size: 11px;">Quantities Match</span>
-          </div>
-        </div>
-
-        <!-- Section 5: Customization & Scheduling -->
-        <h3 style="font-size: 15px; font-weight: 700; color: #102a43; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.05em;">
-          4. Customization Requirements & Timelines
-        </h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-          <div class="form-field-group">
-            <label for="bulk-customization" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Customization Requirements <span style="font-weight: 400; color: #64748b;">(Optional)</span>
-            </label>
-            <input
-              type="text"
-              id="bulk-customization"
-              name="contact[Customization Requirements]"
-              class="form-field-input"
-              placeholder="e.g. Individual doctor names, Hospital embroidered crest, department patches"
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px;"
-            />
-          </div>
-
-          <div class="form-field-group">
-            <label for="bulk-delivery-date" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Target Delivery Date <span style="font-weight: 400; color: #64748b;">(Optional)</span>
-            </label>
-            <input
-              type="date"
-              id="bulk-delivery-date"
-              name="contact[Target Delivery Date]"
-              class="form-field-input"
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #ffffff;"
-            />
-          </div>
-
-          <div class="form-field-group" style="grid-column: 1 / -1;">
-            <label for="bulk-notes" style="display: block; font-size: 13px; font-weight: 600; color: #102a43; margin-bottom: 6px;">
-              Additional Notes & Ward Instructions <span style="font-weight: 400; color: #64748b;">(Optional)</span>
-            </label>
-            <textarea
-              id="bulk-notes"
-              name="contact[body]"
-              rows="4"
-              class="form-field-input"
-              placeholder="Mention any specific fabric blend, sleeve preferences, institutional billing instructions, or sample request..."
-              style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; line-height: 1.5;"
-            ></textarea>
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <div style="margin-top: 24px; text-align: center;">
-          <button
-            type="submit"
-            id="btn-submit-bulk-enquiry"
-            class="btn-proceed-checkout"
-            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 380px; padding: 16px 32px; background: #102a43; color: #ffffff; font-size: 15px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(16,42,67,0.2); transition: background-color 0.2s;"
-          >
-            <span>Submit Bulk Order Requirements</span>
-            <span aria-hidden="true">→</span>
-          </button>
-          <div style="font-size: 11px; color: #64748b; margin-top: 10px;">
-            🔒 Secure submission • Official quotation provided without obligation • Minimum order {{ min_qty }} scrubs
-          </div>
-        </div>
-      </fieldset>
-    {% endform %}
-  </div>
-</div>
-
-<script>
-  (function() {
-    const minRequiredQty = {{ min_qty }};
-
-    window.validateBulkQuantityLive = function() {
-      const qtyInput = document.getElementById('bulk-qty');
-      const hint = document.getElementById('bulk-qty-hint');
-      const val = parseInt(qtyInput?.value, 10) || 0;
-
-      if (val < minRequiredQty) {
-        if (hint) {
-          hint.style.color = '#e11d48';
-          hint.textContent = `Minimum bulk order quantity is ${minRequiredQty} scrubs.`;
-        }
-      } else {
-        if (hint) {
-          hint.style.color = '#64748b';
-          hint.textContent = `Valid bulk volume (${val} scrubs).`;
-        }
-      }
-      calcBulkSizeSum();
-    };
-
-    window.calcBulkSizeSum = function() {
-      const sizeInputs = document.querySelectorAll('.bulk-size-input');
-      const qtyInput = document.getElementById('bulk-qty');
-      const laterCheckbox = document.getElementById('bulk-size-later');
-      const sumIndicator = document.getElementById('bulk-size-sum-text');
-      const badge = document.getElementById('bulk-size-reconciled-badge');
-
-      if (!qtyInput || !sumIndicator) return;
-
-      const declaredQty = parseInt(qtyInput.value, 10) || 0;
-
-      if (laterCheckbox && laterCheckbox.checked) {
-        sumIndicator.style.color = '#0284c7';
-        sumIndicator.textContent = 'Size breakdown will be coordinated after enquiry review.';
-        if (badge) badge.textContent = 'Deferred Sizing';
-        return;
-      }
-
-      let totalSizes = 0;
-      sizeInputs.forEach(input => {
-        totalSizes += (parseInt(input.value, 10) || 0);
-      });
-
-      if (totalSizes === declaredQty) {
-        sumIndicator.style.color = '#059669';
-        sumIndicator.textContent = `Breakdown Sum: ${totalSizes} / Declared Order: ${declaredQty} ✓`;
-        if (badge) {
-          badge.style.color = '#059669';
-          badge.textContent = 'Quantities Match';
-        }
-      } else {
-        sumIndicator.style.color = '#e11d48';
-        sumIndicator.textContent = `Breakdown Sum: ${totalSizes} / Declared Order: ${declaredQty} (Difference: ${totalSizes - declaredQty})`;
-        if (badge) {
-          badge.style.color = '#e11d48';
-          badge.textContent = 'Sum Mismatch';
-        }
-      }
-    };
-
-    window.toggleBulkSizeBreakdown = function(isLater) {
-      const sizeInputs = document.querySelectorAll('.bulk-size-input');
-      sizeInputs.forEach(input => {
-        input.disabled = isLater;
-        if (isLater) input.style.opacity = '0.5';
-        else input.style.opacity = '1';
-      });
-      calcBulkSizeSum();
-    };
-
-    // Client-side submit guard
-    const form = document.getElementById('bulk-orders-enquiry-form');
-    if (form) {
-      form.addEventListener('submit', function(e) {
-        const errorBox = document.getElementById('bulk-client-error-box');
-        const qtyInput = document.getElementById('bulk-qty');
-        const declaredQty = parseInt(qtyInput?.value, 10) || 0;
-        const laterCheckbox = document.getElementById('bulk-size-later');
-        const submitBtn = document.getElementById('btn-submit-bulk-enquiry');
-
-        if (errorBox) {
-          errorBox.style.display = 'none';
-          errorBox.textContent = '';
-        }
-
-        // 1. Minimum quantity check
-        if (declaredQty < minRequiredQty) {
-          e.preventDefault();
-          if (errorBox) {
-            errorBox.style.display = 'block';
-            errorBox.textContent = `Minimum bulk order quantity is ${minRequiredQty} scrubs. Please enter ${minRequiredQty} or more.`;
-            errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-          return false;
-        }
-
-        // 2. Size breakdown sum check
-        if (!laterCheckbox || !laterCheckbox.checked) {
-          const sizeInputs = document.querySelectorAll('.bulk-size-input');
-          let totalSizes = 0;
-          sizeInputs.forEach(input => {
-            totalSizes += (parseInt(input.value, 10) || 0);
-          });
-
-          if (totalSizes !== declaredQty) {
-            e.preventDefault();
-            if (errorBox) {
-              errorBox.style.display = 'block';
-              errorBox.textContent = `The sum of your individual sizes (${totalSizes}) does not match your declared estimated quantity (${declaredQty}). Please adjust your sizes or check "Provide exact size breakdown later".`;
-              errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-            return false;
-          }
-        }
-
-        // 3. Stamp exact submission ISO time
-        const timeInput = document.getElementById('bulk-submission-time');
-        if (timeInput) {
-          timeInput.value = new Date().toISOString();
-        }
-
-        // 4. Prevent duplicate clicks
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.style.opacity = '0.7';
-          submitBtn.innerHTML = 'Submitting Bulk Order Requirements...';
-        }
-      });
-    }
-
-    // Initialize initial calculations
-    calcBulkSizeSum();
-  })();
-</script>
+{% render "enamels-bulk-orders-workflow" %}
 
 {% schema %}
 {
-  "name": "Bulk Orders Enquiry",
+  "name": "Enamels Bulk Orders Form",
   "class": "enamels-bulk-orders-wrapper",
   "settings": [
     {
@@ -569,13 +17,53 @@
       "type": "text",
       "id": "heading",
       "label": "Section Heading",
-      "default": "Bulk Orders"
+      "default": "Institutional & Hospital Bulk Orders"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_desktop",
+      "min": 20,
+      "max": 52,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size (Desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 16,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Font Size (Mobile)",
+      "default": 24
     },
     {
       "type": "textarea",
       "id": "subtext",
       "label": "Supporting Subtitle",
-      "default": "Planning a bulk order? Submit your requirements using the form below. Minimum order quantity: 10 scrubs."
+      "default": "Equip your medical team, clinic, or hospital department with Enamels premium medical wear. Minimum order volume: 10 units."
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_desktop",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle Font Size (Desktop)",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_mobile",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle Font Size (Mobile)",
+      "default": 13
     },
     {
       "type": "number",
@@ -585,19 +73,67 @@
     },
     {
       "type": "header",
-      "content": "Confirmation State"
+      "content": "Sizing & Layout"
     },
     {
-      "type": "text",
-      "id": "success_heading",
-      "label": "Success Title",
-      "default": "Bulk Order Enquiry Received"
+      "type": "range",
+      "id": "container_max_width",
+      "min": 800,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "label": "Max Container Width",
+      "default": 1020
     },
     {
-      "type": "textarea",
-      "id": "success_message",
-      "label": "Success Message Explanation",
-      "default": "Thank you for your bulk enquiry. Our institutional sales desk has received your uniform specifications and will contact you via email or WhatsApp within 24 business hours with an official quotation and sizing logistics."
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Corner Radius",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top (Mobile)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom (Desktop)",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom (Mobile)",
+      "default": 40
     }
   ],
   "presets": [

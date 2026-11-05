@@ -5,8 +5,43 @@
   <!-- In templates/product.json or page.customizer.json -->
 {% endcomment %}
 
-<div class="enamels-customizer-section section-padding" style="background-color: {{ section.settings.bg_color | default: '#f8fafc' }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
-  <div class="page-width">
+{%- liquid
+  assign pad_top_desk = section.settings.padding_top_desktop | default: section.settings.padding_top | default: 48
+  assign pad_top_mob = section.settings.padding_top_mobile | default: 24
+  assign pad_bot_desk = section.settings.padding_bottom_desktop | default: section.settings.padding_bottom | default: 48
+  assign pad_bot_mob = section.settings.padding_bottom_mobile | default: 28
+  assign max_w = section.settings.container_max_width | default: 1140
+  assign t_size_desk = section.settings.title_size_desktop | default: 30
+  assign t_size_mob = section.settings.title_size_mobile | default: 22
+  assign sub_size_desk = section.settings.subtitle_size_desktop | default: 15
+  assign sub_size_mob = section.settings.subtitle_size_mobile | default: 13
+-%}
+
+<div
+  class="enamels-customizer-section"
+  id="enamels-customizer-sec-{{ section.id }}"
+  style="
+    background-color: {{ section.settings.bg_color | default: '#f8fafc' }};
+    padding-top: {{ pad_top_desk }}px;
+    padding-bottom: {{ pad_bot_desk }}px;
+  "
+>
+  <style>
+    @media (max-width: 640px) {
+      #enamels-customizer-sec-{{ section.id }} {
+        padding-top: {{ pad_top_mob }}px !important;
+        padding-bottom: {{ pad_bot_mob }}px !important;
+      }
+      #enamels-customizer-sec-{{ section.id }} .customizer-section-title {
+        font-size: {{ t_size_mob }}px !important;
+      }
+      #enamels-customizer-sec-{{ section.id }} .customizer-section-subtitle {
+        font-size: {{ sub_size_mob }}px !important;
+      }
+    }
+  </style>
+
+  <div class="page-width" style="max-width: {{ max_w }}px; margin: 0 auto; padding: 0 16px;">
     {% if section.settings.show_header %}
       <div class="customizer-section-header text-center" style="max-width: 720px; margin: 0 auto 36px auto; text-align: center;">
         {% if section.settings.badge != blank %}
@@ -15,12 +50,12 @@
           </span>
         {% endif %}
         {% if section.settings.title != blank %}
-          <h2 class="customizer-section-title" style="font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 800; color: #0f172a; margin: 0 0 12px 0; letter-spacing: -0.02em;">
+          <h2 class="customizer-section-title" style="font-size: {{ t_size_desk }}px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0; letter-spacing: -0.02em;">
             {{ section.settings.title | escape }}
           </h2>
         {% endif %}
         {% if section.settings.subtitle != blank %}
-          <p class="customizer-section-subtitle" style="font-size: 1rem; color: #64748b; line-height: 1.6; margin: 0;">
+          <p class="customizer-section-subtitle" style="font-size: {{ sub_size_desk }}px; color: #64748b; line-height: 1.6; margin: 0;">
             {{ section.settings.subtitle | escape }}
           </p>
         {% endif %}
@@ -64,10 +99,50 @@
       "default": "Step-by-Step Custom Fit & Embroidery"
     },
     {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Size (Desktop)",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 16,
+      "max": 34,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading Size (Mobile)",
+      "default": 22
+    },
+    {
       "type": "textarea",
       "id": "subtitle",
       "label": "Subheading",
       "default": "Tailor your scrubs with clinical precision: choose your fit, select official shades, and preview live chest pocket embroidery."
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_desktop",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading Size (Desktop)",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_mobile",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Subheading Size (Mobile)",
+      "default": 13
     },
     {
       "type": "header",
@@ -104,7 +179,7 @@
     },
     {
       "type": "header",
-      "content": "Layout & Colors"
+      "content": "Layout, Sizing & Colors"
     },
     {
       "type": "color",
@@ -114,28 +189,58 @@
     },
     {
       "type": "range",
-      "id": "padding_top",
-      "label": "Top padding",
+      "id": "container_max_width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Container Max Width",
+      "default": 1140
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Top padding (Desktop)",
       "min": 0,
-      "max": 100,
+      "max": 120,
       "step": 4,
       "unit": "px",
       "default": 48
     },
     {
       "type": "range",
-      "id": "padding_bottom",
-      "label": "Bottom padding",
+      "id": "padding_top_mobile",
+      "label": "Top padding (Mobile)",
       "min": 0,
-      "max": 100,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Bottom padding (Desktop)",
+      "min": 0,
+      "max": 120,
       "step": 4,
       "unit": "px",
       "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding (Mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 28
     }
   ],
   "presets": [
     {
-      "name": "Enamels Customization Wizard"
+      "name": "Customization Studio"
     }
   ]
 }

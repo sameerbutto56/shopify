@@ -1,0 +1,459 @@
+{% comment %}
+  Enamels Global International Delivery & Orders Modal
+  Provides instant interactive worldwide delivery onboarding across all storefront pages
+  with zero 404 errors.
+{% endcomment %}
+
+<!-- International Order Modal Container -->
+<div
+  class="enamels-intl-modal-wrap"
+  id="enamels-international-modal-overlay"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="intl-modal-title"
+  style="display: none;"
+>
+  <div class="enamels-intl-modal-backdrop" onclick="window.closeInternationalModal()"></div>
+
+  <div class="enamels-intl-modal-content">
+    <div class="enamels-intl-modal-bar">
+      <div class="intl-modal-title-group">
+        <span class="intl-modal-badge">🌍 Worldwide Dispatch</span>
+        <h2 class="intl-modal-heading" id="intl-modal-title">International Order & Delivery</h2>
+      </div>
+      <button
+        type="button"
+        class="enamels-intl-modal-close"
+        onclick="window.closeInternationalModal()"
+        aria-label="Close International Modal"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="enamels-intl-modal-body">
+      
+      <!-- Highlight Rates Hero -->
+      <div class="intl-hero-box">
+        <div class="intl-rate-badge-main">
+          <span class="intl-rate-title">Flat Worldwide Express Shipping</span>
+          <div class="intl-rate-amount">PKR 4,000 <span style="font-size: 14px; font-weight: 500; opacity: 0.85;">/ scrub unit</span></div>
+        </div>
+        <p class="intl-hero-subtitle">
+          Direct tracked courier dispatch to the United Kingdom, United States, UAE, Saudi Arabia, Canada, Australia, and 60+ countries worldwide via DHL & FedEx Express.
+        </p>
+      </div>
+
+      <!-- Perks Grid -->
+      <div class="intl-perks-grid">
+        <div class="intl-perk-card">
+          <span class="intl-perk-icon">✈️</span>
+          <strong>3–5 Days Dispatch</strong>
+          <span>Express air courier with doorstep delivery & live tracking.</span>
+        </div>
+        <div class="intl-perk-card">
+          <span class="intl-perk-icon">💳</span>
+          <strong>100% Advance Payment</strong>
+          <span>Secure checkout via Visa, Mastercard, or Bank Transfer.</span>
+        </div>
+        <div class="intl-perk-card">
+          <span class="intl-perk-icon">🧵</span>
+          <strong>Custom Tailoring</strong>
+          <span>Doctor name embroidery & custom sizing shipped worldwide.</span>
+        </div>
+      </div>
+
+      <!-- Action Choices -->
+      <div class="intl-action-block">
+        <h3 class="intl-action-title">How would you like to order?</h3>
+        
+        <div class="intl-choices-stack">
+          <!-- Choice 1: Customize for International -->
+          <button type="button" class="intl-choice-btn primary" onclick="window.enamelsLaunchCustomizerIntl()">
+            <div class="choice-btn-left">
+              <span class="choice-icon">✂️</span>
+              <div class="choice-text">
+                <strong>Customize Your Own Scrub (Worldwide)</strong>
+                <span>Tailor fabric, color, contrast, bespoke fit, and clinical name embroidery.</span>
+              </div>
+            </div>
+            <span class="choice-arrow">→</span>
+          </button>
+
+          <!-- Choice 2: Browse Ready Catalog -->
+          <button type="button" class="intl-choice-btn secondary" onclick="window.enamelsBrowseCatalogIntl()">
+            <div class="choice-btn-left">
+              <span class="choice-icon">🩺</span>
+              <div class="choice-text">
+                <strong>Shop Men & Women Ready Collections</strong>
+                <span>Browse ready-to-wear scrub suits and labcoats with international shipping.</span>
+              </div>
+            </div>
+            <span class="choice-arrow">→</span>
+          </button>
+
+          <!-- Choice 3: WhatsApp Concierge -->
+          <a href="https://wa.me/923000000000?text=Hi%20Enamels,%20I%20would%20like%20to%20place%20an%20International%20Scrub%20Order" class="intl-choice-btn whatsapp" target="_blank" rel="noopener">
+            <div class="choice-btn-left">
+              <span class="choice-icon">💬</span>
+              <div class="choice-text">
+                <strong>Order via WhatsApp Global Concierge</strong>
+                <span>Speak directly with our export team for international sizing guidance.</span>
+              </div>
+            </div>
+            <span class="choice-arrow">↗</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .enamels-intl-modal-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .enamels-intl-modal-wrap.is-open {
+    opacity: 1;
+    visibility: visible;
+    display: flex !important;
+  }
+
+  .enamels-intl-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .enamels-intl-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    max-height: 94vh;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 2;
+    transform: scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .enamels-intl-modal-wrap.is-open .enamels-intl-modal-content {
+    transform: scale(1);
+  }
+
+  .enamels-intl-modal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: #0f172a;
+    color: #ffffff;
+    border-bottom: 2px solid #008779;
+    flex-shrink: 0;
+  }
+
+  .intl-modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .intl-modal-badge {
+    background: rgba(0, 135, 121, 0.25);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .intl-modal-heading {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+
+  .enamels-intl-modal-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .enamels-intl-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .enamels-intl-modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-grow: 1;
+    padding: 24px;
+    background: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* Rates Box */
+  .intl-hero-box {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 12px;
+    padding: 20px;
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .intl-rate-title {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .intl-rate-amount {
+    font-size: 30px;
+    font-weight: 800;
+    color: #38bdf8;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .intl-hero-subtitle {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Perks */
+  .intl-perks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 600px) {
+    .intl-perks-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .intl-perk-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .intl-perk-icon {
+    font-size: 20px;
+    line-height: 1;
+  }
+  .intl-perk-card strong {
+    font-size: 12px;
+    color: #0f172a;
+  }
+  .intl-perk-card span {
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.3;
+  }
+
+  /* Choices */
+  .intl-action-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .intl-choices-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .intl-choice-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: left;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    min-height: 52px;
+  }
+  .intl-choice-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .choice-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .choice-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .choice-text strong {
+    display: block;
+    font-size: 14px;
+    color: #0f172a;
+    font-weight: 700;
+  }
+  .choice-text span {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .choice-arrow {
+    font-size: 18px;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-left: 12px;
+  }
+
+  .intl-choice-btn.primary {
+    border-color: #008779;
+    background: rgba(0, 135, 121, 0.04);
+  }
+  .intl-choice-btn.primary .choice-text strong {
+    color: #008779;
+  }
+  .intl-choice-btn.primary .choice-arrow {
+    color: #008779;
+  }
+
+  .intl-choice-btn.whatsapp {
+    border-color: #25d366;
+    background: rgba(37, 211, 102, 0.05);
+  }
+  .intl-choice-btn.whatsapp .choice-text strong {
+    color: #128c7e;
+  }
+</style>
+
+<script>
+  (function initIntlModalEngine() {
+    window.openInternationalModal = function() {
+      // Automatically activate international mode
+      if (typeof window.enamelsSetIntlMode === 'function') {
+        window.enamelsSetIntlMode(true);
+      }
+
+      var modal = document.getElementById('enamels-international-modal-overlay');
+      if (modal) {
+        modal.style.display = 'flex';
+        void modal.offsetWidth;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    window.closeInternationalModal = function() {
+      var modal = document.getElementById('enamels-international-modal-overlay');
+      if (modal) {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(function() {
+          if (!modal.classList.contains('is-open')) {
+            modal.style.display = 'none';
+          }
+        }, 260);
+      }
+    };
+
+    window.enamelsLaunchCustomizerIntl = function() {
+      window.closeInternationalModal();
+      // Ensure customizer sets international delivery destination
+      if (typeof window.enamelsSetDestination === 'function') {
+        window.enamelsSetDestination('intl');
+      }
+      setTimeout(function() {
+        if (typeof window.openCustomizerModal === 'function') {
+          window.openCustomizerModal();
+        }
+      }, 200);
+    };
+
+    window.enamelsBrowseCatalogIntl = function() {
+      window.closeInternationalModal();
+      window.location.href = '/collections/all?delivery=intl';
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && document.getElementById('enamels-international-modal-overlay')) {
+        window.closeInternationalModal();
+      }
+    });
+
+    // Check hash on load
+    if (window.location.hash === '#international' || window.location.hash === '#intl-order' || window.location.hash === '#international-delivery') {
+      setTimeout(function() {
+        window.openInternationalModal();
+      }, 300);
+    }
+  })();
+</script>
+

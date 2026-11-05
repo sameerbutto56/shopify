@@ -55,18 +55,35 @@
 
   .product-media-container img {
     aspect-ratio: inherit;
-    object-fit: contain;
+    object-fit: var(--product-media-fit, contain);
+    object-position: var(--product-media-position, center);
   }
 
   .product-media-container.media-fit-contain img {
-    object-position: center center;
+    object-position: var(--product-media-position, center);
   }
 
   .product-media-container.media-fit {
-    --product-media-fit: cover;
+    --product-media-fit: contain;
 
     img {
-      object-fit: var(--product-media-fit);
+      object-fit: var(--product-media-fit, contain);
+      object-position: var(--product-media-position, center);
     }
+  }
+
+  /* Standard 1200x1800 (2:3 Portrait) Card Presentation */
+  .card-gallery {
+    aspect-ratio: var(--gallery-aspect-ratio, 2 / 3);
+    background-color: var(--product-card-bg, #f8fafc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .card-gallery img {
+    object-fit: var(--product-media-fit, contain) !important;
+    object-position: var(--product-media-position, center) !important;
   }
 {% endstylesheet %}

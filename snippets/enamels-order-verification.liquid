@@ -1,0 +1,1221 @@
+{% comment %}
+  Enamels Order & Online Payment Verification Component
+  Displays:
+  1. Official Confirmation & Verification Call Notice
+  2. Order Reference & Pending Verification Status Card
+  3. WhatsApp Payment Screenshot Submission Button & Guidance
+  4. Mandatory Customer Order Confirmation Preview (Sample Demonstration Data)
+  5. Mandatory Admin Order Details Preview (9-Section Clean Layout for Enamels Operations Team)
+{% endcomment %}
+
+{%- liquid
+  assign raw_wa = settings.whatsapp_number | default: '923011331133'
+  assign wa_clean = raw_wa | replace: '+', '' | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', ''
+  assign order_ref = order.name | default: order.order_number | default: 'ENM-2026-8941'
+-%}
+
+<div class="enamels-order-verification-container" id="enamels-order-verification-box">
+  
+  <!-- Verification Card Main -->
+  <div class="enamels-verif-card">
+    
+    <!-- Header Status Banner -->
+    <div class="verif-card-header">
+      <div class="verif-status-badge">
+        <span class="status-pulse-dot"></span>
+        <span id="verif-status-text">⏳ Payment Pending Verification</span>
+      </div>
+      <div class="verif-order-ref">
+        Order: <strong id="verif-display-order-id">#{{ order_ref | remove: '#' }}</strong>
+      </div>
+    </div>
+
+    <!-- Official Confirmation Call Message -->
+    <div class="verif-message-box">
+      <div class="verif-icon-circle">✓</div>
+      <div class="verif-message-content">
+        <h3 class="verif-message-title">Order Received — Pending Verification</h3>
+        <p class="verif-message-body">
+          Thank you for placing your order with Enamels! Your payment and order details have been received. Our verification team will contact you within one working day to verify your payment and confirm your order. Please keep your phone available.
+        </p>
+      </div>
+    </div>
+
+    <!-- WhatsApp Screenshot Submission Block -->
+    {% if wa_clean != blank %}
+      <div class="verif-whatsapp-box">
+        <div class="whatsapp-box-left">
+          <div class="wa-shield-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="#128c7e">
+              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.41 1.56 1.56 2.41 3.62 2.41 5.83 0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31c-.82-1.31-1.26-2.83-1.26-4.38 0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.14-.25-.02-.39.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.13-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.55.13.17 1.74 2.65 4.21 3.72.59.25 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.11-.23-.17-.48-.3"/>
+            </svg>
+          </div>
+          <div>
+            <strong class="wa-box-title">For faster payment verification:</strong>
+            <p class="wa-box-sub">
+              For faster payment verification, please send a screenshot of your payment transaction along with your Order Number to our official Enamels WhatsApp number.
+            </p>
+          </div>
+        </div>
+
+        <div class="whatsapp-btn-wrap">
+          <a
+            href="https://wa.me/{{ wa_clean }}?text=Hello%20Enamels%2C%20I%20have%20placed%20Order%20%23{{ order_ref | remove: '#' }}%20and%20completed%20my%20online%20payment.%20I%20am%20sharing%20my%20payment%20screenshot%20for%20verification.%20Please%20verify%20and%20confirm%20my%20order."
+            id="enamels-btn-whatsapp-screenshot"
+            class="btn-send-screenshot-wa"
+            target="_blank"
+            rel="noopener"
+            onclick="window.enamelsTrackWhatsAppClick()"
+          >
+            <span class="wa-btn-icon">💬</span>
+            <span class="wa-btn-text">Send Payment Screenshot on WhatsApp</span>
+          </a>
+          <span class="wa-manual-note">
+            📎 Please manually attach your payment screenshot or receipt inside WhatsApp before sending.
+          </span>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Verification Timeline Details -->
+    <div class="verif-details-grid">
+      <div class="verif-detail-col">
+        <span class="detail-label">Verification Window</span>
+        <strong class="detail-val">Within 1 Working Day</strong>
+        <span class="detail-sub">Mon – Sat (9:00 AM – 6:00 PM)</span>
+      </div>
+
+      <div class="verif-detail-col">
+        <span class="detail-label">Payment Verification Rule</span>
+        <strong class="detail-val">Bank & Gateway Clearance</strong>
+        <span class="detail-sub">Orders confirmed upon actual bank credit</span>
+      </div>
+
+      <div class="verif-detail-col">
+        <span class="detail-label">Official Support Contact</span>
+        <strong class="detail-val">+{{ wa_clean }}</strong>
+        <span class="detail-sub">Official Enamels WhatsApp Desk</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       ORDER PREVIEW PRESENTATION (Customer View & Admin View Tabs)
+       Mandatory realistic sample preview of customized scrub orders
+       ========================================================================= -->
+  <div class="enamels-preview-deck" id="enamels-order-preview-deck">
+    
+    <!-- Top Preview Controller & Watermark -->
+    <div class="preview-deck-header">
+      <div class="preview-deck-tag">
+        <span class="pulse-indicator"></span>
+        <span>SAMPLE DEMONSTRATION DATA • CUSTOMIZED SCRUB ORDER</span>
+      </div>
+      <div class="preview-mode-switch">
+        <button type="button" class="btn-mode-tab active" id="tab-btn-cust" onclick="window.enamelsSwitchPreviewTab('cust')">
+          👤 Customer Order Confirmation View
+        </button>
+        <button type="button" class="btn-mode-tab" id="tab-btn-admin" onclick="window.enamelsSwitchPreviewTab('admin')">
+          🏢 Admin Order Details View (Enamels Operations Staff)
+        </button>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB A: CUSTOMER ORDER CONFIRMATION PREVIEW
+         ===================================================================== -->
+    <div class="preview-tab-pane active" id="pane-cust-preview">
+      <div class="cust-preview-card">
+        
+        <div class="cust-card-title-bar">
+          <div>
+            <span class="cust-order-tag">Customer Receipt Preview</span>
+            <h3 class="cust-order-h3">Order #ENM-2026-8941</h3>
+            <span class="cust-order-date">Placed on November 05, 2026 • 02:40 PM PKT</span>
+          </div>
+          <div class="cust-status-badge-pill">
+            ⏳ Pending Verification Call
+          </div>
+        </div>
+
+        <!-- Garment Itemized Card -->
+        <div class="cust-item-row">
+          <div class="cust-item-thumb">
+            <img src="{{ 'demo-sprinter-navy.jpg' | asset_url }}" alt="Custom Tailored Scrub" width="120" height="150" loading="lazy">
+          </div>
+          <div class="cust-item-details">
+            <h4 class="cust-item-name">Enamels Custom Tailored Doctor Scrub Set — Sprinter Series</h4>
+            <div class="cust-specs-grid">
+              <div class="spec-cell">
+                <span class="spec-k">Fabric:</span>
+                <span class="spec-v">Velora Micro-Drape (210 GSM, 72% Poly / 21% Rayon / 7% Spandex) [FL-VLR-01]</span>
+              </div>
+              <div class="spec-cell">
+                <span class="spec-k">Main Garment Color:</span>
+                <span class="spec-v">Royal Navy Blue (#0f2b48)</span>
+              </div>
+              <div class="spec-cell">
+                <span class="spec-k">Contrast Accent:</span>
+                <span class="spec-v">Hospital Teal Piping (#008779) on V-Neck Collar & Pocket Welts</span>
+              </div>
+              <div class="spec-cell">
+                <span class="spec-k">Selected Design Article:</span>
+                <span class="spec-v">Sprinter Athletic Cut (8-Pocket Cargo Configuration)</span>
+              </div>
+              <div class="spec-cell">
+                <span class="spec-k">Sizing Selection:</span>
+                <span class="spec-v">Custom Tailored Fit</span>
+              </div>
+              <div class="spec-cell full-w">
+                <span class="spec-k">Bespoke Measurements:</span>
+                <span class="spec-v spec-measurements-pill">
+                  Top: Length 29.0" • Chest 42.0" • Shoulder 18.5" • Sleeve 9.5" | Pant: Waist 34.0" • Hips 40.0" • Inseam 31.0" • Thigh 24.0"
+                </span>
+              </div>
+              <div class="spec-cell full-w">
+                <span class="spec-k">Personalization & Monogramming:</span>
+                <span class="spec-v">
+                  Embroidered: <strong>"Dr. Sarah Ahmed, MD"</strong> • Font: Serif Block • Thread: Silver Gray • Placement: Left Chest (Above Pen Pocket)
+                </span>
+              </div>
+              <div class="spec-cell full-w">
+                <span class="spec-k">Institutional Insignia / Crest:</span>
+                <span class="spec-v">Hospital Crest Embroidered Patch (Left Sleeve, 2.5") [+PKR 450]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Order Financial Breakdown -->
+        <div class="cust-financial-wrap">
+          <div class="financial-table">
+            <div class="fin-row">
+              <span class="fin-k">Base Scrub Set (Sprinter 4-Way Technical):</span>
+              <span class="fin-v">PKR 4,850.00</span>
+            </div>
+            <div class="fin-row">
+              <span class="fin-k">Custom Tailoring & Bespoke Pattern Fee:</span>
+              <span class="fin-v">PKR 500.00</span>
+            </div>
+            <div class="fin-row">
+              <span class="fin-k">Chest Name Monogramming (Dr. Sarah Ahmed, MD):</span>
+              <span class="fin-v">PKR 350.00</span>
+            </div>
+            <div class="fin-row">
+              <span class="fin-k">Hospital Crest Embroidered Emblem:</span>
+              <span class="fin-v">PKR 450.00</span>
+            </div>
+            <div class="fin-row">
+              <span class="fin-k">Pakistan Standard Insured Shipping:</span>
+              <span class="fin-v">PKR 250.00</span>
+            </div>
+            <div class="fin-row discount-row">
+              <span class="fin-k">Payment Promotion (Online Bank Transfer -2% on garments):</span>
+              <span class="fin-v">-PKR 123.00</span>
+            </div>
+            <div class="fin-row grand-total-row">
+              <span class="fin-k">Final Order Total:</span>
+              <span class="fin-v">PKR 6,277.00</span>
+            </div>
+          </div>
+
+          <div class="cust-payment-terms-box">
+            <span class="terms-title">💳 Payment Method & Verification Terms</span>
+            <p class="terms-body">
+              <strong>Selected Payment:</strong> Online Bank Transfer (Meezan Bank Ltd)<br>
+              <strong>Transaction Ref:</strong> FT261105894120<br>
+              <strong>Payment Status:</strong> Pending Verification Call & Bank Clearance<br>
+              <strong>Advance Payment Rule:</strong> 100% Advance Payment Enforced — Tailoring does not commence until verification is complete.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         TAB B: ADMIN ORDER DETAILS PREVIEW (The 9 Organized Sections)
+         ===================================================================== -->
+    <div class="preview-tab-pane" id="pane-admin-preview">
+      <div class="admin-preview-docket">
+        
+        <!-- Admin Bar -->
+        <div class="admin-docket-top">
+          <div>
+            <span class="admin-sys-tag">ENAMELS OPS INTERNAL DOCKET • BESPOKE SCRUBS DESK</span>
+            <h2 class="admin-docket-h2">Shopify Order #ENM-2026-8941</h2>
+            <span class="admin-docket-id">Shopify ID: gid://shopify/Order/619284729104 • Line Item ID: 148920194821</span>
+          </div>
+          <div class="admin-action-cluster">
+            <a href="https://wa.me/923008472910?text=Hello%20Dr.%20Sarah%20Ahmed%2C%20this%20is%20Enamels%20Verification%20Desk%20regarding%20Custom%20Scrub%20Order%20%23ENM-2026-8941." target="_blank" class="admin-btn-wa">
+              💬 WhatsApp Customer
+            </a>
+            <a href="tel:+923008472910" class="admin-btn-call">
+              📞 Call (+92 300 8472910)
+            </a>
+          </div>
+        </div>
+
+        <!-- 9 Organized Admin Sections Grid -->
+        <div class="admin-sections-layout">
+          
+          <!-- SECTION 1: Order Information -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">1</span>
+              <h4 class="sec-title">Order Information</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Order Number:</span><strong class="adl-v">#ENM-2026-8941</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Date & Time:</span><span class="adl-v">05 Nov 2026, 02:40 PM PKT</span></div>
+              <div class="admin-data-line"><span class="adl-k">Sales Channel:</span><span class="adl-v">Online Store (Customizer Experience v2.4)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Currency:</span><span class="adl-v">PKR (Pakistani Rupee)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Financial Status:</span><span class="adl-v badge-amber">Pending Verification Call</span></div>
+              <div class="admin-data-line"><span class="adl-k">Fulfillment Status:</span><span class="adl-v badge-slate">Unfulfilled (Held for Payment)</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: Customer Information -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">2</span>
+              <h4 class="sec-title">Customer Information</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Customer Name:</span><strong class="adl-v">Dr. Sarah Ahmed</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Medical Title:</span><span class="adl-v">Consultant Cardiologist</span></div>
+              <div class="admin-data-line"><span class="adl-k">Phone Number:</span><span class="adl-v">+92 300 8472910</span></div>
+              <div class="admin-data-line"><span class="adl-k">WhatsApp Number:</span><span class="adl-v">+92 300 8472910</span></div>
+              <div class="admin-data-line"><span class="adl-k">Email Address:</span><span class="adl-v">dr.sarah.ahmed@hospital.org.pk</span></div>
+              <div class="admin-data-line"><span class="adl-k">Delivery Address:</span><span class="adl-v">Apt 4B, Doctors Residential Complex, Services Hospital Road, Jail Road, Lahore, 54000</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 3: Product and Design -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">3</span>
+              <h4 class="sec-title">Product and Design</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Parent Product:</span><strong class="adl-v">Enamels Custom Tailored Doctor Scrub Set</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Design Family:</span><span class="adl-v">Sprinter Series (Athletic V-Neck)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Style Code:</span><span class="adl-v">SPR-VN-8PKT-2026</span></div>
+              <div class="admin-data-line"><span class="adl-k">Configuration:</span><span class="adl-v">V-Neck Top + 6-Pocket Ergonomic Cargo Pant</span></div>
+              <div class="admin-data-line"><span class="adl-k">Base SKU:</span><span class="adl-v font-mono">ENM-CUST-SPR-TOPPANT</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 4: Fabric and Color Details -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">4</span>
+              <h4 class="sec-title">Fabric and Color Details</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Fabric Article:</span><strong class="adl-v">Velora Micro-Drape Technical Fabric</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Fabric Code:</span><span class="adl-v font-mono">FL-VLR-01</span></div>
+              <div class="admin-data-line"><span class="adl-k">Weight & Composition:</span><span class="adl-v">210 GSM • 72% Poly / 21% Rayon / 7% Spandex</span></div>
+              <div class="admin-data-line"><span class="adl-k">Main Color:</span><span class="adl-v"><span class="color-dot" style="background:#0f2b48;"></span> Royal Navy Blue (#0f2b48)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Contrast Accent:</span><span class="adl-v"><span class="color-dot" style="background:#008779;"></span> Hospital Teal Piping (#008779)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Contrast Placement:</span><span class="adl-v">V-Neck Collar Perimeter & Cargo Pocket Welts</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 5: Size and Measurements -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">5</span>
+              <h4 class="sec-title">Size and Measurements</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Fit Model:</span><strong class="adl-v">Custom Tailored Fit (Bespoke Pattern Cut)</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Top Length:</span><span class="adl-v">29.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Chest Circumference:</span><span class="adl-v">42.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Shoulder Width:</span><span class="adl-v">18.5 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Sleeve Length:</span><span class="adl-v">9.5 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Trouser Waist:</span><span class="adl-v">34.0 inches (Elasticated + Drawcord)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Trouser Hips:</span><span class="adl-v">40.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Trouser Inseam:</span><span class="adl-v">31.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Upper Thigh:</span><span class="adl-v">24.0 inches</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 6: Personalization -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">6</span>
+              <h4 class="sec-title">Personalization</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Service Requested:</span><strong class="adl-v">Precision Name Embroidery + Crest</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Embroidered Text:</span><span class="adl-v font-serif-highlight">"Dr. Sarah Ahmed, MD"</span></div>
+              <div class="admin-data-line"><span class="adl-k">Embroidery Font:</span><span class="adl-v">Serif Block Modern</span></div>
+              <div class="admin-data-line"><span class="adl-k">Thread Shade:</span><span class="adl-v">Silver Gray (Madeira Polyneon 1801)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Text Placement:</span><span class="adl-v">Left Chest (1.5" Above Pen Pocket)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Emblem Insignia:</span><span class="adl-v">Hospital Medical Crest (Left Arm Sleeve, 2.5")</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 7: Price Breakdown -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">7</span>
+              <h4 class="sec-title">Price Breakdown</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Base Garment Price:</span><span class="adl-v">PKR 4,850.00</span></div>
+              <div class="admin-data-line"><span class="adl-k">Bespoke Pattern Fee:</span><span class="adl-v">PKR 500.00</span></div>
+              <div class="admin-data-line"><span class="adl-k">Name Monogramming:</span><span class="adl-v">PKR 350.00</span></div>
+              <div class="admin-data-line"><span class="adl-k">Hospital Crest Fee:</span><span class="adl-v">PKR 450.00</span></div>
+              <div class="admin-data-line"><span class="adl-k">Shipping Packaging:</span><span class="adl-v">PKR 250.00</span></div>
+              <div class="admin-data-line"><span class="adl-k">Bank Transfer Discount (-2%):</span><span class="adl-v text-emerald">-PKR 123.00</span></div>
+              <div class="admin-data-line total-highlight"><span class="adl-k">Final Collected Amount:</span><strong class="adl-v font-bold">PKR 6,277.00</strong></div>
+            </div>
+          </div>
+
+          <!-- SECTION 8: Payment Information -->
+          <div class="admin-section-block">
+            <div class="sec-head">
+              <span class="sec-num">8</span>
+              <h4 class="sec-title">Payment Information</h4>
+            </div>
+            <div class="sec-content-list">
+              <div class="admin-data-line"><span class="adl-k">Gateway Method:</span><strong class="adl-v">Online Bank Transfer (Direct Deposit)</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Receiving Bank:</span><span class="adl-v">Meezan Bank Ltd</span></div>
+              <div class="admin-data-line"><span class="adl-k">Target IBAN:</span><span class="adl-v font-mono">PK55MEZN0001020304050607</span></div>
+              <div class="admin-data-line"><span class="adl-k">Customer Trans Ref:</span><span class="adl-v font-mono font-bold">FT261105894120</span></div>
+              <div class="admin-data-line"><span class="adl-k">Advance Payment Rule:</span><span class="adl-v badge-blue">100% Advance Payment Enforced</span></div>
+              <div class="admin-data-line"><span class="adl-k">COD Allowed:</span><span class="adl-v badge-rose">No (Custom Goods Non-COD)</span></div>
+            </div>
+          </div>
+
+          <!-- SECTION 9: Verification and Order Status -->
+          <div class="admin-section-block full-width-block">
+            <div class="sec-head">
+              <span class="sec-num">9</span>
+              <h4 class="sec-title">Verification and Order Status</h4>
+            </div>
+            <div class="sec-content-list admin-verif-control-grid">
+              <div>
+                <div class="admin-data-line"><span class="adl-k">Verification Desk Status:</span><span class="adl-v badge-amber">⏳ Pending Verification Call</span></div>
+                <div class="admin-data-line"><span class="adl-k">Target Window:</span><span class="adl-v">Within 1 Working Day (Due: 06 Nov 2026, 02:40 PM)</span></div>
+                <div class="admin-data-line"><span class="adl-k">Assigned Officer:</span><span class="adl-v">Lahore Head Office Verification Queue</span></div>
+                <div class="admin-data-line"><span class="adl-k">WhatsApp Proof:</span><span class="adl-v badge-teal">Receipt Screenshot Logged • Match Pending</span></div>
+              </div>
+
+              <!-- Admin Action Triggers -->
+              <div class="admin-ops-buttons">
+                <button type="button" class="btn-ops-action btn-ops-verify" onclick="alert('Verification Action: Payment cleared against Meezan Bank statement. Custom order #ENM-2026-8941 approved and routed to pattern cutting!')">
+                  ✓ Mark Payment Verified & Release to Tailoring
+                </button>
+                <button type="button" class="btn-ops-action btn-ops-logcall" onclick="alert('Call Logged: Verification officer placed call to Dr. Sarah Ahmed (+92 300 8472910). Customer confirmed sizing and embroidery details.')">
+                  📞 Log Customer Verification Call
+                </button>
+                <button type="button" class="btn-ops-action btn-ops-discrepancy" onclick="alert('Discrepancy Notice: WhatsApp payment receipt resubmission request generated for customer.')">
+                  ⚠️ Flag Payment Discrepancy / Request Resubmission
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  .enamels-order-verification-container {
+    width: 100%;
+    max-width: 960px;
+    margin: 24px auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+  }
+
+  .enamels-verif-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 30px;
+  }
+
+  .verif-card-header {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 2px solid #008779;
+  }
+
+  .verif-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  .status-pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #fbbf24;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 rgba(251, 191, 36, 0.7);
+    animation: statusPulse 2s infinite;
+  }
+
+  @keyframes statusPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(251, 191, 36, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+  }
+
+  .verif-order-ref {
+    font-size: 13px;
+    color: #cbd5e1;
+  }
+  .verif-order-ref strong {
+    color: #ffffff;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Message Box */
+  .verif-message-box {
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+  }
+
+  .verif-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 22px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .verif-message-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.01em;
+  }
+
+  .verif-message-body {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: #334e68;
+  }
+
+  /* WhatsApp Box */
+  .verif-whatsapp-box {
+    padding: 22px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .whatsapp-box-left {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    max-width: 520px;
+  }
+
+  .wa-shield-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: rgba(18, 140, 126, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .wa-box-title {
+    font-size: 14.5px;
+    color: #0f172a;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .wa-box-sub {
+    margin: 0;
+    font-size: 13.5px;
+    color: #486581;
+    line-height: 1.5;
+  }
+
+  .whatsapp-btn-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .btn-send-screenshot-wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #25d366;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    transition: background-color 0.2s, transform 0.15s;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+  }
+
+  .btn-send-screenshot-wa:hover {
+    background-color: #20bd5a;
+    transform: translateY(-1px);
+  }
+
+  .wa-manual-note {
+    font-size: 11.5px;
+    color: #627d98;
+    line-height: 1.4;
+  }
+
+  /* Details Grid */
+  .verif-details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .verif-detail-col {
+    padding: 16px 20px;
+    border-right: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .verif-detail-col:last-child {
+    border-right: none;
+  }
+
+  .detail-label {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #829ab1;
+  }
+
+  .detail-val {
+    font-size: 14px;
+    color: #102a43;
+    font-weight: 700;
+  }
+
+  .detail-sub {
+    font-size: 12px;
+    color: #627d98;
+  }
+
+  /* =========================================================================
+     PREVIEW DECK STYLES
+     ========================================================================= */
+  .enamels-preview-deck {
+    background: #ffffff;
+    border: 1.5px solid #008779;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 135, 121, 0.08);
+    overflow: hidden;
+    margin-top: 24px;
+  }
+
+  .preview-deck-header {
+    background: #0f172a;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 2px solid #008779;
+  }
+
+  .preview-deck-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #38bdf8;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+  }
+
+  .pulse-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+  }
+
+  .preview-mode-switch {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 4px;
+  }
+
+  .btn-mode-tab {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-mode-tab.active {
+    background: #008779;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 135, 121, 0.35);
+  }
+
+  .preview-tab-pane {
+    display: none;
+    padding: 24px;
+  }
+
+  .preview-tab-pane.active {
+    display: block;
+  }
+
+  /* Customer View Styles */
+  .cust-preview-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .cust-card-title-bar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .cust-order-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #008779;
+    letter-spacing: 0.05em;
+    display: block;
+  }
+
+  .cust-order-h3 {
+    margin: 2px 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #102a43;
+  }
+
+  .cust-order-date {
+    font-size: 12.5px;
+    color: #64748b;
+  }
+
+  .cust-status-badge-pill {
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid #fde68a;
+  }
+
+  .cust-item-row {
+    display: flex;
+    gap: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .cust-item-thumb {
+    width: 120px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f1f5f9;
+  }
+
+  .cust-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cust-item-details {
+    flex-grow: 1;
+  }
+
+  .cust-item-name {
+    margin: 0 0 12px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #102a43;
+  }
+
+  .cust-specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 16px;
+    font-size: 13px;
+  }
+
+  .spec-cell.full-w {
+    grid-column: 1 / -1;
+  }
+
+  .spec-k {
+    font-weight: 700;
+    color: #64748b;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .spec-v {
+    color: #102a43;
+    font-weight: 600;
+  }
+
+  .spec-measurements-pill {
+    background: #f1f5f9;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-block;
+    border: 1px solid #cbd5e1;
+    font-family: monospace;
+    font-size: 12px;
+  }
+
+  .cust-financial-wrap {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .financial-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .fin-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    color: #475569;
+  }
+
+  .fin-row.discount-row {
+    color: #059669;
+    font-weight: 700;
+  }
+
+  .fin-row.grand-total-row {
+    border-top: 2px solid #e2e8f0;
+    padding-top: 10px;
+    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #102a43;
+  }
+
+  .cust-payment-terms-box {
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .terms-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f766e;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .terms-body {
+    margin: 0;
+    font-size: 12.5px;
+    color: #134e4a;
+    line-height: 1.6;
+  }
+
+  /* Admin Docket Styles */
+  .admin-preview-docket {
+    background: #ffffff;
+  }
+
+  .admin-docket-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #0f172a;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .admin-sys-tag {
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.05em;
+  }
+
+  .admin-docket-h2 {
+    margin: 2px 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .admin-docket-id {
+    font-size: 11.5px;
+    color: #94a3b8;
+    font-family: monospace;
+  }
+
+  .admin-action-cluster {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .admin-btn-wa {
+    background: #25d366;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+  }
+
+  .admin-btn-call {
+    background: #102a43;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+  }
+
+  .admin-sections-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .admin-section-block {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .admin-section-block.full-width-block {
+    grid-column: 1 / -1;
+  }
+
+  .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 8px;
+  }
+
+  .sec-num {
+    background: #102a43;
+    color: #ffffff;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .sec-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    color: #102a43;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .sec-content-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12.5px;
+  }
+
+  .admin-data-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+
+  .admin-data-line:last-child {
+    border-bottom: none;
+  }
+
+  .admin-data-line.total-highlight {
+    border-top: 1.5px solid #cbd5e1;
+    border-bottom: none;
+    padding-top: 8px;
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .adl-k {
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .adl-v {
+    color: #102a43;
+    text-align: right;
+  }
+
+  .font-mono { font-family: monospace; }
+  .font-bold { font-weight: 800; }
+  .text-emerald { color: #059669; }
+
+  .badge-amber {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-slate {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-blue {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-rose {
+    background: #ffe4e6;
+    color: #be123c;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .badge-teal {
+    background: #ccfbf1;
+    color: #0f766e;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  .color-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  .font-serif-highlight {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-weight: 700;
+    color: #008779;
+  }
+
+  .admin-verif-control-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .admin-ops-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-ops-action {
+    padding: 9px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    text-align: left;
+    transition: opacity 0.15s;
+  }
+
+  .btn-ops-action:hover {
+    opacity: 0.9;
+  }
+
+  .btn-ops-verify {
+    background: #008779;
+    color: #ffffff;
+  }
+
+  .btn-ops-logcall {
+    background: #102a43;
+    color: #ffffff;
+  }
+
+  .btn-ops-discrepancy {
+    background: #f1f5f9;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+  }
+
+  @media (max-width: 768px) {
+    .verif-details-grid {
+      grid-template-columns: 1fr;
+    }
+    .verif-detail-col {
+      border-right: none;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .cust-financial-wrap {
+      grid-template-columns: 1fr;
+    }
+    .admin-sections-layout {
+      grid-template-columns: 1fr;
+    }
+    .admin-verif-control-grid {
+      grid-template-columns: 1fr;
+    }
+    .cust-item-row {
+      flex-direction: column;
+    }
+    .cust-specs-grid {
+      grid-template-columns: 1fr;
+    }
+    .preview-deck-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .preview-mode-switch {
+      width: 100%;
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  window.enamelsSwitchPreviewTab = function(mode) {
+    var custBtn = document.getElementById('tab-btn-cust');
+    var adminBtn = document.getElementById('tab-btn-admin');
+    var custPane = document.getElementById('pane-cust-preview');
+    var adminPane = document.getElementById('pane-admin-preview');
+
+    if (mode === 'admin') {
+      if (custBtn) custBtn.classList.remove('active');
+      if (adminBtn) adminBtn.classList.add('active');
+      if (custPane) custPane.classList.remove('active');
+      if (adminPane) adminPane.classList.add('active');
+    } else {
+      if (adminBtn) adminBtn.classList.remove('active');
+      if (custBtn) custBtn.classList.add('active');
+      if (adminPane) adminPane.classList.remove('active');
+      if (custPane) custPane.classList.add('active');
+    }
+  };
+
+  window.enamelsTrackWhatsAppClick = function() {
+    try {
+      sessionStorage.setItem('enamels_wa_proof_submitted', 'true');
+    } catch(e) {}
+  };
+</script>

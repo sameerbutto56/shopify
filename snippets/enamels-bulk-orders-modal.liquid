@@ -1,0 +1,228 @@
+{% comment %}
+  Enamels Global Institutional Bulk Orders Modal
+  Provides instant zero-latency access to the 5-step bulk order workflow
+  across all storefront pages without 404 errors.
+{% endcomment %}
+
+<!-- Bulk Orders Backdrop & Modal Container -->
+<div
+  class="enamels-bulk-modal-wrap"
+  id="enamels-bulk-orders-modal-overlay"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="bulk-modal-title"
+  style="display: none;"
+>
+  <div class="enamels-bulk-modal-backdrop" onclick="window.closeBulkOrdersModal()"></div>
+
+  <div class="enamels-bulk-modal-content">
+    <div class="enamels-bulk-modal-bar">
+      <div class="bulk-modal-title-group">
+        <span class="bulk-modal-badge">🏥 Institutional Portal</span>
+        <h2 class="bulk-modal-heading" id="bulk-modal-title">Bulk Orders (10+ Units)</h2>
+      </div>
+      <button
+        type="button"
+        class="enamels-bulk-modal-close"
+        onclick="window.closeBulkOrdersModal()"
+        aria-label="Close Bulk Orders Modal"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="enamels-bulk-modal-body">
+      {% render 'enamels-bulk-orders-workflow' %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .enamels-bulk-modal-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .enamels-bulk-modal-wrap.is-open {
+    opacity: 1;
+    visibility: visible;
+    display: flex !important;
+  }
+
+  .enamels-bulk-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .enamels-bulk-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    max-height: 94vh;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 2;
+    transform: scale(0.96);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .enamels-bulk-modal-wrap.is-open .enamels-bulk-modal-content {
+    transform: scale(1);
+  }
+
+  .enamels-bulk-modal-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: #0f172a;
+    color: #ffffff;
+    border-bottom: 2px solid #008779;
+    flex-shrink: 0;
+  }
+
+  .bulk-modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .bulk-modal-badge {
+    background: rgba(0, 135, 121, 0.25);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .bulk-modal-heading {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+  }
+
+  .enamels-bulk-modal-close {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .enamels-bulk-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .enamels-bulk-modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-grow: 1;
+    padding: 10px 0;
+    background: #ffffff;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-bulk-modal-wrap {
+      padding: 0;
+    }
+    .enamels-bulk-modal-content {
+      max-height: 100vh;
+      height: 100vh;
+      border-radius: 0;
+    }
+    .enamels-bulk-modal-bar {
+      padding: 12px 16px;
+    }
+    .bulk-modal-heading {
+      font-size: 14px;
+    }
+  }
+</style>
+
+<script>
+  (function initBulkModalEngine() {
+    window.openBulkOrdersModal = function() {
+      var modal = document.getElementById('enamels-bulk-orders-modal-overlay');
+      if (modal) {
+        modal.style.display = 'flex';
+        // force reflow
+        void modal.offsetWidth;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        // Re-calculate totals if needed
+        if (typeof window.enamelsBulkRecalcTotal === 'function') {
+          window.enamelsBulkRecalcTotal();
+        }
+      }
+    };
+
+    window.closeBulkOrdersModal = function() {
+      var modal = document.getElementById('enamels-bulk-orders-modal-overlay');
+      if (modal) {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(function() {
+          if (!modal.classList.contains('is-open')) {
+            modal.style.display = 'none';
+          }
+        }, 260);
+      }
+    };
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && document.getElementById('enamels-bulk-orders-modal-overlay')) {
+        window.closeBulkOrdersModal();
+      }
+    });
+
+    // Check hash on load
+    if (window.location.hash === '#bulk-orders' || window.location.hash === '#bulk') {
+      setTimeout(function() {
+        window.openBulkOrdersModal();
+      }, 300);
+    }
+  })();
+</script>
+
