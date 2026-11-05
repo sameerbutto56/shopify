@@ -252,6 +252,67 @@
       </div>
     </div>
 
+    {%- comment -%}
+      Dynamic Article Discovery across Products:
+      Scan all products for series tags, metafields, or titles (Crown, Velora, Sprinter, Flexwell, etc.)
+    {%- endcomment -%}
+    {%- assign detected_series_string = '' -%}
+    {%- if target_col.products.size > 0 -%}
+      {%- for p in target_col.products -%}
+        {%- assign p_title_down = p.title | downcase -%}
+        {%- assign p_tags_down = p.tags | join: ' ' | downcase -%}
+        
+        {%- for tag in p.tags -%}
+          {%- assign tag_down = tag | downcase -%}
+          {%- if tag_down contains 'series:' -%}
+            {%- assign s_name = tag | split: ':' | last | strip -%}
+            {%- unless detected_series_string contains s_name -%}
+              {%- assign detected_series_string = detected_series_string | append: s_name | append: '::' -%}
+            {%- endunless -%}
+          {%- elsif tag_down contains 'article:' -%}
+            {%- assign s_name = tag | split: ':' | last | strip -%}
+            {%- unless detected_series_string contains s_name -%}
+              {%- assign detected_series_string = detected_series_string | append: s_name | append: '::' -%}
+            {%- endunless -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- comment -%} Check common known series if present in title or tag {%- endcomment -%}
+        {%- if p_title_down contains 'crown' or p_tags_down contains 'crown' -%}
+          {%- unless detected_series_string contains 'Crown' -%}
+            {%- assign detected_series_string = detected_series_string | append: 'Crown::' -%}
+          {%- endunless -%}
+        {%- endif -%}
+        {%- if p_title_down contains 'velora' or p_title_down contains 'vilora' or p_tags_down contains 'velora' or p_tags_down contains 'vilora' -%}
+          {%- unless detected_series_string contains 'Velora' -%}
+            {%- assign detected_series_string = detected_series_string | append: 'Velora::' -%}
+          {%- endunless -%}
+        {%- endif -%}
+        {%- if p_title_down contains 'sprinter' or p_tags_down contains 'sprinter' -%}
+          {%- unless detected_series_string contains 'Sprinter' -%}
+            {%- assign detected_series_string = detected_series_string | append: 'Sprinter::' -%}
+          {%- endunless -%}
+        {%- endif -%}
+        {%- if p_title_down contains 'flexwell' or p_tags_down contains 'flexwell' -%}
+          {%- unless detected_series_string contains 'Flexwell' -%}
+            {%- assign detected_series_string = detected_series_string | append: 'Flexwell::' -%}
+          {%- endunless -%}
+        {%- endif -%}
+        {%- if p_title_down contains 'basic' or p_tags_down contains 'basic' -%}
+          {%- unless detected_series_string contains 'Basic' -%}
+            {%- assign detected_series_string = detected_series_string | append: 'Basic::' -%}
+          {%- endunless -%}
+        {%- endif -%}
+        {%- if p.metafields.custom.series != blank -%}
+          {%- assign mf_series = p.metafields.custom.series.value | default: p.metafields.custom.series -%}
+          {%- unless detected_series_string contains mf_series -%}
+            {%- assign detected_series_string = detected_series_string | append: mf_series | append: '::' -%}
+          {%- endunless -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+    {%- assign detected_series_list = detected_series_string | split: '::' -%}
+
     <!-- 3. Top Horizontal Scrollable Category Thumbnail Carousel -->
     {% if show_category_carousel %}
     <div class="enamels-cat-carousel-wrap">
@@ -264,90 +325,123 @@
       </div>
 
       <div class="enamels-cat-carousel" id="enamels-cat-carousel">
-        <!-- 1. Scrubs -->
-        <button
-          type="button"
-          class="enamels-carousel-item{% if current_cat == 'scrubs' or current_cat == 'all' %} is-active{% endif %}"
-          data-category-target="scrubs"
-        >
-          <div class="enamels-carousel-item__thumb">
-            {% if current_gender == 'women' %}
-              <img src="{{ 'cat-women-scrubs.jpg' | asset_url }}" alt="Scrubs" width="90" height="90" loading="lazy">
-            {% else %}
-              <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Scrubs" width="90" height="90" loading="lazy">
-            {% endif %}
-          </div>
-          <span class="enamels-carousel-item__name">Scrubs</span>
-        </button>
+        {%- assign rendered_cat_pills = 0 -%}
+        
+        {%- comment -%} Priority 1: Merchant Blocks in Studio {%- endcomment -%}
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'category_filter' -%}
+              {%- assign col = block.settings.collection -%}
+              {%- assign cat_name = block.settings.title | default: col.title -%}
+              {%- assign cat_key = block.settings.category_key -%}
+              {%- if cat_key == blank and col != blank -%}
+                {%- assign cat_key = col.handle -%}
+              {%- endif -%}
+              {%- if cat_key == blank -%}
+                {%- assign cat_key = cat_name | handleize -%}
+              {%- endif -%}
+              {%- assign cat_img = block.settings.image -%}
+              {%- if cat_img == blank and col.featured_image != blank -%}
+                {%- assign cat_img = col.featured_image -%}
+              {%- endif -%}
+              {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
+              <button
+                type="button"
+                class="enamels-carousel-item{% if current_cat == cat_key %} is-active{% endif %}"
+                data-category-target="{{ cat_key }}"
+                {{ block.shopify_attributes }}
+              >
+                <div class="enamels-carousel-item__thumb">
+                  {%- if cat_img != blank -%}
+                    <img src="{{ cat_img | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                  {%- elsif col.products.first.featured_media != blank -%}
+                    <img src="{{ col.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                  {%- else -%}
+                    <div class="enamels-cat-thumb-placeholder">🩺</div>
+                  {%- endif -%}
+                </div>
+                <span class="enamels-carousel-item__name">{{ cat_name }}</span>
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
 
-        <!-- 2. White Coats -->
-        <button
-          type="button"
-          class="enamels-carousel-item{% if current_cat == 'white-coats' %} is-active{% endif %}"
-          data-category-target="white-coats"
-        >
-          <div class="enamels-carousel-item__thumb">
-            <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="White Coats" width="90" height="90" loading="lazy">
-          </div>
-          <span class="enamels-carousel-item__name">White Coats</span>
-        </button>
+        {%- comment -%} Priority 2: Collection List setting {%- endcomment -%}
+        {%- if rendered_cat_pills == 0 and section.settings.category_collections != blank -%}
+          {%- for col in section.settings.category_collections -%}
+            {%- assign cat_name = col.title -%}
+            {%- assign cat_key = col.handle -%}
+            {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
+            <button
+              type="button"
+              class="enamels-carousel-item{% if current_cat == cat_key %} is-active{% endif %}"
+              data-category-target="{{ cat_key }}"
+            >
+              <div class="enamels-carousel-item__thumb">
+                {%- if col.featured_image != blank -%}
+                  <img src="{{ col.featured_image | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                {%- elsif col.products.first.featured_media != blank -%}
+                  <img src="{{ col.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                {%- else -%}
+                  <div class="enamels-cat-thumb-placeholder">🩺</div>
+                {%- endif -%}
+              </div>
+              <span class="enamels-carousel-item__name">{{ cat_name }}</span>
+            </button>
+          {%- endfor -%}
+        {%- endif -%}
 
-        <!-- 3. Lab Coats -->
-        <button
-          type="button"
-          class="enamels-carousel-item{% if current_cat == 'lab-coats' %} is-active{% endif %}"
-          data-category-target="lab-coats"
-        >
-          <div class="enamels-carousel-item__thumb">
-            <img src="{{ 'demo-hang-labcoat-white.jpg' | asset_url }}" alt="Lab Coats" width="90" height="90" loading="lazy">
-          </div>
-          <span class="enamels-carousel-item__name">Lab Coats</span>
-        </button>
+        {%- comment -%} Priority 3: Automatic Discovery from genuine store collections {%- endcomment -%}
+        {%- if rendered_cat_pills == 0 -%}
+          {%- liquid
+            assign default_cat_handles = 'scrubs,basic-scrubs,male-scrubs,female-scrubs,lab-coats,white-coats,surgical-caps,caps,sleeves,accessories,clogs' | split: ','
+            for h in default_cat_handles
+              assign c = collections[h]
+              if c != blank and c.products_count > 0
+                assign c_title = c.title
+                assign c_key = h
+                if h contains 'scrub'
+                  assign c_key = 'scrubs'
+                elsif h contains 'lab' or h contains 'white'
+                  assign c_key = 'lab-coats'
+                elsif h contains 'cap'
+                  assign c_key = 'caps'
+                elsif h contains 'sleeve'
+                  assign c_key = 'sleeves'
+                elsif h contains 'clog' or h contains 'access'
+                  assign c_key = 'accessories'
+                endif
+                -%}
+                <button
+                  type="button"
+                  class="enamels-carousel-item{% if current_cat == c_key %} is-active{% endif %}"
+                  data-category-target="{{ c_key }}"
+                >
+                  <div class="enamels-carousel-item__thumb">
+                    {%- if c.featured_image != blank -%}
+                      <img src="{{ c.featured_image | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
+                    {%- elsif c.products.first.featured_media != blank -%}
+                      <img src="{{ c.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
+                    {%- else -%}
+                      <div class="enamels-cat-thumb-placeholder">🩺</div>
+                    {%- endif -%}
+                  </div>
+                  <span class="enamels-carousel-item__name">{{ c_title }}</span>
+                </button>
+                {%- liquid
+              endif
+            endfor
+          -%}
+        {%- endif -%}
 
-        <!-- 4. Caps (BunFit™) -->
+        <!-- Universal "View All" Pill -->
         <button
           type="button"
-          class="enamels-carousel-item{% if current_cat == 'caps' %} is-active{% endif %}"
-          data-category-target="caps"
-        >
-          <div class="enamels-carousel-item__thumb">
-            <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="Caps" width="90" height="90" loading="lazy">
-          </div>
-          <span class="enamels-carousel-item__name">Caps (BunFit™)</span>
-        </button>
-
-        <!-- 5. Sleeves -->
-        <button
-          type="button"
-          class="enamels-carousel-item{% if current_cat == 'sleeves' %} is-active{% endif %}"
-          data-category-target="sleeves"
-        >
-          <div class="enamels-carousel-item__thumb">
-            <img src="{{ 'cat-flexfit.jpg' | asset_url }}" alt="Sleeves" width="90" height="90" loading="lazy">
-          </div>
-          <span class="enamels-carousel-item__name">Sleeves</span>
-        </button>
-
-        <!-- 6. Accessories -->
-        <button
-          type="button"
-          class="enamels-carousel-item{% if current_cat == 'accessories' %} is-active{% endif %}"
-          data-category-target="accessories"
-        >
-          <div class="enamels-carousel-item__thumb">
-            <img src="{{ 'cat-clogs.jpg' | asset_url }}" alt="Accessories" width="90" height="90" loading="lazy">
-          </div>
-          <span class="enamels-carousel-item__name">Accessories</span>
-        </button>
-
-        <!-- 7. View All -->
-        <button
-          type="button"
-          class="enamels-carousel-item"
+          class="enamels-carousel-item{% if current_cat == 'all' %} is-active{% endif %}"
           data-category-target="all"
         >
-          <div class="enamels-carousel-item__thumb">
-            <img src="{{ 'enamels-cat-new-arrivals.jpg' | asset_url }}" alt="View All" width="90" height="90" loading="lazy">
+          <div class="enamels-carousel-item__thumb enamels-view-all-thumb">
+            <span class="enamels-all-grid-icon">▦</span>
           </div>
           <span class="enamels-carousel-item__name">View All</span>
         </button>
@@ -355,8 +449,8 @@
     </div>
     {% endif %}
 
-    <!-- 4. Article Sub-Filter Bar (Under Scrubs) -->
-    {% if show_article_filter %}
+    <!-- 4. Dynamic Article Sub-Filter Bar (Under Scrubs) -->
+    {% if show_article_filter and detected_series_list.size > 0 %}
     <div class="enamels-article-filters" id="enamels-article-filters">
       <span class="enamels-article-filters__label">SERIES / ARTICLE:</span>
       <div class="enamels-article-filters__list">
@@ -367,34 +461,19 @@
         >
           All Scrubs
         </button>
-        <button
-          type="button"
-          class="enamels-article-pill{% if current_article == 'crown' %} is-active{% endif %}"
-          data-article-target="crown"
-        >
-          Crown Series <span class="enamels-pill-sub">Mandarin Collar</span>
-        </button>
-        <button
-          type="button"
-          class="enamels-article-pill{% if current_article == 'vilora' %} is-active{% endif %}"
-          data-article-target="vilora"
-        >
-          Velora Series <span class="enamels-pill-sub">Micro-Drape</span>
-        </button>
-        <button
-          type="button"
-          class="enamels-article-pill{% if current_article == 'sprinter' %} is-active{% endif %}"
-          data-article-target="sprinter"
-        >
-          Sprinter Series <span class="enamels-pill-sub">4-Way Stretch</span>
-        </button>
-        <button
-          type="button"
-          class="enamels-article-pill{% if current_article == 'flexwell' %} is-active{% endif %}"
-          data-article-target="flexwell"
-        >
-          Flexwell Series <span class="enamels-pill-sub">Aerocool Flex</span>
-        </button>
+        {%- for s in detected_series_list -%}
+          {%- if s != blank -%}
+            {%- assign s_clean = s | strip -%}
+            {%- assign s_handle = s_clean | downcase | replace: ' ', '-' -%}
+            <button
+              type="button"
+              class="enamels-article-pill{% if current_article == s_handle %} is-active{% endif %}"
+              data-article-target="{{ s_handle }}"
+            >
+              {{ s_clean }} Series
+            </button>
+          {%- endif -%}
+        {%- endfor -%}
       </div>
     </div>
     {% endif %}
@@ -462,15 +541,19 @@
 
             # Article / Series Detection
             assign prod_article = 'other'
-            if prod_title_lower contains 'sprinter' or prod_tags_string contains 'sprinter'
-              assign prod_article = 'sprinter'
-            elsif prod_title_lower contains 'vilora' or prod_title_lower contains 'velora' or prod_tags_string contains 'vilora' or prod_tags_string contains 'velora'
-              assign prod_article = 'vilora'
-            elsif prod_title_lower contains 'crown' or prod_tags_string contains 'crown'
-              assign prod_article = 'crown'
-            elsif prod_title_lower contains 'flexwell' or prod_tags_string contains 'flexwell'
-              assign prod_article = 'flexwell'
-            endif
+            assign prod_series_display = ''
+            for s in detected_series_list
+              if s != blank
+                assign s_clean = s | strip
+                assign s_h = s_clean | downcase | replace: ' ', '-'
+                assign s_down = s_clean | downcase
+                if prod_title_lower contains s_down or prod_tags_string contains s_down
+                  assign prod_article = s_h
+                  assign prod_series_display = s_clean | append: ' Series'
+                  break
+                endif
+              endif
+            endfor
 
             # Color Options & Swatches
             assign color_values = ''
@@ -528,9 +611,9 @@
               </div>
 
               <div class="enamels-cat-card__info">
-                {% if prod_article != 'other' %}
+                {% if prod_series_display != blank %}
                   <span class="enamels-cat-card__series">
-                    {% if prod_article == 'crown' %}Crown Series{% elsif prod_article == 'vilora' %}Velora Series{% elsif prod_article == 'sprinter' %}Sprinter Series{% elsif prod_article == 'flexwell' %}Flexwell Series{% endif %}
+                    {{ prod_series_display }}
                   </span>
                 {% endif %}
 
@@ -599,178 +682,14 @@
       {%- endif -%}
 
       {%- comment -%}
-        Fallback Curated Cards:
-        Rendered if store products collection is empty or if development theme has not yet synced products.
+        Empty State: Rendered only when the genuine collection has 0 products
       {%- endcomment -%}
       {%- if rendered_count == 0 -%}
-        <!-- Fallback 1: Sprinter Men Navy -->
-        <div
-          class="enamels-cat-card"
-          data-product-id="fallback-1"
-          data-gender="men"
-          data-category="scrubs"
-          data-article="sprinter"
-          data-title="Sprinter 4-Way Stretch Scrub Suit - Navy Blue"
-          data-price="590000"
-        >
-          <a href="/products/sprinter-autumn-edition" class="enamels-cat-card__link">
-            <div class="enamels-cat-card__media">
-              <img src="{{ 'demo-sprinter-navy.jpg' | asset_url }}" alt="Sprinter Scrub Suit" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
-            </div>
-            <div class="enamels-cat-card__info">
-              <span class="enamels-cat-card__series">Sprinter Series</span>
-              <span class="enamels-cat-card__title">Sprinter 4-Way Stretch Scrub Suit</span>
-              <div class="enamels-cat-card__price-row">
-                <span class="enamels-cat-card__price">Rs 5,900</span>
-              </div>
-              <div class="enamels-cat-card__swatches">
-                <span class="enamels-color-dot" style="background-color: #0f172a;" title="Navy"></span>
-                <span class="enamels-color-dot" style="background-color: #18181b;" title="Black"></span>
-                <span class="enamels-color-dot" style="background-color: #14532d;" title="Hunter Green"></span>
-                <span class="enamels-color-more">+4</span>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- Fallback 2: Velora Women Teal -->
-        <div
-          class="enamels-cat-card"
-          data-product-id="fallback-2"
-          data-gender="women"
-          data-category="scrubs"
-          data-article="vilora"
-          data-title="Velora Micro-Drape Tailored Scrub Suit - Teal"
-          data-price="650000"
-        >
-          <a href="/products/velora-luxury-scrub-suit" class="enamels-cat-card__link">
-            <div class="enamels-cat-card__media">
-              <img src="{{ 'demo-velora-teal.jpg' | asset_url }}" alt="Velora Scrub Suit" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
-            </div>
-            <div class="enamels-cat-card__info">
-              <span class="enamels-cat-card__series">Velora Series</span>
-              <span class="enamels-cat-card__title">Velora Micro-Drape Scrub Suit</span>
-              <div class="enamels-cat-card__price-row">
-                <span class="enamels-cat-card__price">Rs 6,500</span>
-              </div>
-              <div class="enamels-cat-card__swatches">
-                <span class="enamels-color-dot" style="background-color: #0d9488;" title="Teal"></span>
-                <span class="enamels-color-dot" style="background-color: #581c87;" title="Wine"></span>
-                <span class="enamels-color-dot" style="background-color: #7dd3fc;" title="Ceil Blue"></span>
-                <span class="enamels-color-more">+5</span>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- Fallback 3: Crown Executive Burgundy (Unisex) -->
-        <div
-          class="enamels-cat-card"
-          data-product-id="fallback-3"
-          data-gender="unisex"
-          data-category="scrubs"
-          data-article="crown"
-          data-title="Crown Executive Mandarin Collar Scrub Suit"
-          data-price="680000"
-        >
-          <a href="/products/crown-mandarin-collar-scrub-suit" class="enamels-cat-card__link">
-            <div class="enamels-cat-card__media">
-              <img src="{{ 'demo-crown-burgundy.jpg' | asset_url }}" alt="Crown Scrub Suit" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
-            </div>
-            <div class="enamels-cat-card__info">
-              <span class="enamels-cat-card__series">Crown Series</span>
-              <span class="enamels-cat-card__title">Crown Mandarin Collar Scrub Suit</span>
-              <div class="enamels-cat-card__price-row">
-                <span class="enamels-cat-card__price">Rs 6,800</span>
-              </div>
-              <div class="enamels-cat-card__swatches">
-                <span class="enamels-color-dot" style="background-color: #581c87;" title="Burgundy"></span>
-                <span class="enamels-color-dot" style="background-color: #0f172a;" title="Navy"></span>
-                <span class="enamels-color-dot" style="background-color: #556b2f;" title="Olive"></span>
-                <span class="enamels-color-more">+3</span>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- Fallback 4: White Coat Unisex -->
-        <div
-          class="enamels-cat-card"
-          data-product-id="fallback-4"
-          data-gender="unisex"
-          data-category="white-coats"
-          data-article="other"
-          data-title="Doctor Professional White Coat"
-          data-price="480000"
-        >
-          <a href="/collections/all?category=white-coats" class="enamels-cat-card__link">
-            <div class="enamels-cat-card__media">
-              <img src="{{ 'demo-hang-labcoat-white.jpg' | asset_url }}" alt="Doctor White Coat" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
-            </div>
-            <div class="enamels-cat-card__info">
-              <span class="enamels-cat-card__title">Doctor Professional White Coat</span>
-              <div class="enamels-cat-card__price-row">
-                <span class="enamels-cat-card__price">Rs 4,800</span>
-              </div>
-              <div class="enamels-cat-card__swatches">
-                <span class="enamels-color-dot" style="background-color: #ffffff; border: 1px solid #cbd5e1;" title="White"></span>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- Fallback 5: Clinical Lab Coat -->
-        <div
-          class="enamels-cat-card"
-          data-product-id="fallback-5"
-          data-gender="unisex"
-          data-category="lab-coats"
-          data-article="other"
-          data-title="Antimicrobial Clinical Lab Coat"
-          data-price="520000"
-        >
-          <a href="/collections/all?category=lab-coats" class="enamels-cat-card__link">
-            <div class="enamels-cat-card__media">
-              <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Clinical Lab Coat" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
-            </div>
-            <div class="enamels-cat-card__info">
-              <span class="enamels-cat-card__title">Antimicrobial Clinical Lab Coat</span>
-              <div class="enamels-cat-card__price-row">
-                <span class="enamels-cat-card__price">Rs 5,200</span>
-              </div>
-              <div class="enamels-cat-card__swatches">
-                <span class="enamels-color-dot" style="background-color: #ffffff; border: 1px solid #cbd5e1;" title="White"></span>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- Fallback 6: BunFit Surgical Cap -->
-        <div
-          class="enamels-cat-card"
-          data-product-id="fallback-6"
-          data-gender="unisex"
-          data-category="caps"
-          data-article="other"
-          data-title="BunFit™ Surgical Medical Cap"
-          data-price="120000"
-        >
-          <a href="/collections/all?category=caps" class="enamels-cat-card__link">
-            <div class="enamels-cat-card__media">
-              <img src="{{ 'cat-caps.jpg' | asset_url }}" alt="BunFit Cap" loading="lazy" width="300" height="450" class="enamels-cat-card__primary-img">
-            </div>
-            <div class="enamels-cat-card__info">
-              <span class="enamels-cat-card__title">BunFit™ Surgical Medical Cap</span>
-              <div class="enamels-cat-card__price-row">
-                <span class="enamels-cat-card__price">Rs 1,200</span>
-              </div>
-              <div class="enamels-cat-card__swatches">
-                <span class="enamels-color-dot" style="background-color: #0f172a;" title="Navy"></span>
-                <span class="enamels-color-dot" style="background-color: #0d9488;" title="Teal"></span>
-                <span class="enamels-color-dot" style="background-color: #581c87;" title="Wine"></span>
-              </div>
-            </div>
-          </a>
+        <div class="enamels-cat-empty-standalone" style="text-align: center; padding: 60px 20px; grid-column: 1 / -1; width: 100%;">
+          <div style="font-size: 38px; margin-bottom: 12px;">🩺</div>
+          <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin: 0 0 6px;">No Products Found in Collection</h3>
+          <p style="font-size: 13px; color: #64748b; max-width: 440px; margin: 0 auto 18px;">There are currently no products available in this collection.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="enamels-cat-empty__btn" style="display: inline-block; text-decoration: none;">View All Store Products</a>
         </div>
       {%- endif -%}
 
@@ -1732,6 +1651,12 @@
       "default": true
     },
     {
+      "type": "collection_list",
+      "id": "category_collections",
+      "label": "Custom Category Collections Picker",
+      "info": "Optionally pick collections to show as category tabs. If empty, automatically discovers store collections or blocks."
+    },
+    {
       "type": "checkbox",
       "id": "show_article_filter",
       "label": "Show Article Sub-Filter (Scrubs)",
@@ -1742,6 +1667,12 @@
       "id": "show_color_swatches",
       "label": "Show Clinical Color Swatches on Cards",
       "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "manual_color_mappings",
+      "label": "Optional Custom Color Swatch Hexes",
+      "info": "Optional manual color mapping fallback (one per line, e.g. Ceil Blue: #6ba4b8). Real variant colors are always preserved."
     },
     {
       "type": "header",
@@ -1987,6 +1918,36 @@
       "unit": "px",
       "label": "Padding Bottom (Mobile)",
       "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category_filter",
+      "name": "Category Tab",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Category Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title Override",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "category_key",
+          "label": "Category Filter Target Key",
+          "info": "e.g. scrubs, lab-coats, white-coats, caps, sleeves, accessories"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Category Thumbnail Image"
+        }
+      ]
     }
   ],
   "presets": [

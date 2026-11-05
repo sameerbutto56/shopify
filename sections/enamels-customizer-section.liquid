@@ -64,6 +64,10 @@
 
     <div class="customizer-wizard-embed-container">
       {% render 'enamels-customization-wizard',
+        design_collection: section.settings.design_collection,
+        design_collections_list: section.settings.design_collections_list,
+        logo_collection: section.settings.logo_collection,
+        fabric_collection: section.settings.fabric_collection,
         embroidery_product: section.settings.embroidery_product,
         patch_product: section.settings.patch_product,
         logo_product: section.settings.logo_product,
@@ -143,6 +147,34 @@
       "unit": "px",
       "label": "Subheading Size (Mobile)",
       "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Dynamic Collections Source"
+    },
+    {
+      "type": "collection",
+      "id": "design_collection",
+      "label": "Design / Scrub Products Collection",
+      "info": "Loads genuine products to customize (e.g. Scrubs or All). If left empty, uses available scrub collections."
+    },
+    {
+      "type": "collection_list",
+      "id": "design_collections_list",
+      "label": "Selectable Design / Article Collections",
+      "info": "Optional: pick multiple collections (e.g. Vilora, Crown, Sprinter) for step 3 tabs."
+    },
+    {
+      "type": "collection",
+      "id": "logo_collection",
+      "label": "Logo & Crest Options Collection",
+      "info": "Dedicated collection for selectable hospital crests, silicone patches, and emblems. Real products and prices will be loaded dynamically."
+    },
+    {
+      "type": "collection",
+      "id": "fabric_collection",
+      "label": "Technical Fabric Options Collection",
+      "info": "Optional collection of fabric products/swatches. If blank, standard clinical fabrics are used."
     },
     {
       "type": "header",

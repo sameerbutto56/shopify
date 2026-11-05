@@ -10,6 +10,37 @@
   7. Payment & Order Submission (100% advance payment, Card 4% vs Online Transfer 2% discount, PK vs Intl shipping, No COD)
 {% endcomment %}
 
+{%- liquid
+  # Dynamic Source Resolution
+  assign target_design_col = nil
+  if design_collection != blank
+    assign target_design_col = collections[design_collection]
+  endif
+  if target_design_col == blank or target_design_col.products.size == 0
+    if collections['basic-scrubs'] != blank and collections['basic-scrubs'].products.size > 0
+      assign target_design_col = collections['basic-scrubs']
+    elsif collections['scrubs'] != blank and collections['scrubs'].products.size > 0
+      assign target_design_col = collections['scrubs']
+    elsif collections['male-scrubs'] != blank and collections['male-scrubs'].products.size > 0
+      assign target_design_col = collections['male-scrubs']
+    else
+      assign target_design_col = collections['all']
+    endif
+  endif
+
+  # Dynamic Logo Collection
+  assign target_logo_col = nil
+  if logo_collection != blank
+    assign target_logo_col = collections[logo_collection]
+  endif
+
+  # Dynamic Fabric Collection
+  assign target_fabric_col = nil
+  if fabric_collection != blank
+    assign target_fabric_col = collections[fabric_collection]
+  endif
+-%}
+
 <div class="enamels-customizer-engine" id="enamels-customizer-app">
   
   <!-- 1. Continuous Red Payment Alert Marquee Banner -->
@@ -252,124 +283,132 @@
         <p class="pane-subtitle">Browse collections dynamically from Shopify Admin. Click any collection to view its designs.</p>
       </div>
 
-      <!-- 3A. Collection Category Selector -->
+      <!-- 3A. Dynamic Collection Category Selector -->
       <div class="design-collection-selector-wrap">
         <div class="collection-pills-row" id="design-collections-track">
-          <!-- Dynamically populated or rendered collection categories -->
-          <button type="button" class="design-cat-pill active" data-col-handle="vilora" onclick="window.enamelsSwitchDesignCollection('vilora', 'Vilora Series')">
-            <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Vilora" class="pill-thumb" width="36" height="36">
-            <span>Vilora Collection</span>
-          </button>
-          <button type="button" class="design-cat-pill" data-col-handle="crown" onclick="window.enamelsSwitchDesignCollection('crown', 'Crown Series')">
-            <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Crown" class="pill-thumb" width="36" height="36">
-            <span>Crown Collection</span>
-          </button>
-          <button type="button" class="design-cat-pill" data-col-handle="sprinter" onclick="window.enamelsSwitchDesignCollection('sprinter', 'Sprinter Series')">
-            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="Sprinter" class="pill-thumb" width="36" height="36">
-            <span>Sprinter Collection</span>
-          </button>
-          <button type="button" class="design-cat-pill" data-col-handle="all" onclick="window.enamelsSwitchDesignCollection('all', 'All Clinical Scrubs')">
-            <img src="{{ 'enamels-cat-men.jpg' | asset_url }}" alt="All Scrubs" class="pill-thumb" width="36" height="36">
+          <button type="button" class="design-cat-pill active" data-col-handle="all" onclick="window.enamelsSwitchDesignCollection('all', 'All Clinical Scrubs')">
+            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#008779; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">🩺</span>
             <span>All Designs</span>
           </button>
+          {%- if design_collections_list != blank -%}
+            {%- for col in design_collections_list -%}
+              <button type="button" class="design-cat-pill" data-col-handle="{{ col.handle }}" onclick="window.enamelsSwitchDesignCollection('{{ col.handle }}', '{{ col.title | escape }}')">
+                {%- if col.featured_image != blank -%}
+                  <img src="{{ col.featured_image | image_url: width: 72, height: 72, crop: 'center' }}" alt="{{ col.title | escape }}" class="pill-thumb" width="36" height="36">
+                {%- else -%}
+                  <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#e2e8f0; color:#102a43; border-radius:50%; width:32px; height:32px; font-size:12px;">★</span>
+                {%- endif -%}
+                <span>{{ col.title }}</span>
+              </button>
+            {%- endfor -%}
+          {%- else -%}
+            {%- comment -%} Discover article series from target_design_col.products {%- endcomment -%}
+            {%- assign wiz_detected_series = '' -%}
+            {%- for p in target_design_col.products -%}
+              {%- assign p_t_lower = p.title | downcase -%}
+              {%- for tag in p.tags -%}
+                {%- assign tag_l = tag | downcase -%}
+                {%- if tag_l contains 'series:' -%}
+                  {%- assign s_val = tag | split: ':' | last | strip -%}
+                  {%- unless wiz_detected_series contains s_val -%}
+                    {%- assign wiz_detected_series = wiz_detected_series | append: s_val | append: '::' -%}
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- if p_t_lower contains 'crown' -%}{%- unless wiz_detected_series contains 'Crown' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Crown::' -%}{%- endunless -%}{%- endif -%}
+              {%- if p_t_lower contains 'velora' or p_t_lower contains 'vilora' -%}{%- unless wiz_detected_series contains 'Velora' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Velora::' -%}{%- endunless -%}{%- endif -%}
+              {%- if p_t_lower contains 'sprinter' -%}{%- unless wiz_detected_series contains 'Sprinter' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Sprinter::' -%}{%- endunless -%}{%- endif -%}
+              {%- if p_t_lower contains 'flexwell' -%}{%- unless wiz_detected_series contains 'Flexwell' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Flexwell::' -%}{%- endunless -%}{%- endif -%}
+            {%- endfor -%}
+            {%- assign wiz_series_list = wiz_detected_series | split: '::' -%}
+            {%- for s in wiz_series_list -%}
+              {%- if s != blank -%}
+                {%- assign s_clean = s | strip -%}
+                {%- assign s_h = s_clean | downcase | replace: ' ', '-' -%}
+                <button type="button" class="design-cat-pill" data-col-handle="{{ s_h }}" onclick="window.enamelsSwitchDesignCollection('{{ s_h }}', '{{ s_clean }} Series')">
+                  <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#e0f2fe; color:#0369a1; border-radius:50%; width:32px; height:32px; font-weight:700; font-size:11px;">{{ s_clean | slice: 0, 2 | upcase }}</span>
+                  <span>{{ s_clean }} Series</span>
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
         </div>
       </div>
 
       <!-- 3B. Dynamic Designs Grid for the Selected Collection -->
       <div class="selected-collection-banner" style="margin: 20px 0 14px; font-size: 14px; color: #475569;">
-        Showing Designs from: <strong id="active-collection-title-display" style="color: #102a43;">Vilora Collection</strong>
+        Showing Designs from: <strong id="active-collection-title-display" style="color: #102a43;">All Designs</strong>
       </div>
 
       <div class="enamels-designs-grid" id="customizer-designs-container">
-        <!-- Design Card 1: Vilora Classic V-Neck -->
-        <div class="enamels-design-card active" data-design-id="des_vilora_vneck" data-design-name="Vilora Luxury Micro-Drape V-Neck" data-design-price="6400" data-design-img="{{ 'enamels-na-seagreen.jpg' | asset_url }}" data-col="vilora">
-          <div class="design-card-media">
-            <img src="{{ 'enamels-na-seagreen.jpg' | asset_url }}" alt="Vilora V-Neck" width="300" height="380" loading="eager">
-          </div>
-          <div class="design-card-body">
-            <h4 class="design-card-title">Vilora Classic V-Neck</h4>
-            <span class="design-card-sub">Fluid Micro-Drape Silhouette</span>
-            <span class="design-card-price">PKR 6,400</span>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_vilora_vneck', 'Vilora Luxury Micro-Drape V-Neck', 6400, '{{ 'enamels-na-seagreen.jpg' | asset_url }}', this)">
-              Select & Next →
-            </button>
-          </div>
-        </div>
+        {%- if target_design_col != blank and target_design_col.products.size > 0 -%}
+          {%- for prod in target_design_col.products -%}
+            {%- liquid
+              assign prod_t_lower = prod.title | downcase
+              assign prod_series_tag = 'all'
+              if prod_t_lower contains 'crown'
+                assign prod_series_tag = 'crown'
+              elsif prod_t_lower contains 'velora' or prod_t_lower contains 'vilora'
+                assign prod_series_tag = 'velora'
+              elsif prod_t_lower contains 'sprinter'
+                assign prod_series_tag = 'sprinter'
+              elsif prod_t_lower contains 'flexwell'
+                assign prod_series_tag = 'flexwell'
+              endif
+              
+              assign first_var = prod.selected_or_first_available_variant
+              assign p_price_num = prod.price | divided_by: 100
+              assign p_media_url = ''
+              if prod.featured_media != blank
+                assign p_media_url = prod.featured_media | image_url: width: 600
+              endif
 
-        <!-- Design Card 2: Vilora Mandarin -->
-        <div class="enamels-design-card" data-design-id="des_vilora_mandarin" data-design-name="Vilora Executive Mandarin Collar" data-design-price="6600" data-design-img="{{ 'enamels-na-olive.jpg' | asset_url }}" data-col="vilora">
-          <div class="design-card-media">
-            <img src="{{ 'enamels-na-olive.jpg' | asset_url }}" alt="Vilora Mandarin" width="300" height="380" loading="lazy">
+              # Extract Color Values for this product
+              assign prod_colors_string = ''
+              for opt in prod.options_with_values
+                assign opt_l = opt.name | downcase
+                if opt_l contains 'color' or opt_l contains 'colour'
+                  assign prod_colors_string = opt.values | join: ','
+                  break
+                endif
+              endfor
+            -%}
+            <div
+              class="enamels-design-card{% if forloop.first %} active{% endif %}"
+              data-design-id="{{ prod.id }}"
+              data-variant-id="{{ first_var.id }}"
+              data-design-name="{{ prod.title | escape }}"
+              data-design-price="{{ p_price_num }}"
+              data-design-img="{{ p_media_url }}"
+              data-col="{{ prod_series_tag }}"
+              data-colors="{{ prod_colors_string | escape }}"
+            >
+              <div class="design-card-media">
+                {% if p_media_url != blank %}
+                  <img src="{{ p_media_url }}" alt="{{ prod.title | escape }}" width="300" height="380" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                {% else %}
+                  <div style="width: 100%; height: 260px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 700;">🩺 ENAMELS</div>
+                {% endif %}
+              </div>
+              <div class="design-card-body">
+                <h4 class="design-card-title">{{ prod.title | escape }}</h4>
+                <span class="design-card-sub">{{ prod.type | default: 'Medical Scrub Suit' }}</span>
+                <span class="design-card-price">{{ prod.price | money_without_trailing_zeros }}</span>
+                <button
+                  type="button"
+                  class="btn-select-next"
+                  onclick="window.enamelsSelectDesignAndNext('{{ prod.id }}', '{{ first_var.id }}', '{{ prod.title | escape }}', {{ p_price_num }}, '{{ p_media_url }}', this)"
+                >
+                  Select & Next →
+                </button>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px;">
+            <p style="color: #64748b;">No scrub products found in the selected collection.</p>
           </div>
-          <div class="design-card-body">
-            <h4 class="design-card-title">Vilora Mandarin Collar</h4>
-            <span class="design-card-sub">Standing Collar with Concealed Placket</span>
-            <span class="design-card-price">PKR 6,600</span>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_vilora_mandarin', 'Vilora Executive Mandarin Collar', 6600, '{{ 'enamels-na-olive.jpg' | asset_url }}', this)">
-              Select & Next →
-            </button>
-          </div>
-        </div>
-
-        <!-- Design Card 3: Crown Executive -->
-        <div class="enamels-design-card" data-design-id="des_crown_exec" data-design-name="Crown Series Structured Mandarin" data-design-price="6800" data-design-img="{{ 'enamels-na-black.jpg' | asset_url }}" data-col="crown">
-          <div class="design-card-media">
-            <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Crown Executive" width="300" height="380" loading="lazy">
-          </div>
-          <div class="design-card-body">
-            <h4 class="design-card-title">Crown Structured Mandarin</h4>
-            <span class="design-card-sub">Chest Badge Loop & Double Welt Pockets</span>
-            <span class="design-card-price">PKR 6,800</span>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_crown_exec', 'Crown Series Structured Mandarin', 6800, '{{ 'enamels-na-black.jpg' | asset_url }}', this)">
-              Select & Next →
-            </button>
-          </div>
-        </div>
-
-        <!-- Design Card 4: Crown Athletic -->
-        <div class="enamels-design-card" data-design-id="des_crown_ath" data-design-name="Crown Raglan Athletic Cut" data-design-price="6800" data-design-img="{{ 'enamels-na-darkgreen.jpg' | asset_url }}" data-col="crown">
-          <div class="design-card-media">
-            <img src="{{ 'enamels-na-darkgreen.jpg' | asset_url }}" alt="Crown Raglan" width="300" height="380" loading="lazy">
-          </div>
-          <div class="design-card-body">
-            <h4 class="design-card-title">Crown Raglan Athletic Cut</h4>
-            <span class="design-card-sub">Raglan Sleeve Architecture for OR Mobility</span>
-            <span class="design-card-price">PKR 6,800</span>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_crown_ath', 'Crown Raglan Athletic Cut', 6800, '{{ 'enamels-na-darkgreen.jpg' | asset_url }}', this)">
-              Select & Next →
-            </button>
-          </div>
-        </div>
-
-        <!-- Design Card 5: Sprinter Athletic -->
-        <div class="enamels-design-card" data-design-id="des_sprinter_flex" data-design-name="Sprinter 4-Way Mechanical Stretch" data-design-price="5900" data-design-img="{{ 'enamels-na-blue.jpg' | asset_url }}" data-col="sprinter">
-          <div class="design-card-media">
-            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="Sprinter 4-Way" width="300" height="380" loading="lazy">
-          </div>
-          <div class="design-card-body">
-            <h4 class="design-card-title">Sprinter Dynamic Scrub</h4>
-            <span class="design-card-sub">Triple Needle Reinforced Cargo Fit</span>
-            <span class="design-card-price">PKR 5,900</span>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_sprinter_flex', 'Sprinter 4-Way Mechanical Stretch', 5900, '{{ 'enamels-na-blue.jpg' | asset_url }}', this)">
-              Select & Next →
-            </button>
-          </div>
-        </div>
-
-        <!-- Design Card 6: Earth Edition -->
-        <div class="enamels-design-card" data-design-id="des_earth_brown" data-design-name="Brown Series Earth Tones Scrub" data-design-price="5900" data-design-img="{{ 'enamels-na-rust.jpg' | asset_url }}" data-col="sprinter">
-          <div class="design-card-media">
-            <img src="{{ 'enamels-na-rust.jpg' | asset_url }}" alt="Brown Series Earth" width="300" height="380" loading="lazy">
-          </div>
-          <div class="design-card-body">
-            <h4 class="design-card-title">Earth Edition Comfort Scrub</h4>
-            <span class="design-card-sub">Terracotta & Earth Tones Reactive Dye</span>
-            <span class="design-card-price">PKR 5,900</span>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectDesignAndNext('des_earth_brown', 'Brown Series Earth Tones Scrub', 5900, '{{ 'enamels-na-rust.jpg' | asset_url }}', this)">
-              Select & Next →
-            </button>
-          </div>
-        </div>
+        {%- endif -%}
       </div>
 
       <div style="margin-top: 24px;">
@@ -562,7 +601,7 @@
           </div>
         </div>
 
-        <!-- Custom Logo Option -->
+        <!-- Custom Logo Option (Dynamic from Shopify Collection or Product) -->
         <div class="form-group" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
           <label class="form-label">Hospital / Clinic Logo Embroidery:</label>
           <div class="logo-options-grid">
@@ -570,14 +609,36 @@
               <input type="radio" name="wiz_logo_type" value="none" checked>
               <span>No Logo (+PKR 0)</span>
             </label>
-            <label class="logo-chip" onclick="window.enamelsSetLogo('crest', 450, this)">
-              <input type="radio" name="wiz_logo_type" value="crest">
-              <span>Official Hospital Crest (+PKR 450)</span>
-            </label>
-            <label class="logo-chip" onclick="window.enamelsSetLogo('patch', 550, this)">
-              <input type="radio" name="wiz_logo_type" value="patch">
-              <span>Silicone Molded Logo Patch (+PKR 550)</span>
-            </label>
+            {%- if target_logo_col != blank and target_logo_col.products.size > 0 -%}
+              {%- for logo_prod in target_logo_col.products -%}
+                {%- assign logo_fee_num = logo_prod.price | divided_by: 100 -%}
+                <label class="logo-chip" onclick="window.enamelsSetLogo('{{ logo_prod.handle }}', {{ logo_fee_num }}, this)">
+                  <input type="radio" name="wiz_logo_type" value="{{ logo_prod.handle }}">
+                  {%- if logo_prod.featured_media != blank -%}
+                    <img src="{{ logo_prod.featured_media | image_url: width: 60 }}" alt="{{ logo_prod.title | escape }}" width="22" height="22" style="border-radius: 4px; object-fit: contain; vertical-align: middle; margin-right: 6px;">
+                  {%- endif -%}
+                  <span>{{ logo_prod.title | escape }} (+PKR {{ logo_fee_num }})</span>
+                </label>
+              {%- endfor -%}
+            {%- elsif logo_product != blank -%}
+              {%- assign logo_fee_num = logo_product.price | divided_by: 100 -%}
+              <label class="logo-chip" onclick="window.enamelsSetLogo('{{ logo_product.handle }}', {{ logo_fee_num }}, this)">
+                <input type="radio" name="wiz_logo_type" value="{{ logo_product.handle }}">
+                {%- if logo_product.featured_media != blank -%}
+                  <img src="{{ logo_product.featured_media | image_url: width: 60 }}" alt="{{ logo_product.title | escape }}" width="22" height="22" style="border-radius: 4px; object-fit: contain; vertical-align: middle; margin-right: 6px;">
+                {%- endif -%}
+                <span>{{ logo_product.title | escape }} (+PKR {{ logo_fee_num }})</span>
+              </label>
+            {%- else -%}
+              <label class="logo-chip" onclick="window.enamelsSetLogo('crest', 450, this)">
+                <input type="radio" name="wiz_logo_type" value="crest">
+                <span>Official Hospital Crest (+PKR 450)</span>
+              </label>
+              <label class="logo-chip" onclick="window.enamelsSetLogo('patch', 550, this)">
+                <input type="radio" name="wiz_logo_type" value="patch">
+                <span>Silicone Molded Logo Patch (+PKR 550)</span>
+              </label>
+            {%- endif -%}
           </div>
         </div>
       </div>
@@ -2162,16 +2223,30 @@
       });
     };
 
-    window.enamelsSelectDesignAndNext = function(designId, designName, price, imgUrl, btnEl) {
+    window.enamelsSelectDesignAndNext = function(designId, variantId, designName, price, imgUrl, btnEl) {
+      if (typeof variantId === 'string' && isNaN(parseInt(variantId, 10)) && typeof designName === 'number') {
+        btnEl = imgUrl;
+        imgUrl = price;
+        price = designName;
+        designName = variantId;
+        variantId = null;
+      }
+
       state.design.id = designId;
+      state.design.variantId = variantId;
       state.design.name = designName;
       state.design.basePrice = price || 6400;
-      state.design.img = imgUrl;
+      state.design.img = imgUrl || '';
 
       var cards = document.querySelectorAll('.enamels-design-card');
       cards.forEach(function(c) {
         c.classList.remove('active');
-        if (c.getAttribute('data-design-id') === designId) c.classList.add('active');
+        if (c.getAttribute('data-design-id') === String(designId)) {
+          c.classList.add('active');
+          if (!state.design.variantId && c.getAttribute('data-variant-id')) {
+            state.design.variantId = c.getAttribute('data-variant-id');
+          }
+        }
       });
 
       window.enamelsGoStep(4);
@@ -2443,19 +2518,31 @@
         });
       }
 
-      // Find first valid variant ID
-      fetch('/products.json?limit=1')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data && data.products && data.products[0] && data.products[0].variants && data.products[0].variants[0]) {
-            sendToCart(data.products[0].variants[0].id);
-          } else {
+      // Use actual selected variant ID from dynamic Shopify design product
+      var finalVariantId = state.design.variantId;
+      if (!finalVariantId) {
+        var firstCard = document.querySelector('.enamels-design-card[data-variant-id]');
+        if (firstCard) {
+          finalVariantId = firstCard.getAttribute('data-variant-id');
+        }
+      }
+
+      if (finalVariantId) {
+        sendToCart(finalVariantId);
+      } else {
+        fetch('/products.json?limit=1')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data && data.products && data.products[0] && data.products[0].variants && data.products[0].variants[0]) {
+              sendToCart(data.products[0].variants[0].id);
+            } else {
+              window.location.href = '/cart';
+            }
+          })
+          .catch(function() {
             window.location.href = '/cart';
-          }
-        })
-        .catch(function() {
-          window.location.href = '/cart';
-        });
+          });
+      }
     };
 
     // Initialize DOM handlers

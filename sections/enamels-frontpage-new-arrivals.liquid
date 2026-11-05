@@ -108,8 +108,8 @@
                 <span class="enamels-na-card__price">
                   {% if prod != blank %}
                     {{ prod.price | money_without_trailing_zeros }}
-                  {% else %}
-                    {{ block.settings.price | default: 'Rs 5900' }}
+                  {% elsif block.settings.price != blank %}
+                    {{ block.settings.price }}
                   {% endif %}
                 </span>
               </div>

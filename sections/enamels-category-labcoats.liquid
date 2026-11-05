@@ -6,11 +6,12 @@
 
 {%- liquid
   assign enable_section = section.settings.enable_section
-  assign category_title = section.settings.title | strip
+  assign col = section.settings.collection
+  assign category_title = section.settings.title | default: col.title | strip
   assign category_tag = section.settings.tag | strip
-  assign category_desc = section.settings.description | strip
+  assign category_desc = section.settings.description | default: col.description | strip
   assign btn_label = section.settings.button_label | strip
-  assign btn_link = section.settings.button_link | default: '#category-lab-coats'
+  assign btn_link = section.settings.button_link | default: col.url | default: '#category-lab-coats'
   assign img_pos = section.settings.image_position | default: 'left'
   assign text_align = section.settings.text_alignment | default: 'left'
   assign aspect_ratio = section.settings.aspect_ratio | default: '4_3'
@@ -143,14 +144,18 @@
       <!-- Category Visual Column -->
       <div class="category-visual-col">
         <div class="category-img-frame ratio-{{ aspect_ratio }}">
-          {% if section.settings.image != blank %}
+          {% assign showcase_img = section.settings.image %}
+          {% if showcase_img == blank and col.featured_image != blank %}
+            {% assign showcase_img = col.featured_image %}
+          {% endif %}
+          {% if showcase_img != blank %}
             <img
-              src="{{ section.settings.image | image_url: width: 1000 }}"
-              alt="{{ section.settings.image.alt | default: category_title | default: 'Lab Coats' | escape }}"
+              src="{{ showcase_img | image_url: width: 1000 }}"
+              alt="{{ showcase_img.alt | default: category_title | default: 'Lab Coats' | escape }}"
               class="category-showcase-img"
               loading="lazy"
-              width="{{ section.settings.image.width }}"
-              height="{{ section.settings.image.height }}"
+              width="600"
+              height="450"
             />
           {% else %}
             <div class="category-img-placeholder" style="background: #f1f5f9; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; min-height: 280px;">
@@ -171,6 +176,12 @@
   "name": "Category — Lab Coats",
   "class": "enamels-category-labcoats-section",
   "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Shopify Collection Source",
+      "info": "Automatically loads collection title, description, featured image, and link from Shopify Admin."
+    },
     {
       "type": "checkbox",
       "id": "enable_section",
