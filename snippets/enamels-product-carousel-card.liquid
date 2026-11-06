@@ -1,0 +1,195 @@
+{% comment %}
+  Enamels Product Carousel Card Snippet
+  Renders a single product card inside the carousel/grid track.
+  Parameters:
+  - prod: Shopify Product object
+  - show_swatches: boolean
+  - show_secondary_image: boolean
+  - show_sale_badge: boolean
+  - card_aspect_ratio: string (e.g. '2 / 3')
+  - card_image_fit: string ('contain' or 'cover')
+  - card_image_pos: string ('center', 'top', etc.)
+  - priority_index: integer (for loading eager vs lazy)
+{% endcomment %}
+
+{%- liquid
+  assign is_eager = false
+  if priority_index < 4
+    assign is_eager = true
+  endif
+
+  assign has_secondary = false
+  if show_secondary_image and prod.media.size > 1
+    assign has_secondary = true
+  endif
+
+  # Calculate Sale & Discount
+  assign is_on_sale = false
+  assign discount_pct = 0
+  if prod.compare_at_price > prod.price
+    assign is_on_sale = true
+    assign savings = prod.compare_at_price | minus: prod.price
+    assign discount_pct = savings | times: 100.0 | divided_by: prod.compare_at_price | round
+  endif
+
+  # Detect Series / Article Tag
+  assign prod_series = ''
+  for tag in prod.tags
+    assign t_lower = tag | downcase
+    if t_lower contains 'series:'
+      assign prod_series = tag | split: ':' | last | strip
+      break
+    elsif t_lower contains 'article:'
+      assign prod_series = tag | split: ':' | last | strip
+      break
+    elsif t_lower contains 'velora' or t_lower contains 'vilora'
+      assign prod_series = 'Velora Series'
+      break
+    elsif t_lower contains 'crown'
+      assign prod_series = 'Crown Series'
+      break
+    elsif t_lower contains 'sprinter'
+      assign prod_series = 'Sprinter Series'
+      break
+    elsif t_lower contains 'flexwell'
+      assign prod_series = 'Flexwell Series'
+      break
+    endif
+  endfor
+
+  # Extract Color Option Values
+  assign color_values = nil
+  for opt in prod.options_with_values
+    assign opt_name = opt.name | downcase
+    if opt_name == 'color' or opt_name == 'colour'
+      assign color_values = opt.values
+      break
+    endif
+  endfor
+-%}
+
+<div
+  class="enamels-carousel-card"
+  data-product-id="{{ prod.id }}"
+  data-price="{{ prod.price }}"
+  style="
+    --card-aspect-ratio: {{ card_aspect_ratio | default: '2 / 3' }};
+    --card-image-fit: {{ card_image_fit | default: 'contain' }};
+    --card-image-pos: {{ card_image_pos | default: 'center' }};
+  "
+>
+  <a href="{{ prod.url }}" class="enamels-carousel-card__link">
+    <!-- Media Frame -->
+    <div class="enamels-carousel-card__media">
+      <!-- Promotional Badges -->
+      <div class="enamels-carousel-card__badges">
+        {%- if show_sale_badge and is_on_sale -%}
+          <span class="enamels-carousel-badge enamels-carousel-badge--sale">SALE</span>
+          {%- if discount_pct > 0 -%}
+            <span class="enamels-carousel-badge enamels-carousel-badge--percent">-{{ discount_pct }}%</span>
+          {%- endif -%}
+        {%- endif -%}
+        {%- if prod.tags contains 'badge:new' or prod.tags contains 'new' -%}
+          <span class="enamels-carousel-badge enamels-carousel-badge--new">NEW</span>
+        {%- endif -%}
+      </div>
+
+      {%- if prod.featured_media != blank -%}
+        <img
+          src="{{ prod.featured_media | image_url: width: 600 }}"
+          srcset="
+            {{ prod.featured_media | image_url: width: 360 }} 360w,
+            {{ prod.featured_media | image_url: width: 600 }} 600w,
+            {{ prod.featured_media | image_url: width: 900 }} 900w,
+            {{ prod.featured_media | image_url: width: 1200 }} 1200w
+          "
+          sizes="(max-width: 640px) 70vw, (max-width: 1024px) 35vw, 25vw"
+          alt="{{ prod.featured_media.alt | default: prod.title | escape }}"
+          width="600"
+          height="900"
+          class="enamels-carousel-card__img enamels-carousel-card__img--primary{% if has_secondary %} has-secondary{% endif %}"
+          {% if is_eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+        >
+        {%- if has_secondary -%}
+          <img
+            src="{{ prod.media[1] | image_url: width: 600 }}"
+            alt="{{ prod.title | escape }}"
+            width="600"
+            height="900"
+            class="enamels-carousel-card__img enamels-carousel-card__img--secondary"
+            loading="lazy"
+          >
+        {%- endif -%}
+      {%- else -%}
+        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 0.8rem; font-weight: 600;">
+          ENAMELS
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Product Details -->
+    <div class="enamels-carousel-card__info">
+      {%- if prod_series != blank -%}
+        <span class="enamels-carousel-card__series">{{ prod_series }}</span>
+      {%- endif -%}
+
+      <h3 class="enamels-carousel-card__title">{{ prod.title | escape }}</h3>
+
+      <div class="enamels-carousel-card__price-row">
+        <span class="enamels-carousel-card__price">{{ prod.price | money_without_trailing_zeros }}</span>
+        {%- if is_on_sale -%}
+          <span class="enamels-carousel-card__compare-price">{{ prod.compare_at_price | money_without_trailing_zeros }}</span>
+        {%- endif -%}
+      </div>
+
+      <!-- Variant Color Swatches -->
+      {%- if show_swatches and color_values != blank and color_values.size > 0 -%}
+        <div class="enamels-carousel-card__swatches" aria-label="{{ color_values.size }} colors available">
+          {%- for color in color_values limit: 5 -%}
+            {%- liquid
+              assign c_clean = color | downcase | strip
+              assign hex = '#0f172a'
+              if c_clean contains 'navy' or c_clean contains 'dark blue'
+                assign hex = '#002349'
+              elsif c_clean contains 'royal' or c_clean contains 'blue'
+                assign hex = '#1d4ed8'
+              elsif c_clean contains 'ceil' or c_clean contains 'sky' or c_clean contains 'light blue'
+                assign hex = '#92b6d5'
+              elsif c_clean contains 'caribbean' or c_clean contains 'aqua'
+                assign hex = '#008779'
+              elsif c_clean contains 'black'
+                assign hex = '#111827'
+              elsif c_clean contains 'white'
+                assign hex = '#ffffff'
+              elsif c_clean contains 'wine' or c_clean contains 'burgundy' or c_clean contains 'maroon'
+                assign hex = '#722f37'
+              elsif c_clean contains 'plum' or c_clean contains 'purple' or c_clean contains 'violet'
+                assign hex = '#581c87'
+              elsif c_clean contains 'hunter' or c_clean contains 'dark green' or c_clean contains 'forest'
+                assign hex = '#355e3b'
+              elsif c_clean contains 'sage' or c_clean contains 'olive'
+                assign hex = '#65a30d'
+              elsif c_clean contains 'teal' or c_clean contains 'sea'
+                assign hex = '#0d9488'
+              elsif c_clean contains 'grey' or c_clean contains 'gray' or c_clean contains 'pewter'
+                assign hex = '#64748b'
+              elsif c_clean contains 'pink' or c_clean contains 'blush'
+                assign hex = '#f472b6'
+              elsif c_clean contains 'rust' or c_clean contains 'orange' or c_clean contains 'mustard'
+                assign hex = '#d97706'
+              endif
+            -%}
+            <span
+              class="enamels-carousel-swatch-dot"
+              style="background-color: {{ hex }};"
+              title="{{ color | escape }}"
+            ></span>
+          {%- endfor -%}
+          {%- if color_values.size > 5 -%}
+            <span class="enamels-carousel-swatch-more">+{{ color_values.size | minus: 5 }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </a>
+</div>

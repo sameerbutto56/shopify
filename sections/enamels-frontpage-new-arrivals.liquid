@@ -1,233 +1,244 @@
 {% comment %}
-  Enamels Frontpage New Arrivals Section
-  Matches the exact New Arrivals cards from the user's UI screenshot.
-  Desktop: 1 row of 6 portrait cards.
-  Mobile: 2 columns grid.
+  Enamels Dynamic Product Carousel & Horizontal Scroller
+  Section: enamels-frontpage-new-arrivals.liquid
+  Features:
+  - Dynamic loading from genuine Shopify collections
+  - Responsive fractional visible cards (2, 2.5, 3, 3.5, 4, 4.5, 5, 6, etc.)
+  - Smooth left-to-right horizontal scrolling without page-level overflow
+  - Desktop left/right navigation arrows, trackpad wheel, and mobile touch gestures
+  - Expand/Collapse inline grid and View All collection page routing
+  - 1200 × 1800 (2:3) portrait thumbnail presentation standard with contain/cover controls
+  - Zero hardcoded dummy products; clean empty state when collection is empty
 {% endcomment %}
 
-<section class="enamels-na-section" id="enamels-na-{{ section.id }}">
-  <div class="enamels-na__container">
-    <!-- Header -->
-    <div class="enamels-section-head">
-      <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'New Arrivals' }}</h2>
-      {% if section.settings.view_all_link != blank and section.settings.view_all_label != blank %}
-        <a href="{{ section.settings.view_all_link }}" class="enamels-section-head__link">
-          {{ section.settings.view_all_label }}
-        </a>
-      {% endif %}
+{{ 'enamels-product-carousel.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'enamels-product-carousel.js' | asset_url }}" defer></script>
+
+{%- liquid
+  # Target Collection Resolution
+  assign target_collection = nil
+  if section.settings.collection != blank
+    assign target_collection = collections[section.settings.collection]
+  elsif section.blocks.size == 0
+    assign target_collection = collections['all']
+  endif
+
+  # Visible Columns Calculation
+  assign visible_desktop = section.settings.products_visible_desktop | default: '4'
+  if visible_desktop == 'custom' or section.settings.products_desktop_custom != blank
+    assign visible_desktop = section.settings.products_desktop_custom | strip | default: '4'
+  endif
+
+  assign visible_tablet = section.settings.products_visible_tablet | default: '2.5'
+  if visible_tablet == 'custom' or section.settings.products_tablet_custom != blank
+    assign visible_tablet = section.settings.products_tablet_custom | strip | default: '2.5'
+  endif
+
+  assign visible_mobile = section.settings.products_visible_mobile | default: '1.5'
+  if visible_mobile == 'custom' or section.settings.products_mobile_custom != blank
+    assign visible_mobile = section.settings.products_mobile_custom | strip | default: '1.5'
+  endif
+
+  # Gap and Sizing
+  assign gap_desktop = section.settings.gap_desktop | default: 16
+  assign gap_tablet = gap_desktop | times: 0.8 | round
+  assign gap_mobile = section.settings.gap_mobile | default: 10
+
+  # Aspect Ratio Calculation
+  assign aspect_ratio_css = '2 / 3'
+  case section.settings.aspect_ratio
+    when '2_3'
+      assign aspect_ratio_css = '2 / 3'
+    when '3_4'
+      assign aspect_ratio_css = '3 / 4'
+    when '1_1'
+      assign aspect_ratio_css = '1 / 1'
+    when '4_5'
+      assign aspect_ratio_css = '4 / 5'
+    when 'natural'
+      assign aspect_ratio_css = 'auto'
+  endcase
+
+  assign image_fit_css = section.settings.image_fit | default: 'contain'
+  assign image_pos_css = section.settings.image_position | default: 'center'
+
+  # Product Limits
+  assign max_carousel_items = section.settings.max_products_carousel | default: 12
+  assign max_grid_items = section.settings.max_products_grid | default: 24
+
+  # Initial Layout Mode
+  assign is_grid_mode = false
+  if section.settings.layout_mode == 'grid'
+    assign is_grid_mode = true
+  endif
+
+  # View All URL
+  assign view_all_url = section.settings.view_all_link
+  if view_all_url == blank and target_collection != blank
+    assign view_all_url = target_collection.url
+  endif
+  if view_all_url == blank
+    assign view_all_url = '/collections/all'
+  endif
+-%}
+
+<section
+  class="enamels-carousel-section"
+  id="enamels-carousel-{{ section.id }}"
+  style="
+    background-color: {{ section.settings.bg_color | default: '#ffffff' }};
+    padding-top: {{ section.settings.padding_top | default: 24 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 36 }}px;
+    --carousel-cols-desktop: {{ visible_desktop }};
+    --carousel-cols-tablet: {{ visible_tablet }};
+    --carousel-cols-mobile: {{ visible_mobile }};
+    --carousel-gap: {{ gap_desktop }}px;
+    --carousel-gap-tablet: {{ gap_tablet }}px;
+    --carousel-gap-mobile: {{ gap_mobile }}px;
+    --grid-cols-desktop: 4;
+    --grid-cols-tablet: 3;
+    --grid-cols-mobile: 2;
+  "
+  data-enamels-carousel
+  data-autoplay="{{ section.settings.enable_autoplay | default: false }}"
+  data-autoplay-speed="{{ section.settings.autoplay_speed | default: 5 }}"
+  data-mouse-wheel="{{ section.settings.enable_mouse_wheel | default: true }}"
+  {{ section.shopify_attributes }}
+>
+  <div class="enamels-carousel-container">
+    <!-- Carousel Header -->
+    <div class="enamels-carousel-header">
+      <div class="enamels-carousel-header__text">
+        {%- if section.settings.title != blank -%}
+          <h2 class="enamels-carousel-header__title">{{ section.settings.title | escape }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="enamels-carousel-header__subtitle">{{ section.settings.subtitle | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="enamels-carousel-header__actions">
+        <!-- View All Link / Expand Button -->
+        {%- if section.settings.show_view_all -%}
+          {%- if section.settings.view_all_behavior == 'expand_inline' -%}
+            <button
+              type="button"
+              class="enamels-carousel-expand-btn"
+              data-carousel-expand
+              data-expand-label="{{ section.settings.view_all_label | default: 'View All' | escape }}"
+              data-collapse-label="Show Less"
+              aria-expanded="{% if is_grid_mode %}true{% else %}false{% endif %}"
+            >
+              <span class="enamels-btn-text">{{ section.settings.view_all_label | default: 'View All' | escape }}</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          {%- elsif section.settings.view_all_behavior == 'both' -%}
+            <button
+              type="button"
+              class="enamels-carousel-expand-btn"
+              data-carousel-expand
+              data-expand-label="Expand Grid"
+              data-collapse-label="Show Less"
+              aria-expanded="{% if is_grid_mode %}true{% else %}false{% endif %}"
+            >
+              <span class="enamels-btn-text">Expand Grid</span>
+            </button>
+            <a href="{{ view_all_url }}" class="enamels-carousel-view-all">
+              <span>{{ section.settings.view_all_label | default: 'Full Collection' | escape }}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          {%- else -%}
+            <a href="{{ view_all_url }}" class="enamels-carousel-view-all">
+              <span>{{ section.settings.view_all_label | default: 'View All' | escape }}</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          {%- endif -%}
+        {%- endif -%}
+
+        <!-- Desktop Navigation Arrows -->
+        {%- if section.settings.show_arrows and is_grid_mode == false -%}
+          <div class="enamels-carousel-nav-arrows">
+            <button
+              type="button"
+              class="enamels-carousel-arrow enamels-carousel-arrow--prev"
+              data-carousel-prev
+              aria-label="Previous products"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="enamels-carousel-arrow enamels-carousel-arrow--next"
+              data-carousel-next
+              aria-label="Next products"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
     </div>
 
-    <!-- Product Grid -->
-    <div class="enamels-na__grid">
-      {%- liquid
-        assign target_collection = nil
-        if section.settings.collection != blank
-          assign target_collection = collections[section.settings.collection]
-        elsif section.blocks.size == 0
-          assign target_collection = collections['all']
-        endif
-      -%}
-
-      {%- if target_collection != blank and target_collection.products.size > 0 -%}
-        {%- for prod in target_collection.products limit: 6 -%}
-          <div class="enamels-na-card">
-            <a href="{{ prod.url }}" class="enamels-na-card__link">
-              <div class="enamels-na-card__media">
-                {% if prod.featured_media != blank %}
-                  <img
-                    src="{{ prod.featured_media | image_url: width: 600 }}"
-                    srcset="{{ prod.featured_media | image_url: width: 360 }} 360w, {{ prod.featured_media | image_url: width: 600 }} 600w"
-                    sizes="(max-width: 640px) 50vw, 16vw"
-                    alt="{{ prod.featured_media.alt | default: prod.title | escape }}"
-                    loading="lazy"
-                    width="250"
-                    height="375"
-                  >
-                {% else %}
-                  <div class="enamels-na-card__placeholder">
-                    <span>Enamels</span>
-                  </div>
-                {% endif %}
-              </div>
-              
-              <div class="enamels-na-card__info">
-                <span class="enamels-na-card__title">
-                  {{ prod.title | escape }}
-                </span>
-                <span class="enamels-na-card__price">
-                  {{ prod.price | money_without_trailing_zeros }}
-                </span>
-              </div>
-            </a>
+    <!-- Carousel Viewport & Track -->
+    <div class="enamels-carousel-viewport">
+      <div
+        class="enamels-carousel-track{% if is_grid_mode %} is-grid-mode{% endif %}"
+        data-carousel-track
+        tabindex="0"
+        role="region"
+        aria-label="{{ section.settings.title | default: 'Products Carousel' | escape }}"
+      >
+        {%- if target_collection != blank and target_collection.products.size > 0 -%}
+          {%- for prod in target_collection.products limit: max_grid_items -%}
+            {%- render 'enamels-product-carousel-card',
+              prod: prod,
+              show_swatches: section.settings.show_color_swatches,
+              show_secondary_image: section.settings.show_secondary_image_on_hover,
+              show_sale_badge: section.settings.show_sale_badge,
+              card_aspect_ratio: aspect_ratio_css,
+              card_image_fit: image_fit_css,
+              card_image_pos: image_pos_css,
+              priority_index: forloop.index0
+            -%}
+          {%- endfor -%}
+        {%- elsif section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- assign prod = block.settings.product -%}
+            {%- if prod != blank -%}
+              {%- render 'enamels-product-carousel-card',
+                prod: prod,
+                show_swatches: section.settings.show_color_swatches,
+                show_secondary_image: section.settings.show_secondary_image_on_hover,
+                show_sale_badge: section.settings.show_sale_badge,
+                card_aspect_ratio: aspect_ratio_css,
+                card_image_fit: image_fit_css,
+                card_image_pos: image_pos_css,
+                priority_index: forloop.index0
+              -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          <div class="enamels-carousel-empty">
+            <p>No products currently found in this collection. Please select an active collection in Shopify Studio.</p>
           </div>
-        {%- endfor -%}
-      {%- else -%}
-        {% for block in section.blocks %}
-          {% assign prod = block.settings.product %}
-          {% assign card_img = block.settings.image %}
-          {% assign card_fallback = block.settings.fallback_asset %}
-          {% assign card_link = block.settings.link %}
-          {% if card_link == blank and prod != blank %}
-            {% assign card_link = prod.url %}
-          {% endif %}
-
-          <div class="enamels-na-card" {{ block.shopify_attributes }}>
-            <a href="{{ card_link | default: '#' }}" class="enamels-na-card__link">
-              <div class="enamels-na-card__media">
-                {% if card_img != blank %}
-                  <img
-                    src="{{ card_img | image_url: width: 600 }}"
-                    alt="{{ block.settings.title | escape }}"
-                    loading="lazy"
-                    width="250"
-                    height="340"
-                  >
-                {% elsif prod.featured_media != blank %}
-                  <img
-                    src="{{ prod.featured_media | image_url: width: 600 }}"
-                    alt="{{ block.settings.title | default: prod.title | escape }}"
-                    loading="lazy"
-                    width="250"
-                    height="340"
-                  >
-                {% elsif card_fallback != blank %}
-                  <img
-                    src="{{ card_fallback | asset_url }}"
-                    alt="{{ block.settings.title | escape }}"
-                    loading="lazy"
-                    width="250"
-                    height="340"
-                  >
-                {% endif %}
-              </div>
-              
-              <div class="enamels-na-card__info">
-                <span class="enamels-na-card__title">
-                  {{ block.settings.title | default: prod.title }}
-                </span>
-                <span class="enamels-na-card__price">
-                  {% if prod != blank %}
-                    {{ prod.price | money_without_trailing_zeros }}
-                  {% elsif block.settings.price != blank %}
-                    {{ block.settings.price }}
-                  {% endif %}
-                </span>
-              </div>
-            </a>
-          </div>
-        {% endfor %}
-      {%- endif -%}
+        {%- endif -%}
+      </div>
     </div>
+
+    <!-- Optional Progress Scrollbar Indicator -->
+    {%- if section.settings.indicator_style == 'scrollbar' and is_grid_mode == false -%}
+      <div class="enamels-carousel-progress" data-carousel-progress aria-hidden="true">
+        <div class="enamels-carousel-progress-bar" data-progress-bar></div>
+      </div>
+    {%- endif -%}
   </div>
 </section>
-
-<style>
-  #enamels-na-{{ section.id }} {
-    padding-top: {{ section.settings.padding_top | default: 16 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | default: 32 }}px;
-  }
-
-  #enamels-na-{{ section.id }} .enamels-na__container {
-    max-width: 1320px;
-    margin: 0 auto;
-    padding: 0 16px;
-  }
-
-  .enamels-na__grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
-  }
-
-  .enamels-na-card {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .enamels-na-card__link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .enamels-na-card__media {
-    width: 100%;
-    aspect-ratio: 3 / 4.4;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #f0f0f0;
-    margin-bottom: 8px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-
-  .enamels-na-card:hover .enamels-na-card__media {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-  }
-
-  .enamels-na-card__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .enamels-na-card__info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .enamels-na-card__title {
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #444444;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    line-height: 1.2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .enamels-na-card__price {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #111111;
-  }
-
-  @media (max-width: 900px) {
-    .enamels-na__grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-  }
-
-  @media (max-width: 640px) {
-    #enamels-na-{{ section.id }} .enamels-na__container {
-      padding: 0 12px;
-    }
-
-    .enamels-na__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .enamels-na-card__media {
-      border-radius: 6px;
-      margin-bottom: 6px;
-    }
-
-    .enamels-na-card__title {
-      font-size: 0.75rem;
-    }
-
-    .enamels-na-card__price {
-      font-size: 0.82rem;
-    }
-  }
-</style>
 
 {% schema %}
 {
@@ -236,143 +247,329 @@
   "class": "enamels-na-section-wrapper",
   "settings": [
     {
-      "type": "text",
-      "id": "title",
-      "label": "Section Title",
-      "default": "New Arrivals"
-    },
-    {
-      "type": "text",
-      "id": "view_all_label",
-      "label": "View All Label",
-      "default": "View all"
-    },
-    {
-      "type": "url",
-      "id": "view_all_link",
-      "label": "View All Link"
+      "type": "header",
+      "content": "Collection & Content"
     },
     {
       "type": "collection",
       "id": "collection",
       "label": "Shopify Collection",
-      "info": "Select collection to display real products. If left blank and no manual blocks are defined, all products will be shown."
+      "info": "Select collection to display real products dynamically."
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Explore our latest clinical scrubs & uniforms, engineered for modern healthcare."
+    },
+    {
+      "type": "header",
+      "content": "Layout Mode & Visible Products"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout Mode",
+      "options": [
+        { "value": "carousel", "label": "Horizontal Carousel (Scrollable)" },
+        { "value": "grid", "label": "Product Grid (Static)" }
+      ],
+      "default": "carousel"
+    },
+    {
+      "type": "select",
+      "id": "products_visible_desktop",
+      "label": "Products Visible on Desktop",
+      "options": [
+        { "value": "2", "label": "2 products" },
+        { "value": "2.5", "label": "2.5 products (2 full + 0.5 peek)" },
+        { "value": "3", "label": "3 products" },
+        { "value": "3.5", "label": "3.5 products (3 full + 0.5 peek)" },
+        { "value": "4", "label": "4 products" },
+        { "value": "4.5", "label": "4.5 products (4 full + 0.5 peek)" },
+        { "value": "5", "label": "5 products" },
+        { "value": "5.5", "label": "5.5 products (5 full + 0.5 peek)" },
+        { "value": "6", "label": "6 products" },
+        { "value": "custom", "label": "Custom Decimal (Use field below)" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "text",
+      "id": "products_desktop_custom",
+      "label": "Custom Desktop Visible Products",
+      "info": "Overrides dropdown when entered (e.g. 2.75, 3.25, 4.2)"
+    },
+    {
+      "type": "select",
+      "id": "products_visible_tablet",
+      "label": "Products Visible on Tablet",
+      "options": [
+        { "value": "1.5", "label": "1.5 products" },
+        { "value": "2", "label": "2 products" },
+        { "value": "2.2", "label": "2.2 products" },
+        { "value": "2.5", "label": "2.5 products" },
+        { "value": "3", "label": "3 products" },
+        { "value": "3.5", "label": "3.5 products" },
+        { "value": "4", "label": "4 products" },
+        { "value": "custom", "label": "Custom Decimal (Use field below)" }
+      ],
+      "default": "2.5"
+    },
+    {
+      "type": "text",
+      "id": "products_tablet_custom",
+      "label": "Custom Tablet Visible Products",
+      "info": "e.g. 2.3, 2.7"
+    },
+    {
+      "type": "select",
+      "id": "products_visible_mobile",
+      "label": "Products Visible on Mobile",
+      "options": [
+        { "value": "1", "label": "1 product" },
+        { "value": "1.2", "label": "1.2 products (1 full + peek)" },
+        { "value": "1.3", "label": "1.3 products" },
+        { "value": "1.5", "label": "1.5 products (1 full + half peek)" },
+        { "value": "1.8", "label": "1.8 products" },
+        { "value": "2", "label": "2 products" },
+        { "value": "2.2", "label": "2.2 products (2 full + peek)" },
+        { "value": "2.5", "label": "2.5 products" },
+        { "value": "custom", "label": "Custom Decimal (Use field below)" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "text",
+      "id": "products_mobile_custom",
+      "label": "Custom Mobile Visible Products",
+      "info": "e.g. 1.25, 1.4, 2.1"
+    },
+    {
+      "type": "range",
+      "id": "max_products_carousel",
+      "min": 4,
+      "max": 30,
+      "step": 2,
+      "label": "Maximum Products in Carousel",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "max_products_grid",
+      "min": 6,
+      "max": 48,
+      "step": 2,
+      "label": "Maximum Products in Grid / View All Mode",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Card Dimensions & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap Between Cards (Desktop)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap Between Cards (Mobile)",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Thumbnail Aspect Ratio",
+      "options": [
+        { "value": "2_3", "label": "Standard 2:3 Portrait (1200 × 1800 px)" },
+        { "value": "3_4", "label": "Portrait (3:4)" },
+        { "value": "1_1", "label": "Square (1:1)" },
+        { "value": "4_5", "label": "Portrait (4:5)" },
+        { "value": "natural", "label": "Natural Image Dimensions" }
+      ],
+      "default": "2_3"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Product Image Fit",
+      "options": [
+        { "value": "contain", "label": "Contain (Full item visible without cropping)" },
+        { "value": "cover", "label": "Cover (Fills thumbnail frame)" }
+      ],
+      "default": "contain"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Navigation & Interaction Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Desktop Left/Right Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "indicator_style",
+      "label": "Carousel Scroll Indicator",
+      "options": [
+        { "value": "scrollbar", "label": "Progress Scrollbar" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "scrollbar"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mouse_wheel",
+      "label": "Enable Smooth Trackpad / Mouse-Wheel Horizontal Scroll",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable Autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay Speed (seconds)",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "View All & Expansion"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Option",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Button Label",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "Custom View All Destination (Overrides Collection URL)"
+    },
+    {
+      "type": "select",
+      "id": "view_all_behavior",
+      "label": "View All Action",
+      "options": [
+        { "value": "navigate", "label": "Navigate to Collection Page" },
+        { "value": "expand_inline", "label": "Expand into Full Grid Inline" },
+        { "value": "both", "label": "Collection Link & Grid Toggle" }
+      ],
+      "default": "navigate"
+    },
+    {
+      "type": "header",
+      "content": "Product Badges & Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_swatches",
+      "label": "Show Variant Color Swatches",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show Sale / Discount Badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image_on_hover",
+      "label": "Show Secondary Image on Hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing & Background"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
     },
     {
       "type": "range",
       "id": "padding_top",
       "min": 0,
-      "max": 60,
+      "max": 80,
       "step": 4,
       "unit": "px",
       "label": "Padding Top",
-      "default": 16
+      "default": 24
     },
     {
       "type": "range",
       "id": "padding_bottom",
       "min": 0,
-      "max": 60,
+      "max": 80,
       "step": 4,
       "unit": "px",
       "label": "Padding Bottom",
-      "default": 32
+      "default": 36
     }
   ],
   "blocks": [
     {
       "type": "product_card",
-      "name": "Product Card",
+      "name": "Custom Product Card",
       "settings": [
         {
           "type": "product",
           "id": "product",
           "label": "Shopify Product"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Card Label / Color Name",
-          "default": "BLUE"
-        },
-        {
-          "type": "text",
-          "id": "price",
-          "label": "Display Price",
-          "default": "Rs 5900"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Card Link"
-        },
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Custom Image"
-        },
-        {
-          "type": "text",
-          "id": "fallback_asset",
-          "label": "Asset File Name",
-          "info": "e.g. enamels-na-blue.jpg"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Enamels New Arrivals",
-      "blocks": [
-        {
-          "type": "product_card",
-          "settings": {
-            "title": "BLUE",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-blue.jpg"
-          }
-        },
-        {
-          "type": "product_card",
-          "settings": {
-            "title": "BLACK",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-black.jpg"
-          }
-        },
-        {
-          "type": "product_card",
-          "settings": {
-            "title": "SEAGREEN",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-seagreen.jpg"
-          }
-        },
-        {
-          "type": "product_card",
-          "settings": {
-            "title": "OLIVE",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-olive.jpg"
-          }
-        },
-        {
-          "type": "product_card",
-          "settings": {
-            "title": "RUST",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-rust.jpg"
-          }
-        },
-        {
-          "type": "product_card",
-          "settings": {
-            "title": "DARK GREEN",
-            "price": "Rs 5900",
-            "fallback_asset": "enamels-na-darkgreen.jpg"
-          }
-        }
-      ]
+      "name": "Enamels New Arrivals"
     }
   ]
 }

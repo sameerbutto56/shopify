@@ -2,87 +2,198 @@
   Enamels Frontpage Lookbook Section
   "Join the Enamels Club" lifestyle collection showcase.
   Features floating product card tag and "Add to cart" button overlaid on editorial imagery.
+  Now updated with:
+  - Dynamic collection integration
+  - Adjustable fractional visible product counts in Studio (2, 2.5, 3, 3.5, 4, 5, etc.)
+  - Both Left & Right navigation arrows
+  - Trackpad wheel and touch swipe horizontal scrolling
 {% endcomment %}
 
-<section class="enamels-lookbook-section" id="enamels-lookbook-{{ section.id }}">
+{%- liquid
+  assign target_collection = nil
+  if section.settings.collection != blank
+    assign target_collection = collections[section.settings.collection]
+  endif
+
+  # Visible Columns Calculation
+  assign visible_desktop = section.settings.products_visible_desktop | default: '5'
+  if visible_desktop == 'custom' or section.settings.products_desktop_custom != blank
+    assign visible_desktop = section.settings.products_desktop_custom | strip | default: '5'
+  endif
+
+  assign visible_tablet = section.settings.products_visible_tablet | default: '3'
+  if visible_tablet == 'custom' or section.settings.products_tablet_custom != blank
+    assign visible_tablet = section.settings.products_tablet_custom | strip | default: '3'
+  endif
+
+  assign visible_mobile = section.settings.products_visible_mobile | default: '1.5'
+  if visible_mobile == 'custom' or section.settings.products_mobile_custom != blank
+    assign visible_mobile = section.settings.products_mobile_custom | strip | default: '1.5'
+  endif
+
+  assign gap_desktop = section.settings.gap_desktop | default: 12
+  assign gap_mobile = 10
+-%}
+
+<section
+  class="enamels-lookbook-section"
+  id="enamels-lookbook-{{ section.id }}"
+  style="
+    padding-top: {{ section.settings.padding_top | default: 16 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 36 }}px;
+    --lb-cols-desktop: {{ visible_desktop }};
+    --lb-cols-tablet: {{ visible_tablet }};
+    --lb-cols-mobile: {{ visible_mobile }};
+    --lb-gap-desktop: {{ gap_desktop }}px;
+    --lb-gap-mobile: {{ gap_mobile }}px;
+  "
+>
   <div class="enamels-lookbook__container">
     <!-- Header -->
-    <div class="enamels-section-head">
-      <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'Join the Enamels Club' }}</h2>
+    <div class="enamels-section-head" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+      <h2 class="enamels-section-head__title" style="margin: 0;">{{ section.settings.title | default: 'Join the Enamels Club' | escape }}</h2>
+      {% if target_collection.url != blank and section.settings.show_view_all %}
+        <a href="{{ target_collection.url }}" class="enamels-carousel-view-all" style="font-size: 0.8rem; font-weight: 700; color: #008779; text-decoration: none;">
+          {{ section.settings.view_all_label | default: 'View All' | escape }} →
+        </a>
+      {% endif %}
     </div>
 
-    <!-- Carousel with Right Navigation Arrow -->
+    <!-- Carousel with Left & Right Navigation Arrows -->
     <div class="enamels-lookbook-carousel">
-      <div class="enamels-lookbook-track" data-track>
-        {% for block in section.blocks %}
-          {% assign prod = block.settings.product %}
-          {% assign bg_img = block.settings.image %}
-          {% assign bg_fallback = block.settings.fallback_asset %}
-          {% assign prod_title = block.settings.product_title | default: prod.title | default: 'Women Suit' %}
-          {% assign prod_price = block.settings.product_price %}
-          {% if prod_price == blank and prod != blank %}
+      <!-- Left Chevron Arrow -->
+      <button
+        type="button"
+        class="enamels-lookbook-arrow enamels-lookbook-arrow--left"
+        aria-label="Previous slide"
+        data-action="prev"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="enamels-lookbook-track" data-track tabindex="0">
+        {%- if target_collection != blank and target_collection.products.size > 0 -%}
+          {% for prod in target_collection.products limit: 15 %}
+            {% assign prod_title = prod.title %}
             {% assign prod_price = prod.price | money_without_trailing_zeros %}
-          {% endif %}
-          {% if prod_price == blank %}
-            {% assign prod_price = 'PKR 8,499' %}
-          {% endif %}
 
-          <div class="enamels-lookbook-card" {{ block.shopify_attributes }}>
-            <!-- Main Editorial Image -->
-            <div class="enamels-lookbook-card__bg">
-              {% if bg_img != blank %}
-                <img
-                  src="{{ bg_img | image_url: width: 600 }}"
-                  alt="{{ block.settings.title | escape }}"
-                  loading="lazy"
-                  width="260"
-                  height="400"
-                >
-              {% elsif bg_fallback != blank %}
-                <img
-                  src="{{ bg_fallback | asset_url }}"
-                  alt="{{ block.settings.title | escape }}"
-                  loading="lazy"
-                  width="260"
-                  height="400"
-                >
-              {% endif %}
-            </div>
+            <div class="enamels-lookbook-card">
+              <!-- Main Editorial Image -->
+              <div class="enamels-lookbook-card__bg">
+                {% if prod.featured_media != blank %}
+                  <img
+                    src="{{ prod.featured_media | image_url: width: 600 }}"
+                    alt="{{ prod.title | escape }}"
+                    loading="lazy"
+                    width="260"
+                    height="400"
+                  >
+                {% endif %}
+              </div>
 
-            <!-- Overlaid Bottom Product Tag & Add to Cart -->
-            <div class="enamels-lookbook-overlay">
-              <a href="{{ block.settings.link | default: prod.url | default: '#' }}" class="enamels-lookbook-pill">
-                <div class="enamels-lookbook-pill__thumb">
-                  {% if block.settings.thumb != blank %}
-                    <img src="{{ block.settings.thumb | image_url: width: 80 }}" alt="" width="32" height="32">
-                  {% elsif prod.featured_media != blank %}
-                    <img src="{{ prod.featured_media | image_url: width: 80 }}" alt="" width="32" height="32">
-                  {% elsif bg_fallback != blank %}
-                    <img src="{{ bg_fallback | asset_url }}" alt="" width="32" height="32">
-                  {% endif %}
-                </div>
-                <div class="enamels-lookbook-pill__details">
-                  <span class="enamels-lookbook-pill__name">{{ prod_title }}</span>
-                  <span class="enamels-lookbook-pill__price">{{ prod_price }}</span>
-                </div>
-                <span class="enamels-lookbook-pill__arrow">›</span>
-              </a>
-
-              {% if prod != blank and prod.available %}
-                <form method="post" action="/cart/add" class="enamels-lookbook-form">
-                  <input type="hidden" name="id" value="{{ prod.selected_or_first_available_variant.id }}">
-                  <button type="submit" class="enamels-lookbook-btn">
-                    {{ section.settings.btn_text | default: 'Add to cart' }}
-                  </button>
-                </form>
-              {% else %}
-                <a href="{{ block.settings.link | default: prod.url | default: '#' }}" class="enamels-lookbook-btn">
-                  {{ section.settings.btn_text | default: 'Add to cart' }}
+              <!-- Overlaid Bottom Product Tag & Add to Cart -->
+              <div class="enamels-lookbook-overlay">
+                <a href="{{ prod.url }}" class="enamels-lookbook-pill">
+                  <div class="enamels-lookbook-pill__thumb">
+                    {% if prod.featured_media != blank %}
+                      <img src="{{ prod.featured_media | image_url: width: 80 }}" alt="" width="32" height="32">
+                    {% endif %}
+                  </div>
+                  <div class="enamels-lookbook-pill__details">
+                    <span class="enamels-lookbook-pill__name">{{ prod_title | escape }}</span>
+                    <span class="enamels-lookbook-pill__price">{{ prod_price }}</span>
+                  </div>
+                  <span class="enamels-lookbook-pill__arrow">›</span>
                 </a>
-              {% endif %}
+
+                {% if prod.available %}
+                  <form method="post" action="/cart/add" class="enamels-lookbook-form">
+                    <input type="hidden" name="id" value="{{ prod.selected_or_first_available_variant.id }}">
+                    <button type="submit" class="enamels-lookbook-btn">
+                      {{ section.settings.btn_text | default: 'Add to cart' }}
+                    </button>
+                  </form>
+                {% else %}
+                  <a href="{{ prod.url }}" class="enamels-lookbook-btn">
+                    {{ section.settings.btn_text | default: 'Add to cart' }}
+                  </a>
+                {% endif %}
+              </div>
             </div>
-          </div>
-        {% endfor %}
+          {% endfor %}
+        {%- else -%}
+          {% for block in section.blocks %}
+            {% assign prod = block.settings.product %}
+            {% assign bg_img = block.settings.image %}
+            {% assign bg_fallback = block.settings.fallback_asset %}
+            {% assign prod_title = block.settings.product_title | default: prod.title | default: 'Women Suit' %}
+            {% assign prod_price = block.settings.product_price %}
+            {% if prod_price == blank and prod != blank %}
+              {% assign prod_price = prod.price | money_without_trailing_zeros %}
+            {% endif %}
+            {% if prod_price == blank %}
+              {% assign prod_price = 'PKR 8,499' %}
+            {% endif %}
+
+            <div class="enamels-lookbook-card" {{ block.shopify_attributes }}>
+              <!-- Main Editorial Image -->
+              <div class="enamels-lookbook-card__bg">
+                {% if bg_img != blank %}
+                  <img
+                    src="{{ bg_img | image_url: width: 600 }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    width="260"
+                    height="400"
+                  >
+                {% elsif bg_fallback != blank %}
+                  <img
+                    src="{{ bg_fallback | asset_url }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    width="260"
+                    height="400"
+                  >
+                {% endif %}
+              </div>
+
+              <!-- Overlaid Bottom Product Tag & Add to Cart -->
+              <div class="enamels-lookbook-overlay">
+                <a href="{{ block.settings.link | default: prod.url | default: '#' }}" class="enamels-lookbook-pill">
+                  <div class="enamels-lookbook-pill__thumb">
+                    {% if block.settings.thumb != blank %}
+                      <img src="{{ block.settings.thumb | image_url: width: 80 }}" alt="" width="32" height="32">
+                    {% elsif prod.featured_media != blank %}
+                      <img src="{{ prod.featured_media | image_url: width: 80 }}" alt="" width="32" height="32">
+                    {% elsif bg_fallback != blank %}
+                      <img src="{{ bg_fallback | asset_url }}" alt="" width="32" height="32">
+                    {% endif %}
+                  </div>
+                  <div class="enamels-lookbook-pill__details">
+                    <span class="enamels-lookbook-pill__name">{{ prod_title }}</span>
+                    <span class="enamels-lookbook-pill__price">{{ prod_price }}</span>
+                  </div>
+                  <span class="enamels-lookbook-pill__arrow">›</span>
+                </a>
+
+                {% if prod != blank and prod.available %}
+                  <form method="post" action="/cart/add" class="enamels-lookbook-form">
+                    <input type="hidden" name="id" value="{{ prod.selected_or_first_available_variant.id }}">
+                    <button type="submit" class="enamels-lookbook-btn">
+                      {{ section.settings.btn_text | default: 'Add to cart' }}
+                    </button>
+                  </form>
+                {% else %}
+                  <a href="{{ block.settings.link | default: prod.url | default: '#' }}" class="enamels-lookbook-btn">
+                    {{ section.settings.btn_text | default: 'Add to cart' }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {%- endif -%}
       </div>
 
       <!-- Right Chevron Arrow -->
@@ -92,7 +203,7 @@
         aria-label="Next slide"
         data-action="next"
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
       </button>
@@ -102,13 +213,11 @@
 
 <style>
   #enamels-lookbook-{{ section.id }} {
-    padding-top: {{ section.settings.padding_top | default: 16 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | default: 36 }}px;
     overflow: hidden;
   }
 
   #enamels-lookbook-{{ section.id }} .enamels-lookbook__container {
-    max-width: 1320px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 16px;
   }
@@ -120,38 +229,39 @@
 
   .enamels-lookbook-track {
     display: flex;
-    gap: 12px;
+    flex-flow: row nowrap;
+    gap: var(--lb-gap-desktop, 12px);
     overflow-x: auto;
     scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding-bottom: 8px;
+    padding: 4px 2px 14px 2px;
   }
 
   .enamels-lookbook-track::-webkit-scrollbar {
     display: none;
   }
 
+  /* Desktop Fractional Sizing */
   .enamels-lookbook-card {
-    flex: 0 0 calc((100% - 48px) / 5);
-    min-width: 200px;
+    flex: 0 0 calc((100% - (var(--lb-gap-desktop, 12px) * (var(--lb-cols-desktop, 5) - 1))) / var(--lb-cols-desktop, 5));
+    min-width: calc((100% - (var(--lb-gap-desktop, 12px) * (var(--lb-cols-desktop, 5) - 1))) / var(--lb-cols-desktop, 5));
+    max-width: calc((100% - (var(--lb-gap-desktop, 12px) * (var(--lb-cols-desktop, 5) - 1))) / var(--lb-cols-desktop, 5));
+    scroll-snap-align: start;
     position: relative;
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 3 / 4.8;
-    background-color: #eaeaea;
-    transition: transform 0.25s ease;
-  }
-
-  .enamels-lookbook-card:hover {
-    transform: translateY(-2px);
+    background-color: #f1f5f9;
+    box-sizing: border-box;
   }
 
   .enamels-lookbook-card__bg {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: #e2e8f0;
   }
 
   .enamels-lookbook-card__bg img {
@@ -159,39 +269,44 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .enamels-lookbook-card:hover .enamels-lookbook-card__bg img {
+    transform: scale(1.04);
   }
 
   .enamels-lookbook-overlay {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    z-index: 2;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    z-index: 2;
   }
 
   .enamels-lookbook-pill {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(4px);
-    border-radius: 6px;
-    padding: 5px 8px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 4px 10px 4px 4px;
     text-decoration: none;
-    color: #111111;
+    color: inherit;
+    gap: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
 
   .enamels-lookbook-pill__thumb {
     width: 28px;
     height: 28px;
-    border-radius: 4px;
+    border-radius: 50%;
     overflow: hidden;
+    background: #e2e8f0;
     flex-shrink: 0;
-    background-color: #ddd;
   }
 
   .enamels-lookbook-pill__thumb img {
@@ -202,45 +317,42 @@
   }
 
   .enamels-lookbook-pill__details {
-    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    flex: 1;
     min-width: 0;
   }
 
   .enamels-lookbook-pill__name {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    color: #111111;
+    color: #102a43;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.2;
   }
 
   .enamels-lookbook-pill__price {
-    font-size: 0.62rem;
+    font-size: 0.68rem;
     font-weight: 600;
-    color: #666666;
-    line-height: 1.2;
+    color: #627d98;
   }
 
   .enamels-lookbook-pill__arrow {
-    font-size: 0.95rem;
-    color: #888888;
-    line-height: 1;
+    font-size: 0.85rem;
+    color: #008779;
     font-weight: bold;
   }
 
   .enamels-lookbook-btn {
     width: 100%;
     background-color: #ffffff;
-    color: #111111;
-    font-size: 0.72rem;
+    color: #102a43;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: capitalize;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 7px 4px;
     cursor: pointer;
     text-align: center;
@@ -251,49 +363,67 @@
   }
 
   .enamels-lookbook-btn:hover {
-    background-color: #f2f2f2;
+    background-color: #f1f5f9;
   }
 
   .enamels-lookbook-arrow {
     position: absolute;
-    right: -10px;
     top: 50%;
     transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: #ffffff;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.12);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 4;
-    color: #111111;
-    transition: background 0.2s ease, transform 0.2s ease;
+    color: #102a43;
+    transition: all 0.2s ease;
   }
 
   .enamels-lookbook-arrow:hover {
-    background: #f8f8f8;
-    transform: translateY(-50%) scale(1.08);
+    background: #102a43;
+    color: #ffffff;
+    transform: translateY(-50%) scale(1.06);
   }
 
-  @media (max-width: 900px) {
+  .enamels-lookbook-arrow--left {
+    left: -12px;
+  }
+
+  .enamels-lookbook-arrow--right {
+    right: -12px;
+  }
+
+  .enamels-lookbook-arrow:disabled,
+  .enamels-lookbook-arrow.is-disabled {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  /* Tablet */
+  @media (max-width: 960px) {
     .enamels-lookbook-card {
-      flex: 0 0 calc((100% - 24px) / 3);
-      min-width: 170px;
+      flex: 0 0 calc((100% - (var(--lb-gap-desktop, 12px) * (var(--lb-cols-tablet, 3) - 1))) / var(--lb-cols-tablet, 3)) !important;
+      min-width: calc((100% - (var(--lb-gap-desktop, 12px) * (var(--lb-cols-tablet, 3) - 1))) / var(--lb-cols-tablet, 3)) !important;
+      max-width: calc((100% - (var(--lb-gap-desktop, 12px) * (var(--lb-cols-tablet, 3) - 1))) / var(--lb-cols-tablet, 3)) !important;
     }
   }
 
+  /* Mobile */
   @media (max-width: 640px) {
     #enamels-lookbook-{{ section.id }} .enamels-lookbook__container {
       padding: 0 12px;
     }
 
     .enamels-lookbook-card {
-      flex: 0 0 68%;
-      min-width: 200px;
+      flex: 0 0 calc((100% - (var(--lb-gap-mobile, 10px) * (var(--lb-cols-mobile, 1.5) - 1))) / var(--lb-cols-mobile, 1.5)) !important;
+      min-width: calc((100% - (var(--lb-gap-mobile, 10px) * (var(--lb-cols-mobile, 1.5) - 1))) / var(--lb-cols-mobile, 1.5)) !important;
+      max-width: calc((100% - (var(--lb-gap-mobile, 10px) * (var(--lb-cols-mobile, 1.5) - 1))) / var(--lb-cols-mobile, 1.5)) !important;
     }
 
     .enamels-lookbook-arrow {
@@ -307,12 +437,38 @@
     const section = document.getElementById('enamels-lookbook-{{ section.id }}');
     if (!section) return;
     const track = section.querySelector('[data-track]');
+    const prevBtn = section.querySelector('[data-action="prev"]');
     const nextBtn = section.querySelector('[data-action="next"]');
+
+    function updateArrows() {
+      if (!track) return;
+      const atStart = track.scrollLeft <= 4;
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 6;
+      if (prevBtn) {
+        prevBtn.disabled = atStart;
+        prevBtn.classList.toggle('is-disabled', atStart);
+      }
+      if (nextBtn) {
+        nextBtn.disabled = atEnd;
+        nextBtn.classList.toggle('is-disabled', atEnd);
+      }
+    }
+
+    if (prevBtn && track) {
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -track.clientWidth * 0.75, behavior: 'smooth' });
+      });
+    }
 
     if (nextBtn && track) {
       nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: track.clientWidth * 0.7, behavior: 'smooth' });
+        track.scrollBy({ left: track.clientWidth * 0.75, behavior: 'smooth' });
       });
+    }
+
+    if (track) {
+      track.addEventListener('scroll', updateArrows, { passive: true });
+      updateArrows();
     }
   })();
 </script>
@@ -324,16 +480,111 @@
   "class": "enamels-lookbook-section-wrapper",
   "settings": [
     {
+      "type": "collection",
+      "id": "collection",
+      "label": "Shopify Collection",
+      "info": "Display genuine products dynamically from this collection."
+    },
+    {
       "type": "text",
       "id": "title",
       "label": "Section Title",
       "default": "Join the Enamels Club"
     },
     {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Label",
+      "default": "View All"
+    },
+    {
       "type": "text",
       "id": "btn_text",
       "label": "Button Label",
       "default": "Add to cart"
+    },
+    {
+      "type": "header",
+      "content": "Visible Products (Fractional)"
+    },
+    {
+      "type": "select",
+      "id": "products_visible_desktop",
+      "label": "Products Visible on Desktop",
+      "options": [
+        { "value": "3", "label": "3 products" },
+        { "value": "3.5", "label": "3.5 products" },
+        { "value": "4", "label": "4 products" },
+        { "value": "4.5", "label": "4.5 products" },
+        { "value": "5", "label": "5 products" },
+        { "value": "5.5", "label": "5.5 products" },
+        { "value": "6", "label": "6 products" },
+        { "value": "custom", "label": "Custom Decimal" }
+      ],
+      "default": "5"
+    },
+    {
+      "type": "text",
+      "id": "products_desktop_custom",
+      "label": "Custom Desktop Visible Products"
+    },
+    {
+      "type": "select",
+      "id": "products_visible_tablet",
+      "label": "Products Visible on Tablet",
+      "options": [
+        { "value": "2", "label": "2 products" },
+        { "value": "2.5", "label": "2.5 products" },
+        { "value": "3", "label": "3 products" },
+        { "value": "3.5", "label": "3.5 products" },
+        { "value": "custom", "label": "Custom Decimal" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "text",
+      "id": "products_tablet_custom",
+      "label": "Custom Tablet Visible Products"
+    },
+    {
+      "type": "select",
+      "id": "products_visible_mobile",
+      "label": "Products Visible on Mobile",
+      "options": [
+        { "value": "1.2", "label": "1.2 products" },
+        { "value": "1.3", "label": "1.3 products" },
+        { "value": "1.5", "label": "1.5 products" },
+        { "value": "1.8", "label": "1.8 products" },
+        { "value": "2", "label": "2 products" },
+        { "value": "2.2", "label": "2.2 products" },
+        { "value": "custom", "label": "Custom Decimal" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "text",
+      "id": "products_mobile_custom",
+      "label": "Custom Mobile Visible Products"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "min": 8,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap Between Cards (Desktop)",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
     },
     {
       "type": "range",
@@ -362,91 +613,49 @@
       "name": "Lookbook Card",
       "settings": [
         {
+          "type": "product",
+          "id": "product",
+          "label": "Shopify Product"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Display Title",
+          "default": "Women Suit"
+        },
+        {
+          "type": "text",
+          "id": "product_price",
+          "label": "Display Price",
+          "default": "PKR 8,499"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Card Link"
+        },
+        {
           "type": "image_picker",
           "id": "image",
-          "label": "Editorial Background Image"
+          "label": "Main Editorial Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "thumb",
+          "label": "Small Pill Thumbnail"
         },
         {
           "type": "text",
           "id": "fallback_asset",
           "label": "Asset File Name",
           "info": "e.g. enamels-lookbook-1.jpg"
-        },
-        {
-          "type": "product",
-          "id": "product",
-          "label": "Linked Product"
-        },
-        {
-          "type": "text",
-          "id": "product_title",
-          "label": "Product Title",
-          "default": "Women Suit"
-        },
-        {
-          "type": "text",
-          "id": "product_price",
-          "label": "Product Price",
-          "default": "PKR 8,499"
-        },
-        {
-          "type": "image_picker",
-          "id": "thumb",
-          "label": "Product Thumbnail"
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Product URL"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Enamels Club Lookbook",
-      "blocks": [
-        {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Suit",
-            "product_price": "PKR 8,499",
-            "fallback_asset": "enamels-lookbook-1.jpg"
-          }
-        },
-        {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Suit",
-            "product_price": "PKR 10,999",
-            "fallback_asset": "enamels-lookbook-2.jpg"
-          }
-        },
-        {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Suit",
-            "product_price": "PKR 10,999",
-            "fallback_asset": "enamels-lookbook-3.jpg"
-          }
-        },
-        {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Dress",
-            "product_price": "PKR 7,499",
-            "fallback_asset": "enamels-lookbook-4.jpg"
-          }
-        },
-        {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Kurti",
-            "product_price": "PKR 4,999",
-            "fallback_asset": "enamels-lookbook-5.jpg"
-          }
-        }
-      ]
+      "name": "Enamels Club Lookbook"
     }
   ]
 }
