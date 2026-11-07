@@ -68,14 +68,31 @@
   endfor
 -%}
 
+{%- liquid
+  # Thumbnail standard: explicit param > theme setting (default 2:3 / contain / center)
+  assign thumb_ratio = card_aspect_ratio
+  if thumb_ratio == blank or thumb_ratio == 'inherit'
+    capture thumb_ratio
+      render 'product-thumb-ratio'
+    endcapture
+  endif
+  assign thumb_fit = card_image_fit
+  if thumb_fit == blank or thumb_fit == 'inherit'
+    assign thumb_fit = settings.product_card_image_fit | default: 'contain'
+  endif
+  assign thumb_pos = card_image_pos
+  if thumb_pos == blank or thumb_pos == 'inherit'
+    assign thumb_pos = settings.product_card_image_position | default: 'center'
+  endif
+-%}
 <div
   class="enamels-carousel-card"
   data-product-id="{{ prod.id }}"
   data-price="{{ prod.price }}"
   style="
-    --card-aspect-ratio: {{ card_aspect_ratio | default: '2 / 3' }};
-    --card-image-fit: {{ card_image_fit | default: 'contain' }};
-    --card-image-pos: {{ card_image_pos | default: 'center' }};
+    --card-aspect-ratio: {{ thumb_ratio }};
+    --card-image-fit: {{ thumb_fit }};
+    --card-image-pos: {{ thumb_pos }};
   "
 >
   <a href="{{ prod.url }}" class="enamels-carousel-card__link">

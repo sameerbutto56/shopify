@@ -1,0 +1,32 @@
+{% doc %}
+  Outputs the CSS aspect-ratio for product thumbnails (no surrounding whitespace).
+  Resolves a section-level choice, falling back to the theme-wide standard
+  (Theme settings > Product cards, default 2:3 / 1200x1800).
+
+  @param {string} [choice] - Section value: inherit, 2_3, 3_4, 4_5, 1_1, natural, custom (or CSS forms like '2 / 3')
+
+  @example
+  {% capture thumb_ratio %}{% render 'product-thumb-ratio', choice: section.settings.aspect_ratio %}{% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign thumb_choice = choice | default: 'inherit'
+  if thumb_choice == 'inherit' or thumb_choice == ''
+    assign thumb_choice = settings.product_card_aspect_ratio | default: '2_3'
+  endif
+  case thumb_choice
+    when '3_4', '3 / 4'
+      echo '3 / 4'
+    when '4_5', '4 / 5'
+      echo '4 / 5'
+    when '1_1', '1 / 1', 'square'
+      echo '1 / 1'
+    when 'natural', 'adapt', 'auto'
+      echo 'auto'
+    when 'custom'
+      assign thumb_w = settings.product_thumb_width | default: 1200
+      assign thumb_h = settings.product_thumb_height | default: 1800
+      echo thumb_w | append: ' / ' | append: thumb_h
+    else
+      echo '2 / 3'
+  endcase
+-%}

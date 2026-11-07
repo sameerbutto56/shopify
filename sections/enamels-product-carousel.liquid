@@ -38,22 +38,18 @@
   assign gap_mobile = section.settings.gap_mobile | default: 10
 
   # Aspect Ratio Calculation
-  assign aspect_ratio_css = '2 / 3'
-  case section.settings.aspect_ratio
-    when '2_3'
-      assign aspect_ratio_css = '2 / 3'
-    when '3_4'
-      assign aspect_ratio_css = '3 / 4'
-    when '1_1'
-      assign aspect_ratio_css = '1 / 1'
-    when '4_5'
-      assign aspect_ratio_css = '4 / 5'
-    when 'natural'
-      assign aspect_ratio_css = 'auto'
-  endcase
+  capture aspect_ratio_css
+    render 'product-thumb-ratio', choice: section.settings.aspect_ratio
+  endcapture
 
-  assign image_fit_css = section.settings.image_fit | default: 'contain'
-  assign image_pos_css = section.settings.image_position | default: 'center'
+  assign image_fit_css = section.settings.image_fit
+  if image_fit_css == blank or image_fit_css == 'inherit'
+    assign image_fit_css = settings.product_card_image_fit | default: 'contain'
+  endif
+  assign image_pos_css = section.settings.image_position
+  if image_pos_css == blank or image_pos_css == 'inherit'
+    assign image_pos_css = settings.product_card_image_position | default: 'center'
+  endif
 
   # Product Limits
   assign max_grid_items = section.settings.max_products_grid | default: 24
@@ -390,34 +386,38 @@
       "id": "aspect_ratio",
       "label": "Thumbnail Aspect Ratio",
       "options": [
+        { "value": "inherit", "label": "Use theme default (Product cards)" },
         { "value": "2_3", "label": "Standard 2:3 Portrait (1200 × 1800 px)" },
         { "value": "3_4", "label": "Portrait (3:4)" },
         { "value": "1_1", "label": "Square (1:1)" },
         { "value": "4_5", "label": "Portrait (4:5)" },
+        { "value": "custom", "label": "Custom (theme width × height)" },
         { "value": "natural", "label": "Natural Image Dimensions" }
       ],
-      "default": "2_3"
+      "default": "inherit"
     },
     {
       "type": "select",
       "id": "image_fit",
       "label": "Product Image Fit",
       "options": [
+        { "value": "inherit", "label": "Use theme default" },
         { "value": "contain", "label": "Contain (Full item visible without cropping)" },
         { "value": "cover", "label": "Cover (Fills thumbnail frame)" }
       ],
-      "default": "contain"
+      "default": "inherit"
     },
     {
       "type": "select",
       "id": "image_position",
       "label": "Image Position",
       "options": [
+        { "value": "inherit", "label": "Use theme default" },
         { "value": "center", "label": "Center" },
         { "value": "top", "label": "Top" },
         { "value": "bottom", "label": "Bottom" }
       ],
-      "default": "center"
+      "default": "inherit"
     },
     {
       "type": "header",

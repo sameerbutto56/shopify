@@ -95,9 +95,17 @@
   assign cols_mob = section.settings.grid_cols_mobile | default: 2
   assign gap_desk = section.settings.grid_gap_desktop | default: 12
   assign gap_mob = section.settings.grid_gap_mobile | default: 10
-  assign card_aspect = section.settings.card_aspect_ratio | default: '2 / 3'
-  assign card_fit = section.settings.card_image_fit | default: 'contain'
-  assign card_pos = section.settings.card_image_position | default: 'center'
+  capture card_aspect
+    render 'product-thumb-ratio', choice: section.settings.card_aspect_ratio
+  endcapture
+  assign card_fit = section.settings.card_image_fit
+  if card_fit == blank or card_fit == 'inherit'
+    assign card_fit = settings.product_card_image_fit | default: 'contain'
+  endif
+  assign card_pos = section.settings.card_image_position
+  if card_pos == blank or card_pos == 'inherit'
+    assign card_pos = settings.product_card_image_position | default: 'center'
+  endif
   assign card_bg = section.settings.card_image_bg | default: '#f8fafc'
   assign card_rad = section.settings.card_radius | default: 8
   assign pad_top_desk = section.settings.padding_top_desktop | default: 16
@@ -1777,33 +1785,38 @@
       "id": "card_aspect_ratio",
       "label": "Image Aspect Ratio",
       "options": [
+        { "value": "inherit", "label": "Use theme default (Product cards)" },
         { "value": "2 / 3", "label": "2:3 (1200x1800 Standard Portrait - Recommended)" },
         { "value": "3 / 4", "label": "3:4 (Standard Portrait)" },
         { "value": "4 / 5", "label": "4:5 (Classic Fashion)" },
-        { "value": "1 / 1", "label": "1:1 (Square)" }
+        { "value": "1 / 1", "label": "1:1 (Square)" },
+        { "value": "custom", "label": "Custom (theme width x height)" },
+        { "value": "natural", "label": "Natural Image Dimensions" }
       ],
-      "default": "2 / 3"
+      "default": "inherit"
     },
     {
       "type": "select",
       "id": "card_image_fit",
       "label": "Image Fit",
       "options": [
+        { "value": "inherit", "label": "Use theme default" },
         { "value": "contain", "label": "Contain - Full Garment Visible (Recommended)" },
         { "value": "cover", "label": "Cover - Crop to Fill Box" }
       ],
-      "default": "contain"
+      "default": "inherit"
     },
     {
       "type": "select",
       "id": "card_image_position",
       "label": "Image Position",
       "options": [
+        { "value": "inherit", "label": "Use theme default" },
         { "value": "center", "label": "Center" },
         { "value": "top", "label": "Top (Focus Collar / Neckline)" },
         { "value": "bottom", "label": "Bottom" }
       ],
-      "default": "center"
+      "default": "inherit"
     },
     {
       "type": "color",

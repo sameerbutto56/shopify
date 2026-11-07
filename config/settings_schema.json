@@ -1904,12 +1904,37 @@
             "label": "1:1 Square"
           },
           {
+            "value": "custom",
+            "label": "Custom (use width x height below)"
+          },
+          {
             "value": "adapt",
             "label": "Auto / Adapt to Original Image"
           }
         ],
         "default": "2_3",
         "info": "Standard 1200x1800px portrait ratio ensures all medical scrubs are presented uniformly across the website."
+      },
+      {
+        "type": "range",
+        "id": "product_thumb_width",
+        "label": "Custom Thumbnail Width (px)",
+        "min": 400,
+        "max": 2400,
+        "step": 100,
+        "default": 1200,
+        "visible_if": "{{ settings.product_card_aspect_ratio == 'custom' }}"
+      },
+      {
+        "type": "range",
+        "id": "product_thumb_height",
+        "label": "Custom Thumbnail Height (px)",
+        "min": 400,
+        "max": 3600,
+        "step": 100,
+        "default": 1800,
+        "visible_if": "{{ settings.product_card_aspect_ratio == 'custom' }}",
+        "info": "Only the width:height ratio is used for the frame. Images are never stretched."
       },
       {
         "type": "select",

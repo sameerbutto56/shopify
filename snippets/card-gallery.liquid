@@ -61,6 +61,10 @@
       assign ratio = '4 / 5'
     when 'square'
       assign ratio = '1'
+    when 'custom'
+      assign custom_w = settings.product_thumb_width | default: 1200
+      assign custom_h = settings.product_thumb_height | default: 1800
+      assign ratio = custom_w | append: ' / ' | append: custom_h
     when 'landscape'
       assign ratio = '16 / 9'
     when 'adapt'

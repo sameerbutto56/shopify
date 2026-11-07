@@ -15,6 +15,26 @@
   assign desc_text = section.settings.custom_desc | default: collection.description
 -%}
 
+{%- capture thumb_ratio -%}{%- render 'product-thumb-ratio' -%}{%- endcapture -%}
+{% style %}
+  #enamels-modular-collection-container .frubs-card-media-wrap {
+    aspect-ratio: {{ thumb_ratio }};
+    width: 100%;
+    overflow: hidden;
+    background-color: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #enamels-modular-collection-container .frubs-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ settings.product_card_image_fit | default: 'contain' }};
+    object-position: {{ settings.product_card_image_position | default: 'center' }};
+    display: block;
+  }
+{% endstyle %}
+
 <div class="page-container" style="padding: 40px 0 60px;" id="enamels-modular-collection-container">
   <!-- Collection Header -->
   <div class="categories-section-header" style="margin-bottom: 24px;">
