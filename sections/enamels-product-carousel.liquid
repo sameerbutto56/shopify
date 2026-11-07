@@ -41,6 +41,7 @@
   capture aspect_ratio_css
     render 'product-thumb-ratio', choice: section.settings.aspect_ratio
   endcapture
+  assign aspect_ratio_css = aspect_ratio_css | strip
 
   assign image_fit_css = section.settings.image_fit
   if image_fit_css == blank or image_fit_css == 'inherit'

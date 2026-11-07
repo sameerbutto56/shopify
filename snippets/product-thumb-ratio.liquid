@@ -1,4 +1,4 @@
-{% doc %}
+{%- doc -%}
   Outputs the CSS aspect-ratio for product thumbnails (no surrounding whitespace).
   Resolves a section-level choice, falling back to the theme-wide standard
   (Theme settings > Product cards, default 2:3 / 1200x1800).
@@ -7,7 +7,7 @@
 
   @example
   {% capture thumb_ratio %}{% render 'product-thumb-ratio', choice: section.settings.aspect_ratio %}{% endcapture %}
-{% enddoc %}
+{%- enddoc -%}
 {%- liquid
   assign thumb_choice = choice | default: 'inherit'
   if thumb_choice == 'inherit' or thumb_choice == ''

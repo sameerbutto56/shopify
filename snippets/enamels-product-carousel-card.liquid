@@ -76,6 +76,10 @@
       render 'product-thumb-ratio'
     endcapture
   endif
+  assign thumb_ratio = thumb_ratio | strip
+  if thumb_ratio == blank
+    assign thumb_ratio = '2 / 3'
+  endif
   assign thumb_fit = card_image_fit
   if thumb_fit == blank or thumb_fit == 'inherit'
     assign thumb_fit = settings.product_card_image_fit | default: 'contain'

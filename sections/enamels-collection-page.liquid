@@ -98,6 +98,7 @@
   capture card_aspect
     render 'product-thumb-ratio', choice: section.settings.card_aspect_ratio
   endcapture
+  assign card_aspect = card_aspect | strip
   assign card_fit = section.settings.card_image_fit
   if card_fit == blank or card_fit == 'inherit'
     assign card_fit = settings.product_card_image_fit | default: 'contain'

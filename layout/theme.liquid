@@ -55,6 +55,66 @@
         {% if settings.enamels_content_max_width != blank %}
           --page-content-max-width: {{ settings.enamels_content_max_width }}px;
         {% endif %}
+
+        {%- capture global_thumb_ratio -%}{%- render 'product-thumb-ratio' -%}{%- endcapture -%}
+        --product-thumbnail-aspect-ratio: {{ global_thumb_ratio | strip }};
+        --product-thumbnail-fit: {{ settings.product_card_image_fit | default: 'contain' }};
+        --product-thumbnail-pos: {{ settings.product_card_image_position | default: 'center' }};
+        --product-thumbnail-bg: {{ settings.product_card_image_bg | default: '#f8fafc' }};
+        --card-aspect-ratio: var(--product-thumbnail-aspect-ratio);
+        --card-image-fit: var(--product-thumbnail-fit);
+        --card-image-pos: var(--product-thumbnail-pos);
+        --gallery-aspect-ratio: var(--product-thumbnail-aspect-ratio);
+        --product-media-fit: var(--product-thumbnail-fit);
+        --product-media-position: var(--product-thumbnail-pos);
+      }
+
+      /* ============================================================ */
+      /* STANDARDIZED 1200x1800 (2:3 PORTRAIT) THUMBNAIL CONTAINERS   */
+      /* Ensures all product cards across all sections, grids &       */
+      /* carousels share identical dimensions without image distortion */
+      /* ============================================================ */
+      .enamels-carousel-card__media,
+      .enamels-cat-card__media,
+      .card-thumb-wrap,
+      .card-media-wrap,
+      .frubs-card-media-wrap,
+      .card-gallery,
+      .series-card-media-wrapper,
+      .enamels-lookbook-card__bg {
+        width: 100% !important;
+        aspect-ratio: var(--product-thumbnail-aspect-ratio, 2 / 3) !important;
+        position: relative !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: var(--product-thumbnail-bg, #f8fafc) !important;
+        box-sizing: border-box !important;
+      }
+
+      .enamels-carousel-card__media img,
+      .enamels-cat-card__media img,
+      .card-thumb-wrap img,
+      .card-media-wrap img,
+      .frubs-card-media-wrap img,
+      .card-gallery img,
+      .series-card-media-wrapper img,
+      .enamels-lookbook-card__bg img,
+      .card-img,
+      .card-img-primary,
+      .enamels-carousel-card__img,
+      .enamels-cat-card__primary-img,
+      .enamels-cat-card__secondary-img,
+      .frubs-card-img {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: var(--product-thumbnail-fit, contain) !important;
+        object-position: var(--product-thumbnail-pos, center) !important;
+        display: block !important;
+        margin: auto !important;
       }
     </style>
 
