@@ -959,6 +959,22 @@
           </div>
         </div>
 
+        <!-- Customer & Delivery Details (collected once; passed to checkout prefilled) -->
+        <div class="wiz-customer-details" id="wiz-customer-details" style="margin-bottom: 24px;">
+          <label class="form-label">Your Contact &amp; Delivery Details:</label>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
+            <input type="text" id="wiz-cd-name" class="wiz-cd-input" autocomplete="name" placeholder="Full name *" required>
+            <input type="tel" id="wiz-cd-phone" class="wiz-cd-input" autocomplete="tel" placeholder="Phone number *" required>
+            <input type="email" id="wiz-cd-email" class="wiz-cd-input" autocomplete="email" placeholder="Email *" required>
+            <input type="text" id="wiz-cd-city" class="wiz-cd-input" autocomplete="address-level2" placeholder="City *" required>
+            <input type="text" id="wiz-cd-address" class="wiz-cd-input" autocomplete="address-line1" placeholder="Complete delivery address *" required style="grid-column:1/-1;">
+            <input type="text" id="wiz-cd-province" class="wiz-cd-input" autocomplete="address-level1" placeholder="Province / State">
+            <input type="text" id="wiz-cd-zip" class="wiz-cd-input" autocomplete="postal-code" placeholder="Postal code">
+            <input type="text" id="wiz-cd-country" class="wiz-cd-input" autocomplete="country-name" placeholder="Country" value="Pakistan">
+          </div>
+          <p id="wiz-cd-error" role="alert" style="display:none; color:#dc2626; font-size:12px; margin:8px 0 0;"></p>
+        </div>
+
         <!-- Payment Method Selection -->
         <div class="payment-selection-block" style="margin-bottom: 24px;">
           <label class="form-label">Select Advance Payment Method:</label>
@@ -2022,6 +2038,9 @@
     margin: 0;
   }
 
+  .wiz-cd-input { width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; min-width: 0; }
+  .wiz-cd-input:focus { outline: 2px solid #008779; border-color: #008779; }
+  .wiz-cd-input.invalid { border-color: #dc2626; }
   .cod-restriction-notice {
     background: #fef2f2;
     border: 1px solid #fecaca;
@@ -2951,6 +2970,30 @@
       var btnText = btn ? btn.querySelector('.btn-submit-text') : null;
       var btnLoader = btn ? btn.querySelector('.btn-submit-loader') : null;
 
+      // Validate customer details (collected here so checkout can be prefilled)
+      var cdIds = { name: 'wiz-cd-name', phone: 'wiz-cd-phone', email: 'wiz-cd-email', city: 'wiz-cd-city', address: 'wiz-cd-address', province: 'wiz-cd-province', zip: 'wiz-cd-zip', country: 'wiz-cd-country' };
+      var cd = {};
+      Object.keys(cdIds).forEach(function(k) {
+        var el = document.getElementById(cdIds[k]);
+        cd[k] = el ? el.value.trim() : '';
+        if (el) el.classList.remove('invalid');
+      });
+      var cdErr = document.getElementById('wiz-cd-error');
+      var missing = ['name', 'phone', 'email', 'city', 'address'].filter(function(k) { return !cd[k]; });
+      var emailBad = cd.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cd.email);
+      if (missing.length || emailBad) {
+        missing.forEach(function(k) { document.getElementById(cdIds[k]).classList.add('invalid'); });
+        if (emailBad) document.getElementById(cdIds.email).classList.add('invalid');
+        if (cdErr) {
+          cdErr.textContent = emailBad && !missing.length ? 'Please enter a valid email address.' : 'Please fill in all required contact and delivery details.';
+          cdErr.style.display = 'block';
+        }
+        var firstBad = document.querySelector('.wiz-cd-input.invalid');
+        if (firstBad) firstBad.focus();
+        return;
+      }
+      if (cdErr) cdErr.style.display = 'none';
+
       if (btn) btn.disabled = true;
       if (btnText) btnText.style.display = 'none';
       if (btnLoader) btnLoader.style.display = 'inline-block';
@@ -3000,6 +3043,36 @@
       props['Delivery Destination'] = state.deliveryDest === 'intl' ? 'International Worldwide Dispatch (PKR 4,000 / unit)' : 'Pakistan Standard (PKR 250)';
       props['Advance Payment Rule'] = '100% Advance Payment Required — Cash on Delivery Not Allowed';
       props['Calculated Final Total'] = 'PKR ' + f.finalTotal.toLocaleString();
+      props['Customer Name'] = cd.name;
+      props['Customer Phone'] = cd.phone;
+      props['Customer Email'] = cd.email;
+      props['Delivery Address'] = cd.address + ', ' + cd.city + (cd.province ? ', ' + cd.province : '') + (cd.zip ? ' ' + cd.zip : '') + ', ' + (cd.country || 'Pakistan');
+      props['Payment Status'] = state.paymentMethod === 'card' ? 'Card — verified by Shopify gateway at checkout' : 'Bank Transfer — PENDING admin verification';
+
+      var cartAttrs = {
+        'Order Type': 'Customized Scrub',
+        'Payment Method': props['Payment Method'],
+        'Payment Status': props['Payment Status'],
+        'Customer Phone': cd.phone
+      };
+
+      // Prefill Shopify checkout so the customer never retypes contact/address details
+      function buildCheckoutUrl() {
+        var parts = ['checkout[email]=' + encodeURIComponent(cd.email)];
+        var nm = cd.name.split(/\s+/);
+        var first = nm.shift();
+        var last = nm.join(' ') || first;
+        var countryName = cd.country || 'Pakistan';
+        var addr = {
+          first_name: first, last_name: last, address1: cd.address, city: cd.city,
+          province: cd.province, zip: cd.zip, country: countryName, phone: cd.phone
+        };
+        Object.keys(addr).forEach(function(k) {
+          if (addr[k]) parts.push('checkout[shipping_address][' + k + ']=' + encodeURIComponent(addr[k]));
+        });
+        parts.push('note=' + encodeURIComponent('Customized Scrub — ' + props['Payment Status']));
+        return '/checkout?' + parts.join('&');
+      }
 
       var postData = {
         quantity: 1,
@@ -3008,28 +3081,46 @@
 
       function sendToCart(variantId) {
         postData.id = variantId;
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(postData)
+        fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
+        .then(function(r) { return r.json(); })
+        .then(function(cart) {
+          var others = (cart.items || []).filter(function(i) { return !(i.properties && i.properties['Customization Type']); });
+          if (others.length && !window.confirm('Your cart has other items. Customized scrubs use their own checkout, so the cart will be cleared first. Continue?')) {
+            throw new Error('cancelled');
+          }
+          return others.length ? fetch('/cart/clear.js', { method: 'POST' }) : null;
+        })
+        .then(function() {
+          return fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(postData)
+          });
         })
         .then(function(res) {
           if (!res.ok) throw new Error('Cart add response error');
           return res.json();
         })
         .then(function() {
-          if (btnLoader) btnLoader.textContent = '✓ Order Confirmed! Redirecting to Checkout...';
+          return fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ attributes: cartAttrs })
+          });
+        })
+        .then(function() {
+          if (btnLoader) btnLoader.textContent = state.paymentMethod === 'card' ? 'Redirecting to secure card payment...' : 'Opening secure checkout (select Bank Transfer)...';
           try {
             sessionStorage.setItem('enamels_payment_method', state.paymentMethod);
             sessionStorage.setItem('enamels_delivery_dest', state.deliveryDest);
           } catch(e) {}
-          setTimeout(function() {
-            window.location.href = '/checkout';
-          }, 500);
+          window.location.href = buildCheckoutUrl();
         })
         .catch(function(err) {
-          console.warn('Customizer cart submit fallback:', err);
-          window.location.href = '/cart';
+          if (btn) btn.disabled = false;
+          if (btnText) btnText.style.display = '';
+          if (btnLoader) btnLoader.style.display = 'none';
+          if (err && err.message !== 'cancelled') alert('Could not submit your customized order. Please try again.');
         });
       }
 
