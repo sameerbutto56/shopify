@@ -114,11 +114,14 @@
       </div>
       <div class="preview-mode-switch">
         <button type="button" class="btn-mode-tab active" id="tab-btn-cust" onclick="window.enamelsSwitchPreviewTab('cust')">
-          👤 Customer Order Confirmation View
+          👤 Customer Receipt View
         </button>
         <button type="button" class="btn-mode-tab" id="tab-btn-admin" onclick="window.enamelsSwitchPreviewTab('admin')">
-          🏢 Admin Order Details View (Enamels Operations Staff)
+          ✂️ Customize Orders Desk (Bespoke Specs)
         </button>
+        <a href="/pages/bulk-orders?admin=1" class="btn-mode-tab" style="text-decoration: none; display: inline-flex; align-items: center;">
+          🏥 Bulk Enquiries Desk →
+        </a>
       </div>
     </div>
 
@@ -327,34 +330,46 @@
           <div class="admin-section-block">
             <div class="sec-head">
               <span class="sec-num">5</span>
-              <h4 class="sec-title">Size and Measurements</h4>
+              <h4 class="sec-title">Gender, Fit & Measurements</h4>
             </div>
             <div class="sec-content-list">
-              <div class="admin-data-line"><span class="adl-k">Fit Model:</span><strong class="adl-v">Custom Tailored Fit (Bespoke Pattern Cut)</strong></div>
-              <div class="admin-data-line"><span class="adl-k">Top Length:</span><span class="adl-v">29.0 inches</span></div>
-              <div class="admin-data-line"><span class="adl-k">Chest Circumference:</span><span class="adl-v">42.0 inches</span></div>
-              <div class="admin-data-line"><span class="adl-k">Shoulder Width:</span><span class="adl-v">18.5 inches</span></div>
-              <div class="admin-data-line"><span class="adl-k">Sleeve Length:</span><span class="adl-v">9.5 inches</span></div>
-              <div class="admin-data-line"><span class="adl-k">Trouser Waist:</span><span class="adl-v">34.0 inches (Elasticated + Drawcord)</span></div>
-              <div class="admin-data-line"><span class="adl-k">Trouser Hips:</span><span class="adl-v">40.0 inches</span></div>
-              <div class="admin-data-line"><span class="adl-k">Trouser Inseam:</span><span class="adl-v">31.0 inches</span></div>
-              <div class="admin-data-line"><span class="adl-k">Upper Thigh:</span><span class="adl-v">24.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Selected Gender:</span><strong class="adl-v">Female (Women's Cut)</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Fit Silhouette:</span><strong class="adl-v text-teal">Slim Fit (Contoured Waist & Bust)</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Selected Size:</span><span class="adl-v">Medium (M) Standard Baseline</span></div>
+              <div class="admin-data-line"><span class="adl-k">Top Length:</span><span class="adl-v">27.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Chest / Bust:</span><span class="adl-v">37.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Shoulder Width:</span><span class="adl-v">15.5 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Sleeve Length:</span><span class="adl-v">7.5 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Trouser Waist:</span><span class="adl-v">29.0 inches (Elasticated + Drawcord)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Trouser Hips:</span><span class="adl-v">39.0 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Trouser Inseam:</span><span class="adl-v">29.5 inches</span></div>
+              <div class="admin-data-line"><span class="adl-k">Upper Thigh:</span><span class="adl-v">22.5 inches</span></div>
+              <div class="admin-data-line" style="grid-column: 1 / -1; background: #fffbeb; padding: 6px 10px; border-radius: 4px; border: 1px solid #fde68a;">
+                <span class="adl-k" style="color: #92400e;">Tailoring Directive:</span>
+                <span class="adl-v" style="color: #92400e; font-size: 11px;">Manufactured strictly per selected Slim Fit measurements and customer size chart.</span>
+              </div>
             </div>
           </div>
 
-          <!-- SECTION 6: Personalization -->
+          <!-- SECTION 6: Personalization & Logo -->
           <div class="admin-section-block">
             <div class="sec-head">
               <span class="sec-num">6</span>
-              <h4 class="sec-title">Personalization</h4>
+              <h4 class="sec-title">Personalization & Logo Files</h4>
             </div>
             <div class="sec-content-list">
-              <div class="admin-data-line"><span class="adl-k">Service Requested:</span><strong class="adl-v">Precision Name Embroidery + Crest</strong></div>
-              <div class="admin-data-line"><span class="adl-k">Embroidered Text:</span><span class="adl-v font-serif-highlight">"Dr. Sarah Ahmed, MD"</span></div>
-              <div class="admin-data-line"><span class="adl-k">Embroidery Font:</span><span class="adl-v">Serif Block Modern</span></div>
-              <div class="admin-data-line"><span class="adl-k">Thread Shade:</span><span class="adl-v">Silver Gray (Madeira Polyneon 1801)</span></div>
-              <div class="admin-data-line"><span class="adl-k">Text Placement:</span><span class="adl-v">Left Chest (1.5" Above Pen Pocket)</span></div>
-              <div class="admin-data-line"><span class="adl-k">Emblem Insignia:</span><span class="adl-v">Hospital Medical Crest (Left Arm Sleeve, 2.5")</span></div>
+              <div class="admin-data-line"><span class="adl-k">Engraving Line 1:</span><strong class="adl-v font-serif-highlight">"Dr. Sarah Ahmed, MD" (Required)</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Engraving Line 2:</span><span class="adl-v">"Consultant Cardiologist"</span></div>
+              <div class="admin-data-line"><span class="adl-k">Engraving Line 3:</span><span class="adl-v">"Head of Surgery Department" (+PKR 250)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Thread Color:</span><span class="adl-v"><span class="color-dot" style="background:#d4af37;"></span> Medical Gold (#d4af37)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Placement:</span><span class="adl-v">Left Chest (1.5" Above Pocket)</span></div>
+              <div class="admin-data-line"><span class="adl-k">Logo Source:</span><strong class="adl-v badge-teal">Uploaded Custom Logo File</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Attached File:</span><span class="adl-v font-mono">hospital-crest-lahore.svg (1.4 MB)</span></div>
+              <div class="admin-data-line" style="margin-top: 6px;">
+                <a href="#download-logo" onclick="alert('Downloading vector logo asset hospital-crest-lahore.svg for Tajima embroidery machine!'); return false;" style="display: inline-flex; align-items: center; gap: 4px; background: #008779; color: #fff; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 4px; text-decoration: none;">
+                  ⬇ Download Attached Logo Vector
+                </a>
+              </div>
             </div>
           </div>
 
@@ -379,15 +394,17 @@
           <div class="admin-section-block">
             <div class="sec-head">
               <span class="sec-num">8</span>
-              <h4 class="sec-title">Payment Information</h4>
+              <h4 class="sec-title">Payment Verification Status</h4>
             </div>
             <div class="sec-content-list">
-              <div class="admin-data-line"><span class="adl-k">Gateway Method:</span><strong class="adl-v">Online Bank Transfer (Direct Deposit)</strong></div>
-              <div class="admin-data-line"><span class="adl-k">Receiving Bank:</span><span class="adl-v">Meezan Bank Ltd</span></div>
+              <div class="admin-data-line"><span class="adl-k">Selected Gateway:</span><strong class="adl-v">Online Bank Transfer (Direct Deposit)</strong></div>
+              <div class="admin-data-line"><span class="adl-k">Payment Verification:</span><span class="adl-v badge-amber">⏳ Pending Bank Clearance & Call</span></div>
+              <div class="admin-data-line"><span class="adl-k">Card Payment Mode:</span><span class="adl-v" style="font-size:11px; color:#64748b;">(Card orders are auto-marked "✓ Gateway Verified")</span></div>
+              <div class="admin-data-line"><span class="adl-k">Receiving Bank:</span><span class="adl-v">Meezan Bank Ltd (Corporate Account)</span></div>
               <div class="admin-data-line"><span class="adl-k">Target IBAN:</span><span class="adl-v font-mono">PK55MEZN0001020304050607</span></div>
-              <div class="admin-data-line"><span class="adl-k">Customer Trans Ref:</span><span class="adl-v font-mono font-bold">FT261105894120</span></div>
+              <div class="admin-data-line"><span class="adl-k">Customer Ref / Proof:</span><span class="adl-v font-mono font-bold">FT261105894120 (Screenshot Received)</span></div>
               <div class="admin-data-line"><span class="adl-k">Advance Payment Rule:</span><span class="adl-v badge-blue">100% Advance Payment Enforced</span></div>
-              <div class="admin-data-line"><span class="adl-k">COD Allowed:</span><span class="adl-v badge-rose">No (Custom Goods Non-COD)</span></div>
+              <div class="admin-data-line"><span class="adl-k">COD Available:</span><span class="adl-v badge-rose">No (Custom Goods Non-COD)</span></div>
             </div>
           </div>
 

@@ -21,8 +21,13 @@
   assign height_tab = section.settings.banner_height_tablet | default: 520
   assign height_mob = section.settings.banner_height_mobile | default: 320
   assign banner_aspect = section.settings.custom_aspect_ratio | default: '2000 / 767'
+  assign banner_aspect_mob = section.settings.custom_aspect_ratio_mobile | default: 'same'
+  if banner_aspect_mob == 'same'
+    assign banner_aspect_mob = banner_aspect
+  endif
   assign image_fit = section.settings.image_fit | default: 'contain'
   assign image_pos = section.settings.image_position | default: 'center'
+  assign sizing_mode = section.settings.sizing_mode | default: 'aspect_ratio'
 
   assign autoplay = section.settings.autoplay
   if autoplay == nil
@@ -59,12 +64,14 @@
     --slider-h-tablet: {{ height_tab }}px;
     --slider-h-mobile: {{ height_mob }}px;
     --slider-aspect: {{ banner_aspect }};
+    --slider-aspect-mob: {{ banner_aspect_mob }};
+    --slider-sizing: {{ sizing_mode }};
     --slider-img-fit: {{ image_fit }};
     --slider-img-pos: {{ image_pos }};
   "
 >
   <div class="enamels-hero-slider__container{% if full_width %} enamels-hero-slider__container--full{% endif %}">
-    <div class="enamels-hero-slider__viewport" id="enamels-slider-viewport-{{ section.id }}">
+    <div class="enamels-hero-slider__viewport enamels-hero-slider__viewport--{{ sizing_mode }}" id="enamels-slider-viewport-{{ section.id }}">
       <div class="enamels-hero-slider__track" id="enamels-slider-track-{{ section.id }}">
         {% for block in section.blocks %}
           {% if block.type == 'slide' and block.settings.visible != false %}
@@ -98,7 +105,7 @@
                         src="{{ block.settings.image | image_url: width: 2000 }}"
                         alt="{{ alt_text }}"
                         class="enamels-hero-slider__img"
-                        style="object-fit: {{ image_fit }};"
+                        style="object-fit: var(--slider-img-fit, {{ image_fit }}); object-position: var(--slider-img-pos, {{ image_pos }});"
                         loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                         fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}"
                         width="1400"
@@ -114,7 +121,7 @@
                         src="{{ fallback | asset_url }}"
                         alt="{{ alt_text }}"
                         class="enamels-hero-slider__img"
-                        style="object-fit: {{ image_fit }};"
+                        style="object-fit: var(--slider-img-fit, {{ image_fit }}); object-position: var(--slider-img-pos, {{ image_pos }});"
                         loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                         fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}"
                         width="1400"
@@ -240,12 +247,14 @@
     user-select: none;
     -webkit-user-select: none;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
 
   .enamels-hero-slider__container {
     max-width: var(--slider-w-desktop, 2000px);
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0;
   }
 
   .enamels-hero-slider__container--full {
@@ -253,26 +262,41 @@
     padding: 0;
   }
 
+  /* Responsive Aspect Ratio Mode: Eliminates all vertical blank spaces / letterboxing */
   .enamels-hero-slider__viewport {
     position: relative;
     width: 100%;
-    height: var(--slider-h-desktop, 767px);
     aspect-ratio: var(--slider-aspect, 2000 / 767);
+    height: auto;
+    max-height: var(--slider-h-desktop, 767px);
+    min-height: 0;
     overflow: hidden;
     background-color: var(--slider-bg, #e8e8e8);
   }
 
+  /* Fixed Height Mode (when selected in Theme Settings) */
+  .enamels-hero-slider__viewport.enamels-hero-slider__viewport--fixed_height {
+    height: var(--slider-h-desktop, 767px);
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
   @media (max-width: 1024px) {
     .enamels-hero-slider__viewport {
+      max-height: var(--slider-h-tablet, 520px);
+    }
+    .enamels-hero-slider__viewport.enamels-hero-slider__viewport--fixed_height {
       height: var(--slider-h-tablet, 520px);
-      aspect-ratio: auto;
     }
   }
 
   @media (max-width: 767px) {
     .enamels-hero-slider__viewport {
+      aspect-ratio: var(--slider-aspect-mob, var(--slider-aspect, 2000 / 767));
+      max-height: var(--slider-h-mobile, 360px);
+    }
+    .enamels-hero-slider__viewport.enamels-hero-slider__viewport--fixed_height {
       height: var(--slider-h-mobile, 320px);
-      aspect-ratio: auto;
     }
   }
 
@@ -633,6 +657,17 @@
           }
         }
       });
+
+      document.addEventListener('shopify:section:load', function(event) {
+        if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+          initSlider();
+        }
+      });
+      document.addEventListener('shopify:section:select', function(event) {
+        if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+          initSlider();
+        }
+      });
     }
 
     if (document.readyState === 'loading') {
@@ -670,6 +705,16 @@
     {
       "type": "header",
       "content": "Hero Banner Sizing (2000x767 Standard)"
+    },
+    {
+      "type": "select",
+      "id": "sizing_mode",
+      "label": "Banner Sizing Mode",
+      "options": [
+        { "value": "aspect_ratio", "label": "Responsive Aspect Ratio (No-Gaps)" },
+        { "value": "fixed_height", "label": "Fixed Pixel Height (Manual)" }
+      ],
+      "default": "aspect_ratio"
     },
     {
       "type": "range",
@@ -714,7 +759,7 @@
     {
       "type": "select",
       "id": "custom_aspect_ratio",
-      "label": "Banner Aspect Ratio",
+      "label": "Banner Aspect Ratio Desktop",
       "options": [
         { "value": "2000 / 767", "label": "2.61:1 (2000x767 Standard Hero)" },
         { "value": "16 / 9", "label": "16:9 Landscape" },
@@ -723,6 +768,19 @@
         { "value": "auto", "label": "Auto / Adapt to Height" }
       ],
       "default": "2000 / 767"
+    },
+    {
+      "type": "select",
+      "id": "custom_aspect_ratio_mobile",
+      "label": "Banner Aspect Ratio Mobile",
+      "options": [
+        { "value": "same", "label": "Same as Desktop" },
+        { "value": "4 / 3", "label": "4:3 Proportional Mobile" },
+        { "value": "16 / 9", "label": "16:9 Mobile Wide" },
+        { "value": "1 / 1", "label": "1:1 Square Mobile" },
+        { "value": "auto", "label": "Auto / Adapt to Height" }
+      ],
+      "default": "same"
     },
     {
       "type": "select",

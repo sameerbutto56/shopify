@@ -106,10 +106,82 @@
       </div>
 
       <div class="enamels-fabric-grid">
-        <!-- Fabric 1 -->
-        <div class="enamels-fabric-card active" data-fabric-id="flex-twill" data-fabric-name="4-Way Flex Twill" data-fabric-fee="0">
+        <!-- Fabric 1: Crown -->
+        <div class="enamels-fabric-card active" data-fabric-id="crown" data-fabric-name="Crown™ Technical Clinical Fabric" data-fabric-fee="0">
           <div class="fabric-card-media">
-            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="4-Way Flex Twill" width="320" height="220" loading="eager">
+            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="Crown Technical Fabric" width="320" height="220" loading="eager">
+            <span class="fabric-badge">Crown Series</span>
+          </div>
+          <div class="fabric-card-body">
+            <div class="fabric-header">
+              <h4 class="fabric-title">Crown™ Clinical Fabric</h4>
+              <span class="fabric-price">+PKR 0</span>
+            </div>
+            <p class="fabric-desc">Signature Crown blend: 74% Poly, 20% Rayon, 6% Spandex. Highly durable, fluid-repellent, wrinkle-free weave designed for intensive hospital shifts.</p>
+            <div class="tech-tag-row">
+              <span class="tech-tag">Crown Colors</span>
+              <span class="tech-tag">4-Way Stretch</span>
+              <span class="tech-tag">Fluid Repellent</span>
+              <span class="tech-tag">Wrinkle-Free</span>
+            </div>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('crown', 'Crown™ Technical Clinical Fabric', 0, this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Fabric 2: Sprinter -->
+        <div class="enamels-fabric-card" data-fabric-id="sprinter" data-fabric-name="Sprinter™ Active Performance Weave" data-fabric-fee="350">
+          <div class="fabric-card-media">
+            <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Sprinter Performance Fabric" width="320" height="220" loading="lazy">
+            <span class="fabric-badge badge-pro">Sprinter Series</span>
+          </div>
+          <div class="fabric-card-body">
+            <div class="fabric-header">
+              <h4 class="fabric-title">Sprinter™ Active Weave</h4>
+              <span class="fabric-price">+PKR 350</span>
+            </div>
+            <p class="fabric-desc">High-motion athletic clinical knit: 85% Micro-Poly, 15% Spandex. Ultra-breathable, moisture-wicking and flexible for fast-paced ER and surgical teams.</p>
+            <div class="tech-tag-row">
+              <span class="tech-tag">Sprinter Colors</span>
+              <span class="tech-tag">Athletic Stretch</span>
+              <span class="tech-tag">Moisture Wicking</span>
+              <span class="tech-tag">Cooling</span>
+            </div>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('sprinter', 'Sprinter™ Active Performance Weave', 350, this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Fabric 3: Tender -->
+        <div class="enamels-fabric-card" data-fabric-id="tender" data-fabric-name="Tender™ Ultra-Soft Touch Microfiber" data-fabric-fee="450">
+          <div class="fabric-card-media">
+            <img src="{{ 'enamels-na-seagreen.jpg' | asset_url }}" alt="Tender Ultra-Soft Touch" width="320" height="220" loading="lazy">
+            <span class="fabric-badge badge-vip">Tender Series</span>
+          </div>
+          <div class="fabric-card-body">
+            <div class="fabric-header">
+              <h4 class="fabric-title">Tender™ Ultra-Soft Touch</h4>
+              <span class="fabric-price">+PKR 450</span>
+            </div>
+            <p class="fabric-desc">Butter-soft brushed microfiber: 70% Poly-Modal, 25% Rayon, 5% Lycra. Luxurious hand feel, gentle on sensitive skin during long 24-hour pediatric & clinical rounds.</p>
+            <div class="tech-tag-row">
+              <span class="tech-tag">Tender Colors</span>
+              <span class="tech-tag">Butter-Soft</span>
+              <span class="tech-tag">Hypoallergenic</span>
+              <span class="tech-tag">Silky Drape</span>
+            </div>
+            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('tender', 'Tender™ Ultra-Soft Touch Microfiber', 450, this)">
+              Select & Next →
+            </button>
+          </div>
+        </div>
+
+        <!-- Fabric 4: Flex Twill -->
+        <div class="enamels-fabric-card" data-fabric-id="flex-twill" data-fabric-name="4-Way Flex Twill" data-fabric-fee="0">
+          <div class="fabric-card-media">
+            <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="4-Way Flex Twill" width="320" height="220" loading="lazy">
             <span class="fabric-badge">Standard Included</span>
           </div>
           <div class="fabric-card-body">
@@ -119,8 +191,8 @@
             </div>
             <p class="fabric-desc">72% Polyester, 21% Rayon, 7% Spandex. Lightweight, wrinkle-free, breathable weave for dynamic clinical mobility.</p>
             <div class="tech-tag-row">
+              <span class="tech-tag">Flex Colors</span>
               <span class="tech-tag">4-Way Stretch</span>
-              <span class="tech-tag">Wrinkle-Free</span>
               <span class="tech-tag">Anti-Static</span>
               <span class="tech-tag">Breathable</span>
             </div>
@@ -130,10 +202,10 @@
           </div>
         </div>
 
-        <!-- Fabric 2 -->
+        <!-- Fabric 5: Aerocool -->
         <div class="enamels-fabric-card" data-fabric-id="aerocool" data-fabric-name="Aerocool™ Micro-Drape" data-fabric-fee="500">
           <div class="fabric-card-media">
-            <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Aerocool Micro-Drape" width="320" height="220" loading="lazy">
+            <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Aerocool Micro-Drape" width="320" height="220" loading="lazy">
             <span class="fabric-badge badge-pro">ICU & ER Grade</span>
           </div>
           <div class="fabric-card-body">
@@ -143,9 +215,9 @@
             </div>
             <p class="fabric-desc">88% Technical Micro-Poly, 12% Lycra with laser ventilation micropores. Antimicrobial fluid barrier, quick-dry performance.</p>
             <div class="tech-tag-row">
-              <span class="tech-tag">Ultra-Breathable</span>
+              <span class="tech-tag">Aerocool Colors</span>
               <span class="tech-tag">Anti-Microbial</span>
-              <span class="tech-tag">Fluid Repellent</span>
+              <span class="tech-tag">Fluid Barrier</span>
               <span class="tech-tag">Fast-Drying</span>
             </div>
             <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('aerocool', 'Aerocool™ Micro-Drape', 500, this)">
@@ -154,7 +226,7 @@
           </div>
         </div>
 
-        <!-- Fabric 3 -->
+        <!-- Fabric 6: Executive -->
         <div class="enamels-fabric-card" data-fabric-id="executive" data-fabric-name="Executive Heavyweight Stretch" data-fabric-fee="750">
           <div class="fabric-card-media">
             <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Executive Heavyweight Stretch" width="320" height="220" loading="lazy">
@@ -167,10 +239,10 @@
             </div>
             <p class="fabric-desc">65% Poly-Rayon, 30% Long-Staple Cotton, 5% Elastane. Holds an authoritative, sharp tailored drape through 24-hour rounds.</p>
             <div class="tech-tag-row">
+              <span class="tech-tag">Executive Colors</span>
               <span class="tech-tag">Autoclave Safe</span>
               <span class="tech-tag">Fade-Resistant</span>
               <span class="tech-tag">Crisp Drape</span>
-              <span class="tech-tag">Fluid Barrier</span>
             </div>
             <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('executive', 'Executive Heavyweight Stretch', 750, this)">
               Select & Next →
@@ -193,11 +265,14 @@
       <!-- Section A: Main Color -->
       <div class="color-selection-section">
         <div class="color-section-header">
-          <h4 class="sub-heading-title">A. Main Color</h4>
-          <span class="selected-shade-pill">Selected: <strong id="active-main-color-label">Ceil Blue</strong></span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h4 class="sub-heading-title" style="margin: 0;">A. Main Color</h4>
+            <span id="active-fabric-color-context" style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 2px 8px; border-radius: 999px;">Crown™ Colors</span>
+          </div>
+          <span class="selected-shade-pill">Selected: <strong id="active-main-color-label">Crown Ceil Blue</strong></span>
         </div>
 
-        <div class="enamels-swatch-circles-grid" role="radiogroup" aria-label="Main Scrub Color">
+        <div class="enamels-swatch-circles-grid" id="cust-swatch-circles-track" role="radiogroup" aria-label="Main Scrub Color">
           <button type="button" class="cust-swatch-circle active" data-color-name="Ceil Blue" data-color-hex="#6ba4b8" style="--swatch-bg: #6ba4b8;" title="Ceil Blue">
             <span class="swatch-check">✓</span>
           </button>
@@ -290,6 +365,26 @@
             <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#008779; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">🩺</span>
             <span>All Designs</span>
           </button>
+          <button type="button" class="design-cat-pill" data-col-handle="male" onclick="window.enamelsSwitchDesignCollection('male', 'Male Medical Scrubs')">
+            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#0f172a; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">👨</span>
+            <span>Male Scrubs</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="female" onclick="window.enamelsSwitchDesignCollection('female', 'Female Medical Scrubs')">
+            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#ec4899; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">👩</span>
+            <span>Female Scrubs</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="crown" onclick="window.enamelsSwitchDesignCollection('crown', 'Crown™ Series')">
+            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#0284c7; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">👑</span>
+            <span>Crown Series</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="velora" onclick="window.enamelsSwitchDesignCollection('velora', 'Velora™ Series')">
+            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#8b5cf6; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">★</span>
+            <span>Velora Series</span>
+          </button>
+          <button type="button" class="design-cat-pill" data-col-handle="sprinter" onclick="window.enamelsSwitchDesignCollection('sprinter', 'Sprinter™ Series')">
+            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#059669; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">⚡</span>
+            <span>Sprinter Series</span>
+          </button>
           {%- if design_collections_list != blank -%}
             {%- for col in design_collections_list -%}
               <button type="button" class="design-cat-pill" data-col-handle="{{ col.handle }}" onclick="window.enamelsSwitchDesignCollection('{{ col.handle }}', '{{ col.title | escape }}')">
@@ -300,36 +395,6 @@
                 {%- endif -%}
                 <span>{{ col.title }}</span>
               </button>
-            {%- endfor -%}
-          {%- else -%}
-            {%- comment -%} Discover article series from target_design_col.products {%- endcomment -%}
-            {%- assign wiz_detected_series = '' -%}
-            {%- for p in target_design_col.products -%}
-              {%- assign p_t_lower = p.title | downcase -%}
-              {%- for tag in p.tags -%}
-                {%- assign tag_l = tag | downcase -%}
-                {%- if tag_l contains 'series:' -%}
-                  {%- assign s_val = tag | split: ':' | last | strip -%}
-                  {%- unless wiz_detected_series contains s_val -%}
-                    {%- assign wiz_detected_series = wiz_detected_series | append: s_val | append: '::' -%}
-                  {%- endunless -%}
-                {%- endif -%}
-              {%- endfor -%}
-              {%- if p_t_lower contains 'crown' -%}{%- unless wiz_detected_series contains 'Crown' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Crown::' -%}{%- endunless -%}{%- endif -%}
-              {%- if p_t_lower contains 'velora' or p_t_lower contains 'vilora' -%}{%- unless wiz_detected_series contains 'Velora' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Velora::' -%}{%- endunless -%}{%- endif -%}
-              {%- if p_t_lower contains 'sprinter' -%}{%- unless wiz_detected_series contains 'Sprinter' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Sprinter::' -%}{%- endunless -%}{%- endif -%}
-              {%- if p_t_lower contains 'flexwell' -%}{%- unless wiz_detected_series contains 'Flexwell' -%}{%- assign wiz_detected_series = wiz_detected_series | append: 'Flexwell::' -%}{%- endunless -%}{%- endif -%}
-            {%- endfor -%}
-            {%- assign wiz_series_list = wiz_detected_series | split: '::' -%}
-            {%- for s in wiz_series_list -%}
-              {%- if s != blank -%}
-                {%- assign s_clean = s | strip -%}
-                {%- assign s_h = s_clean | downcase | replace: ' ', '-' -%}
-                <button type="button" class="design-cat-pill" data-col-handle="{{ s_h }}" onclick="window.enamelsSwitchDesignCollection('{{ s_h }}', '{{ s_clean }} Series')">
-                  <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#e0f2fe; color:#0369a1; border-radius:50%; width:32px; height:32px; font-weight:700; font-size:11px;">{{ s_clean | slice: 0, 2 | upcase }}</span>
-                  <span>{{ s_clean }} Series</span>
-                </button>
-              {%- endif -%}
             {%- endfor -%}
           {%- endif -%}
         </div>
@@ -354,6 +419,13 @@
                 assign prod_series_tag = 'sprinter'
               elsif prod_t_lower contains 'flexwell'
                 assign prod_series_tag = 'flexwell'
+              endif
+              
+              assign prod_gender = 'all'
+              if prod_t_lower contains 'women' or prod_t_lower contains 'female' or prod_t_lower contains 'ladies'
+                assign prod_gender = 'female'
+              elsif prod_t_lower contains 'men' or prod_t_lower contains 'male'
+                assign prod_gender = 'male'
               endif
               
               assign first_var = prod.selected_or_first_available_variant
@@ -381,6 +453,7 @@
               data-design-price="{{ p_price_num }}"
               data-design-img="{{ p_media_url }}"
               data-col="{{ prod_series_tag }}"
+              data-gender="{{ prod_gender }}"
               data-colors="{{ prod_colors_string | escape }}"
             >
               <div class="design-card-media">
@@ -417,24 +490,63 @@
     </div>
 
     <!-- =========================================================================
-         STEP 4: SIZE & FIT (STANDARD MEASUREMENTS & AUTO CUSTOM DETECTION)
+         STEP 4: SIZE & FIT (GENDER SELECTION, FEMALE 3-FIT SYSTEM, MEASUREMENTS)
          ========================================================================= -->
     <div class="enamels-wizard-pane" id="wizard-pane-4" data-step-index="4">
       <div class="enamels-pane-head">
         <span class="pane-eyebrow">Step 4 of 7</span>
         <h3 class="pane-title">Size & Fit Selection</h3>
-        <p class="pane-subtitle">Choose your size. The official Enamels measurement chart populates below. Altering any value automatically customizes your fit.</p>
+        <p class="pane-subtitle">Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut.</p>
       </div>
 
-      <!-- Size Selection Chips -->
+      <!-- 1. Gender Selector -->
+      <div class="form-group" style="margin-bottom: 18px;">
+        <label class="form-label">A. Select Gender:</label>
+        <div style="display: flex; gap: 12px;">
+          <button type="button" class="gender-pill active" id="gender-pill-male" onclick="window.enamelsSetGender('male')">
+            <span style="font-size: 16px;">👨</span> Male Scrubs
+          </button>
+          <button type="button" class="gender-pill" id="gender-pill-female" onclick="window.enamelsSetGender('female')">
+            <span style="font-size: 16px;">👩</span> Female Scrubs
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Female 3-Fit Selector (Dynamic when Female is selected) -->
+      <div id="female-fit-container" style="display: none; margin-bottom: 20px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 16px;">
+        <label class="form-label" style="margin-bottom: 8px;">B. Choose Female Fit Silhouette:</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <button type="button" class="female-fit-card active" id="ffit-slim" onclick="window.enamelsSetFemaleFit('slim')">
+            <strong style="display:block; font-size:13px; color:#102a43;">Slim Fit</strong>
+            <span style="font-size:11px; color:#64748b;">Tailored waist & contoured silhouette</span>
+          </button>
+          <button type="button" class="female-fit-card" id="ffit-regular" onclick="window.enamelsSetFemaleFit('regular')">
+            <strong style="display:block; font-size:13px; color:#102a43;">Regular Fit</strong>
+            <span style="font-size:11px; color:#64748b;">Standard clinical comfort drape</span>
+          </button>
+          <button type="button" class="female-fit-card" id="ffit-loose" onclick="window.enamelsSetFemaleFit('loose')">
+            <strong style="display:block; font-size:13px; color:#102a43;">Loose Fit</strong>
+            <span style="font-size:11px; color:#64748b;">Modest, roomier cut for extra mobility</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Mandatory Fit Notice Banner -->
+      <div class="enamels-mandatory-fit-notice" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 10px;">
+        <span style="font-size: 20px; line-height: 1;">⚠️</span>
+        <span style="font-size: 13px; font-weight: 700; color: #92400e; line-height: 1.45;">
+          Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements.
+        </span>
+      </div>
+
+      <!-- 4. Size Selection Chips -->
       <div class="size-chips-bar" role="radiogroup" aria-label="Standard Sizes">
-        <button type="button" class="size-chip-btn" data-size="XS" onclick="window.enamelsSelectStandardSize('XS')">XS</button>
-        <button type="button" class="size-chip-btn" data-size="S" onclick="window.enamelsSelectStandardSize('S')">S</button>
-        <button type="button" class="size-chip-btn active" data-size="M" onclick="window.enamelsSelectStandardSize('M')">M</button>
-        <button type="button" class="size-chip-btn" data-size="L" onclick="window.enamelsSelectStandardSize('L')">L</button>
+        <button type="button" class="size-chip-btn" data-size="S" onclick="window.enamelsSelectStandardSize('S')">Small (S)</button>
+        <button type="button" class="size-chip-btn active" data-size="M" onclick="window.enamelsSelectStandardSize('M')">Medium (M)</button>
+        <button type="button" class="size-chip-btn" data-size="L" onclick="window.enamelsSelectStandardSize('L')">Large (L)</button>
         <button type="button" class="size-chip-btn" data-size="XL" onclick="window.enamelsSelectStandardSize('XL')">XL</button>
         <button type="button" class="size-chip-btn" data-size="2XL" onclick="window.enamelsSelectStandardSize('2XL')">2XL</button>
-        <button type="button" class="size-chip-btn size-chip-custom" data-size="Custom" id="size-chip-custom-btn" onclick="window.enamelsSelectCustomDirectly()">Custom</button>
+        <button type="button" class="size-chip-btn size-chip-custom" data-size="Custom" id="size-chip-custom-btn" onclick="window.enamelsSelectCustomDirectly()">Custom Fit</button>
       </div>
 
       <!-- Measurements Container (Pre-populated from Enamels Size Chart) -->
@@ -561,13 +673,37 @@
 
         <!-- Name & Thread (Hidden when None) -->
         <div id="wiz-emb-fields-wrapper" style="display: none; margin-top: 24px;">
+          <!-- Line 1: Compulsory -->
           <div class="form-group">
-            <label for="wiz-cust-name" class="form-label">Doctor / Staff Name & Credentials:</label>
-            <input type="text" id="wiz-cust-name" class="form-input" placeholder="e.g. Dr. Sarah Ahmed, MD - Chief of Surgery" maxlength="45" oninput="window.enamelsUpdateEmbText(this.value)">
-            <span class="form-hint">Maximum 45 characters. Embroidered exactly as typed.</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label for="wiz-cust-name-1" class="form-label" style="margin: 0;">Line 1: Doctor / Staff Name:</label>
+              <span style="font-size: 11px; font-weight: 700; color: #e11d48; background: #ffe4e6; padding: 2px 8px; border-radius: 4px;">* Compulsory</span>
+            </div>
+            <input type="text" id="wiz-cust-name-1" class="form-input" placeholder="e.g. Dr. Sarah Ahmed, MD" maxlength="45" oninput="window.enamelsUpdateEmbLines()">
+            <span class="form-hint">Maximum 45 characters. Primary engraving line.</span>
           </div>
 
-          <div class="form-group" style="margin-top: 16px;">
+          <!-- Line 2: Optional -->
+          <div class="form-group" style="margin-top: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label for="wiz-cust-name-2" class="form-label" style="margin: 0;">Line 2: Title / Department / Hospital:</label>
+              <span style="font-size: 11px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">Optional</span>
+            </div>
+            <input type="text" id="wiz-cust-name-2" class="form-input" placeholder="e.g. Consultant Cardiologist" maxlength="45" oninput="window.enamelsUpdateEmbLines()">
+            <span class="form-hint">Appears directly beneath Line 1.</span>
+          </div>
+
+          <!-- Extra Dynamic Lines Container -->
+          <div id="wiz-extra-emb-lines-container" style="margin-top: 10px;"></div>
+
+          <!-- Add Line Button (+) -->
+          <div style="margin-top: 12px;">
+            <button type="button" class="btn-add-emb-line" id="btn-add-emb-line" onclick="window.enamelsAddExtraEmbLine()" style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1.5px dashed #008779; color: #008779; font-weight: 700; font-size: 12px; padding: 7px 14px; border-radius: 6px; cursor: pointer;">
+              <span>➕ Add Additional Engraving Line (+PKR 250)</span>
+            </button>
+          </div>
+
+          <div class="form-group" style="margin-top: 18px;">
             <label class="form-label">Thread Color:</label>
             <div class="thread-color-grid">
               <button type="button" class="thread-chip active" data-thread="Pure White" onclick="window.enamelsSetThread('Pure White', '#ffffff', this)">
@@ -597,11 +733,12 @@
             <div class="scrub-pocket-mockup">
               <div class="pocket-stitch-line"></div>
               <div class="preview-embroidered-text" id="wiz-emb-live-text">DR. SARAH AHMED, MD</div>
+              <div class="preview-embroidered-subtext" id="wiz-emb-live-subtext" style="font-size: 10px; opacity: 0.85; margin-top: 2px;"></div>
             </div>
           </div>
         </div>
 
-        <!-- Custom Logo Option (Dynamic from Shopify Collection or Product) -->
+        <!-- Custom Logo Option (Collection Logo or Custom File Upload) -->
         <div class="form-group" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
           <label class="form-label">Hospital / Clinic Logo Embroidery:</label>
           <div class="logo-options-grid">
@@ -620,15 +757,6 @@
                   <span>{{ logo_prod.title | escape }} (+PKR {{ logo_fee_num }})</span>
                 </label>
               {%- endfor -%}
-            {%- elsif logo_product != blank -%}
-              {%- assign logo_fee_num = logo_product.price | divided_by: 100 -%}
-              <label class="logo-chip" onclick="window.enamelsSetLogo('{{ logo_product.handle }}', {{ logo_fee_num }}, this)">
-                <input type="radio" name="wiz_logo_type" value="{{ logo_product.handle }}">
-                {%- if logo_product.featured_media != blank -%}
-                  <img src="{{ logo_product.featured_media | image_url: width: 60 }}" alt="{{ logo_product.title | escape }}" width="22" height="22" style="border-radius: 4px; object-fit: contain; vertical-align: middle; margin-right: 6px;">
-                {%- endif -%}
-                <span>{{ logo_product.title | escape }} (+PKR {{ logo_fee_num }})</span>
-              </label>
             {%- else -%}
               <label class="logo-chip" onclick="window.enamelsSetLogo('crest', 450, this)">
                 <input type="radio" name="wiz_logo_type" value="crest">
@@ -636,9 +764,41 @@
               </label>
               <label class="logo-chip" onclick="window.enamelsSetLogo('patch', 550, this)">
                 <input type="radio" name="wiz_logo_type" value="patch">
-                <span>Silicone Molded Logo Patch (+PKR 550)</span>
+                <span>Silicone Logo Patch (+PKR 550)</span>
               </label>
             {%- endif -%}
+            <!-- Upload Custom Logo File Option -->
+            <label class="logo-chip" onclick="window.enamelsSetLogo('custom_upload', 550, this)">
+              <input type="radio" name="wiz_logo_type" value="custom_upload">
+              <span>📎 Upload Custom Logo (+PKR 550)</span>
+            </label>
+          </div>
+
+          <!-- Custom Logo File Upload Box (Shown when custom_upload selected) -->
+          <div id="wiz-logo-upload-box" style="display: none; margin-top: 14px; background: #f8fafc; border: 1.5px dashed #008779; border-radius: 8px; padding: 16px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <span style="font-size: 24px;">📁</span>
+              <div style="flex: 1;">
+                <label for="wiz-logo-file-input" style="display: block; font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 4px;">
+                  Select Logo File (PNG, JPG, SVG, PDF • Max 10MB):
+                </label>
+                <input
+                  type="file"
+                  id="wiz-logo-file-input"
+                  accept=".png,.jpg,.jpeg,.svg,.pdf"
+                  onchange="window.enamelsHandleLogoFileUpload(this)"
+                  style="font-size: 12px; margin-top: 4px;"
+                >
+                <span class="form-hint">Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File is preserved for admin embroidery setup.</span>
+                <div id="wiz-logo-file-preview-strip" style="display: none; margin-top: 10px; align-items: center; gap: 10px; background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                  <img id="wiz-logo-thumb-preview" src="" alt="Logo Preview" style="width: 36px; height: 36px; object-fit: contain; border-radius: 4px; display: none;">
+                  <div style="font-size: 12px;">
+                    <strong id="wiz-logo-file-name" style="color: #102a43; display: block;">logo.png</strong>
+                    <span id="wiz-logo-file-size" style="color: #64748b; font-size: 11px;">1.2 MB • Ready for Admin Desk</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1338,6 +1498,60 @@
   }
 
   /* STEP 4: Size & Measurements */
+  .gender-pill {
+    padding: 10px 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 999px;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    color: #102a43;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .gender-pill:hover { border-color: #008779; background: #f0fdfa; }
+  .gender-pill.active {
+    border-color: #008779;
+    background: #008779;
+    color: #ffffff;
+  }
+
+  .female-fit-card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .female-fit-card:hover { border-color: #008779; }
+  .female-fit-card.active {
+    border-color: #008779;
+    background: #f0fdfa;
+    box-shadow: 0 0 0 1px #008779;
+  }
+
+  .extra-emb-line-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .btn-remove-emb-line {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
   .size-chips-bar {
     display: flex;
     flex-wrap: wrap;
@@ -1928,9 +2142,8 @@
 
 <script>
   (function initRebuiltCustomizer() {
-    // Official Enamels Size Chart (Inches)
-    var ENAMELS_SIZE_CHART = {
-      'XS': { topLength: 27, chest: 36, shoulder: 16.5, sleeve: 7.5, pantWaist: 28, pantHip: 37, pantInseam: 29, thigh: 22 },
+    // Official Enamels Male & Female Size Charts (Inches)
+    var ENAMELS_MALE_SIZE_CHART = {
       'S':  { topLength: 28, chest: 38, shoulder: 17.5, sleeve: 8.0, pantWaist: 30, pantHip: 39, pantInseam: 30, thigh: 23 },
       'M':  { topLength: 29, chest: 40, shoulder: 18.5, sleeve: 8.5, pantWaist: 33, pantHip: 42, pantInseam: 30.5, thigh: 24.5 },
       'L':  { topLength: 30, chest: 43, shoulder: 19.5, sleeve: 9.0, pantWaist: 36, pantHip: 45, pantInseam: 31, thigh: 26 },
@@ -1938,17 +2151,89 @@
       '2XL':{ topLength: 32, chest: 49, shoulder: 21.5, sleeve: 10.0, pantWaist: 44, pantHip: 51, pantInseam: 32, thigh: 29 }
     };
 
+    var ENAMELS_FEMALE_SLIM_CHART = {
+      'S':  { topLength: 26.0, chest: 35.0, shoulder: 15.0, sleeve: 7.0, pantWaist: 27.0, pantHip: 37.0, pantInseam: 29.0, thigh: 21.5 },
+      'M':  { topLength: 27.0, chest: 37.0, shoulder: 15.5, sleeve: 7.5, pantWaist: 29.0, pantHip: 39.0, pantInseam: 29.5, thigh: 22.5 },
+      'L':  { topLength: 28.0, chest: 40.0, shoulder: 16.5, sleeve: 8.0, pantWaist: 32.0, pantHip: 42.0, pantInseam: 30.0, thigh: 24.0 },
+      'XL': { topLength: 29.0, chest: 43.0, shoulder: 17.5, sleeve: 8.5, pantWaist: 35.0, pantHip: 45.0, pantInseam: 30.5, thigh: 25.5 },
+      '2XL':{ topLength: 30.0, chest: 46.0, shoulder: 18.5, sleeve: 9.0, pantWaist: 39.0, pantHip: 48.0, pantInseam: 31.0, thigh: 27.0 }
+    };
+
+    var ENAMELS_FEMALE_REGULAR_CHART = {
+      'S':  { topLength: 26.5, chest: 36.5, shoulder: 15.5, sleeve: 7.2, pantWaist: 28.0, pantHip: 38.0, pantInseam: 29.0, thigh: 22.0 },
+      'M':  { topLength: 27.5, chest: 38.5, shoulder: 16.0, sleeve: 7.7, pantWaist: 30.5, pantHip: 40.5, pantInseam: 29.5, thigh: 23.5 },
+      'L':  { topLength: 28.5, chest: 41.5, shoulder: 17.0, sleeve: 8.2, pantWaist: 33.5, pantHip: 43.5, pantInseam: 30.0, thigh: 25.0 },
+      'XL': { topLength: 29.5, chest: 44.5, shoulder: 18.0, sleeve: 8.7, pantWaist: 37.0, pantHip: 46.5, pantInseam: 30.5, thigh: 26.5 },
+      '2XL':{ topLength: 30.5, chest: 47.5, shoulder: 19.0, sleeve: 9.2, pantWaist: 41.0, pantHip: 49.5, pantInseam: 31.0, thigh: 28.0 }
+    };
+
+    var ENAMELS_FEMALE_LOOSE_CHART = {
+      'S':  { topLength: 27.5, chest: 38.5, shoulder: 16.0, sleeve: 7.5, pantWaist: 30.0, pantHip: 40.0, pantInseam: 29.5, thigh: 23.0 },
+      'M':  { topLength: 28.5, chest: 40.5, shoulder: 16.8, sleeve: 8.0, pantWaist: 32.5, pantHip: 42.5, pantInseam: 30.0, thigh: 24.5 },
+      'L':  { topLength: 29.5, chest: 43.5, shoulder: 17.8, sleeve: 8.5, pantWaist: 35.5, pantHip: 45.5, pantInseam: 30.5, thigh: 26.0 },
+      'XL': { topLength: 30.5, chest: 46.5, shoulder: 18.8, sleeve: 9.0, pantWaist: 39.0, pantHip: 48.5, pantInseam: 31.0, thigh: 27.5 },
+      '2XL':{ topLength: 31.5, chest: 49.5, shoulder: 19.8, sleeve: 9.5, pantWaist: 43.0, pantHip: 51.5, pantInseam: 31.5, thigh: 29.0 }
+    };
+
+    // Fabric-to-Color Mapping (Strict Dynamic Colors per Fabric)
+    var FABRIC_COLORS = {
+      'crown': [
+        { name: 'Crown Ceil Blue', hex: '#6ba4b8' },
+        { name: 'Crown Royal Navy', hex: '#0f172a' },
+        { name: 'Crown Hunter Green', hex: '#14532d' },
+        { name: 'Crown Burgundy', hex: '#581c87' },
+        { name: 'Crown Deep Charcoal', hex: '#27272a' },
+        { name: 'Crown Caribbean Blue', hex: '#0284c7' }
+      ],
+      'sprinter': [
+        { name: 'Sprinter Slate Blue', hex: '#475569' },
+        { name: 'Sprinter Obsidian Black', hex: '#18181b' },
+        { name: 'Sprinter Olive Moss', hex: '#3f4e3b' },
+        { name: 'Sprinter Wine', hex: '#4c0519' },
+        { name: 'Sprinter Steel Grey', hex: '#64748b' },
+        { name: 'Sprinter Atlantic Teal', hex: '#0f766e' }
+      ],
+      'tender': [
+        { name: 'Tender Lilac', hex: '#a855f7' },
+        { name: 'Tender Powder Blue', hex: '#93c5fd' },
+        { name: 'Tender Sage Green', hex: '#84cc16' },
+        { name: 'Tender Blush Pink', hex: '#f472b6' },
+        { name: 'Tender Soft Navy', hex: '#1e3a8a' },
+        { name: 'Tender Mauve', hex: '#a21caf' }
+      ],
+      'flex-twill': [
+        { name: 'Ceil Blue', hex: '#6ba4b8' },
+        { name: 'Royal Navy', hex: '#0f172a' },
+        { name: 'Obsidian Black', hex: '#18181b' },
+        { name: 'Olive Green', hex: '#3f4e3b' },
+        { name: 'Hunter Green', hex: '#14532d' },
+        { name: 'Burgundy', hex: '#581c87' }
+      ],
+      'aerocool': [
+        { name: 'Aerocool Sky', hex: '#38bdf8' },
+        { name: 'Aerocool Deep Navy', hex: '#0c4a6e' },
+        { name: 'Aerocool Carbon', hex: '#1c1917' },
+        { name: 'Aerocool Mint', hex: '#2dd4bf' }
+      ],
+      'executive': [
+        { name: 'Executive Midnight', hex: '#020617' },
+        { name: 'Executive Charcoal', hex: '#334155' },
+        { name: 'Executive Royal', hex: '#1e40af' },
+        { name: 'Executive Burgundy', hex: '#701a75' }
+      ]
+    };
+
     var state = {
       currentStep: 1,
       // Step 1: Fabric
       fabric: {
-        id: 'flex-twill',
-        name: '4-Way Flex Twill',
+        id: 'crown',
+        name: 'Crown™ Technical Clinical Fabric',
         fee: 0
       },
       // Step 2: Color & Contrast
       color: {
-        name: 'Ceil Blue',
+        name: 'Crown Ceil Blue',
         hex: '#6ba4b8'
       },
       contrast: {
@@ -1957,16 +2242,18 @@
       },
       // Step 3: Design
       collection: {
-        handle: 'vilora',
-        title: 'Vilora Collection'
+        handle: 'all',
+        title: 'All Clinical Scrubs'
       },
       design: {
-        id: 'des_vilora_vneck',
-        name: 'Vilora Luxury Micro-Drape V-Neck',
+        id: 'des_crown_vneck',
+        name: 'Crown Signature Clinical V-Neck Set',
         basePrice: 6400,
-        img: "{{ 'enamels-na-seagreen.jpg' | asset_url }}"
+        img: "{{ 'enamels-na-blue.jpg' | asset_url }}"
       },
       // Step 4: Size & Fit
+      gender: 'male', // 'male' or 'female'
+      femaleFit: 'slim', // 'slim', 'regular', 'loose'
       size: 'M',
       isCustomSize: false,
       unit: 'in',
@@ -1983,22 +2270,40 @@
       // Step 5: Personalization
       personalization: {
         placement: 'none',
-        name: '',
+        line1: '',
+        line2: '',
+        extraLines: [],
         thread: 'Pure White',
         fee: 0,
         logoType: 'none',
-        logoFee: 0
+        logoFee: 0,
+        logoFileName: '',
+        logoFileSize: '',
+        logoFileData: ''
       },
       // Step 7: Payment & Delivery
       deliveryDest: 'pk', // 'pk' or 'intl'
       paymentMethod: 'card' // 'card' or 'bank_transfer'
     };
 
+    function getActiveSizeChart() {
+      if (state.gender === 'female') {
+        if (state.femaleFit === 'slim') return ENAMELS_FEMALE_SLIM_CHART;
+        if (state.femaleFit === 'loose') return ENAMELS_FEMALE_LOOSE_CHART;
+        return ENAMELS_FEMALE_REGULAR_CHART;
+      }
+      return ENAMELS_MALE_SIZE_CHART;
+    }
+
     // Safe financial calculations
     function calculateFinancials() {
       var base = state.design.basePrice || 6400;
       var fabricFee = state.fabric.fee || 0;
-      var embFee = (state.personalization.fee || 0) + (state.personalization.logoFee || 0);
+      var extraLinesCount = state.personalization.extraLines.length;
+      var placementBaseFee = (state.personalization.placement !== 'none') ? (state.personalization.fee || 500) : 0;
+      var extraLinesFee = extraLinesCount * 250;
+      var logoFee = state.personalization.logoFee || 0;
+      var embFee = placementBaseFee + extraLinesFee + logoFee;
       var productValue = base + fabricFee;
 
       // Delivery
@@ -2009,10 +2314,8 @@
       var onlineDiscount = 0;
 
       if (state.paymentMethod === 'card') {
-        // 4% additional bank charges on (productValue + embFee)
         cardFee = Math.round((productValue + embFee) * 0.04);
       } else if (state.paymentMethod === 'bank_transfer') {
-        // 2% discount on product value only (never on delivery or other fees)
         onlineDiscount = Math.round(productValue * 0.02);
       }
 
@@ -2038,7 +2341,7 @@
       var rName = document.getElementById('rev-design-name');
       var rCol = document.getElementById('rev-col-name');
       var rBaseP = document.getElementById('rev-design-base-price');
-      if (rThumb) rThumb.src = state.design.img;
+      if (rThumb && state.design.img) rThumb.src = state.design.img;
       if (rName) rName.textContent = state.design.name;
       if (rCol) rCol.textContent = 'Collection: ' + state.collection.title;
       if (rBaseP) rBaseP.textContent = 'Base Price: PKR ' + state.design.basePrice.toLocaleString();
@@ -2060,7 +2363,8 @@
       var rSize = document.getElementById('rev-size-name');
       var rMText = document.getElementById('rev-measurements-text');
       if (rSize) {
-        rSize.textContent = state.isCustomSize ? 'Custom Tailored Fit' : 'Size ' + state.size + ' (Standard)';
+        var fitLabel = state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'MALE';
+        rSize.textContent = (state.isCustomSize ? 'Custom Tailored Fit' : 'Size ' + state.size) + ' (' + fitLabel + ')';
       }
       if (rMText) {
         var m = state.measurements;
@@ -2072,13 +2376,22 @@
       var rEmbFee = document.getElementById('rev-emb-fee');
       if (rEmbName) {
         var embParts = [];
-        if (state.personalization.placement !== 'none' && state.personalization.name) {
-          embParts.push('"' + state.personalization.name + '" (' + state.personalization.placement + ', ' + state.personalization.thread + ')');
+        if (state.personalization.placement !== 'none' && state.personalization.line1) {
+          var allLines = [state.personalization.line1];
+          if (state.personalization.line2) allLines.push(state.personalization.line2);
+          if (state.personalization.extraLines.length > 0) {
+            allLines = allLines.concat(state.personalization.extraLines);
+          }
+          embParts.push('Engraving: "' + allLines.join(' | ') + '" (' + state.personalization.placement + ', ' + state.personalization.thread + ')');
         }
         if (state.personalization.logoType !== 'none') {
-          embParts.push(state.personalization.logoType === 'crest' ? 'Hospital Crest Logo' : 'Silicone Logo Patch');
+          if (state.personalization.logoType === 'custom_upload') {
+            embParts.push('Custom Logo Uploaded: ' + (state.personalization.logoFileName || 'File attached'));
+          } else {
+            embParts.push(state.personalization.logoType === 'crest' ? 'Hospital Crest Emblem' : 'Silicone Logo Patch');
+          }
         }
-        rEmbName.textContent = embParts.length > 0 ? embParts.join(' + ') : 'None';
+        rEmbName.textContent = embParts.length > 0 ? embParts.join(' • ') : 'None';
       }
       if (rEmbFee) rEmbFee.textContent = f.embFee > 0 ? '+PKR ' + f.embFee.toLocaleString() : '+PKR 0';
 
@@ -2172,6 +2485,52 @@
       if (root) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    // 1. Dynamic Fabric-Based Color Swatches Renderer
+    function renderFabricColors(fabricId) {
+      var colors = FABRIC_COLORS[fabricId] || FABRIC_COLORS['crown'];
+      var track = document.getElementById('cust-swatch-circles-track');
+      var contextBadge = document.getElementById('active-fabric-color-context');
+      var colorLabel = document.getElementById('active-main-color-label');
+
+      if (contextBadge) {
+        var fLabel = state.fabric.name.split(' ')[0] || 'Crown';
+        contextBadge.textContent = fLabel + ' Colors Only';
+      }
+
+      if (track) {
+        track.innerHTML = '';
+        colors.forEach(function(c, idx) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'cust-swatch-circle' + (idx === 0 ? ' active' : '');
+          btn.setAttribute('data-color-name', c.name);
+          btn.setAttribute('data-color-hex', c.hex);
+          btn.style.setProperty('--swatch-bg', c.hex);
+          btn.title = c.name;
+          btn.innerHTML = '<span class="swatch-check">✓</span>';
+
+          btn.addEventListener('click', function() {
+            var allSwatches = track.querySelectorAll('.cust-swatch-circle');
+            allSwatches.forEach(function(s) { s.classList.remove('active'); });
+            btn.classList.add('active');
+            state.color.name = c.name;
+            state.color.hex = c.hex;
+            if (colorLabel) colorLabel.textContent = c.name;
+            updateReviewAndPaymentUI();
+          });
+
+          track.appendChild(btn);
+        });
+
+        // Pre-select first color belonging to the selected fabric
+        if (colors.length > 0) {
+          state.color.name = colors[0].name;
+          state.color.hex = colors[0].hex;
+          if (colorLabel) colorLabel.textContent = colors[0].name;
+        }
+      }
+    }
+
     // 1. Fabric Selection & Next
     window.enamelsSelectFabricAndNext = function(fabricId, fabricName, fee, btnEl) {
       state.fabric.id = fabricId;
@@ -2184,12 +2543,12 @@
         if (c.getAttribute('data-fabric-id') === fabricId) c.classList.add('active');
       });
 
+      renderFabricColors(fabricId);
       window.enamelsGoStep(2);
     };
 
     // 2. Color & Contrast Selection
     window.enamelsSaveColorsAndNext = function() {
-      // Validate that color is selected
       if (!state.color.name) {
         alert('Please choose a garment color.');
         return;
@@ -2211,11 +2570,16 @@
       var labelEl = document.getElementById('active-collection-title-display');
       if (labelEl) labelEl.textContent = colTitle;
 
-      // Filter design cards by collection
+      // Filter design cards by collection or category
       var cards = document.querySelectorAll('.enamels-design-card');
       cards.forEach(function(c) {
         var cardCol = c.getAttribute('data-col');
-        if (colHandle === 'all' || cardCol === colHandle) {
+        var cardGender = c.getAttribute('data-gender') || 'all';
+        if (colHandle === 'all') {
+          c.style.display = 'flex';
+        } else if (colHandle === 'male' || colHandle === 'female') {
+          c.style.display = (cardGender === colHandle || cardGender === 'all') ? 'flex' : 'none';
+        } else if (cardCol === colHandle) {
           c.style.display = 'flex';
         } else {
           c.style.display = 'none';
@@ -2252,8 +2616,45 @@
       window.enamelsGoStep(4);
     };
 
+    // 4. Gender Selection Handler
+    window.enamelsSetGender = function(genderKey) {
+      state.gender = genderKey;
+      var btnM = document.getElementById('gender-pill-male');
+      var btnF = document.getElementById('gender-pill-female');
+      var femaleContainer = document.getElementById('female-fit-container');
+
+      if (genderKey === 'female') {
+        if (btnM) btnM.classList.remove('active');
+        if (btnF) btnF.classList.add('active');
+        if (femaleContainer) femaleContainer.style.display = 'block';
+      } else {
+        if (btnM) btnM.classList.add('active');
+        if (btnF) btnF.classList.remove('active');
+        if (femaleContainer) femaleContainer.style.display = 'none';
+      }
+
+      // Re-populate active measurements
+      window.enamelsSelectStandardSize(state.size);
+    };
+
+    // 4. Female Fit Handler (Slim, Regular, Loose)
+    window.enamelsSetFemaleFit = function(fitKey) {
+      state.femaleFit = fitKey;
+      var cards = document.querySelectorAll('.female-fit-card');
+      cards.forEach(function(c) { c.classList.remove('active'); });
+      var target = document.getElementById('ffit-' + fitKey);
+      if (target) target.classList.add('active');
+
+      // Re-populate active measurements with new fit curve
+      window.enamelsSelectStandardSize(state.size);
+    };
+
     // 4. Size & Fit Selection (with Enamels Standard Size Chart & Auto Custom Detection)
     window.enamelsSelectStandardSize = function(sizeKey) {
+      if (sizeKey === 'Custom') {
+        window.enamelsSelectCustomDirectly();
+        return;
+      }
       state.size = sizeKey;
       state.isCustomSize = false;
 
@@ -2267,10 +2668,12 @@
       if (alertBox) alertBox.style.display = 'none';
 
       var heading = document.getElementById('m-chart-heading');
-      if (heading) heading.textContent = sizeKey + ' Standard Measurements';
+      if (heading) {
+        var fitContext = state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'MALE';
+        heading.textContent = sizeKey + ' Standard Measurements (' + fitContext + ')';
+      }
 
-      // Populate form with Enamels size chart values
-      var chart = ENAMELS_SIZE_CHART[sizeKey];
+      var chart = getActiveSizeChart()[sizeKey];
       if (chart) {
         state.measurements.topLength = chart.topLength;
         state.measurements.chest = chart.chest;
@@ -2281,14 +2684,23 @@
         state.measurements.pantInseam = chart.pantInseam;
         state.measurements.thigh = chart.thigh;
 
-        document.getElementById('wiz_m_top_length').value = chart.topLength;
-        document.getElementById('wiz_m_chest').value = chart.chest;
-        document.getElementById('wiz_m_shoulder').value = chart.shoulder;
-        document.getElementById('wiz_m_sleeve').value = chart.sleeve;
-        document.getElementById('wiz_m_pant_waist').value = chart.pantWaist;
-        document.getElementById('wiz_m_pant_hip').value = chart.pantHip;
-        document.getElementById('wiz_m_pant_inseam').value = chart.pantInseam;
-        document.getElementById('wiz_m_thigh').value = chart.thigh;
+        var elTL = document.getElementById('wiz_m_top_length');
+        var elCh = document.getElementById('wiz_m_chest');
+        var elSh = document.getElementById('wiz_m_shoulder');
+        var elSl = document.getElementById('wiz_m_sleeve');
+        var elPW = document.getElementById('wiz_m_pant_waist');
+        var elPH = document.getElementById('wiz_m_pant_hip');
+        var elPI = document.getElementById('wiz_m_pant_inseam');
+        var elTh = document.getElementById('wiz_m_thigh');
+
+        if (elTL) elTL.value = chart.topLength;
+        if (elCh) elCh.value = chart.chest;
+        if (elSh) elSh.value = chart.shoulder;
+        if (elSl) elSl.value = chart.sleeve;
+        if (elPW) elPW.value = chart.pantWaist;
+        if (elPH) elPH.value = chart.pantHip;
+        if (elPI) elPI.value = chart.pantInseam;
+        if (elTh) elTh.value = chart.thigh;
       }
 
       updateReviewAndPaymentUI();
@@ -2313,11 +2725,9 @@
       updateReviewAndPaymentUI();
     };
 
-    // Automatic Custom Size Detection: if user alters any measurement input
     window.enamelsHandleMeasurementInput = function(fieldKey, value) {
       state.measurements[fieldKey] = parseFloat(value) || value;
 
-      // Automatically switch to Custom if not already
       if (!state.isCustomSize) {
         state.isCustomSize = true;
         state.size = 'Custom';
@@ -2358,7 +2768,7 @@
       window.enamelsGoStep(5);
     };
 
-    // 5. Personalization
+    // 5. Personalization: Multi-Line Engraving & Logo
     window.enamelsSetPlacement = function(placement, fee, el) {
       state.personalization.placement = placement;
       state.personalization.fee = fee || 0;
@@ -2375,13 +2785,45 @@
       updateReviewAndPaymentUI();
     };
 
-    window.enamelsUpdateEmbText = function(text) {
-      state.personalization.name = text.trim();
-      var liveText = document.getElementById('wiz-emb-live-text');
-      if (liveText) {
-        liveText.textContent = text.trim() ? text.trim().toUpperCase() : 'YOUR NAME / TITLE';
-      }
+    window.enamelsUpdateEmbLines = function() {
+      var l1 = document.getElementById('wiz-cust-name-1');
+      var l2 = document.getElementById('wiz-cust-name-2');
+      state.personalization.line1 = l1 ? l1.value.trim() : '';
+      state.personalization.line2 = l2 ? l2.value.trim() : '';
+
+      // Collect any extra lines
+      var extraInputs = document.querySelectorAll('.extra-emb-input');
+      state.personalization.extraLines = [];
+      extraInputs.forEach(function(inp) {
+        if (inp.value.trim()) state.personalization.extraLines.push(inp.value.trim());
+      });
+
+      var live1 = document.getElementById('wiz-emb-live-text');
+      var live2 = document.getElementById('wiz-emb-live-subtext');
+      if (live1) live1.textContent = state.personalization.line1 ? state.personalization.line1.toUpperCase() : 'YOUR NAME / TITLE';
+      if (live2) live2.textContent = state.personalization.line2 ? state.personalization.line2 : '';
+
       updateReviewAndPaymentUI();
+    };
+
+    window.enamelsAddExtraEmbLine = function() {
+      var container = document.getElementById('wiz-extra-emb-lines-container');
+      if (!container) return;
+      var lineIdx = state.personalization.extraLines.length + 3; // Line 3, 4, etc.
+
+      var row = document.createElement('div');
+      row.className = 'extra-emb-line-row';
+      row.innerHTML = '<input type="text" class="form-input extra-emb-input" placeholder="Line ' + lineIdx + ': Additional engraving (+PKR 250)" maxlength="45" oninput="window.enamelsUpdateEmbLines()">' +
+                      '<button type="button" class="btn-remove-emb-line" onclick="window.enamelsRemoveExtraEmbLine(this)">✕</button>';
+
+      container.appendChild(row);
+      window.enamelsUpdateEmbLines();
+    };
+
+    window.enamelsRemoveExtraEmbLine = function(btn) {
+      var row = btn.closest('.extra-emb-line-row');
+      if (row) row.remove();
+      window.enamelsUpdateEmbLines();
     };
 
     window.enamelsSetThread = function(threadName, threadHex, el) {
@@ -2391,7 +2833,9 @@
       if (el) el.classList.add('active');
 
       var liveText = document.getElementById('wiz-emb-live-text');
+      var liveSub = document.getElementById('wiz-emb-live-subtext');
       if (liveText) liveText.style.color = threadHex;
+      if (liveSub) liveSub.style.color = threadHex;
 
       updateReviewAndPaymentUI();
     };
@@ -2404,10 +2848,71 @@
       chips.forEach(function(c) { c.classList.remove('active'); });
       if (el) el.classList.add('active');
 
+      var uploadBox = document.getElementById('wiz-logo-upload-box');
+      if (uploadBox) {
+        uploadBox.style.display = (logoType === 'custom_upload') ? 'block' : 'none';
+      }
+
+      updateReviewAndPaymentUI();
+    };
+
+    window.enamelsHandleLogoFileUpload = function(input) {
+      if (!input || !input.files || input.files.length === 0) return;
+      var file = input.files[0];
+
+      // Validate size <= 10MB
+      var maxBytes = 10 * 1024 * 1024;
+      if (file.size > maxBytes) {
+        alert('File size exceeds 10MB limit. Please upload a smaller image or vector file.');
+        input.value = '';
+        return;
+      }
+
+      // Validate allowed extensions
+      var ext = file.name.split('.').pop().toLowerCase();
+      var allowed = ['png', 'jpg', 'jpeg', 'svg', 'pdf'];
+      if (allowed.indexOf(ext) === -1) {
+        alert('Invalid file format. Allowed formats: PNG, JPG, SVG, PDF.');
+        input.value = '';
+        return;
+      }
+
+      var formattedSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      state.personalization.logoFileName = file.name;
+      state.personalization.logoFileSize = formattedSize;
+
+      var strip = document.getElementById('wiz-logo-file-preview-strip');
+      var nameEl = document.getElementById('wiz-logo-file-name');
+      var sizeEl = document.getElementById('wiz-logo-file-size');
+      var thumbEl = document.getElementById('wiz-logo-thumb-preview');
+
+      if (strip) strip.style.display = 'flex';
+      if (nameEl) nameEl.textContent = file.name;
+      if (sizeEl) sizeEl.textContent = formattedSize + ' • Ready for Admin Embroidery Desk';
+
+      if (thumbEl && (ext === 'png' || ext === 'jpg' || ext === 'jpeg' || ext === 'svg')) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          thumbEl.src = e.target.result;
+          thumbEl.style.display = 'block';
+          state.personalization.logoFileData = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else if (thumbEl) {
+        thumbEl.style.display = 'none';
+      }
+
       updateReviewAndPaymentUI();
     };
 
     window.enamelsSavePersonalizationAndNext = function() {
+      // Validate line 1 if placement is active
+      if (state.personalization.placement !== 'none' && !state.personalization.line1) {
+        alert('Please fill in compulsory Line 1 (Doctor / Staff Name) or select "None" for embroidery placement.');
+        var inp = document.getElementById('wiz-cust-name-1');
+        if (inp) inp.focus();
+        return;
+      }
       window.enamelsGoStep(6);
     };
 
@@ -2460,6 +2965,8 @@
         'Design Silhouette': state.design.name,
         'Main Color': state.color.name,
         'Contrast Option': state.contrast.name,
+        'Gender': state.gender === 'female' ? 'Female' : 'Male',
+        'Fit Style': state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'Male Standard Fit',
         'Size Fit': state.isCustomSize ? 'Custom Tailored Fit' : 'Standard ' + state.size,
         'Custom Sizing': state.isCustomSize ? 'Yes' : 'No'
       };
@@ -2470,17 +2977,26 @@
       props['Measurement Specs'] = 'Length ' + m.topLength + u + ', Chest ' + m.chest + u + ', Shoulder ' + m.shoulder + u + ', Sleeve ' + m.sleeve + u + ', Waist ' + m.pantWaist + u + ', Hips ' + m.pantHip + u + ', Inseam ' + m.pantInseam + u + ', Thigh ' + m.thigh + u;
 
       // Personalization
-      if (state.personalization.placement !== 'none' && state.personalization.name) {
-        props['Personalization Name'] = state.personalization.name;
+      if (state.personalization.placement !== 'none' && state.personalization.line1) {
+        props['Engraving Line 1 (Required)'] = state.personalization.line1;
+        if (state.personalization.line2) props['Engraving Line 2'] = state.personalization.line2;
+        if (state.personalization.extraLines.length > 0) {
+          props['Additional Engraving Lines'] = state.personalization.extraLines.join(' | ');
+        }
         props['Personalization Placement'] = state.personalization.placement;
         props['Thread Color'] = state.personalization.thread;
       }
       if (state.personalization.logoType !== 'none') {
-        props['Logo Option'] = state.personalization.logoType === 'crest' ? 'Hospital Crest (+PKR 450)' : 'Silicone Patch (+PKR 550)';
+        if (state.personalization.logoType === 'custom_upload') {
+          props['Logo Option'] = 'Uploaded Custom Logo (' + (state.personalization.logoFileName || 'File attached') + ')';
+          props['Logo File Attached'] = state.personalization.logoFileName + ' (' + state.personalization.logoFileSize + ')';
+        } else {
+          props['Logo Option'] = state.personalization.logoType === 'crest' ? 'Hospital Crest (+PKR 450)' : 'Silicone Patch (+PKR 550)';
+        }
       }
 
       // Payment & Delivery terms
-      props['Payment Method'] = state.paymentMethod === 'card' ? 'Card Payment (+4% Bank Charge)' : 'Online Bank Transfer (2% Product Discount Applied)';
+      props['Payment Method'] = state.paymentMethod === 'card' ? 'Card Payment (+4% Gateway Verified)' : 'Online Bank Transfer (2% Discount • Pending Verification)';
       props['Delivery Destination'] = state.deliveryDest === 'intl' ? 'International Worldwide Dispatch (PKR 4,000 / unit)' : 'Pakistan Standard (PKR 250)';
       props['Advance Payment Rule'] = '100% Advance Payment Required — Cash on Delivery Not Allowed';
       props['Calculated Final Total'] = 'PKR ' + f.finalTotal.toLocaleString();
@@ -2503,7 +3019,6 @@
         })
         .then(function() {
           if (btnLoader) btnLoader.textContent = '✓ Order Confirmed! Redirecting to Checkout...';
-          // Store payment instructions in sessionStorage
           try {
             sessionStorage.setItem('enamels_payment_method', state.paymentMethod);
             sessionStorage.setItem('enamels_delivery_dest', state.deliveryDest);
@@ -2518,7 +3033,6 @@
         });
       }
 
-      // Use actual selected variant ID from dynamic Shopify design product
       var finalVariantId = state.design.variantId;
       if (!finalVariantId) {
         var firstCard = document.querySelector('.enamels-design-card[data-variant-id]');
@@ -2547,20 +3061,6 @@
 
     // Initialize DOM handlers
     document.addEventListener('DOMContentLoaded', function() {
-      // Step 2 Color Swatches
-      var colorSwatches = document.querySelectorAll('.cust-swatch-circle');
-      var colorLabel = document.getElementById('active-main-color-label');
-      colorSwatches.forEach(function(swatch) {
-        swatch.addEventListener('click', function() {
-          colorSwatches.forEach(function(s) { s.classList.remove('active'); });
-          swatch.classList.add('active');
-          state.color.name = swatch.getAttribute('data-color-name');
-          state.color.hex = swatch.getAttribute('data-color-hex');
-          if (colorLabel) colorLabel.textContent = state.color.name;
-          updateReviewAndPaymentUI();
-        });
-      });
-
       // Step 2 Contrast Swatches
       var contrastSwatches = document.querySelectorAll('.contrast-swatch-circle');
       var contrastLabel = document.getElementById('active-contrast-label');
@@ -2584,11 +3084,15 @@
         });
       });
 
+      // Render default fabric colors for Crown
+      renderFabricColors('crown');
+
       // Pre-populate medium measurements on load
       window.enamelsSelectStandardSize('M');
     });
 
     if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      renderFabricColors('crown');
       updateReviewAndPaymentUI();
     }
   })();

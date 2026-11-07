@@ -234,6 +234,9 @@
 
 <style>
   #enamels-cats-{{ section.id }} {
+    --cats-visible-desk: {{ section.settings.cards_visible_desktop | default: 6 }};
+    --cats-visible-tab: {{ section.settings.cards_visible_tablet | default: 3 }};
+    --cats-visible-mob: {{ section.settings.cards_visible_mobile | default: 1.25 }};
     --cats-title-size-desk: {{ section.settings.title_size_desktop | default: 20 }}px;
     --cats-title-size-mob: {{ section.settings.title_size_mobile | default: 16 }}px;
     --cats-sub-size-desk: {{ section.settings.subtitle_size_desktop | default: 13 }}px;
@@ -437,8 +440,21 @@
   }
 
   .enamels-cat-card--carousel {
-    flex: 0 0 calc((100% - (var(--cats-gap-desk) * 5)) / 6);
-    min-width: 190px;
+    flex: 0 0 calc((100% - (var(--cats-gap-desk) * (var(--cats-visible-desk) - 1))) / var(--cats-visible-desk));
+    min-width: 0;
+  }
+
+  @media (max-width: 1024px) {
+    .enamels-cat-card--carousel {
+      flex: 0 0 calc((100% - (var(--cats-gap-desk) * (var(--cats-visible-tab) - 1))) / var(--cats-visible-tab));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .enamels-cat-card--carousel {
+      flex: 0 0 calc((100% - (var(--cats-gap-mob) * (var(--cats-visible-mob) - 1))) / var(--cats-visible-mob));
+      min-width: 160px;
+    }
   }
 
   .enamels-cat-card__content {
@@ -763,6 +779,22 @@
           }
         }
       });
+      document.addEventListener('shopify:section:load', function(event) {
+        if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+          initSection();
+        }
+      });
+      document.addEventListener('shopify:section:select', function(event) {
+        if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+          initSection();
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSection);
+    } else {
+      initSection();
     }
   })();
 </script>
@@ -911,6 +943,43 @@
     {
       "type": "header",
       "content": "Card Sizing & Layout (Desktop & Mobile)"
+    },
+    {
+      "type": "select",
+      "id": "cards_visible_desktop",
+      "label": "Visible Cards (Desktop Carousel)",
+      "options": [
+        { "value": "6", "label": "6 Cards Visible" },
+        { "value": "5", "label": "5 Cards Visible" },
+        { "value": "4", "label": "4 Cards Visible" },
+        { "value": "3", "label": "3 Cards Visible" },
+        { "value": "2", "label": "2 Cards Visible" },
+        { "value": "1", "label": "1 Card Visible" }
+      ],
+      "default": "6"
+    },
+    {
+      "type": "select",
+      "id": "cards_visible_tablet",
+      "label": "Visible Cards (Tablet Carousel)",
+      "options": [
+        { "value": "4", "label": "4 Cards Visible" },
+        { "value": "3", "label": "3 Cards Visible" },
+        { "value": "2", "label": "2 Cards Visible" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "cards_visible_mobile",
+      "label": "Visible Cards (Mobile Carousel)",
+      "options": [
+        { "value": "1", "label": "1 Card Visible" },
+        { "value": "1.25", "label": "1.25 Cards Visible" },
+        { "value": "1.5", "label": "1.5 Cards Visible" },
+        { "value": "2", "label": "2 Cards Visible" }
+      ],
+      "default": "1.25"
     },
     {
       "type": "range",

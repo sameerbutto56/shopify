@@ -1,21 +1,15 @@
 {% comment %}
-  Enamels Dedicated Multi-Category & Multi-Article Institutional Bulk Orders Workflow
-  Features:
-  - Part 2: Pure enquiry / quotation system (Zero fake sales orders, no cart redirect, no inventory deduction)
-  - Part 3: Multiple categories in one enquiry (Scrubs, Lab Coats, Caps, Accessories) with multi-select chips
-  - Part 4: Multiple articles under each selected category with independent selection
-  - Part 5: Independent size-wise breakdown (XS-2XL) per article with live auto-totals (article, category, grand total)
-  - Part 6: Enforced 10-unit minimum with live validation alerts & volume tier perks
-  - Part 7: Comprehensive customer details & review step, unique ref ID ENM-BLK-2026-XXXX, direct WhatsApp desk trigger
-  - Part 8: Admin Bulk Enquiry Management Dashboard with 8-state enquiry workflow & direct WhatsApp/Call actions
-  - Part 9: 100% mobile-first card layout with zero horizontal overflow
+  Enamels Simplified Institutional & Hospital Bulk Orders Workflow
+  Single-Page Form:
+  1. Dynamic Category dropdown (Scrubs, Lab Coats, Patient Gowns, Caps, Accessories, etc.)
+  2. Quantity selection ranges (10–20, 20–50, 50–100, 100–250, 250+)
+  3. Note: "If you want more products, please fill in your details below."
+  4. Customer contact form (Name, Organization, Phone/WhatsApp, Email, City, Notes)
+  5. Pure enquiry submission: No Shopify checkout, no payment, no inventory deduction.
+  6. Dedicated Bulk Orders Admin desk to review/proceed with enquiries.
 {% endcomment %}
 
 {%- liquid
-  assign min_qty = section.settings.min_order_quantity | default: 10
-  assign heading = section.settings.heading | default: 'Institutional & Hospital Bulk Orders' | strip
-  assign subtext = section.settings.subtext | default: 'Equip your clinic, hospital department, or medical faculty with Enamels premium tailored uniforms. Minimum order volume: 10 units across any combination of categories.' | strip
-  assign max_w = section.settings.container_max_width | default: 1060
   assign raw_wa = settings.whatsapp_number | default: '923011331133'
   assign wa_clean = raw_wa | replace: '+', '' | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', ''
 -%}
@@ -25,22 +19,24 @@
   <!-- Header Block -->
   <div class="bulk-workflow-header">
     <div class="bulk-badge-pill">
-      <span>🏥</span> INSTITUTIONAL & CLINICAL VOLUME PROGRAM
+      <span>🏥</span> INSTITUTIONAL & CLINICAL BULK PROGRAM
     </div>
-    <h1 class="bulk-main-heading">{{ heading }}</h1>
-    <p class="bulk-subheading">{{ subtext }}</p>
+    <h1 class="bulk-main-heading">Institutional & Hospital Bulk Order Enquiry</h1>
+    <p class="bulk-subheading">
+      Equip your clinic, hospital department, nursing faculty, or medical team with Enamels premium tailored scrubs and uniforms.
+    </p>
 
-    <!-- Admin / Staff Enquiry Desk Toggle -->
+    <!-- Admin / Staff Desk Toggle -->
     <div class="bulk-staff-toggle-bar">
       <button type="button" class="btn-staff-toggle" id="btn-toggle-admin-panel" onclick="window.enamelsToggleAdminBulkPanel()">
-        <span>👔 Enamels Staff: Review Logged Enquiries</span>
+        <span>👔 Enamels Staff: Bulk Enquiry Management Desk</span>
         <span class="staff-badge-count" id="staff-enquiry-badge-count">1</span>
       </button>
     </div>
   </div>
 
   <!-- =========================================================================
-       ADMIN BULK ENQUIRY MANAGEMENT DASHBOARD (Part 8)
+       ADMIN BULK ENQUIRY MANAGEMENT DASHBOARD
        Shown when staff toggles the button or ?admin=1 is in URL
        ========================================================================= -->
   <div class="enamels-admin-enquiry-panel" id="enamels-admin-enquiry-panel" style="display: none;">
@@ -48,7 +44,7 @@
       <div>
         <span class="admin-panel-tag">ENAMELS INTERNAL OPERATIONS DESK</span>
         <h3 class="admin-panel-title">Institutional Bulk Order Enquiries</h3>
-        <p class="admin-panel-sub">Review incoming institutional enquiries, size breakdowns, and manage quotation follow-up status.</p>
+        <p class="admin-panel-sub">Review incoming institutional enquiries, requested volume tiers, and manage quotation follow-up status.</p>
       </div>
       <button type="button" class="btn-close-admin-panel" onclick="window.enamelsToggleAdminBulkPanel()">✕ Close Panel</button>
     </div>
@@ -64,7 +60,6 @@
         <option value="Quotation Shared">Quotation Shared</option>
         <option value="Negotiation">Negotiation</option>
         <option value="Confirmed">Confirmed</option>
-        <option value="Rejected">Rejected</option>
         <option value="Closed">Closed</option>
       </select>
       <button type="button" class="btn-seed-sample" onclick="window.enamelsSeedSampleBulkEnquiry()">
@@ -72,396 +67,183 @@
       </button>
     </div>
 
-    <!-- Enquiry Cards List Container -->
-    <div class="admin-enquiries-list" id="admin-enquiries-list">
-      <!-- Dynamic enquiry cards rendered by JavaScript -->
-    </div>
+    <!-- Dynamic Enquiry Cards List -->
+    <div class="admin-enquiries-list" id="admin-enquiries-list"></div>
   </div>
 
   <!-- =========================================================================
-       CUSTOMER 5-STEP ENQUIRY WORKFLOW WIZARD
+       CUSTOMER SINGLE-PAGE INSTITUTIONAL BULK ENQUIRY FORM
        ========================================================================= -->
-  <div class="bulk-wizard-card" id="bulk-customer-wizard">
+  <div class="bulk-enquiry-card" id="bulk-customer-enquiry-form-card">
     
-    <!-- 5-Step Progress Stepper -->
-    <div class="bulk-stepper-track">
-      <button type="button" class="stepper-node active" id="snode-1" onclick="window.enamelsBulkGoStep(1)">
-        <span class="snode-num">1</span>
-        <span class="snode-text">Categories</span>
-      </button>
-      <div class="snode-sep"></div>
-
-      <button type="button" class="stepper-node" id="snode-2" onclick="window.enamelsBulkGoStep(2)">
-        <span class="snode-num">2</span>
-        <span class="snode-text">Articles</span>
-      </button>
-      <div class="snode-sep"></div>
-
-      <button type="button" class="stepper-node" id="snode-3" onclick="window.enamelsBulkGoStep(3)">
-        <span class="snode-num">3</span>
-        <span class="snode-text">Sizes & Quantities</span>
-      </button>
-      <div class="snode-sep"></div>
-
-      <button type="button" class="stepper-node" id="snode-4" onclick="window.enamelsBulkGoStep(4)">
-        <span class="snode-num">4</span>
-        <span class="snode-text">Contact Details</span>
-      </button>
-      <div class="snode-sep"></div>
-
-      <button type="button" class="stepper-node" id="snode-5" onclick="window.enamelsBulkGoStep(5)">
-        <span class="snode-num">5</span>
-        <span class="snode-text">Review & Submit</span>
-      </button>
+    <div class="bulk-enquiry-form-head">
+      <h2 class="form-title">Institutional Quotation & Bulk Request</h2>
+      <p class="form-desc">Fill in your requirements below. Our corporate relations team will prepare a formal customized quotation.</p>
     </div>
 
-    <!-- Live Grand Total Floating Badge -->
-    <div class="bulk-live-meter-strip" id="bulk-live-meter-strip">
-      <div class="meter-stat-group">
-        <span class="meter-stat-label">Total Enquiry Volume:</span>
-        <strong class="meter-stat-count" id="meter-grand-total">0 Units</strong>
-      </div>
-      <div class="meter-tier-badge" id="meter-tier-badge">
-        Minimum 10 Units Required
-      </div>
-    </div>
-
-    <!-- =======================================================================
-         STEP 1: MULTI-CATEGORY SELECTION (Part 3)
-         ======================================================================= -->
-    <div class="bulk-step-pane active" id="bulk-pane-1">
-      <div class="pane-headline">
-        <span class="pane-tag">Step 1 of 5</span>
-        <h2 class="pane-title">Select Uniform Categories</h2>
-        <p class="pane-desc">You can select one, two, or multiple categories in a single bulk enquiry. Click each category to add or remove it.</p>
+    <form id="enamels-bulk-enquiry-form" onsubmit="window.enamelsHandleBulkSubmit(event)">
+      
+      <!-- 1. Category Selection -->
+      <div class="bulk-field-group">
+        <label for="bulk-category-select" class="bulk-field-label">
+          1. Select Uniform Category <span class="req-star">*</span>
+        </label>
+        <select id="bulk-category-select" class="bulk-form-select" required onchange="window.enamelsUpdateBulkCategory(this.value)">
+          <option value="" disabled selected>— Choose Medical Apparel Category —</option>
+          <option value="Medical Scrubs (Sets / Tops / Pants)">Medical Scrubs (Sets, Tops & Cargo Trousers)</option>
+          <option value="Doctor & Consultant Lab Coats">Doctor & Consultant Lab Coats</option>
+          <option value="Patient Gowns & OT Drapes">Patient Gowns & Operating Theatre Drapes</option>
+          <option value="Surgical Scrub Caps">Surgical Scrub Caps & Headwear</option>
+          <option value="Medical Arm Sleeves & Accessories">Medical Arm Sleeves, Non-Slip Clogs & Accessories</option>
+          <option value="Complete Hospital Department Multi-Uniforms">Complete Hospital Department Package (Multiple Uniforms)</option>
+        </select>
+        <span class="field-hint">Select the primary apparel line required for your institution.</span>
       </div>
 
-      <!-- Active Selected Categories Chips Bar -->
-      <div class="selected-categories-chips-wrap" id="selected-categories-chips-wrap">
-        <span class="chips-label">Selected Categories (<span id="cat-chips-count">1</span>):</span>
-        <div class="chips-container" id="cat-chips-container">
-          <!-- Dynamic category chips -->
+      <!-- 2. Quantity Selection Ranges -->
+      <div class="bulk-field-group" style="margin-top: 22px;">
+        <label class="bulk-field-label">
+          2. Select Estimated Quantity Range <span class="req-star">*</span>
+        </label>
+        <div class="bulk-qty-pills-grid" role="radiogroup" aria-label="Quantity Range">
+          <label class="qty-range-pill active" onclick="window.enamelsSetQtyRange('10 – 20 Units', this)">
+            <input type="radio" name="bulk_qty_range" value="10 – 20 Units" checked>
+            <strong class="qty-pill-text">10 – 20 Units</strong>
+            <span class="qty-pill-sub">Clinic / Small Team</span>
+          </label>
+          <label class="qty-range-pill" onclick="window.enamelsSetQtyRange('20 – 50 Units', this)">
+            <input type="radio" name="bulk_qty_range" value="20 – 50 Units">
+            <strong class="qty-pill-text">20 – 50 Units</strong>
+            <span class="qty-pill-sub">Department Ward</span>
+          </label>
+          <label class="qty-range-pill" onclick="window.enamelsSetQtyRange('50 – 100 Units', this)">
+            <input type="radio" name="bulk_qty_range" value="50 – 100 Units">
+            <strong class="qty-pill-text">50 – 100 Units</strong>
+            <span class="qty-pill-sub">Specialty Hospital</span>
+          </label>
+          <label class="qty-range-pill" onclick="window.enamelsSetQtyRange('100 – 250 Units', this)">
+            <input type="radio" name="bulk_qty_range" value="100 – 250 Units">
+            <strong class="qty-pill-text">100 – 250 Units</strong>
+            <span class="qty-pill-sub">Large Medical Complex</span>
+          </label>
+          <label class="qty-range-pill" onclick="window.enamelsSetQtyRange('250+ Units', this)">
+            <input type="radio" name="bulk_qty_range" value="250+ Units">
+            <strong class="qty-pill-text">250+ Units</strong>
+            <span class="qty-pill-sub">Institutional Enterprise</span>
+          </label>
         </div>
       </div>
 
-      <!-- Categories Cards Grid -->
-      <div class="bulk-categories-grid">
-        
-        <!-- Category: Scrubs -->
-        <div class="bulk-cat-toggle-card selected" data-cat-id="scrubs" onclick="window.enamelsToggleCategory('scrubs')">
-          <div class="cat-card-check">✓</div>
-          <div class="cat-card-media">
-            <img src="{{ 'cat-men-scrubs.jpg' | asset_url }}" alt="Medical Scrubs" width="280" height="150" loading="lazy">
-          </div>
-          <div class="cat-card-body">
-            <h3 class="cat-card-title">Medical Scrubs</h3>
-            <p class="cat-card-desc">Surgical tops, joggers, and cargo scrub trousers in 4-way stretch antimicrobial fabrics.</p>
-            <span class="cat-card-action">✓ Category Selected</span>
-          </div>
-        </div>
-
-        <!-- Category: Lab Coats -->
-        <div class="bulk-cat-toggle-card" data-cat-id="lab_coats" onclick="window.enamelsToggleCategory('lab_coats')">
-          <div class="cat-card-check">✓</div>
-          <div class="cat-card-media">
-            <img src="{{ 'cat-labcoat.jpg' | asset_url }}" alt="Doctor & Lab Coats" width="280" height="150" loading="lazy">
-          </div>
-          <div class="cat-card-body">
-            <h3 class="cat-card-title">Doctor & Lab Coats</h3>
-            <p class="cat-card-desc">Consultant notched lapel coats, resident lab coats, and spill-resistant clinical white coats.</p>
-            <span class="cat-card-action">+ Click to Select</span>
-          </div>
-        </div>
-
-        <!-- Category: Caps -->
-        <div class="bulk-cat-toggle-card" data-cat-id="caps" onclick="window.enamelsToggleCategory('caps')">
-          <div class="cat-card-check">✓</div>
-          <div class="cat-card-media">
-            <img src="{{ 'banner-caps.jpg' | asset_url }}" alt="Surgical Scrub Caps" width="280" height="150" loading="lazy">
-          </div>
-          <div class="cat-card-body">
-            <h3 class="cat-card-title">Surgical Scrub Caps</h3>
-            <p class="cat-card-desc">Ergonomic tie-back and bouffant scrub caps with absorbent sweatband lining.</p>
-            <span class="cat-card-action">+ Click to Select</span>
-          </div>
-        </div>
-
-        <!-- Category: Accessories -->
-        <div class="bulk-cat-toggle-card" data-cat-id="accessories" onclick="window.enamelsToggleCategory('accessories')">
-          <div class="cat-card-check">✓</div>
-          <div class="cat-card-media">
-            <img src="{{ 'cat-clogs.jpg' | asset_url }}" alt="Accessories & Sleeves" width="280" height="150" loading="lazy">
-          </div>
-          <div class="cat-card-body">
-            <h3 class="cat-card-title">Accessories & Sleeves</h3>
-            <p class="cat-card-desc">Medical arm sleeves, non-slip theatre clogs, badge reels, and hospital accessories.</p>
-            <span class="cat-card-action">+ Click to Select</span>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="bulk-pane-actions" style="justify-content: flex-end;">
-        <button type="button" class="btn-bulk-step-next" id="btn-next-to-articles" onclick="window.enamelsBulkGoStep(2)">
-          <span>Next: Select Articles</span>
-          <span>→</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- =======================================================================
-         STEP 2: MULTI-ARTICLE SELECTION PER CATEGORY (Part 4)
-         ======================================================================= -->
-    <div class="bulk-step-pane" id="bulk-pane-2">
-      <div class="pane-headline">
-        <span class="pane-tag">Step 2 of 5</span>
-        <h2 class="pane-title">Select Articles for Each Category</h2>
-        <p class="pane-desc">Select the specific garment styles you require under each chosen category. You can choose multiple articles per category.</p>
-      </div>
-
-      <!-- Category Filter Tabs for Quick Jump -->
-      <div class="category-jump-tabs" id="article-category-jump-tabs">
-        <!-- Dynamic tabs generated by script -->
-      </div>
-
-      <!-- Articles Container Grouped by Selected Categories -->
-      <div class="category-articles-supergroup" id="category-articles-supergroup">
-        <!-- Injected dynamically per selected categories -->
-      </div>
-
-      <div class="bulk-pane-actions">
-        <button type="button" class="btn-bulk-step-prev" onclick="window.enamelsBulkGoStep(1)">← Back to Categories</button>
-        <button type="button" class="btn-bulk-step-next" id="btn-next-to-sizes" onclick="window.enamelsBulkGoStep(3)">
-          <span>Next: Sizes & Quantities</span>
-          <span>→</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- =======================================================================
-         STEP 3: MULTI-QUANTITY & SIZE BREAKDOWN (Part 5 & 6)
-         ======================================================================= -->
-    <div class="bulk-step-pane" id="bulk-pane-3">
-      <div class="pane-headline">
-        <span class="pane-tag">Step 3 of 5</span>
-        <h2 class="pane-title">Sizes & Volume Breakdown</h2>
-        <p class="pane-desc">Specify independent quantities across XS to 2XL for every chosen article. Minimum overall enquiry volume: 10 units.</p>
-      </div>
-
-      <!-- Volume Tier Perks Banner -->
-      <div class="bulk-tier-banner">
-        <div class="tier-pill-card active" id="tier-pill-1">
-          <span class="tp-lbl">Tier 1</span>
-          <strong class="tp-range">10 – 20 Units</strong>
-          <span class="tp-perk">Standard Wholesale Pricing • Departmental Packaging</span>
-        </div>
-        <div class="tier-pill-card" id="tier-pill-2">
-          <span class="tp-lbl">Tier 2</span>
-          <strong class="tp-range">21 – 40 Units</strong>
-          <span class="tp-perk">Volume Discount Tier • Priority Factory Batch</span>
-        </div>
-        <div class="tier-pill-card" id="tier-pill-3">
-          <span class="tp-lbl">Tier 3</span>
-          <strong class="tp-range">41 – 50+ Units</strong>
-          <span class="tp-perk">Enterprise Tier • Complimentary Custom Crest Embroidery</span>
-        </div>
-      </div>
-
-      <!-- Per-Article Size Steppers Cards Container -->
-      <div class="articles-size-breakdown-list" id="articles-size-breakdown-list">
-        <!-- Injected dynamically for each selected article -->
-      </div>
-
-      <!-- Minimum 10 Unit Alert Message -->
-      <div class="bulk-validation-alert" id="bulk-min-qty-alert" style="display: none;">
-        <span class="alert-icon">⚠️</span>
-        <div class="alert-text">
-          <strong>Minimum Volume Notice:</strong> The total bulk enquiry must contain at least 10 units across all selected articles. Current total: <span id="alert-current-total">0</span> units (Please add <span id="alert-needed-qty">10</span> more units).
-        </div>
-      </div>
-
-      <div class="bulk-pane-actions">
-        <button type="button" class="btn-bulk-step-prev" onclick="window.enamelsBulkGoStep(2)">← Back to Articles</button>
-        <button type="button" class="btn-bulk-step-next" id="btn-next-to-details" onclick="window.enamelsBulkGoStep(4)">
-          <span>Next: Contact Details</span>
-          <span>→</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- =======================================================================
-         STEP 4: CUSTOMER INFORMATION FORM (Part 7)
-         ======================================================================= -->
-    <div class="bulk-step-pane" id="bulk-pane-4">
-      <div class="pane-headline">
-        <span class="pane-tag">Step 4 of 5</span>
-        <h2 class="pane-title">Institutional Contact Details</h2>
-        <p class="pane-desc">Our uniforms team will use these contact details to review your specifications and send a formal wholesale quotation.</p>
-      </div>
-
-      <div class="bulk-form-grid">
-        <div class="form-group">
-          <label class="form-label" for="bulk-inp-name">Full Name <span class="req">*</span></label>
-          <input type="text" id="bulk-inp-name" class="form-control" placeholder="Dr. Sarah Ahmed" required />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="bulk-inp-hospital">Hospital / Clinic / Organization Name <span class="req">*</span></label>
-          <input type="text" id="bulk-inp-hospital" class="form-control" placeholder="Services Hospital / Shaukat Khanum" required />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="bulk-inp-phone">Phone Number <span class="req">*</span></label>
-          <input type="tel" id="bulk-inp-phone" class="form-control" placeholder="0300 8472910" required />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="bulk-inp-whatsapp">WhatsApp Number <span class="req">*</span></label>
-          <input type="tel" id="bulk-inp-whatsapp" class="form-control" placeholder="0300 8472910 (For receiving quote)" required />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="bulk-inp-email">Official Email Address</label>
-          <input type="email" id="bulk-inp-email" class="form-control" placeholder="sarah.ahmed@hospital.org.pk" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="bulk-inp-city">Delivery City <span class="req">*</span></label>
-          <input type="text" id="bulk-inp-city" class="form-control" placeholder="Lahore / Karachi / Islamabad / Peshawar" required />
-        </div>
-
-        <div class="form-group full-width">
-          <label class="form-label" for="bulk-inp-address">Department / Delivery Address</label>
-          <input type="text" id="bulk-inp-address" class="form-control" placeholder="Department of Cardiology, Main Block, 3rd Floor" />
-        </div>
-
-        <div class="form-group full-width">
-          <label class="form-label" for="bulk-inp-notes">Additional Requirements / Notes</label>
-          <textarea id="bulk-inp-notes" class="form-control" rows="3" placeholder="Enter custom embroidery crest preferences, specific fabric shades, delivery date constraints, or invoice requirements."></textarea>
-        </div>
-      </div>
-
-      <div class="bulk-pane-actions">
-        <button type="button" class="btn-bulk-step-prev" onclick="window.enamelsBulkGoStep(3)">← Back to Quantities</button>
-        <button type="button" class="btn-bulk-step-next" id="btn-next-to-review" onclick="window.enamelsBulkGoStep(5)">
-          <span>Next: Review & Submit</span>
-          <span>→</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- =======================================================================
-         STEP 5: REVIEW & ENQUIRY SUBMISSION (Part 7)
-         ======================================================================= -->
-    <div class="bulk-step-pane" id="bulk-pane-5">
-      <div class="pane-headline">
-        <span class="pane-tag">Step 5 of 5</span>
-        <h2 class="pane-title">Review Your Bulk Order Enquiry</h2>
-        <p class="pane-desc">Please verify your selections. Submitting this enquiry does not charge payment or place an order.</p>
-      </div>
-
-      <!-- Enquiry Reference Card -->
-      <div class="enquiry-ref-banner">
-        <div>
-          <span class="ref-sub-title">Generated Enquiry Reference</span>
-          <strong class="ref-code" id="rev-ref-id-code">ENM-BLK-2026-XXXX</strong>
-        </div>
-        <div class="ref-type-tag">
-          Official Institutional Quotation Request
-        </div>
-      </div>
-
-      <!-- Itemized Category & Article Breakdown Table -->
-      <div class="review-table-card">
-        <h3 class="review-card-heading">Selected Categories & Size Quantities</h3>
-        <div id="review-breakdown-table-container">
-          <!-- Populated dynamically with category, article, and size rows -->
-        </div>
-
-        <!-- Grand Total Strip -->
-        <div class="review-grand-total-row">
-          <span>Overall Enquiry Quantity:</span>
-          <strong id="rev-grand-total-units">0 Units</strong>
-        </div>
-      </div>
-
-      <!-- Customer Summary Card -->
-      <div class="review-contact-card">
-        <h3 class="review-card-heading">Contact & Hospital Specifications</h3>
-        <div class="review-contact-grid">
-          <div><span class="rc-k">Full Name:</span> <strong class="rc-v" id="rev-name-val">-</strong></div>
-          <div><span class="rc-k">Organization:</span> <strong class="rc-v" id="rev-hospital-val">-</strong></div>
-          <div><span class="rc-k">Phone:</span> <strong class="rc-v" id="rev-phone-val">-</strong></div>
-          <div><span class="rc-k">WhatsApp:</span> <strong class="rc-v" id="rev-whatsapp-val">-</strong></div>
-          <div><span class="rc-k">City:</span> <strong class="rc-v" id="rev-city-val">-</strong></div>
-          <div><span class="rc-k">Email:</span> <span class="rc-v" id="rev-email-val">-</span></div>
-          <div class="full-col"><span class="rc-k">Address:</span> <span class="rc-v" id="rev-address-val">-</span></div>
-          <div class="full-col"><span class="rc-k">Notes:</span> <span class="rc-v" id="rev-notes-val">None</span></div>
-        </div>
-      </div>
-
-      <!-- Non-Binding Business Rule Notice (Part 2) -->
-      <div class="zero-obligation-box">
-        <div class="zo-icon">🔒</div>
-        <div class="zo-text">
-          <strong>Zero-Obligation Quotation Request:</strong>
-          This form is an institutional enquiry, not a paid checkout order. No payment is charged and no inventory is deducted. Our sales team will contact you via phone or WhatsApp to finalize volume discounts, provide physical sample swatches if required, and confirm production delivery timelines.
-        </div>
-      </div>
-
-      <div class="bulk-pane-actions">
-        <button type="button" class="btn-bulk-step-prev" onclick="window.enamelsBulkGoStep(4)">← Back to Details</button>
-        <button type="button" class="btn-submit-enquiry-final" id="btn-submit-enquiry-final" onclick="window.enamelsSubmitBulkEnquiry()">
-          <span>Submit Bulk Enquiry</span>
-          <span>✓</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- =======================================================================
-         SUCCESS SCREEN (Part 7)
-         ======================================================================= -->
-    <div class="bulk-step-pane" id="bulk-pane-success" style="display: none;">
-      <div class="success-screen-card">
-        <div class="success-emoji">🎉</div>
-        <h2 class="success-title">Bulk Order Enquiry Received!</h2>
-        
-        <p class="success-official-msg">
-          "Thank you for contacting Enamels for a bulk order. Your enquiry has been received successfully. Our team will contact you through phone or WhatsApp to discuss your requirements and finalize your order."
-        </p>
-
-        <div class="success-meta-box">
-          <div class="meta-item">
-            <span class="meta-k">Enquiry Reference Number:</span>
-            <strong class="meta-v" id="success-ref-id">ENM-BLK-2026-XXXX</strong>
-          </div>
-          <div class="meta-item">
-            <span class="meta-k">Total Garment Units:</span>
-            <strong class="meta-v" id="success-total-units">0 Units</strong>
-          </div>
-          <div class="meta-item">
-            <span class="meta-k">Follow-Up Channel:</span>
-            <strong class="meta-v">Official Enamels WhatsApp / Phone Desk</strong>
-          </div>
-        </div>
-
-        <div class="success-wa-trigger-box">
-          <p class="wa-trigger-lead">
-            For expedited wholesale quotation processing, you can connect directly with our institutional desk:
+      <!-- 3. Prominent Customer Note Banner -->
+      <div class="bulk-friendly-note-banner">
+        <span class="banner-icon">💡</span>
+        <div class="banner-content">
+          <strong class="banner-title">Need custom sizes, multiple colors, or more products?</strong>
+          <p class="banner-text">
+            If you want more products, custom color piping, hospital logos, or specific size distributions, please fill in your details below and specify them in the notes field.
           </p>
-          <a href="#" id="success-wa-direct-btn" target="_blank" class="btn-direct-wa-desk">
-            <span>💬 Connect on WhatsApp with Reference #</span>
-          </a>
+        </div>
+      </div>
+
+      <!-- 4. Customer & Institutional Details -->
+      <div class="bulk-form-grid" style="margin-top: 24px;">
+        <!-- Full Name -->
+        <div class="bulk-field-group">
+          <label for="bulk-cust-name" class="bulk-field-label">
+            Contact Person Full Name <span class="req-star">*</span>
+          </label>
+          <input type="text" id="bulk-cust-name" class="bulk-form-input" placeholder="e.g. Dr. Muhammad Usman / Administrator" required>
         </div>
 
-        <div class="success-back-row">
-          <button type="button" class="btn-reset-workflow" onclick="window.enamelsResetBulkWorkflow()">
-            + Submit Another Enquiry
-          </button>
-          <a href="/" class="btn-return-storefront">
-            Return to Storefront
+        <!-- Organization / Hospital -->
+        <div class="bulk-field-group">
+          <label for="bulk-org-name" class="bulk-field-label">
+            Hospital / Clinic / Organization Name <span class="req-star">*</span>
+          </label>
+          <input type="text" id="bulk-org-name" class="bulk-form-input" placeholder="e.g. Shaukat Khanum Memorial / Doctors Hospital" required>
+        </div>
+
+        <!-- Phone / WhatsApp -->
+        <div class="bulk-field-group">
+          <label for="bulk-phone" class="bulk-field-label">
+            Phone / WhatsApp Number <span class="req-star">*</span>
+          </label>
+          <input type="tel" id="bulk-phone" class="bulk-form-input" placeholder="e.g. 0300 1234567 or +92 300 1234567" required>
+          <span class="field-hint">Our verification officer will contact you on this number.</span>
+        </div>
+
+        <!-- Email -->
+        <div class="bulk-field-group">
+          <label for="bulk-email" class="bulk-field-label">
+            Email Address <span class="req-star">*</span>
+          </label>
+          <input type="email" id="bulk-email" class="bulk-form-input" placeholder="e.g. procurement@hospital.org.pk" required>
+        </div>
+
+        <!-- City / Location -->
+        <div class="bulk-field-group" style="grid-column: 1 / -1;">
+          <label for="bulk-city" class="bulk-field-label">
+            City / Location <span class="req-star">*</span>
+          </label>
+          <input type="text" id="bulk-city" class="bulk-form-input" placeholder="e.g. Lahore, Karachi, Islamabad, Peshawar, Rawalpindi" required>
+        </div>
+
+        <!-- Additional Notes / Requirements -->
+        <div class="bulk-field-group" style="grid-column: 1 / -1;">
+          <label for="bulk-notes" class="bulk-field-label">
+            Additional Requirements & Notes:
+          </label>
+          <textarea
+            id="bulk-notes"
+            class="bulk-form-textarea"
+            rows="4"
+            placeholder="Please mention any specific colors (Navy, Ceil Blue, Burgundy), fabric choices (Crown, Sprinter, Tender), hospital logo embroidery requirements, or required delivery timeline."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Submit Action Button -->
+      <div class="bulk-action-row" style="margin-top: 28px;">
+        <button type="submit" class="btn-submit-bulk-enquiry" id="btn-submit-bulk">
+          <span class="btn-text">Submit Bulk Order Enquiry →</span>
+          <span class="btn-subtext">No Payment or Checkout Required • Pure Quotation Request</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Instant Success Confirmation Card (Hidden by default, shown on submit) -->
+    <div class="bulk-success-card" id="bulk-success-card" style="display: none;">
+      <div class="success-icon-badge">✓</div>
+      <h3 class="success-title">Institutional Bulk Enquiry Received!</h3>
+      <div class="success-ref-pill">
+        Reference ID: <strong id="success-ref-id">ENM-BLK-2026-9481</strong>
+      </div>
+      <p class="success-body">
+        Thank you for choosing Enamels! Your bulk order enquiry has been logged successfully with our institutional desk. Our corporate account manager will contact you within one working day with formal pricing, digital fabric swatches, and quotation terms.
+      </p>
+      
+      {% if wa_clean != blank %}
+        <div class="success-wa-action-box">
+          <p style="font-size: 13px; color: #102a43; font-weight: 600; margin: 0 0 8px;">
+            Want immediate assistance? Connect directly with our institutional desk on WhatsApp:
+          </p>
+          <a
+            href="#"
+            id="btn-success-wa-link"
+            class="btn-success-whatsapp"
+            target="_blank"
+            rel="noopener"
+          >
+            💬 Chat on WhatsApp with Reference #<span id="wa-link-ref-id">ENM-BLK-2026-9481</span>
           </a>
         </div>
+      {% endif %}
+
+      <div style="margin-top: 24px;">
+        <button type="button" class="btn-reset-bulk" onclick="window.enamelsResetBulkForm()">
+          ← Submit Another Enquiry
+        </button>
       </div>
     </div>
 
@@ -471,78 +253,72 @@
 
 <style>
   .enamels-bulk-workflow-wrapper {
-    max-width: {{ max_w }}px;
-    margin: 0 auto;
-    padding: 20px 16px 60px;
+    width: 100%;
+    max-width: 860px;
+    margin: 24px auto 60px;
+    padding: 0 16px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #102a43;
     box-sizing: border-box;
   }
 
   .bulk-workflow-header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
-
   .bulk-badge-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: rgba(0, 135, 121, 0.08);
+    background: #e6fffa;
+    border: 1px solid #99f6e4;
     color: #008779;
-    border: 1px solid rgba(0, 135, 121, 0.25);
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 11.5px;
+    font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    letter-spacing: 0.08em;
+    padding: 4px 14px;
+    border-radius: 999px;
+    margin-bottom: 12px;
   }
-
   .bulk-main-heading {
-    font-size: 32px;
+    font-size: clamp(22px, 3.5vw, 32px);
     font-weight: 800;
     color: #102a43;
-    margin: 0 0 10px;
-    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0 0 8px;
   }
-
   .bulk-subheading {
-    font-size: 15px;
+    font-size: 14px;
     color: #64748b;
-    max-width: 680px;
+    max-width: 640px;
     margin: 0 auto;
-    line-height: 1.6;
+    line-height: 1.5;
   }
 
   .bulk-staff-toggle-bar {
-    margin-top: 14px;
+    margin-top: 16px;
   }
-
   .btn-staff-toggle {
-    background: #0f172a;
-    color: #f8fafc;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 999px;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    transition: background 0.2s;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
-
   .btn-staff-toggle:hover {
-    background: #1e293b;
+    background: #e2e8f0;
+    color: #0f172a;
   }
-
   .staff-badge-count {
     background: #008779;
     color: #ffffff;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
     padding: 2px 7px;
     border-radius: 999px;
@@ -551,2018 +327,618 @@
   /* Admin Panel */
   .enamels-admin-enquiry-panel {
     background: #ffffff;
-    border: 2px solid #0f172a;
-    border-radius: 14px;
+    border: 2px solid #008779;
+    border-radius: 12px;
     padding: 20px;
-    margin-bottom: 24px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    margin-bottom: 28px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   }
-
   .admin-panel-head {
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
-    padding-bottom: 14px;
-    border-bottom: 1.5px solid #e2e8f0;
+    align-items: flex-start;
     margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 10px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #e2e8f0;
   }
-
   .admin-panel-tag {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
+    letter-spacing: 0.06em;
     color: #008779;
-    letter-spacing: 0.05em;
   }
-
   .admin-panel-title {
-    margin: 2px 0;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
-    color: #0f172a;
+    color: #102a43;
+    margin: 2px 0;
   }
-
   .admin-panel-sub {
-    margin: 0;
-    font-size: 13px;
-    color: #64748b;
-  }
-
-  .btn-close-admin-panel {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: 700;
-    cursor: pointer;
     font-size: 12px;
+    color: #64748b;
+    margin: 0;
   }
-
+  .btn-close-admin-panel {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
   .admin-filter-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 16px;
     flex-wrap: wrap;
-    font-size: 13px;
   }
-
-  .admin-filter-bar select {
-    padding: 6px 12px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .btn-seed-sample {
-    background: #f0fdfa;
-    color: #008779;
-    border: 1px solid #99f6e4;
-    padding: 6px 12px;
-    border-radius: 6px;
+  .filter-lbl {
     font-size: 12px;
     font-weight: 700;
+    color: #334155;
+  }
+  .admin-filter-bar select {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .btn-seed-sample {
+    margin-left: auto;
+    background: #f8fafc;
+    border: 1px dashed #008779;
+    color: #008779;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
     cursor: pointer;
   }
-
-  .admin-enquiries-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    max-height: 600px;
-    overflow-y: auto;
-  }
-
-  .admin-enquiry-card {
+  .admin-enquiry-card-item {
     background: #f8fafc;
     border: 1px solid #cbd5e1;
-    border-radius: 10px;
-    padding: 16px;
-    transition: border-color 0.2s;
-  }
-
-  .admin-enquiry-card:hover {
-    border-color: #008779;
-  }
-
-  .aec-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
+    border-radius: 8px;
+    padding: 14px 16px;
     margin-bottom: 12px;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 10px;
   }
-
-  .aec-ref-code {
-    font-family: monospace;
-    font-size: 15px;
+  .enq-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .enq-ref {
+    font-size: 13px;
     font-weight: 800;
-    color: #0f172a;
+    color: #102a43;
   }
-
-  .aec-date {
-    font-size: 12px;
-    color: #64748b;
-  }
-
-  .status-select-wrap select {
-    font-size: 12px;
-    font-weight: 700;
+  .enq-status-select {
     padding: 4px 8px;
-    border-radius: 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
     border: 1px solid #cbd5e1;
   }
-
-  .aec-customer-info {
-    font-size: 13px;
-    margin-bottom: 12px;
-    color: #334e68;
-    line-height: 1.5;
+  .enq-body-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    font-size: 12px;
   }
-
-  .aec-breakdown-box {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 10px 14px;
-    font-size: 12.5px;
-    margin-bottom: 12px;
+  @media (max-width: 640px) {
+    .enq-body-grid { grid-template-columns: 1fr; }
   }
-
-  .aec-actions {
+  .enq-data-lbl { color: #64748b; font-weight: 600; margin-right: 4px; }
+  .enq-data-val { color: #102a43; font-weight: 700; }
+  .enq-actions-bar {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
   }
-
-  .aec-btn-wa {
+  .btn-enq-wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     background: #25d366;
     color: #ffffff;
-    text-decoration: none;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 6px;
-  }
-
-  .aec-btn-call {
-    background: #102a43;
-    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 4px;
     text-decoration: none;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 6px;
   }
-
-  /* Wizard Card */
-  .bulk-wizard-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    padding: 28px 24px;
-  }
-
-  /* Stepper Track */
-  .bulk-stepper-track {
-    display: flex;
+  .btn-enq-call {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 4px;
+    background: #008779;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+
+  /* Customer Form Card */
+  .bulk-enquiry-card {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    padding: 32px 36px;
+  }
+  @media (max-width: 640px) {
+    .bulk-enquiry-card { padding: 20px 16px; }
+  }
+
+  .bulk-enquiry-form-head {
     margin-bottom: 24px;
     border-bottom: 1px solid #f1f5f9;
     padding-bottom: 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
-  .bulk-stepper-track::-webkit-scrollbar { display: none; }
-
-  .stepper-node {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 6px 10px;
-    border-radius: 8px;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-
-  .snode-num {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: #e2e8f0;
-    color: #475569;
-    font-size: 12px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .stepper-node.active .snode-num,
-  .stepper-node.completed .snode-num {
-    background: #008779;
-    color: #ffffff;
-  }
-
-  .snode-text {
-    font-size: 13px;
-    font-weight: 600;
-    color: #64748b;
-  }
-
-  .stepper-node.active .snode-text {
-    color: #008779;
-    font-weight: 800;
-  }
-
-  .snode-sep {
-    flex: 1;
-    height: 2px;
-    background: #e2e8f0;
-    margin: 0 8px;
-    min-width: 16px;
-  }
-
-  /* Live Meter Strip */
-  .bulk-live-meter-strip {
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 12px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .meter-stat-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .meter-stat-label {
-    font-size: 13px;
-    color: #64748b;
-    font-weight: 600;
-  }
-
-  .meter-stat-count {
-    font-size: 18px;
+  .form-title {
+    font-size: 20px;
     font-weight: 800;
     color: #102a43;
+    margin: 0 0 4px;
   }
-
-  .meter-stat-count.valid {
-    color: #008779;
-  }
-
-  .meter-tier-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: #f1f5f9;
-    color: #475569;
-  }
-
-  .meter-tier-badge.badge-valid {
-    background: #dcfce7;
-    color: #15803d;
-  }
-
-  .meter-tier-badge.badge-invalid {
-    background: #fee2e2;
-    color: #b91c1c;
-  }
-
-  /* Panes */
-  .bulk-step-pane {
-    display: none;
-  }
-
-  .bulk-step-pane.active {
-    display: block;
-  }
-
-  .pane-headline {
-    margin-bottom: 20px;
-  }
-
-  .pane-tag {
-    font-size: 11px;
-    text-transform: uppercase;
-    color: #008779;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .pane-title {
-    margin: 0 0 6px;
-    font-size: 22px;
-    font-weight: 800;
-    color: #102a43;
-  }
-
-  .pane-desc {
+  .form-desc {
+    font-size: 13px;
+    color: #64748b;
     margin: 0;
-    font-size: 14px;
-    color: #64748b;
-    line-height: 1.5;
   }
 
-  /* Chips Bar */
-  .selected-categories-chips-wrap {
-    background: #f0fdfa;
-    border: 1px solid #ccfbf1;
-    border-radius: 8px;
-    padding: 10px 14px;
+  .bulk-field-group {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+    flex-direction: column;
   }
-
-  .chips-label {
-    font-size: 12.5px;
+  .bulk-field-label {
+    font-size: 13px;
     font-weight: 700;
-    color: #0f766e;
+    color: #102a43;
+    margin-bottom: 6px;
   }
-
-  .chips-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+  .req-star {
+    color: #e11d48;
+    font-weight: 800;
   }
-
-  .cat-chip {
-    background: #008779;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .cat-chip-remove {
-    cursor: pointer;
-    font-weight: 900;
+  .field-hint {
     font-size: 11px;
-    opacity: 0.8;
-  }
-  .cat-chip-remove:hover { opacity: 1; }
-
-  /* Categories Cards Grid */
-  .bulk-categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
+    color: #64748b;
+    margin-top: 4px;
   }
 
-  .bulk-cat-toggle-card {
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    overflow: hidden;
+  .bulk-form-select,
+  .bulk-form-input,
+  .bulk-form-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #102a43;
     background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s ease;
+    font-family: inherit;
+  }
+  .bulk-form-select:focus,
+  .bulk-form-input:focus,
+  .bulk-form-textarea:focus {
+    border-color: #008779;
+    box-shadow: 0 0 0 3px rgba(0, 135, 121, 0.12);
+  }
+
+  .bulk-qty-pills-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 768px) {
+    .bulk-qty-pills-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .qty-range-pill {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
     cursor: pointer;
-    position: relative;
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
-
-  .bulk-cat-toggle-card:hover {
-    border-color: #008779;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 135, 121, 0.12);
-  }
-
-  .bulk-cat-toggle-card.selected {
+  .qty-range-pill input { display: none; }
+  .qty-range-pill:hover { border-color: #008779; }
+  .qty-range-pill.active {
     border-color: #008779;
     background: #f0fdfa;
-    box-shadow: 0 0 0 2px rgba(0, 135, 121, 0.25);
+    box-shadow: 0 0 0 1px #008779;
   }
-
-  .cat-card-check {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: #cbd5e1;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2;
-    transition: background 0.2s;
-  }
-
-  .bulk-cat-toggle-card.selected .cat-card-check {
-    background: #008779;
-  }
-
-  .cat-card-media {
-    height: 140px;
-    background: #f1f5f9;
-    overflow: hidden;
-  }
-
-  .cat-card-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .cat-card-body {
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: space-between;
-  }
-
-  .cat-card-title {
-    margin: 0 0 4px;
-    font-size: 16px;
-    font-weight: 800;
-    color: #102a43;
-  }
-
-  .cat-card-desc {
-    margin: 0 0 12px;
-    font-size: 12px;
-    color: #64748b;
-    line-height: 1.4;
-  }
-
-  .cat-card-action {
-    font-size: 12px;
-    font-weight: 700;
-    color: #008779;
-  }
-
-  /* Articles Supergroup */
-  .category-jump-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  .btn-cat-tab {
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    color: #475569;
+  .qty-pill-text {
     font-size: 13px;
     font-weight: 700;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s;
-  }
-
-  .btn-cat-tab.active {
-    background: #008779;
-    color: #ffffff;
-    border-color: #008779;
-  }
-
-  .cat-articles-section {
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 24px;
-  }
-
-  .cat-articles-section-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #102a43;
-    margin: 0 0 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .cat-article-badge-count {
-    font-size: 12px;
-    font-weight: 700;
-    background: #e2e8f0;
-    color: #475569;
-    padding: 3px 10px;
-    border-radius: 999px;
-  }
-
-  .articles-grid-sub {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 14px;
-  }
-
-  .bulk-article-toggle-card {
-    background: #ffffff;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.2s;
-  }
-
-  .bulk-article-toggle-card:hover {
-    border-color: #008779;
-    box-shadow: 0 4px 12px rgba(0, 135, 121, 0.1);
-  }
-
-  .bulk-article-toggle-card.selected {
-    border-color: #008779;
-    background: #f0fdfa;
-    box-shadow: 0 0 0 2px rgba(0, 135, 121, 0.2);
-  }
-
-  .article-thumb {
-    height: 130px;
-    background: #f1f5f9;
-  }
-
-  .article-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .article-body {
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: space-between;
-  }
-
-  .article-title {
-    margin: 0 0 4px;
-    font-size: 14px;
-    font-weight: 800;
     color: #102a43;
   }
-
-  .article-spec {
-    font-size: 11.5px;
+  .qty-pill-sub {
+    font-size: 10px;
     color: #64748b;
-    margin-bottom: 10px;
-    line-height: 1.4;
+    margin-top: 2px;
   }
 
-  .article-toggle-btn {
-    font-size: 11.5px;
-    font-weight: 700;
-    color: #008779;
-  }
-
-  /* Step 3: Size breakdown */
-  .bulk-tier-banner {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  /* Friendly Note Banner */
+  .bulk-friendly-note-banner {
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 22px;
+    display: flex;
+    align-items: flex-start;
     gap: 12px;
-    margin-bottom: 24px;
   }
-
-  .tier-pill-card {
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    background: #f8fafc;
-    text-align: center;
+  .banner-icon {
+    font-size: 20px;
+    line-height: 1;
   }
-
-  .tier-pill-card.active {
-    border-color: #008779;
-    background: #f0fdfa;
-  }
-
-  .tp-lbl {
-    font-size: 11px;
-    font-weight: 800;
-    color: #64748b;
-    text-transform: uppercase;
+  .banner-title {
     display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 2px;
   }
-  .tier-pill-card.active .tp-lbl { color: #008779; }
-
-  .tp-range {
-    font-size: 15px;
-    font-weight: 800;
-    color: #102a43;
-    display: block;
-  }
-
-  .tp-perk {
-    font-size: 11px;
-    color: #475569;
-    margin-top: 3px;
-    display: block;
-  }
-
-  .article-size-card {
-    background: #ffffff;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 20px;
-  }
-
-  .asc-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .asc-title-wrap {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .asc-cat-tag {
-    font-size: 11px;
-    font-weight: 800;
-    color: #008779;
-    text-transform: uppercase;
-  }
-
-  .asc-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #102a43;
+  .banner-text {
+    font-size: 12px;
+    color: #78350f;
     margin: 0;
+    line-height: 1.45;
   }
 
-  .asc-meta-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .asc-item-total {
-    font-size: 14px;
-    font-weight: 800;
-    color: #102a43;
-    background: #f1f5f9;
-    padding: 4px 10px;
-    border-radius: 6px;
-  }
-
-  .btn-remove-article-breakdown {
-    background: transparent;
-    border: 1px solid #fca5a5;
-    color: #dc2626;
-    font-size: 11.5px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .btn-remove-article-breakdown:hover {
-    background: #fee2e2;
-  }
-
-  .sizes-steppers-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-  }
-
-  .size-cell-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 6px;
-    text-align: center;
-  }
-
-  .size-label {
-    font-size: 13px;
-    font-weight: 800;
-    color: #102a43;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .stepper-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-  }
-
-  .btn-step-act {
-    width: 28px;
-    height: 28px;
-    border-radius: 4px;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    font-size: 15px;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .btn-step-act:hover {
-    background: #008779;
-    color: #ffffff;
-    border-color: #008779;
-  }
-
-  .size-qty-input {
-    width: 38px;
-    height: 28px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .bulk-validation-alert {
-    background: #fef2f2;
-    border: 1.5px solid #fca5a5;
-    border-radius: 10px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 20px;
-    color: #991b1b;
-    font-size: 13.5px;
-  }
-
-  .alert-icon {
-    font-size: 22px;
-  }
-
-  /* Step 4 Form */
   .bulk-form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 16px;
-    margin-bottom: 24px;
+  }
+  @media (max-width: 640px) {
+    .bulk-form-grid { grid-template-columns: 1fr; }
   }
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .form-group.full-width {
-    grid-column: 1 / -1;
-  }
-
-  .form-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #102a43;
-  }
-
-  .form-label .req {
-    color: #dc2626;
-  }
-
-  .form-control {
-    padding: 11px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #102a43;
-    background: #ffffff;
-    box-sizing: border-box;
-  }
-
-  .form-control:focus {
-    outline: none;
-    border-color: #008779;
-    box-shadow: 0 0 0 3px rgba(0, 135, 121, 0.15);
-  }
-
-  /* Step 5 Review */
-  .enquiry-ref-banner {
-    background: #102a43;
-    color: #ffffff;
-    padding: 14px 18px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .ref-sub-title {
-    font-size: 11.5px;
-    text-transform: uppercase;
-    color: #94a3b8;
-    display: block;
-    letter-spacing: 0.05em;
-  }
-
-  .ref-code {
-    font-family: monospace;
-    font-size: 18px;
-    color: #38bdf8;
-    letter-spacing: 0.05em;
-  }
-
-  .ref-type-tag {
-    font-size: 11.5px;
-    font-weight: 700;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 4px 10px;
-    border-radius: 4px;
-  }
-
-  .review-table-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 20px;
-  }
-
-  .review-card-heading {
-    margin: 0 0 14px;
-    font-size: 15px;
-    font-weight: 800;
-    color: #102a43;
-  }
-
-  .review-cat-row {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-  }
-
-  .rcr-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: #008779;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .rcr-article-line {
-    font-size: 13px;
-    padding: 4px 0;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px dashed #f1f5f9;
-  }
-  .rcr-article-line:last-child { border-bottom: none; }
-
-  .review-grand-total-row {
-    border-top: 2px solid #cbd5e1;
-    padding-top: 10px;
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 16px;
-    font-weight: 800;
-    color: #102a43;
-  }
-
-  .review-contact-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 18px;
-    margin-bottom: 20px;
-  }
-
-  .review-contact-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px 16px;
-    font-size: 13px;
-  }
-
-  .review-contact-grid .full-col {
-    grid-column: 1 / -1;
-  }
-
-  .rc-k {
-    color: #64748b;
-    font-weight: 600;
-  }
-  .rc-v {
-    color: #102a43;
-  }
-
-  .zero-obligation-box {
-    background: #f0fdfa;
-    border: 1px solid #99f6e4;
-    border-radius: 8px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-    font-size: 13px;
-    color: #0f766e;
-    line-height: 1.5;
-  }
-
-  .zo-icon {
-    font-size: 24px;
-    flex-shrink: 0;
-  }
-
-  /* Actions */
-  .bulk-pane-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 20px;
-    margin-top: 24px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .btn-bulk-step-prev {
-    background: #ffffff;
-    border: 1.5px solid #cbd5e1;
-    color: #475569;
-    padding: 11px 22px;
-    border-radius: 8px;
-    font-size: 13.5px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .btn-bulk-step-next {
+  .btn-submit-bulk-enquiry {
+    width: 100%;
     background: #008779;
     color: #ffffff;
     border: none;
-    padding: 12px 28px;
     border-radius: 8px;
-    font-size: 14px;
-    font-weight: 700;
+    padding: 14px 20px;
     cursor: pointer;
-    display: inline-flex;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 14px rgba(0, 135, 121, 0.25);
+    gap: 3px;
+    transition: background 0.2s ease, transform 0.15s ease;
   }
-
-  .btn-bulk-step-next:disabled {
-    background: #cbd5e1;
-    color: #94a3b8;
-    cursor: not-allowed;
-    box-shadow: none;
+  .btn-submit-bulk-enquiry:hover {
+    background: #007064;
+    transform: translateY(-1px);
   }
-
-  .btn-submit-enquiry-final {
-    background: #102a43;
-    color: #ffffff;
-    border: none;
-    padding: 14px 34px;
-    border-radius: 8px;
+  .btn-text {
     font-size: 15px;
     font-weight: 800;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 16px rgba(16, 42, 67, 0.25);
+    letter-spacing: 0.02em;
+  }
+  .btn-subtext {
+    font-size: 11px;
+    opacity: 0.9;
   }
 
-  /* Success Screen */
-  .success-screen-card {
+  /* Success Card */
+  .bulk-success-card {
     text-align: center;
-    padding: 30px 16px;
+    padding: 30px 20px;
+    animation: fadeIn 0.3s ease;
   }
-
-  .success-emoji {
-    font-size: 54px;
-    margin-bottom: 12px;
-  }
-
-  .success-title {
+  .success-icon-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: #15803d;
     font-size: 26px;
     font-weight: 800;
-    color: #102a43;
-    margin: 0 0 14px;
-  }
-
-  .success-official-msg {
-    font-size: 15.5px;
-    line-height: 1.6;
-    color: #334e68;
-    max-width: 660px;
-    margin: 0 auto 24px;
-    font-style: italic;
-    background: #f8fafc;
-    padding: 16px 20px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-  }
-
-  .success-meta-box {
-    display: inline-flex;
-    flex-direction: column;
-    gap: 8px;
-    background: #f0fdf4;
-    border: 1px solid #bbf7d0;
-    padding: 16px 24px;
-    border-radius: 10px;
-    text-align: left;
-    margin-bottom: 24px;
-  }
-
-  .meta-item {
-    font-size: 13.5px;
-    color: #166534;
-  }
-  .meta-k { font-weight: 600; margin-right: 6px; }
-  .meta-v { font-weight: 800; }
-
-  .success-wa-trigger-box {
-    margin-bottom: 28px;
-  }
-
-  .wa-trigger-lead {
-    font-size: 13.5px;
-    color: #64748b;
-    margin-bottom: 10px;
-  }
-
-  .btn-direct-wa-desk {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: #25d366;
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 14.5px;
-    font-weight: 800;
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
-  }
-
-  .success-back-row {
-    display: flex;
     justify-content: center;
-    gap: 12px;
+    margin-bottom: 12px;
   }
-
-  .btn-reset-workflow {
+  .success-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #102a43;
+    margin: 0 0 10px;
+  }
+  .success-ref-pill {
+    display: inline-block;
     background: #f1f5f9;
     border: 1px solid #cbd5e1;
+    color: #1e293b;
+    font-size: 13px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .success-body {
+    font-size: 14px;
     color: #475569;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
+    max-width: 560px;
+    margin: 0 auto 20px;
+    line-height: 1.5;
   }
-
-  .btn-return-storefront {
-    background: #102a43;
+  .success-wa-action-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    padding: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .btn-success-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #25d366;
     color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 700;
     font-size: 13px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 6px;
     text-decoration: none;
+    transition: background 0.2s ease;
   }
-
-  /* Mobile Media Queries (Part 9) */
-  @media (max-width: 768px) {
-    .bulk-form-grid {
-      grid-template-columns: 1fr;
-    }
-    .sizes-steppers-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .review-contact-grid {
-      grid-template-columns: 1fr;
-    }
-    .bulk-tier-banner {
-      grid-template-columns: 1fr;
-    }
-    .bulk-categories-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .bulk-categories-grid {
-      grid-template-columns: 1fr;
-    }
-    .sizes-steppers-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .bulk-main-heading {
-      font-size: 24px;
-    }
+  .btn-success-whatsapp:hover { background: #1ebe57; }
+  .btn-reset-bulk {
+    background: none;
+    border: none;
+    color: #008779;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
   }
 </style>
 
 <script>
-  (function initEnamelsBulkWorkflow() {
-    var MIN_BULK_QTY = {{ min_qty }};
-    var OFFICIAL_WA_NUMBER = '{{ wa_clean }}';
+  (function initSimplifiedBulkWorkflow() {
+    var selectedQtyRange = '10 – 20 Units';
+    var selectedCategory = '';
 
-    // Catalog Data Definition (Scrubs, Lab Coats, Caps, Accessories)
-    var CATALOG = {
-      scrubs: {
-        id: 'scrubs',
-        title: 'Medical Scrubs',
-        articles: [
-          { id: 'sprinter', name: 'Sprinter 4-Way Stretch Scrub Set', spec: 'Ergonomic athletic cut, 8 pockets, anti-wrinkle moisture wicking.', image: '{{ "demo-sprinter-navy.jpg" | asset_url }}' },
-          { id: 'vilora', name: 'Vilora Technical Antimicrobial Scrub Set', spec: 'ICU fluid barrier finish, modern mandarin collar, tailored silhouette.', image: '{{ "demo-velora-teal.jpg" | asset_url }}' },
-          { id: 'crown', name: 'Crown Signature Tailored Scrub Set', spec: 'Executive consultant drape, hidden magnetic pocket, premium heavyweight blend.', image: '{{ "demo-crown-burgundy.jpg" | asset_url }}' },
-          { id: 'classic', name: 'Classic Comfort Dual-Pocket Scrub Set', spec: 'Reinforced dual chest pockets, autoclave safe, high-durability poly-cotton.', image: '{{ "cat-men-scrubs.jpg" | asset_url }}' }
-        ]
-      },
-      lab_coats: {
-        id: 'lab_coats',
-        title: 'Doctor & Lab Coats',
-        articles: [
-          { id: 'exec_coat', name: 'Executive Consultant Doctor Coat', spec: 'Tailored notched lapel, iPad pocket, spill-proof Teflon coating.', image: '{{ "demo-hang-labcoat-white.jpg" | asset_url }}' },
-          { id: 'resident_coat', name: 'Resident Medical White Coat', spec: 'Mid-length modern fit, tablet side slits, reinforced instrument loops.', image: '{{ "cat-labcoat.jpg" | asset_url }}' },
-          { id: 'lab_jacket', name: 'Clinical Barrier Lab Jacket', spec: 'Ribbed knit cuffs, high-neck snap closure, fluid-resistant finish.', image: '{{ "cat-labcoat.jpg" | asset_url }}' }
-        ]
-      },
-      caps: {
-        id: 'caps',
-        title: 'Surgical Scrub Caps',
-        articles: [
-          { id: 'tie_back_cap', name: 'Ergonomic Tie-Back Surgical Cap', spec: 'Breathable crown panel, built-in terry cloth forehead sweatband.', image: '{{ "banner-caps.jpg" | asset_url }}' },
-          { id: 'bouffant_cap', name: 'Bouffant Elastic Theatre Cap', spec: 'Generous volume for longer hair, hypoallergenic soft elastic band.', image: '{{ "banner-caps.jpg" | asset_url }}' },
-          { id: 'embroidered_cap', name: 'Custom Embroidered Doctor Cap', spec: 'Includes department name & personalized doctor monogram.', image: '{{ "banner-caps.jpg" | asset_url }}' }
-        ]
-      },
-      accessories: {
-        id: 'accessories',
-        title: 'Accessories & Sleeves',
-        articles: [
-          { id: 'arm_sleeves', name: 'Medical Compression Arm Sleeves (Pair)', spec: 'UPF 50+ cooling compression sleeves for theater and clinic.', image: '{{ "cat-clogs.jpg" | asset_url }}' },
-          { id: 'theatre_clogs', name: 'Orthopedic Hospital Theatre Clogs', spec: 'Shock-absorbing EVA, slip-resistant sole, washable & autoclavable.', image: '{{ "cat-clogs.jpg" | asset_url }}' },
-          { id: 'id_reels', name: 'Departmental Heavy-Duty Badge Reels', spec: 'Retractable steel cord, reinforced alligator clip, laser logo.', image: '{{ "cat-clogs.jpg" | asset_url }}' }
-        ]
+    window.enamelsSetQtyRange = function(rangeKey, el) {
+      selectedQtyRange = rangeKey;
+      var pills = document.querySelectorAll('.qty-range-pill');
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      if (el) {
+        el.classList.add('active');
+        var inp = el.querySelector('input');
+        if (inp) inp.checked = true;
       }
     };
 
-    // State
-    var state = {
-      currentStep: 1,
-      selectedCategories: ['scrubs'],
-      selectedArticles: {
-        'scrubs:sprinter': {
-          catId: 'scrubs',
-          catTitle: 'Medical Scrubs',
-          articleId: 'sprinter',
-          articleName: 'Sprinter 4-Way Stretch Scrub Set',
-          sizes: { xs: 0, s: 2, m: 5, l: 3, xl: 0, '2xl': 0 }
-        }
-      },
-      contact: {
-        name: '',
-        hospital: '',
-        phone: '',
-        whatsapp: '',
-        email: '',
-        city: '',
-        address: '',
-        notes: ''
-      },
-      referenceId: ''
+    window.enamelsUpdateBulkCategory = function(catVal) {
+      selectedCategory = catVal;
     };
 
-    function generateRefId() {
-      var chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-      var rand = '';
-      for (var i = 0; i < 4; i++) {
-        rand += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return 'ENM-BLK-2026-' + rand;
-    }
+    window.enamelsHandleBulkSubmit = function(e) {
+      e.preventDefault();
+      var cat = document.getElementById('bulk-category-select').value;
+      var name = document.getElementById('bulk-cust-name').value.trim();
+      var org = document.getElementById('bulk-org-name').value.trim();
+      var phone = document.getElementById('bulk-phone').value.trim();
+      var email = document.getElementById('bulk-email').value.trim();
+      var city = document.getElementById('bulk-city').value.trim();
+      var notes = document.getElementById('bulk-notes').value.trim();
 
-    state.referenceId = generateRefId();
-
-    // Calculate Totals
-    function calculateTotals() {
-      var grandTotal = 0;
-      var catTotals = {};
-
-      Object.keys(state.selectedArticles).forEach(function(key) {
-        var item = state.selectedArticles[key];
-        var itemTotal = 0;
-        Object.keys(item.sizes).forEach(function(s) {
-          itemTotal += (parseInt(item.sizes[s], 10) || 0);
-        });
-        item.totalQty = itemTotal;
-        grandTotal += itemTotal;
-
-        if (!catTotals[item.catId]) catTotals[item.catId] = 0;
-        catTotals[item.catId] += itemTotal;
-      });
-
-      return {
-        grandTotal: grandTotal,
-        catTotals: catTotals
-      };
-    }
-
-    // Update Live Meters and Tiers
-    function updateLiveMeters() {
-      var totals = calculateTotals();
-      var countEl = document.getElementById('meter-grand-total');
-      var tierEl = document.getElementById('meter-tier-badge');
-      var alertEl = document.getElementById('bulk-min-qty-alert');
-      var alertCur = document.getElementById('alert-current-total');
-      var alertNeed = document.getElementById('alert-needed-qty');
-
-      if (countEl) {
-        countEl.textContent = totals.grandTotal + ' Units';
-        countEl.className = 'meter-stat-count ' + (totals.grandTotal >= MIN_BULK_QTY ? 'valid' : '');
-      }
-
-      var tier1 = document.getElementById('tier-pill-1');
-      var tier2 = document.getElementById('tier-pill-2');
-      var tier3 = document.getElementById('tier-pill-3');
-
-      if (tier1) tier1.classList.remove('active');
-      if (tier2) tier2.classList.remove('active');
-      if (tier3) tier3.classList.remove('active');
-
-      if (tierEl) {
-        if (totals.grandTotal < MIN_BULK_QTY) {
-          tierEl.textContent = 'Minimum 10 Units Required (' + totals.grandTotal + '/' + MIN_BULK_QTY + ')';
-          tierEl.className = 'meter-tier-badge badge-invalid';
-          if (alertEl) alertEl.style.display = 'flex';
-          if (alertCur) alertCur.textContent = totals.grandTotal;
-          if (alertNeed) alertNeed.textContent = Math.max(0, MIN_BULK_QTY - totals.grandTotal);
-        } else if (totals.grandTotal <= 20) {
-          tierEl.textContent = '✓ Tier 1 (10–20 Units) • Standard Wholesale';
-          tierEl.className = 'meter-tier-badge badge-valid';
-          if (tier1) tier1.classList.add('active');
-          if (alertEl) alertEl.style.display = 'none';
-        } else if (totals.grandTotal <= 40) {
-          tierEl.textContent = '✓ Tier 2 (21–40 Units) • Volume Priority Batch';
-          tierEl.className = 'meter-tier-badge badge-valid';
-          if (tier2) tier2.classList.add('active');
-          if (alertEl) alertEl.style.display = 'none';
-        } else {
-          tierEl.textContent = '✓ Tier 3 (41+ Units) • Enterprise Tier (Free Crest)';
-          tierEl.className = 'meter-tier-badge badge-valid';
-          if (tier3) tier3.classList.add('active');
-          if (alertEl) alertEl.style.display = 'none';
-        }
-      }
-
-      // Enable / Disable next buttons on Step 3
-      var btnNextToDetails = document.getElementById('btn-next-to-details');
-      if (btnNextToDetails) {
-        btnNextToDetails.disabled = (totals.grandTotal < MIN_BULK_QTY);
-      }
-    }
-
-    // Step 1: Category Toggle
-    window.enamelsToggleCategory = function(catId) {
-      var idx = state.selectedCategories.indexOf(catId);
-      if (idx > -1) {
-        if (state.selectedCategories.length === 1) {
-          alert('Please keep at least one category selected.');
-          return;
-        }
-        state.selectedCategories.splice(idx, 1);
-        // Remove articles belonging to this category
-        Object.keys(state.selectedArticles).forEach(function(k) {
-          if (state.selectedArticles[k].catId === catId) {
-            delete state.selectedArticles[k];
-          }
-        });
-      } else {
-        state.selectedCategories.push(catId);
-        // Default select first article of newly added category
-        var catObj = CATALOG[catId];
-        if (catObj && catObj.articles && catObj.articles.length > 0) {
-          var firstArt = catObj.articles[0];
-          var key = catId + ':' + firstArt.id;
-          if (!state.selectedArticles[key]) {
-            state.selectedArticles[key] = {
-              catId: catId,
-              catTitle: catObj.title,
-              articleId: firstArt.id,
-              articleName: firstArt.name,
-              sizes: { xs: 0, s: 2, m: 4, l: 4, xl: 0, '2xl': 0 }
-            };
-          }
-        }
-      }
-      renderCategoryCards();
-      renderCategoryChips();
-      renderArticlesStep();
-      renderSizeBreakdownStep();
-      updateLiveMeters();
-    };
-
-    function renderCategoryCards() {
-      var cards = document.querySelectorAll('.bulk-cat-toggle-card');
-      cards.forEach(function(card) {
-        var cid = card.getAttribute('data-cat-id');
-        var isSel = state.selectedCategories.indexOf(cid) > -1;
-        card.classList.toggle('selected', isSel);
-        var actSpan = card.querySelector('.cat-card-action');
-        if (actSpan) {
-          actSpan.textContent = isSel ? '✓ Category Selected' : '+ Click to Select';
-        }
-      });
-    }
-
-    function renderCategoryChips() {
-      var container = document.getElementById('cat-chips-container');
-      var countEl = document.getElementById('cat-chips-count');
-      if (countEl) countEl.textContent = state.selectedCategories.length;
-      if (!container) return;
-
-      container.innerHTML = '';
-      state.selectedCategories.forEach(function(cid) {
-        var catObj = CATALOG[cid];
-        if (!catObj) return;
-        var chip = document.createElement('div');
-        chip.className = 'cat-chip';
-        chip.innerHTML = '<span>' + catObj.title + '</span><span class="cat-chip-remove" onclick="window.enamelsToggleCategory(\'' + cid + '\')">✕</span>';
-        container.appendChild(chip);
-      });
-    }
-
-    // Step 2: Articles Step Render
-    function renderArticlesStep() {
-      var supergroup = document.getElementById('category-articles-supergroup');
-      var jumpTabs = document.getElementById('article-category-jump-tabs');
-      if (!supergroup) return;
-
-      supergroup.innerHTML = '';
-      if (jumpTabs) jumpTabs.innerHTML = '';
-
-      state.selectedCategories.forEach(function(cid, idx) {
-        var catObj = CATALOG[cid];
-        if (!catObj) return;
-
-        // Jump tab
-        if (jumpTabs) {
-          var jTab = document.createElement('button');
-          jTab.type = 'button';
-          jTab.className = 'btn-cat-tab ' + (idx === 0 ? 'active' : '');
-          jTab.textContent = catObj.title;
-          jTab.onclick = function() {
-            jumpTabs.querySelectorAll('.btn-cat-tab').forEach(function(t) { t.classList.remove('active'); });
-            jTab.classList.add('active');
-            var targetSec = document.getElementById('cat-sec-' + cid);
-            if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          };
-          jumpTabs.appendChild(jTab);
-        }
-
-        // Category section
-        var sec = document.createElement('div');
-        sec.className = 'cat-articles-section';
-        sec.id = 'cat-sec-' + cid;
-
-        // Header
-        var secHead = document.createElement('div');
-        secHead.className = 'cat-articles-section-title';
-        secHead.innerHTML = '<span>Category: ' + catObj.title + '</span><span class="cat-article-badge-count" id="badge-art-count-' + cid + '">0 Selected</span>';
-        sec.appendChild(secHead);
-
-        // Grid
-        var grid = document.createElement('div');
-        grid.className = 'articles-grid-sub';
-
-        catObj.articles.forEach(function(art) {
-          var key = cid + ':' + art.id;
-          var isSelected = !!state.selectedArticles[key];
-
-          var card = document.createElement('div');
-          card.className = 'bulk-article-toggle-card ' + (isSelected ? 'selected' : '');
-          card.id = 'art-card-' + cid + '-' + art.id;
-          card.innerHTML =
-            '<div class="article-thumb"><img src="' + art.image + '" alt="' + art.name + '" loading="lazy"></div>' +
-            '<div class="article-body">' +
-              '<h4 class="article-title">' + art.name + '</h4>' +
-              '<p class="article-spec">' + art.spec + '</p>' +
-              '<span class="article-toggle-btn">' + (isSelected ? '✓ Selected' : '+ Add to Enquiry') + '</span>' +
-            '</div>';
-
-          card.onclick = function() {
-            window.enamelsToggleArticle(cid, art.id, art.name);
-          };
-
-          grid.appendChild(card);
-        });
-
-        sec.appendChild(grid);
-        supergroup.appendChild(sec);
-      });
-
-      updateArticleCountBadges();
-    }
-
-    function updateArticleCountBadges() {
-      state.selectedCategories.forEach(function(cid) {
-        var count = 0;
-        Object.keys(state.selectedArticles).forEach(function(k) {
-          if (state.selectedArticles[k].catId === cid) count++;
-        });
-        var b = document.getElementById('badge-art-count-' + cid);
-        if (b) b.textContent = count + ' Selected';
-      });
-
-      var btnNextSizes = document.getElementById('btn-next-to-sizes');
-      if (btnNextSizes) {
-        btnNextSizes.disabled = (Object.keys(state.selectedArticles).length === 0);
-      }
-    }
-
-    window.enamelsToggleArticle = function(catId, artId, artName) {
-      var key = catId + ':' + artId;
-      if (state.selectedArticles[key]) {
-        if (Object.keys(state.selectedArticles).length === 1) {
-          alert('Please keep at least one article selected in your enquiry.');
-          return;
-        }
-        delete state.selectedArticles[key];
-      } else {
-        var catObj = CATALOG[catId];
-        state.selectedArticles[key] = {
-          catId: catId,
-          catTitle: catObj ? catObj.title : catId,
-          articleId: artId,
-          articleName: artName,
-          sizes: { xs: 0, s: 2, m: 4, l: 4, xl: 0, '2xl': 0 }
-        };
-      }
-
-      var card = document.getElementById('art-card-' + catId + '-' + artId);
-      if (card) {
-        var isSel = !!state.selectedArticles[key];
-        card.classList.toggle('selected', isSel);
-        var btnSpan = card.querySelector('.article-toggle-btn');
-        if (btnSpan) btnSpan.textContent = isSel ? '✓ Selected' : '+ Add to Enquiry';
-      }
-
-      updateArticleCountBadges();
-      renderSizeBreakdownStep();
-      updateLiveMeters();
-    };
-
-    // Step 3: Size Breakdown Step Render
-    function renderSizeBreakdownStep() {
-      var container = document.getElementById('articles-size-breakdown-list');
-      if (!container) return;
-
-      container.innerHTML = '';
-      var keys = Object.keys(state.selectedArticles);
-
-      if (keys.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding: 30px; color:#64748b;">No articles selected. Please go back to Step 2 and choose articles.</div>';
+      if (!cat) {
+        alert('Please choose a uniform category.');
+        document.getElementById('bulk-category-select').focus();
         return;
       }
 
-      var sizesList = ['xs', 's', 'm', 'l', 'xl', '2xl'];
+      var randomNum = Math.floor(1000 + Math.random() * 9000);
+      var refId = 'ENM-BLK-2026-' + randomNum;
 
-      keys.forEach(function(key) {
-        var item = state.selectedArticles[key];
-        var card = document.createElement('div');
-        card.className = 'article-size-card';
-        card.id = 'asc-card-' + key.replace(':', '-');
-
-        // Header
-        var head = document.createElement('div');
-        head.className = 'asc-header';
-        head.innerHTML =
-          '<div class="asc-title-wrap">' +
-            '<span class="asc-cat-tag">' + item.catTitle + '</span>' +
-            '<h4 class="asc-title">' + item.articleName + '</h4>' +
-          '</div>' +
-          '<div class="asc-meta-right">' +
-            '<span class="asc-item-total" id="ait-' + key.replace(':', '-') + '">Total: ' + (item.totalQty || 0) + ' Units</span>' +
-            '<button type="button" class="btn-remove-article-breakdown" onclick="window.enamelsRemoveArticleFromBreakdown(\'' + item.catId + '\', \'' + item.articleId + '\', \'' + item.articleName + '\')">✕ Remove</button>' +
-          '</div>';
-
-        card.appendChild(head);
-
-        // Steppers Grid
-        var grid = document.createElement('div');
-        grid.className = 'sizes-steppers-grid';
-
-        sizesList.forEach(function(sz) {
-          var val = item.sizes[sz] || 0;
-          var cell = document.createElement('div');
-          cell.className = 'size-cell-card';
-          cell.innerHTML =
-            '<span class="size-label">' + sz.toUpperCase() + '</span>' +
-            '<div class="stepper-row">' +
-              '<button type="button" class="btn-step-act" onclick="window.enamelsAdjustSize(\'' + key + '\', \'' + sz + '\', -1)">−</button>' +
-              '<input type="number" min="0" max="999" class="size-qty-input" id="inp-sz-' + key.replace(':', '-') + '-' + sz + '" value="' + val + '" onchange="window.enamelsSetSizeDirect(\'' + key + '\', \'' + sz + '\', this.value)" />' +
-              '<button type="button" class="btn-step-act" onclick="window.enamelsAdjustSize(\'' + key + '\', \'' + sz + '\', 1)">+</button>' +
-            '</div>';
-          grid.appendChild(cell);
-        });
-
-        card.appendChild(grid);
-        container.appendChild(card);
-      });
-    }
-
-    window.enamelsRemoveArticleFromBreakdown = function(catId, artId, artName) {
-      window.enamelsToggleArticle(catId, artId, artName);
-    };
-
-    window.enamelsAdjustSize = function(key, sz, delta) {
-      if (!state.selectedArticles[key]) return;
-      var cur = parseInt(state.selectedArticles[key].sizes[sz], 10) || 0;
-      var next = Math.max(0, cur + delta);
-      state.selectedArticles[key].sizes[sz] = next;
-
-      var inp = document.getElementById('inp-sz-' + key.replace(':', '-') + '-' + sz);
-      if (inp) inp.value = next;
-
-      var totals = calculateTotals();
-      var itemTotEl = document.getElementById('ait-' + key.replace(':', '-'));
-      if (itemTotEl) {
-        itemTotEl.textContent = 'Total: ' + (state.selectedArticles[key].totalQty || 0) + ' Units';
-      }
-
-      updateLiveMeters();
-    };
-
-    window.enamelsSetSizeDirect = function(key, sz, valStr) {
-      if (!state.selectedArticles[key]) return;
-      var val = Math.max(0, parseInt(valStr, 10) || 0);
-      state.selectedArticles[key].sizes[sz] = val;
-
-      var inp = document.getElementById('inp-sz-' + key.replace(':', '-') + '-' + sz);
-      if (inp) inp.value = val;
-
-      var totals = calculateTotals();
-      var itemTotEl = document.getElementById('ait-' + key.replace(':', '-'));
-      if (itemTotEl) {
-        itemTotEl.textContent = 'Total: ' + (state.selectedArticles[key].totalQty || 0) + ' Units';
-      }
-
-      updateLiveMeters();
-    };
-
-    // Step 5 Review Render
-    function renderReviewStep() {
-      var totals = calculateTotals();
-      var codeEl = document.getElementById('rev-ref-id-code');
-      if (codeEl) codeEl.textContent = state.referenceId;
-
-      var tableContainer = document.getElementById('review-breakdown-table-container');
-      if (tableContainer) {
-        tableContainer.innerHTML = '';
-        var byCat = {};
-        Object.keys(state.selectedArticles).forEach(function(k) {
-          var item = state.selectedArticles[k];
-          if (!byCat[item.catId]) byCat[item.catId] = { title: item.catTitle, articles: [] };
-          byCat[item.catId].articles.push(item);
-        });
-
-        Object.keys(byCat).forEach(function(cid) {
-          var catGroup = byCat[cid];
-          var catRow = document.createElement('div');
-          catRow.className = 'review-cat-row';
-
-          var linesHtml = '';
-          catGroup.articles.forEach(function(art) {
-            var szStr = [];
-            Object.keys(art.sizes).forEach(function(s) {
-              if (art.sizes[s] > 0) szStr.push(s.toUpperCase() + ': ' + art.sizes[s]);
-            });
-            linesHtml +=
-              '<div class="rcr-article-line">' +
-                '<span><strong>' + art.articleName + '</strong> (' + (szStr.length > 0 ? szStr.join(', ') : 'No sizes specified') + ')</span>' +
-                '<strong>' + (art.totalQty || 0) + ' Units</strong>' +
-              '</div>';
-          });
-
-          catRow.innerHTML =
-            '<div class="rcr-title">' +
-              '<span>Category: ' + catGroup.title + '</span>' +
-              '<span>Category Subtotal: ' + (totals.catTotals[cid] || 0) + ' Units</span>' +
-            '</div>' +
-            linesHtml;
-
-          tableContainer.appendChild(catRow);
-        });
-      }
-
-      var grandEl = document.getElementById('rev-grand-total-units');
-      if (grandEl) grandEl.textContent = totals.grandTotal + ' Units';
-
-      // Fill customer contact fields
-      var nameEl = document.getElementById('bulk-inp-name');
-      var hospEl = document.getElementById('bulk-inp-hospital');
-      var phoneEl = document.getElementById('bulk-inp-phone');
-      var waEl = document.getElementById('bulk-inp-whatsapp');
-      var cityEl = document.getElementById('bulk-inp-city');
-      var emailEl = document.getElementById('bulk-inp-email');
-      var addrEl = document.getElementById('bulk-inp-address');
-      var notesEl = document.getElementById('bulk-inp-notes');
-
-      state.contact.name = nameEl ? nameEl.value.trim() : '';
-      state.contact.hospital = hospEl ? hospEl.value.trim() : '';
-      state.contact.phone = phoneEl ? phoneEl.value.trim() : '';
-      state.contact.whatsapp = waEl ? waEl.value.trim() : '';
-      state.contact.city = cityEl ? cityEl.value.trim() : '';
-      state.contact.email = emailEl ? emailEl.value.trim() : '';
-      state.contact.address = addrEl ? addrEl.value.trim() : '';
-      state.contact.notes = notesEl ? notesEl.value.trim() : '';
-
-      var rName = document.getElementById('rev-name-val');
-      var rHosp = document.getElementById('rev-hospital-val');
-      var rPhone = document.getElementById('rev-phone-val');
-      var rWa = document.getElementById('rev-whatsapp-val');
-      var rCity = document.getElementById('rev-city-val');
-      var rEmail = document.getElementById('rev-email-val');
-      var rAddr = document.getElementById('rev-address-val');
-      var rNotes = document.getElementById('rev-notes-val');
-
-      if (rName) rName.textContent = state.contact.name || 'Not provided';
-      if (rHosp) rHosp.textContent = state.contact.hospital || 'Not provided';
-      if (rPhone) rPhone.textContent = state.contact.phone || 'Not provided';
-      if (rWa) rWa.textContent = state.contact.whatsapp || state.contact.phone || 'Not provided';
-      if (rCity) rCity.textContent = state.contact.city || 'Not provided';
-      if (rEmail) rEmail.textContent = state.contact.email || 'None';
-      if (rAddr) rAddr.textContent = state.contact.address || 'Standard Delivery';
-      if (rNotes) rNotes.textContent = state.contact.notes || 'None';
-    }
-
-    // Wizard Navigation
-    window.enamelsBulkGoStep = function(stepNum) {
-      if (stepNum === 4) {
-        var totals = calculateTotals();
-        if (totals.grandTotal < MIN_BULK_QTY) {
-          alert('Please enter at least ' + MIN_BULK_QTY + ' units across your selected articles to proceed.');
-          return;
-        }
-      }
-
-      if (stepNum === 5) {
-        var name = (document.getElementById('bulk-inp-name') || {}).value || '';
-        var hosp = (document.getElementById('bulk-inp-hospital') || {}).value || '';
-        var phone = (document.getElementById('bulk-inp-phone') || {}).value || '';
-        var city = (document.getElementById('bulk-inp-city') || {}).value || '';
-
-        if (!name.trim() || !hosp.trim() || !phone.trim() || !city.trim()) {
-          alert('Please fill in your Name, Organization, Phone, and City before proceeding to review.');
-          return;
-        }
-        renderReviewStep();
-      }
-
-      state.currentStep = stepNum;
-
-      for (var i = 1; i <= 5; i++) {
-        var pane = document.getElementById('bulk-pane-' + i);
-        var snode = document.getElementById('snode-' + i);
-        if (pane) pane.classList.toggle('active', i === stepNum);
-        if (snode) {
-          snode.classList.toggle('active', i === stepNum);
-          snode.classList.toggle('completed', i < stepNum);
-        }
-      }
-
-      var wizardCard = document.getElementById('bulk-customer-wizard');
-      if (wizardCard) {
-        wizardCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    };
-
-    // Final Submission (Part 7)
-    window.enamelsSubmitBulkEnquiry = function() {
-      var totals = calculateTotals();
-      if (totals.grandTotal < MIN_BULK_QTY) {
-        alert('Minimum volume of 10 units is required.');
-        return;
-      }
-
-      var submitBtn = document.getElementById('btn-submit-enquiry-final');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting Enquiry...';
-      }
-
-      var enquiryRecord = {
-        refId: state.referenceId,
-        createdAt: new Date().toLocaleString(),
-        customer: state.contact,
-        selectedCategories: state.selectedCategories,
-        selectedArticles: state.selectedArticles,
-        totals: totals,
+      var newEnquiry = {
+        refId: refId,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        category: cat,
+        qtyRange: selectedQtyRange,
+        customerName: name,
+        organization: org,
+        phone: phone,
+        email: email,
+        city: city,
+        notes: notes || 'Standard institutional quotation requested.',
         status: 'New Enquiry'
       };
 
-      // Save to localStorage enquiry storage (Part 8)
+      // Persist to localStorage for Admin Desk
       try {
         var existing = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
-        existing.unshift(enquiryRecord);
+        existing.unshift(newEnquiry);
         localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(existing));
-      } catch(e) {}
+      } catch (err) {}
 
-      // Show Success Screen
-      setTimeout(function() {
-        for (var i = 1; i <= 5; i++) {
-          var p = document.getElementById('bulk-pane-' + i);
-          if (p) p.style.display = 'none';
-        }
-        var meter = document.getElementById('bulk-live-meter-strip');
-        if (meter) meter.style.display = 'none';
+      // Update success card view
+      var formEl = document.getElementById('enamels-bulk-enquiry-form');
+      var successCard = document.getElementById('bulk-success-card');
+      var refEl = document.getElementById('success-ref-id');
+      var waRefEl = document.getElementById('wa-link-ref-id');
+      var waBtn = document.getElementById('btn-success-wa-link');
 
-        var successPane = document.getElementById('bulk-pane-success');
-        if (successPane) successPane.style.display = 'block';
+      if (refEl) refEl.textContent = refId;
+      if (waRefEl) waRefEl.textContent = refId;
 
-        var sRef = document.getElementById('success-ref-id');
-        var sTot = document.getElementById('success-total-units');
-        if (sRef) sRef.textContent = state.referenceId;
-        if (sTot) sTot.textContent = totals.grandTotal + ' Units';
-
-        // Pre-fill WhatsApp link
-        var waBtn = document.getElementById('success-wa-direct-btn');
-        if (waBtn) {
-          var waText = encodeURIComponent(
-            "Hello Enamels, I have submitted Institutional Bulk Order Enquiry #" + state.referenceId +
-            " for " + totals.grandTotal + " units across " + state.selectedCategories.length +
-            " categories for " + (state.contact.hospital || 'our hospital') + ". Please share the wholesale quotation."
-          );
-          waBtn.href = "https://wa.me/" + OFFICIAL_WA_NUMBER + "?text=" + waText;
-        }
-
-        renderAdminEnquiries();
-      }, 600);
-    };
-
-    window.enamelsResetBulkWorkflow = function() {
-      state.referenceId = generateRefId();
-      state.currentStep = 1;
-      for (var i = 1; i <= 5; i++) {
-        var p = document.getElementById('bulk-pane-' + i);
-        if (p) {
-          p.style.display = '';
-          p.classList.toggle('active', i === 1);
-        }
-      }
-      var meter = document.getElementById('bulk-live-meter-strip');
-      if (meter) meter.style.display = '';
-
-      var successPane = document.getElementById('bulk-pane-success');
-      if (successPane) successPane.style.display = 'none';
-
-      var submitBtn = document.getElementById('btn-submit-enquiry-final');
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Submit Bulk Enquiry</span><span>✓</span>';
+      if (waBtn) {
+        var waNum = '{{ wa_clean }}';
+        var waMsg = 'Hello Enamels Institutional Desk, I have submitted Bulk Enquiry Reference ' + refId +
+                    ' for ' + org + ' (' + cat + ', ' + selectedQtyRange + '). Please share quotation details.';
+        waBtn.href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(waMsg);
       }
 
-      window.enamelsBulkGoStep(1);
+      if (formEl) formEl.style.display = 'none';
+      if (successCard) successCard.style.display = 'block';
+
+      // Update Admin badge & render list
+      renderAdminEnquiries();
+      var root = document.getElementById('enamels-bulk-workflow-box');
+      if (root) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    // =========================================================================
-    // ADMIN ENQUIRY MANAGEMENT (Part 8)
-    // =========================================================================
+    window.enamelsResetBulkForm = function() {
+      var formEl = document.getElementById('enamels-bulk-enquiry-form');
+      var successCard = document.getElementById('bulk-success-card');
+      if (formEl) {
+        formEl.reset();
+        formEl.style.display = 'block';
+      }
+      if (successCard) successCard.style.display = 'none';
+    };
+
+    // Admin Desk Handlers
     window.enamelsToggleAdminBulkPanel = function() {
       var panel = document.getElementById('enamels-admin-enquiry-panel');
       if (!panel) return;
-      var isHidden = panel.style.display === 'none' || panel.style.display === '';
-      panel.style.display = isHidden ? 'block' : 'none';
-      if (isHidden) {
+      var isOpen = panel.style.display === 'block';
+      panel.style.display = isOpen ? 'none' : 'block';
+      if (!isOpen) {
         renderAdminEnquiries();
         panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
+    window.enamelsFilterAdminEnquiries = function(statusFilter) {
+      renderAdminEnquiries(statusFilter);
+    };
+
     window.enamelsSeedSampleBulkEnquiry = function() {
-      var sampleRecord = {
-        refId: 'ENM-BLK-2026-9281',
-        createdAt: '05 Nov 2026, 01:15 PM PKT',
-        customer: {
-          name: 'Dr. Usman Tariq',
-          hospital: 'Shaukat Khanum Memorial Hospital (ICU Wing)',
-          phone: '+92 301 5551234',
-          whatsapp: '+92 301 5551234',
-          email: 'usman.tariq@hospital.org.pk',
-          city: 'Lahore, Punjab',
-          address: 'ICU Administration Office, 2nd Floor, Main Building',
-          notes: 'Requires hospital crest embroidery on left arm sleeve and department nametag on chest. Needed by 20th November.'
-        },
-        selectedCategories: ['scrubs', 'lab_coats'],
-        selectedArticles: {
-          'scrubs:sprinter': {
-            catId: 'scrubs',
-            catTitle: 'Medical Scrubs',
-            articleId: 'sprinter',
-            articleName: 'Sprinter 4-Way Stretch Scrub Set',
-            sizes: { xs: 2, s: 5, m: 10, l: 8, xl: 5, '2xl': 2 },
-            totalQty: 32
-          },
-          'lab_coats:exec_coat': {
-            catId: 'lab_coats',
-            catTitle: 'Doctor & Lab Coats',
-            articleId: 'exec_coat',
-            articleName: 'Executive Consultant Doctor Coat',
-            sizes: { xs: 1, s: 2, m: 5, l: 5, xl: 3, '2xl': 1 },
-            totalQty: 17
-          }
-        },
-        totals: {
-          grandTotal: 49,
-          catTotals: { scrubs: 32, lab_coats: 17 }
-        },
+      var sample = {
+        refId: 'ENM-BLK-2026-8812',
+        date: '05 Nov 2026',
+        category: 'Medical Scrubs (Sets, Tops & Cargo Trousers)',
+        qtyRange: '50 – 100 Units',
+        customerName: 'Prof. Dr. Tariq Mahmood',
+        organization: 'Shaukat Khanum Memorial Cancer Hospital',
+        phone: '+92 300 8472910',
+        email: 'procurement@skm.org.pk',
+        city: 'Lahore',
+        notes: 'Royal Navy scrubs required with custom Hospital Crest embroidery on left sleeve. Delivery needed before December rounds.',
         status: 'Contact Pending'
       };
-
       try {
-        var list = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
-        // Don't add duplicate sample
-        var exists = list.some(function(e) { return e.refId === sampleRecord.refId; });
-        if (!exists) {
-          list.unshift(sampleRecord);
-          localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(list));
-        }
-      } catch(e) {}
+        var existing = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
+        existing.unshift(sample);
+        localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(existing));
+      } catch (e) {}
       renderAdminEnquiries();
     };
 
-    function renderAdminEnquiries(statusFilter) {
-      var listEl = document.getElementById('admin-enquiries-list');
-      var badgeCountEl = document.getElementById('staff-enquiry-badge-count');
-      if (!listEl) return;
+    function renderAdminEnquiries(filter) {
+      var container = document.getElementById('admin-enquiries-list');
+      var badgeCount = document.getElementById('staff-enquiry-badge-count');
+      if (!container) return;
 
       var enquiries = [];
       try {
         enquiries = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
-      } catch(e) {}
+      } catch (e) {}
 
-      // If empty, auto-seed the realistic sample enquiry
+      // Add default sample if none
       if (enquiries.length === 0) {
-        window.enamelsSeedSampleBulkEnquiry();
-        enquiries = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
+        enquiries = [{
+          refId: 'ENM-BLK-2026-7241',
+          date: '04 Nov 2026',
+          category: 'Medical Scrubs (Sets, Tops & Cargo Trousers)',
+          qtyRange: '20 – 50 Units',
+          customerName: 'Dr. Sarah Ahmed (Chief Administrator)',
+          organization: 'Services Hospital Surgical Department',
+          phone: '+92 300 1234567',
+          email: 'surgical.services@punjab.gov.pk',
+          city: 'Lahore',
+          notes: 'Ceil Blue 4-way flex twill scrubs with doctor name embroidery.',
+          status: 'New Enquiry'
+        }];
+        try { localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(enquiries)); } catch(e) {}
       }
 
-      if (badgeCountEl) badgeCountEl.textContent = enquiries.length;
-
-      var filter = statusFilter || (document.getElementById('admin-status-filter') || {}).value || 'all';
-
-      listEl.innerHTML = '';
+      if (badgeCount) badgeCount.textContent = enquiries.length;
 
       var filtered = enquiries.filter(function(enq) {
-        if (filter === 'all') return true;
+        if (!filter || filter === 'all') return true;
         return enq.status === filter;
       });
 
       if (filtered.length === 0) {
-        listEl.innerHTML = '<div style="padding: 20px; text-align: center; color:#64748b;">No enquiries found with status: ' + filter + '</div>';
+        container.innerHTML = '<p style="font-size: 13px; color: #64748b; text-align: center; padding: 20px;">No enquiries match the selected filter.</p>';
         return;
       }
 
-      var statuses = ['New Enquiry', 'Contact Pending', 'Contacted', 'Quotation Shared', 'Negotiation', 'Confirmed', 'Rejected', 'Closed'];
-
-      filtered.forEach(function(enq, idx) {
-        var card = document.createElement('div');
-        card.className = 'admin-enquiry-card';
-
-        // Format breakdown
-        var breakdownHtml = '';
-        Object.keys(enq.selectedArticles || {}).forEach(function(k) {
-          var art = enq.selectedArticles[k];
-          var szTokens = [];
-          Object.keys(art.sizes || {}).forEach(function(s) {
-            if (art.sizes[s] > 0) szTokens.push(s.toUpperCase() + ': ' + art.sizes[s]);
-          });
-          breakdownHtml +=
-            '<div>• <strong>[' + (art.catTitle || art.catId) + ']</strong> ' + art.articleName +
-            ' — <span style="font-family:monospace; color:#0f766e;">' + (szTokens.join(', ') || 'Sizes pending') + '</span> ' +
-            '<strong>(' + (art.totalQty || 0) + ' units)</strong></div>';
-        });
-
-        // Status options
-        var statusOptionsHtml = '';
-        statuses.forEach(function(st) {
-          statusOptionsHtml += '<option value="' + st + '" ' + (enq.status === st ? 'selected' : '') + '>' + st + '</option>';
-        });
-
-        var custPhone = (enq.customer.phone || '').replace(/[^0-9]/g, '');
-        var custWa = (enq.customer.whatsapp || enq.customer.phone || '').replace(/[^0-9]/g, '');
-
-        card.innerHTML =
-          '<div class="aec-header">' +
-            '<div>' +
-              '<span class="aec-ref-code">' + enq.refId + '</span>' +
-              '<span class="aec-date"> • Submitted: ' + enq.createdAt + '</span>' +
-            '</div>' +
-            '<div class="status-select-wrap">' +
-              '<label style="font-size:11px; font-weight:700; color:#475569; margin-right:4px;">Status:</label>' +
-              '<select onchange="window.enamelsUpdateEnquiryStatus(\'' + enq.refId + '\', this.value)">' +
-                statusOptionsHtml +
-              '</select>' +
-            '</div>' +
-          '</div>' +
-          '<div class="aec-customer-info">' +
-            '<strong>Customer:</strong> ' + enq.customer.name + ' (' + enq.customer.hospital + ') • <strong>City:</strong> ' + enq.customer.city + '<br>' +
-            '<strong>Phone / WhatsApp:</strong> ' + (enq.customer.phone || 'N/A') + ' / ' + (enq.customer.whatsapp || 'N/A') + ' • <strong>Email:</strong> ' + (enq.customer.email || 'None') + '<br>' +
-            (enq.customer.notes ? '<strong>Notes:</strong> <em>' + enq.customer.notes + '</em>' : '') +
-          '</div>' +
-          '<div class="aec-breakdown-box">' +
-            '<div style="font-weight:700; color:#0f172a; margin-bottom:6px;">Order Specifications (Total: ' + (enq.totals.grandTotal || 0) + ' Units across ' + (enq.selectedCategories || []).length + ' Categories):</div>' +
-            breakdownHtml +
-          '</div>' +
-          '<div class="aec-actions">' +
-            '<a href="https://wa.me/' + custWa + '?text=' + encodeURIComponent('Hello ' + enq.customer.name + ', this is Enamels Institutional Uniforms Desk regarding your Bulk Order Enquiry #' + enq.refId + ' for ' + (enq.totals.grandTotal || 0) + ' units.') + '" target="_blank" class="aec-btn-wa">💬 WhatsApp Customer</a>' +
-            '<a href="tel:' + custPhone + '" class="aec-btn-call">📞 Call Customer</a>' +
-          '</div>';
-
-        listEl.appendChild(card);
-      });
+      container.innerHTML = filtered.map(function(enq, idx) {
+        var cleanPhone = (enq.phone || '').replace(/[^0-9]/g, '');
+        var waHref = 'https://wa.me/' + cleanPhone + '?text=' + encodeURIComponent('Hello ' + enq.customerName + ', this is Enamels Institutional Desk regarding your Bulk Order Enquiry ' + enq.refId + ' for ' + enq.organization + '.');
+        return '<div class="admin-enquiry-card-item">' +
+                 '<div class="enq-card-head">' +
+                   '<span class="enq-ref">' + enq.refId + ' • ' + enq.organization + '</span>' +
+                   '<select class="enq-status-select" onchange="window.enamelsUpdateEnquiryStatus(\'' + enq.refId + '\', this.value)">' +
+                     '<option value="New Enquiry"' + (enq.status === 'New Enquiry' ? ' selected' : '') + '>New Enquiry</option>' +
+                     '<option value="Contact Pending"' + (enq.status === 'Contact Pending' ? ' selected' : '') + '>Contact Pending</option>' +
+                     '<option value="Contacted"' + (enq.status === 'Contacted' ? ' selected' : '') + '>Contacted</option>' +
+                     '<option value="Quotation Shared"' + (enq.status === 'Quotation Shared' ? ' selected' : '') + '>Quotation Shared</option>' +
+                     '<option value="Negotiation"' + (enq.status === 'Negotiation' ? ' selected' : '') + '>Negotiation</option>' +
+                     '<option value="Confirmed"' + (enq.status === 'Confirmed' ? ' selected' : '') + '>Confirmed</option>' +
+                     '<option value="Closed"' + (enq.status === 'Closed' ? ' selected' : '') + '>Closed</option>' +
+                   '</select>' +
+                 '</div>' +
+                 '<div class="enq-body-grid">' +
+                   '<div><span class="enq-data-lbl">Contact:</span><span class="enq-data-val">' + enq.customerName + '</span></div>' +
+                   '<div><span class="enq-data-lbl">Phone / WA:</span><span class="enq-data-val">' + enq.phone + '</span></div>' +
+                   '<div><span class="enq-data-lbl">Email:</span><span class="enq-data-val">' + enq.email + '</span></div>' +
+                   '<div><span class="enq-data-lbl">City:</span><span class="enq-data-val">' + enq.city + '</span></div>' +
+                   '<div><span class="enq-data-lbl">Category:</span><span class="enq-data-val">' + enq.category + '</span></div>' +
+                   '<div><span class="enq-data-lbl">Volume Tier:</span><span class="enq-data-val">' + enq.qtyRange + '</span></div>' +
+                   '<div style="grid-column: 1 / -1;"><span class="enq-data-lbl">Requirements:</span><span class="enq-data-val">' + enq.notes + '</span></div>' +
+                 '</div>' +
+                 '<div class="enq-actions-bar">' +
+                   '<a href="' + waHref + '" target="_blank" class="btn-enq-wa">💬 WhatsApp Contact</a>' +
+                   '<a href="tel:' + enq.phone + '" class="btn-enq-call">📞 Call (' + enq.phone + ')</a>' +
+                 '</div>' +
+               '</div>';
+      }).join('');
     }
 
     window.enamelsUpdateEnquiryStatus = function(refId, newStatus) {
       try {
-        var list = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
-        list.forEach(function(e) {
-          if (e.refId === refId) {
-            e.status = newStatus;
-          }
+        var existing = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
+        existing.forEach(function(item) {
+          if (item.refId === refId) item.status = newStatus;
         });
-        localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(list));
-      } catch(e) {}
+        localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(existing));
+      } catch (e) {}
     };
 
-    window.enamelsFilterAdminEnquiries = function(val) {
-      renderAdminEnquiries(val);
-    };
-
-    // Initialize
     document.addEventListener('DOMContentLoaded', function() {
-      renderCategoryCards();
-      renderCategoryChips();
-      renderArticlesStep();
-      renderSizeBreakdownStep();
-      updateLiveMeters();
-      renderAdminEnquiries();
-
-      // Check URL query ?admin=1
-      if (window.location.search.indexOf('admin=1') > -1) {
+      // Check ?admin=1 in URL to open admin panel automatically
+      if (window.location.search.indexOf('admin=1') !== -1) {
         window.enamelsToggleAdminBulkPanel();
       }
     });
 
-    // Also run immediately
-    renderCategoryCards();
-    renderCategoryChips();
-    renderArticlesStep();
-    renderSizeBreakdownStep();
-    updateLiveMeters();
-    renderAdminEnquiries();
   })();
 </script>
