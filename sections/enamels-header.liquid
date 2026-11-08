@@ -101,26 +101,6 @@
   endif
 -%}
 
-{%- if request.design_mode or customer.tags contains 'admin' or customer.tags contains 'staff' or customer.email contains 'enamels' or request.path contains 'admin' or request.query_string contains 'admin=true' -%}
-  <aside class="enamels-admin-top-bar" id="enamels-admin-bar" aria-label="Store Admin Navigation">
-    <div class="page-container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 6px 16px;">
-      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <span class="admin-bar-badge">⚡ STORE ADMIN</span>
-        <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">Desks:</span>
-        <a href="/pages/admin-portal#customize-orders" class="admin-bar-link">✂️ Customize Orders Desk</a>
-        <a href="/pages/admin-portal#bulk-enquiries" class="admin-bar-link">📦 Bulk Order Queries Desk</a>
-      </div>
-      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <a href="https://admin.shopify.com/store/enamels-online/orders?query=tag%3Acustomized-order" target="_blank" class="admin-bar-link admin-bar-link--shopify" title="Opens Customize Orders in Shopify Admin">
-          Shopify Admin: Customize Orders ↗
-        </a>
-        <a href="https://admin.shopify.com/store/enamels-online/orders?query=-tag%3Acustomized-order" target="_blank" class="admin-bar-link admin-bar-link--shopify" title="Opens Regular Orders in Shopify Admin">
-          Shopify Admin: Regular Orders ↗
-        </a>
-      </div>
-    </div>
-  </aside>
-{%- endif -%}
 
 <header
   class="enamels-header {% if enable_sticky %}is-sticky-header{% endif %}"
@@ -175,51 +155,68 @@
         </a>
         {% endif %}
 
-        {% if show_account %}
-        <!-- Customer Account & Admin Profile Link & Dropdown -->
+        {%- if show_account -%}
+        <!-- Customer Account Link & Dropdown -->
         <div class="header-account-wrap" style="position: relative;">
-          <a href="{{ routes.account_url }}" class="header-action-btn" aria-label="Customer Account & Admin Profile" title="My Account & Admin Portal" style="color: inherit; text-decoration: none;">
+          <a href="{{ routes.account_url }}" class="header-action-btn" aria-label="Customer Account" title="My Account" style="color: inherit; text-decoration: none;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </a>
           <div class="header-account-dropdown">
-            <div class="had-header">
-              <strong style="display: block; font-size: 13px; color: #102a43;">
-                {% if customer %}{{ customer.name }}{% else %}Store Profile & Admin{% endif %}
-              </strong>
-              <span style="font-size: 11px; color: #64748b;">
-                {% if customer %}{{ customer.email }}{% else %}Operations & Orders Desk{% endif %}
-              </span>
-            </div>
-            <div class="had-divider"></div>
-            <a href="{{ routes.account_url }}" class="had-item">
-              <span class="had-icon">👤</span>
-              <span>My Profile & Orders</span>
-            </a>
-            <a href="{{ routes.account_url }}#customize-orders" class="had-item had-item--highlight">
-              <span class="had-icon">✂️</span>
-              <span>Customize Orders Desk</span>
-            </a>
-            <a href="{{ routes.account_url }}#bulk-enquiries" class="had-item">
-              <span class="had-icon">📦</span>
-              <span>Bulk Orders Query Desk</span>
-            </a>
-            <button type="button" class="had-item" onclick="window.openStudioPanel ? window.openStudioPanel() : window.toggleStudioPanel()" style="width: 100%; border: none; background: none; font-family: inherit; cursor: pointer; text-align: left;">
-              <span class="had-icon">🎨</span>
-              <span>Enamels Studio Panel</span>
-            </button>
             {% if customer %}
+              <div class="had-header">
+                <strong style="display: block; font-size: 13px; color: #102a43;">
+                  {{ customer.name | default: 'My Account' }}
+                </strong>
+                <span style="font-size: 11px; color: #64748b;">
+                  {{ customer.email }}
+                </span>
+              </div>
+              <div class="had-divider"></div>
+              <a href="{{ routes.account_url }}" class="had-item">
+                <span class="had-icon">🛍️</span>
+                <span>My Orders</span>
+              </a>
+              <a href="{{ routes.account_addresses_url }}" class="had-item">
+                <span class="had-icon">📍</span>
+                <span>Delivery Addresses</span>
+              </a>
+              {% if customer.tags contains 'admin' or customer.tags contains 'staff' or customer.tags contains 'owner' %}
+                <div class="had-divider"></div>
+                <a href="/pages/admin-portal" class="had-item had-item--highlight" style="color: #008779; font-weight: 700;">
+                  <span class="had-icon">🔒</span>
+                  <span>Admin Operations Desk</span>
+                </a>
+              {% endif %}
               <div class="had-divider"></div>
               <a href="{{ routes.account_logout_url }}" class="had-item" style="color: #dc2626;">
                 <span class="had-icon">🚪</span>
                 <span>Sign Out</span>
               </a>
+            {% else %}
+              <div class="had-header">
+                <strong style="display: block; font-size: 13px; color: #102a43;">
+                  Welcome to Enamels
+                </strong>
+                <span style="font-size: 11px; color: #64748b;">
+                  Sign in to view your orders &amp; addresses
+                </span>
+              </div>
+              <div class="had-divider"></div>
+              <a href="{{ routes.account_login_url }}" class="had-item had-item--highlight" style="color: #008779; font-weight: 700;">
+                <span class="had-icon">🔑</span>
+                <span>Sign In</span>
+              </a>
+              <a href="{{ routes.account_register_url }}" class="had-item">
+                <span class="had-icon">✨</span>
+                <span>Create Account</span>
+              </a>
             {% endif %}
           </div>
         </div>
-        {% endif %}
+        {%- endif -%}
 
         {% if show_wishlist %}
         <!-- Wishlist Button -->

@@ -7,8 +7,42 @@
   4. Customer Address & Account Information
 {% endcomment %}
 
+{%- liquid
+  assign is_server_admin = false
+  if customer and (customer.tags contains 'admin' or customer.tags contains 'staff' or customer.tags contains 'owner')
+    assign is_server_admin = true
+  endif
+-%}
+
 <div class="enamels-profile-page-wrapper" id="enamels-profile-container">
-  <div class="enamels-profile-inner">
+
+  <!-- AUTHENTICATION GATE (Restricts access to authorized store staff) -->
+  <div id="admin-auth-gate" style="display: {% if is_server_admin %}none{% else %}block{% endif %}; max-width: 480px; margin: 40px auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 32px 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); text-align: center;">
+    <div style="font-size: 40px; margin-bottom: 12px;">🔒</div>
+    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: #008779; text-transform: uppercase;">RESTRICTED ACCESS</span>
+    <h2 style="font-size: 20px; font-weight: 800; color: #102a43; margin: 6px 0 8px;">Enamels Admin Operations Profile</h2>
+    <p style="font-size: 13px; color: #64748b; line-height: 1.5; margin: 0 0 20px;">
+      This route is strictly restricted to authorized administrators for managing Customize Orders, Bulk Queries, and operations.
+    </p>
+
+    <form onsubmit="window.unlockAdminProfile(event)" style="text-align: left;">
+      <label style="display: block; font-size: 12px; font-weight: 700; color: #102a43; margin-bottom: 6px;">Staff Passcode / Security Key</label>
+      <input type="password" id="admin-security-pin" placeholder="Enter staff security key..." required style="width: 100%; padding: 10px 14px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; margin-bottom: 12px;">
+      
+      <div id="admin-auth-error" style="display: none; background: #fef2f2; color: #b91c1c; padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 12px; border: 1px solid #fca5a5;"></div>
+
+      <button type="submit" style="width: 100%; background: #102a43; color: #ffffff; border: none; padding: 11px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;">
+        Unlock Operations Desk
+      </button>
+    </form>
+
+    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
+      Logged in as staff? <a href="{{ routes.account_login_url }}" style="color: #008779; font-weight: 700; text-decoration: none;">Sign in with Staff Account</a>
+    </div>
+  </div>
+
+  <!-- PROTECTED ADMIN DESKS (Only displayed when authenticated) -->
+  <div class="enamels-profile-inner" id="admin-protected-content" style="display: {% if is_server_admin %}block{% else %}none{% endif %};">
 
     <!-- Top Profile Banner -->
     <div class="enamels-profile-header-card">
@@ -43,6 +77,9 @@
       </div>
 
       <div class="profile-header-actions">
+        <button type="button" class="btn-profile-secondary" onclick="window.lockAdminProfile()" title="Lock Admin Session">
+          🔒 Lock Session
+        </button>
         {% if customer %}
           <a href="{{ routes.account_logout_url }}" class="btn-profile-secondary">
             Sign Out
@@ -1315,7 +1352,51 @@
       window.renderProfileBulkQueries();
     };
 
+    window.unlockAdminProfile = function(e) {
+      if (e) e.preventDefault();
+      var input = document.getElementById('admin-security-pin');
+      var pin = (input ? input.value : '').trim();
+      var err = document.getElementById('admin-auth-error');
+
+      // Valid security keys for Enamels staff/admin
+      if (pin === 'enamels2026' || pin === 'admin@enamels' || pin === 'enamels@admin' || pin === '1331133') {
+        sessionStorage.setItem('enamels_admin_auth', '1');
+        if (err) err.style.display = 'none';
+        initAdminProfile();
+      } else {
+        if (err) {
+          err.textContent = 'Invalid administrator security key. Please check credentials or sign in with staff account.';
+          err.style.display = 'block';
+        }
+      }
+    };
+
+    window.lockAdminProfile = function() {
+      sessionStorage.removeItem('enamels_admin_auth');
+      initAdminProfile();
+    };
+
+    function checkAdminAuth() {
+      var isServerAdmin = {{ is_server_admin | json }};
+      var isSessionAdmin = sessionStorage.getItem('enamels_admin_auth') === '1';
+      var gateEl = document.getElementById('admin-auth-gate');
+      var contentEl = document.getElementById('admin-protected-content');
+
+      if (isServerAdmin || isSessionAdmin) {
+        if (gateEl) gateEl.style.display = 'none';
+        if (contentEl) contentEl.style.display = 'block';
+        return true;
+      } else {
+        if (gateEl) gateEl.style.display = 'block';
+        if (contentEl) contentEl.style.display = 'none';
+        return false;
+      }
+    }
+
     function initAdminProfile() {
+      var authorized = checkAdminAuth();
+      if (!authorized) return;
+
       window.renderProfileCustomOrders();
       window.renderProfileBulkQueries();
 
@@ -1348,7 +1429,7 @@
 
 {% schema %}
 {
-  "name": "Admin & Customer Profile",
+  "name": "Admin Operations Profile",
   "settings": []
 }
 {% endschema %}

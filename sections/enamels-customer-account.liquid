@@ -1,0 +1,628 @@
+{% comment %}
+  Enamels Customer Account Dashboard Section
+  Dedicated 100% customer-facing account view.
+  Displays customer's retail orders, bespoke custom scrub status, delivery addresses, and personal details.
+  Does NOT expose any internal Shopify admin controls, verification buttons, or administrative desks.
+{% endcomment %}
+
+<div class="enamels-cust-account-wrap">
+  <div class="page-container">
+
+    {% if customer %}
+      <!-- Customer Header Card -->
+      <div class="cust-account-hero">
+        <div class="cust-hero-left">
+          <div class="cust-avatar-circle">
+            {{ customer.first_name | slice: 0, 1 | default: customer.name | slice: 0, 1 | default: 'E' | upcase }}
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <h1 class="cust-hero-name">{{ customer.name | default: 'Valued Customer' }}</h1>
+              <span class="cust-badge">Verified Customer</span>
+            </div>
+            <p class="cust-hero-sub">
+              {{ customer.email }}
+              {% if customer.default_address.city != blank %} • {{ customer.default_address.city }}, Pakistan{% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="cust-hero-actions">
+          <a href="{{ routes.account_addresses_url }}" class="cust-btn-outline">
+            📍 Manage Addresses ({{ customer.addresses_count | default: 0 }})
+          </a>
+          <a href="{{ routes.account_logout_url }}" class="cust-btn-signout">
+            Sign Out
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="cust-stats-grid">
+        <div class="cust-stat-card" onclick="window.switchCustAccountTab('orders')">
+          <span class="cust-stat-icon">🛍️</span>
+          <div>
+            <span class="cust-stat-label">Store Orders</span>
+            <strong class="cust-stat-val">{{ customer.orders_count | default: 0 }}</strong>
+          </div>
+        </div>
+
+        <div class="cust-stat-card" onclick="window.switchCustAccountTab('custom')">
+          <span class="cust-stat-icon">✂️</span>
+          <div>
+            <span class="cust-stat-label">Customized Scrubs</span>
+            <strong class="cust-stat-val" id="cust-custom-count">0 Tracked</strong>
+          </div>
+        </div>
+
+        <div class="cust-stat-card" onclick="window.switchCustAccountTab('addresses')">
+          <span class="cust-stat-icon">📍</span>
+          <div>
+            <span class="cust-stat-label">Saved Addresses</span>
+            <strong class="cust-stat-val">{{ customer.addresses_count | default: 1 }}</strong>
+          </div>
+        </div>
+
+        <div class="cust-stat-card" onclick="window.openCustomizerModal ? window.openCustomizerModal() : (window.location.href='/pages/customizer')">
+          <span class="cust-stat-icon">🎨</span>
+          <div>
+            <span class="cust-stat-label">Customize Scrub</span>
+            <strong class="cust-stat-val" style="color: #008779; font-size: 13px;">Design New →</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <nav class="cust-tabs-nav" aria-label="Customer Account Navigation">
+        <button type="button" class="cust-tab-btn active" id="tab-cust-orders" onclick="window.switchCustAccountTab('orders')">
+          <span>🛍️</span>
+          <span>Order History</span>
+          <span class="cust-pill">{{ customer.orders_count | default: 0 }}</span>
+        </button>
+
+        <button type="button" class="cust-tab-btn" id="tab-cust-custom" onclick="window.switchCustAccountTab('custom')">
+          <span>✂️</span>
+          <span>My Customized Scrubs</span>
+          <span class="cust-pill" id="tab-cust-custom-pill">0</span>
+        </button>
+
+        <button type="button" class="cust-tab-btn" id="tab-cust-addresses" onclick="window.switchCustAccountTab('addresses')">
+          <span>📍</span>
+          <span>Saved Addresses</span>
+        </button>
+      </nav>
+
+      <!-- TAB 1: STORE ORDERS -->
+      <div class="cust-tab-pane active" id="pane-cust-orders">
+        <div class="cust-card">
+          <div class="cust-card-head">
+            <div>
+              <h2 class="cust-card-title">Order History</h2>
+              <p class="cust-card-desc">All purchases placed directly through the Enamels online catalog.</p>
+            </div>
+            <a href="/collections/all" class="cust-btn-primary">Browse Catalog</a>
+          </div>
+
+          {% if customer.orders.size > 0 %}
+            <div class="cust-table-wrap">
+              <table class="cust-table">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Payment</th>
+                    <th>Fulfillment</th>
+                    <th style="text-align: right;">Total</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for ord in customer.orders %}
+                    <tr>
+                      <td>
+                        <a href="{{ ord.customer_url }}" class="cust-order-name">{{ ord.name }}</a>
+                      </td>
+                      <td>{{ ord.created_at | date: "%d %b %Y" }}</td>
+                      <td>
+                        <span class="cust-status-pill cust-status--{{ ord.financial_status }}">
+                          {{ ord.financial_status_label }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="cust-status-pill cust-status--{{ ord.fulfillment_status | default: 'unfulfilled' }}">
+                          {{ ord.fulfillment_status_label }}
+                        </span>
+                      </td>
+                      <td style="text-align: right; font-weight: 700;">
+                        {{ ord.total_price | money }}
+                      </td>
+                      <td style="text-align: right;">
+                        <a href="{{ ord.customer_url }}" class="cust-btn-view">View Order →</a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="cust-empty-state">
+              <span style="font-size: 36px; display: block; margin-bottom: 10px;">🛍️</span>
+              <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 700; color: #102a43;">No orders yet</h3>
+              <p style="margin: 0 0 16px; font-size: 13px; color: #64748b;">Browse our clinical scrub collections and tailored lab coats.</p>
+              <a href="/collections/all" class="cust-btn-primary">Explore Products</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- TAB 2: MY CUSTOMIZED SCRUBS (Customer View Only) -->
+      <div class="cust-tab-pane" id="pane-cust-custom">
+        <div class="cust-card">
+          <div class="cust-card-head">
+            <div>
+              <h2 class="cust-card-title">My Customized Scrub Requests</h2>
+              <p class="cust-card-desc">Bespoke clinical scrubs tailored to your individual fit, colors, and monogram specifications.</p>
+            </div>
+            <button type="button" class="cust-btn-primary" onclick="window.openCustomizerModal ? window.openCustomizerModal() : (window.location.href='/pages/customizer')">
+              + Design Another Scrub
+            </button>
+          </div>
+
+          <!-- Customer Custom Orders Container (Populated via JS without exposing Admin functions) -->
+          <div id="cust-custom-orders-container">
+            <div class="cust-empty-state" id="cust-custom-empty">
+              <span style="font-size: 36px; display: block; margin-bottom: 10px;">✂️</span>
+              <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 700; color: #102a43;">No customized scrubs found</h3>
+              <p style="margin: 0 0 16px; font-size: 13px; color: #64748b;">Design your own bespoke scrubs with custom sizing, monogramming, and technical fabrics.</p>
+              <button type="button" class="cust-btn-primary" onclick="window.openCustomizerModal ? window.openCustomizerModal() : (window.location.href='/pages/customizer')">
+                Launch Scrub Customizer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SAVED ADDRESSES -->
+      <div class="cust-tab-pane" id="pane-cust-addresses">
+        <div class="cust-card">
+          <div class="cust-card-head">
+            <div>
+              <h2 class="cust-card-title">Default Shipping Address</h2>
+              <p class="cust-card-desc">Where your medical scrubs and clinic packages will be delivered.</p>
+            </div>
+            <a href="{{ routes.account_addresses_url }}" class="cust-btn-primary">Manage All Addresses</a>
+          </div>
+
+          {% if customer.default_address %}
+            <div class="cust-address-card">
+              <strong style="display: block; font-size: 15px; color: #102a43; margin-bottom: 6px;">{{ customer.default_address.name }}</strong>
+              <p style="margin: 0 0 4px; font-size: 13px; color: #475569;">{{ customer.default_address.address1 }}</p>
+              {% if customer.default_address.address2 != blank %}
+                <p style="margin: 0 0 4px; font-size: 13px; color: #475569;">{{ customer.default_address.address2 }}</p>
+              {% endif %}
+              <p style="margin: 0 0 4px; font-size: 13px; color: #475569;">
+                {{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}
+              </p>
+              <p style="margin: 0 0 8px; font-size: 13px; color: #475569;">{{ customer.default_address.country }}</p>
+              {% if customer.default_address.phone != blank %}
+                <p style="margin: 0; font-size: 12px; color: #64748b;">📞 {{ customer.default_address.phone }}</p>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="cust-empty-state">
+              <span style="font-size: 36px; display: block; margin-bottom: 10px;">📍</span>
+              <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 700; color: #102a43;">No address saved</h3>
+              <p style="margin: 0 0 16px; font-size: 13px; color: #64748b;">Add your clinic or home delivery address for faster checkout.</p>
+              <a href="{{ routes.account_addresses_url }}" class="cust-btn-primary">Add Address</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    {% else %}
+      <!-- Logged-out State -->
+      <div class="cust-login-required-card">
+        <div style="font-size: 48px; margin-bottom: 14px;">👤</div>
+        <h2 style="font-size: 22px; font-weight: 800; color: #102a43; margin: 0 0 8px;">Customer Sign In</h2>
+        <p style="font-size: 14px; color: #64748b; margin: 0 0 24px; max-width: 440px; margin-left: auto; margin-right: auto;">
+          Please sign in to your Enamels account to view your past orders, customized scrubs, and saved shipping addresses.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="{{ routes.account_login_url }}" class="cust-btn-primary" style="padding: 10px 24px;">Sign In to Account</a>
+          <a href="{{ routes.account_register_url }}" class="cust-btn-outline" style="padding: 10px 24px;">Create New Account</a>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<style>
+  .enamels-cust-account-wrap {
+    background-color: #f8fafc;
+    min-height: 75vh;
+    padding: 32px 16px 80px;
+    font-family: inherit;
+    color: #1e293b;
+  }
+  .cust-account-hero {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .cust-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cust-avatar-circle {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #102a43;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .cust-hero-name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #102a43;
+  }
+  .cust-badge {
+    background: #e6fffa;
+    color: #008779;
+    border: 1px solid #b2f5ea;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .cust-hero-sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .cust-hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cust-btn-outline {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: #102a43;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .cust-btn-outline:hover {
+    border-color: #008779;
+    color: #008779;
+  }
+  .cust-btn-signout {
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+  .cust-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 900px) {
+    .cust-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 500px) {
+    .cust-stats-grid { grid-template-columns: 1fr; }
+  }
+  .cust-stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .cust-stat-card:hover {
+    border-color: #008779;
+    transform: translateY(-2px);
+  }
+  .cust-stat-icon {
+    font-size: 24px;
+  }
+  .cust-stat-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .cust-stat-val {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    color: #102a43;
+    margin-top: 2px;
+  }
+  .cust-tabs-nav {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+    overflow-x: auto;
+  }
+  .cust-tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .cust-tab-btn.active {
+    color: #008779;
+    border-bottom-color: #008779;
+  }
+  .cust-pill {
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  .cust-tab-btn.active .cust-pill {
+    background: #e6fffa;
+    color: #008779;
+  }
+  .cust-tab-pane {
+    display: none;
+  }
+  .cust-tab-pane.active {
+    display: block;
+  }
+  .cust-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .cust-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 20px;
+  }
+  .cust-card-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #102a43;
+  }
+  .cust-card-desc {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+  .cust-btn-primary {
+    background: #102a43;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .cust-btn-primary:hover {
+    background: #008779;
+  }
+  .cust-table-wrap {
+    overflow-x: auto;
+  }
+  .cust-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .cust-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+  .cust-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+  .cust-order-name {
+    font-weight: 700;
+    color: #008779;
+    text-decoration: none;
+  }
+  .cust-order-name:hover {
+    text-decoration: underline;
+  }
+  .cust-status-pill {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: capitalize;
+  }
+  .cust-status--paid { background: #dcfce7; color: #15803d; }
+  .cust-status--pending { background: #fef3c7; color: #b45309; }
+  .cust-status--fulfilled { background: #dbeafe; color: #1d4ed8; }
+  .cust-status--unfulfilled { background: #f1f5f9; color: #475569; }
+  .cust-btn-view {
+    font-size: 12px;
+    font-weight: 700;
+    color: #008779;
+    text-decoration: none;
+  }
+  .cust-empty-state {
+    text-align: center;
+    padding: 40px 16px;
+  }
+  .cust-address-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    max-width: 400px;
+  }
+  .cust-login-required-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    max-width: 600px;
+    margin: 40px auto;
+  }
+  .cust-custom-item-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+</style>
+
+<script>
+  (function() {
+    window.switchCustAccountTab = function(tabName) {
+      document.querySelectorAll('.cust-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.cust-tab-pane').forEach(function(p) { p.classList.remove('active'); });
+
+      var btn = document.getElementById('tab-cust-' + tabName);
+      var pane = document.getElementById('pane-cust-' + tabName);
+      if (btn) btn.classList.add('active');
+      if (pane) pane.classList.add('active');
+    };
+
+    function loadCustomerCustomScrubs() {
+      var customerEmail = {{ customer.email | default: '' | json }};
+      var container = document.getElementById('cust-custom-orders-container');
+      var emptyEl = document.getElementById('cust-custom-empty');
+      var countEl = document.getElementById('cust-custom-count');
+      var pillEl = document.getElementById('tab-cust-custom-pill');
+
+      if (!container) return;
+
+      var allCustom = [];
+      try {
+        var raw = localStorage.getItem('enamels_custom_orders');
+        if (raw) allCustom = JSON.parse(raw);
+      } catch (e) {}
+
+      // Filter only orders matching this customer's email or phone (customer-facing isolation)
+      var myOrders = allCustom.filter(function(o) {
+        if (!customerEmail) return true;
+        return (o.customer && o.customer.email && o.customer.email.toLowerCase() === customerEmail.toLowerCase());
+      });
+
+      if (countEl) countEl.textContent = myOrders.length + ' Tracked';
+      if (pillEl) pillEl.textContent = myOrders.length;
+
+      if (myOrders.length === 0) {
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+      }
+
+      if (emptyEl) emptyEl.style.display = 'none';
+      var html = '';
+
+      myOrders.forEach(function(o) {
+        var statusLabel = o.status || 'Order Placed';
+        var statusBadge = '<span class="cust-status-pill cust-status--pending">⏳ Payment Pending Verification</span>';
+        if (o.status === 'APPROVED' || o.status === 'Approved' || o.paymentStatus === 'PAID_CARD') {
+          statusBadge = '<span class="cust-status-pill cust-status--paid">🧵 In Production</span>';
+        }
+
+        html += '<div class="cust-custom-item-card">';
+        html += '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid #e2e8f0; padding-bottom:10px; margin-bottom:12px;">';
+        html += '<div>';
+        html += '<strong style="color:#102a43; font-size:15px;">Custom Scrub Order ' + (o.refId || '#CS-Pending') + '</strong>';
+        html += '<span style="font-size:12px; color:#64748b; margin-left:8px;">' + (o.timestamp ? new Date(o.timestamp).toLocaleDateString() : 'Recent') + '</span>';
+        html += '</div>';
+        html += statusBadge;
+        html += '</div>';
+
+        html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; font-size:13px; color:#475569;">';
+        if (o.article) html += '<div><strong>Design Series:</strong> ' + (o.article.name || 'Sprinter') + '</div>';
+        if (o.fabric) html += '<div><strong>Fabric:</strong> ' + (o.fabric.name || 'Velora') + '</div>';
+        if (o.color) html += '<div><strong>Garment Color:</strong> ' + (o.color.name || 'Royal Navy') + '</div>';
+        if (o.size) html += '<div><strong>Size Fit:</strong> ' + (o.size.label || 'Tailored Custom') + '</div>';
+        if (o.personalization && o.personalization.name) html += '<div><strong>Monogram:</strong> ' + o.personalization.name + '</div>';
+        if (o.pricing && o.pricing.finalTotal) html += '<div><strong>Total Amount:</strong> PKR ' + Number(o.pricing.finalTotal).toLocaleString() + '</div>';
+        html += '</div>';
+
+        html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed #e2e8f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">';
+        html += '<span style="font-size:12px; color:#64748b;">Need updates on your scrub? Contact support on WhatsApp with your Reference ID.</span>';
+        html += '<a href="https://wa.me/923011331133?text=Hello%20Enamels%2C%20checking%20status%20for%20Custom%20Scrub%20' + (o.refId || '') + '" target="_blank" class="cust-btn-view">Track with Support ↗</a>';
+        html += '</div>';
+
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadCustomerCustomScrubs);
+    } else {
+      loadCustomerCustomScrubs();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Customer Account",
+  "settings": []
+}
+{% endschema %}

@@ -355,7 +355,7 @@
       <div class="enamels-pane-head">
         <span class="pane-eyebrow">Step 3 of 7</span>
         <h3 class="pane-title">Select Scrub Design Collection</h3>
-        <p class="pane-subtitle">Browse collections dynamically from Shopify Admin. Click any collection to view its designs.</p>
+        <p class="pane-subtitle">Select a scrub collection to view available bespoke styles and colors.</p>
       </div>
 
       <!-- 3A. Dynamic Collection Category Selector -->
@@ -789,12 +789,12 @@
                   onchange="window.enamelsHandleLogoFileUpload(this)"
                   style="font-size: 12px; margin-top: 4px;"
                 >
-                <span class="form-hint">Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File is preserved for admin embroidery setup.</span>
+                <span class="form-hint">Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File will be digitized for high-precision embroidery.</span>
                 <div id="wiz-logo-file-preview-strip" style="display: none; margin-top: 10px; align-items: center; gap: 10px; background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
                   <img id="wiz-logo-thumb-preview" src="" alt="Logo Preview" style="width: 36px; height: 36px; object-fit: contain; border-radius: 4px; display: none;">
                   <div style="font-size: 12px;">
                     <strong id="wiz-logo-file-name" style="color: #102a43; display: block;">logo.png</strong>
-                    <span id="wiz-logo-file-size" style="color: #64748b; font-size: 11px;">1.2 MB • Ready for Admin Desk</span>
+                    <span id="wiz-logo-file-size" style="color: #64748b; font-size: 11px;">1.2 MB • Attached successfully</span>
                   </div>
                 </div>
               </div>
@@ -1060,14 +1060,6 @@
             <span class="btn-submit-loader" style="display: none;">Securing Order & Redirecting...</span>
           </button>
         </div>
-
-        <!-- Sample Demonstration Previews Link (Mandatory Requirement) -->
-        <div style="margin-top: 14px; text-align: center;">
-          <a href="/pages/order-confirmation?demo=1" target="_blank" style="font-size: 13px; font-weight: 700; color: #008779; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; background: #f0fdfa; border: 1.5px solid #99f6e4; border-radius: 8px;">
-            <span>👁 Preview Sample Customer Confirmation & Admin Order View →</span>
-          </a>
-        </div>
-
       </div>
 
       <div style="margin-top: 24px;">
@@ -2907,7 +2899,7 @@
 
       if (strip) strip.style.display = 'flex';
       if (nameEl) nameEl.textContent = file.name;
-      if (sizeEl) sizeEl.textContent = formattedSize + ' • Ready for Admin Embroidery Desk';
+      if (sizeEl) sizeEl.textContent = formattedSize + ' • Attached successfully';
 
       if (thumbEl && (ext === 'png' || ext === 'jpg' || ext === 'jpeg' || ext === 'svg')) {
         var reader = new FileReader();
@@ -3047,7 +3039,7 @@
       props['Customer Phone'] = cd.phone;
       props['Customer Email'] = cd.email;
       props['Delivery Address'] = cd.address + ', ' + cd.city + (cd.province ? ', ' + cd.province : '') + (cd.zip ? ' ' + cd.zip : '') + ', ' + (cd.country || 'Pakistan');
-      props['Payment Status'] = state.paymentMethod === 'card' ? 'Card — verified by Shopify gateway at checkout' : 'Bank Transfer — PENDING admin verification';
+      props['Payment Status'] = state.paymentMethod === 'card' ? 'Card — verified by Shopify gateway at checkout' : 'Bank Transfer — Pending Payment Verification';
 
       var cartAttrs = {
         'Order Type': 'Customized Scrub',

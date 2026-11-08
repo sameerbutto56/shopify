@@ -1,10 +1,19 @@
 {% comment %}
   Enamels Customer & Administrator Account Template
-  Renders the unified Enamels Admin Profile Portal with:
-  - Standard Retail Orders
-  - Dedicated Customize Orders Desk (Bespoke Scrub Specifications & Verification)
-  - Dedicated Bulk Orders Query Desk (Institutional Orders)
-  - Address & Profile Settings
+  Separates retail customer experience from internal Store Administrator profile.
+  - Normal customers see dedicated Customer Account Dashboard (order history, custom scrub status, addresses).
+  - Authorized Store Staff / Admins see the comprehensive Administrative Desks (Customize Orders, Bulk Queries, Store Controls).
 {% endcomment %}
 
-{% section 'enamels-admin-profile' %}
+{%- liquid
+  assign is_store_admin = false
+  if customer and (customer.tags contains 'admin' or customer.tags contains 'staff' or customer.tags contains 'owner')
+    assign is_store_admin = true
+  endif
+-%}
+
+{%- if is_store_admin -%}
+  {% section 'enamels-admin-profile' %}
+{%- else -%}
+  {% section 'enamels-customer-account' %}
+{%- endif -%}

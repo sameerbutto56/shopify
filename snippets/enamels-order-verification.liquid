@@ -106,28 +106,15 @@
        ========================================================================= -->
   <div class="enamels-preview-deck" id="enamels-order-preview-deck">
     
-    <!-- Top Preview Controller & Watermark -->
+    <!-- Top Preview Header -->
     <div class="preview-deck-header">
       <div class="preview-deck-tag">
         <span class="pulse-indicator"></span>
-        <span>SAMPLE DEMONSTRATION DATA • CUSTOMIZED SCRUB ORDER</span>
-      </div>
-      <div class="preview-mode-switch">
-        <button type="button" class="btn-mode-tab active" id="tab-btn-cust" onclick="window.enamelsSwitchPreviewTab('cust')">
-          👤 Customer Receipt View
-        </button>
-        <button type="button" class="btn-mode-tab" id="tab-btn-admin" onclick="window.enamelsSwitchPreviewTab('admin')">
-          ✂️ Customize Orders Desk (Bespoke Specs)
-        </button>
-        <a href="/pages/bulk-orders?admin=1" class="btn-mode-tab" style="text-decoration: none; display: inline-flex; align-items: center;">
-          🏥 Bulk Enquiries Desk →
-        </a>
+        <span>ORDER CONFIRMATION &amp; RECEIPT</span>
       </div>
     </div>
 
-    <!-- =====================================================================
-         TAB A: CUSTOMER ORDER CONFIRMATION PREVIEW
-         ===================================================================== -->
+    <!-- CUSTOMER ORDER CONFIRMATION -->
     <div class="preview-tab-pane active" id="pane-cust-preview">
       <div class="cust-preview-card">
         
@@ -237,6 +224,7 @@
       </div>
     </div>
 
+    {% if customer.tags contains 'admin' or customer.tags contains 'staff' or customer.tags contains 'owner' %}
     <!-- =====================================================================
          TAB B: ADMIN ORDER DETAILS PREVIEW (The 9 Organized Sections)
          ===================================================================== -->
@@ -441,6 +429,7 @@
 
       </div>
     </div>
+    {% endif %}
 
   </div>
 
