@@ -282,6 +282,49 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
   font-size: 15px;
 }
 
+/* Store Admin Quick Launch Bar */
+.enamels-admin-top-bar {
+  background: #0f172a;
+  color: #f8fafc;
+  font-family: inherit;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1000;
+}
+.admin-bar-badge {
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.admin-bar-link {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+  font-size: 11px;
+}
+.admin-bar-link:hover {
+  background: #008779;
+  color: #ffffff;
+}
+.admin-bar-link--shopify {
+  background: rgba(37, 99, 235, 0.2);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  color: #93c5fd;
+}
+.admin-bar-link--shopify:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
 .cart-bubble-badge {
   background-color: var(--enamels-accent-red);
   color: #ffffff;

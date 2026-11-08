@@ -735,86 +735,89 @@
 
 <script>
   (function () {
-    const section = document.getElementById('enamels-cats-{{ section.id }}');
-    if (!section) return;
+    function initEnamelsCategories() {
+      const section = document.getElementById('enamels-cats-{{ section.id }}');
+      if (!section) return;
 
-    const toggleBtn = section.querySelector('[data-cat-toggle]');
-    const drawer = section.querySelector('[data-cat-drawer]');
-    const labelSpan = section.querySelector('.enamels-cat-toggle-btn__label');
-    const track = section.querySelector('[data-carousel-track]');
-    const prevBtn = section.querySelector('[data-cat-prev]');
-    const nextBtn = section.querySelector('[data-cat-next]');
+      const toggleBtn = section.querySelector('[data-cat-toggle]');
+      const drawer = section.querySelector('[data-cat-drawer]');
+      const labelSpan = section.querySelector('.enamels-cat-toggle-btn__label');
+      const track = section.querySelector('[data-carousel-track]');
+      const prevBtn = section.querySelector('[data-cat-prev]');
+      const nextBtn = section.querySelector('[data-cat-next]');
 
-    // Carousel Arrow Navigation
-    if (track && prevBtn && nextBtn) {
-      const scrollStep = () => track.clientWidth * 0.75;
+      // Carousel Arrow Navigation
+      if (track && prevBtn && nextBtn) {
+        const scrollStep = () => track.clientWidth * 0.75;
 
-      prevBtn.addEventListener('click', () => {
-        track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
-      });
+        prevBtn.onclick = () => {
+          track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+        };
 
-      nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
-      });
+        nextBtn.onclick = () => {
+          track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+        };
 
-      // Update arrow visibility based on scroll position
-      const updateArrows = () => {
-        const atStart = track.scrollLeft <= 5;
-        const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
-        prevBtn.style.opacity = atStart ? '0.3' : '1';
-        prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
-        nextBtn.style.opacity = atEnd ? '0.3' : '1';
-        nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
-      };
+        // Update arrow visibility based on scroll position
+        const updateArrows = () => {
+          const atStart = track.scrollLeft <= 5;
+          const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
+          prevBtn.style.opacity = atStart ? '0.3' : '1';
+          prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
+          nextBtn.style.opacity = atEnd ? '0.3' : '1';
+          nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+        };
 
-      track.addEventListener('scroll', updateArrows, { passive: true });
-      window.addEventListener('resize', updateArrows, { passive: true });
-      updateArrows();
-    }
+        track.addEventListener('scroll', updateArrows, { passive: true });
+        window.addEventListener('resize', updateArrows, { passive: true });
+        updateArrows();
+      }
 
-    // View All / Show Less Expand & Collapse
-    if (toggleBtn && drawer && labelSpan) {
-      const labelCollapsed = labelSpan.getAttribute('data-label-collapsed') || 'View all';
-      const labelExpanded = labelSpan.getAttribute('data-label-expanded') || 'Show less';
+      // View All / Show Less Expand & Collapse
+      if (toggleBtn && drawer && labelSpan) {
+        const labelCollapsed = labelSpan.getAttribute('data-label-collapsed') || 'View all';
+        const labelExpanded = labelSpan.getAttribute('data-label-expanded') || 'Show less';
 
-      toggleBtn.addEventListener('click', function () {
-        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.onclick = function () {
+          const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
 
-        if (!isExpanded) {
-          // EXPAND
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          drawer.setAttribute('aria-hidden', 'false');
-          labelSpan.textContent = labelExpanded;
-        } else {
-          // COLLAPSE
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          drawer.setAttribute('aria-hidden', 'true');
-          labelSpan.textContent = labelCollapsed;
+          if (!isExpanded) {
+            // EXPAND
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            drawer.setAttribute('aria-hidden', 'false');
+            labelSpan.textContent = labelExpanded;
+          } else {
+            // COLLAPSE
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            drawer.setAttribute('aria-hidden', 'true');
+            labelSpan.textContent = labelCollapsed;
 
-          // Graceful scroll adjustment if customer scrolled past the header
-          const rect = section.getBoundingClientRect();
-          if (rect.top < 0) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Graceful scroll adjustment if customer scrolled past the header
+            const rect = section.getBoundingClientRect();
+            if (rect.top < 0) {
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
           }
-        }
-      });
-      document.addEventListener('shopify:section:load', function(event) {
-        if (event.detail && event.detail.sectionId === '{{ section.id }}') {
-          initSection();
-        }
-      });
-      document.addEventListener('shopify:section:select', function(event) {
-        if (event.detail && event.detail.sectionId === '{{ section.id }}') {
-          initSection();
-        }
-      });
+        };
+      }
     }
 
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initSection);
+      document.addEventListener('DOMContentLoaded', initEnamelsCategories);
     } else {
-      initSection();
+      initEnamelsCategories();
     }
+
+    document.addEventListener('shopify:section:load', function(event) {
+      if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+        initEnamelsCategories();
+      }
+    });
+    document.addEventListener('shopify:section:select', function(event) {
+      if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+        initEnamelsCategories();
+      }
+    });
   })();
 </script>
 

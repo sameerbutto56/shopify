@@ -412,64 +412,14 @@
       "type": "enamels-frontpage-lookbook",
       "settings": {
         "title": "Join the Enamels Club",
+        "subtitle": "Clinical lifestyle stories & real medical wear in motion",
+        "collection": "all",
         "btn_text": "Add to cart",
         "padding_top": 16,
         "padding_bottom": 36
       },
-      "blocks": {
-        "lb_1": {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Suit",
-            "product_price": "PKR 8,499",
-            "fallback_asset": "enamels-lookbook-1.jpg",
-            "link": "/collections/women-scrubs"
-          }
-        },
-        "lb_2": {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Suit",
-            "product_price": "PKR 10,999",
-            "fallback_asset": "enamels-lookbook-2.jpg",
-            "link": "/collections/women-scrubs"
-          }
-        },
-        "lb_3": {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Suit",
-            "product_price": "PKR 10,999",
-            "fallback_asset": "enamels-lookbook-3.jpg",
-            "link": "/collections/women-scrubs"
-          }
-        },
-        "lb_4": {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Dress",
-            "product_price": "PKR 7,499",
-            "fallback_asset": "enamels-lookbook-4.jpg",
-            "link": "/collections/women-scrubs"
-          }
-        },
-        "lb_5": {
-          "type": "lookbook_card",
-          "settings": {
-            "product_title": "Women Kurti",
-            "product_price": "PKR 4,999",
-            "fallback_asset": "enamels-lookbook-5.jpg",
-            "link": "/collections/women-scrubs"
-          }
-        }
-      },
-      "block_order": [
-        "lb_1",
-        "lb_2",
-        "lb_3",
-        "lb_4",
-        "lb_5"
-      ]
+      "blocks": {},
+      "block_order": []
     }
   },
   "order": [

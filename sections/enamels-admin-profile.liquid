@@ -1315,8 +1315,7 @@
       window.renderProfileBulkQueries();
     };
 
-    // 4. Initial Route & Hash Handlers
-    document.addEventListener('DOMContentLoaded', function() {
+    function initAdminProfile() {
       window.renderProfileCustomOrders();
       window.renderProfileBulkQueries();
 
@@ -1329,6 +1328,18 @@
         window.switchProfileTab('account-details');
       } else if (hash === 'regular-orders') {
         window.switchProfileTab('regular-orders');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAdminProfile);
+    } else {
+      initAdminProfile();
+    }
+
+    document.addEventListener('shopify:section:load', function(event) {
+      if (event.detail && event.detail.sectionId === '{{ section.id }}') {
+        initAdminProfile();
       }
     });
 

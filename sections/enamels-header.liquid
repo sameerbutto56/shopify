@@ -36,10 +36,17 @@
   assign use_custom_menu = section.settings.use_custom_shopify_menu | default: false
   assign custom_menu = linklists[section.settings.custom_menu]
 
+  assign nav_men_label = section.settings.nav_men_label | default: 'Men'
+  assign nav_women_label = section.settings.nav_women_label | default: 'Women'
   assign nav_studio_label = section.settings.nav_studio_label | default: 'Customize Your Own Scrubs'
   assign nav_studio_badge = section.settings.nav_studio_badge | default: 'STUDIO'
   assign nav_bulk_orders_label = section.settings.nav_bulk_orders_label | default: 'Bulk Orders'
   assign nav_bulk_orders_badge = section.settings.nav_bulk_orders_badge | default: 'INSTITUTIONAL'
+  assign nav_scrubs_label = section.settings.nav_scrubs_label | default: 'Scrubs'
+  assign nav_lab_coats_label = section.settings.nav_lab_coats_label | default: 'Lab Coats'
+  assign nav_caps_label = section.settings.nav_caps_label | default: 'Caps'
+  assign nav_sleeves_label = section.settings.nav_sleeves_label | default: 'Sleeves'
+  assign nav_accessories_label = section.settings.nav_accessories_label | default: 'Essentials'
   assign nav_home_fitting_label = section.settings.nav_home_fitting_label | default: 'Book a Home Fitting'
   assign nav_home_fitting_badge = section.settings.nav_home_fitting_badge | default: 'LAHORE ONLY'
 
@@ -93,6 +100,27 @@
     assign show_home_service = false
   endif
 -%}
+
+{%- if request.design_mode or customer.tags contains 'admin' or customer.tags contains 'staff' or customer.email contains 'enamels' or request.path contains 'admin' or request.query_string contains 'admin=true' -%}
+  <aside class="enamels-admin-top-bar" id="enamels-admin-bar" aria-label="Store Admin Navigation">
+    <div class="page-container" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 6px 16px;">
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <span class="admin-bar-badge">⚡ STORE ADMIN</span>
+        <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">Desks:</span>
+        <a href="/pages/admin-portal#customize-orders" class="admin-bar-link">✂️ Customize Orders Desk</a>
+        <a href="/pages/admin-portal#bulk-enquiries" class="admin-bar-link">📦 Bulk Order Queries Desk</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <a href="https://admin.shopify.com/store/enamels-online/orders?query=tag%3Acustomized-order" target="_blank" class="admin-bar-link admin-bar-link--shopify" title="Opens Customize Orders in Shopify Admin">
+          Shopify Admin: Customize Orders ↗
+        </a>
+        <a href="https://admin.shopify.com/store/enamels-online/orders?query=-tag%3Acustomized-order" target="_blank" class="admin-bar-link admin-bar-link--shopify" title="Opens Regular Orders in Shopify Admin">
+          Shopify Admin: Regular Orders ↗
+        </a>
+      </div>
+    </div>
+  </aside>
+{%- endif -%}
 
 <header
   class="enamels-header {% if enable_sticky %}is-sticky-header{% endif %}"
@@ -264,7 +292,7 @@
               class="enamels-nav-link"
               onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('men'); return false; }"
             >
-              <span class="nav-link-text">Men</span>
+              <span class="nav-link-text">{{ nav_men_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -277,7 +305,7 @@
               class="enamels-nav-link"
               onclick="if (typeof window.navigateToGender === 'function') { window.navigateToGender('women'); return false; }"
             >
-              <span class="nav-link-text">Women</span>
+              <span class="nav-link-text">{{ nav_women_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -320,7 +348,7 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <span class="nav-link-text">Scrubs</span>
+              <span class="nav-link-text">{{ nav_scrubs_label | escape }}</span>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="nav-arrow-icon" aria-hidden="true">
                 <path d="M6 9l6 6 6-6"/>
               </svg>
@@ -357,7 +385,7 @@
               href="{{ routes.collections_url }}/all?category=lab-coats"
               class="enamels-nav-link"
             >
-              <span class="nav-link-text">Lab Coats</span>
+              <span class="nav-link-text">{{ nav_lab_coats_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -369,7 +397,7 @@
               href="{{ routes.collections_url }}/all?category=caps"
               class="enamels-nav-link"
             >
-              <span class="nav-link-text">Caps</span>
+              <span class="nav-link-text">{{ nav_caps_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -381,19 +409,19 @@
               href="{{ routes.collections_url }}/all?category=sleeves"
               class="enamels-nav-link"
             >
-              <span class="nav-link-text">Sleeves</span>
+              <span class="nav-link-text">{{ nav_sleeves_label | escape }}</span>
             </a>
           </li>
           {% endif %}
 
-          <!-- 9. ACCESSORIES -->
+          <!-- 9. ACCESSORIES / ESSENTIALS -->
           {% if show_accessories %}
           <li class="enamels-nav-item" id="nav-item-accessories">
             <a
               href="{{ routes.collections_url }}/all?category=accessories"
               class="enamels-nav-link"
             >
-              <span class="nav-link-text">Accessories</span>
+              <span class="nav-link-text">{{ nav_accessories_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -469,7 +497,7 @@
           {% if show_men %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?gender=men" onclick="if(typeof window.navigateToGender==='function'){window.navigateToGender('men');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Men</span>
+              <span>{{ nav_men_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -478,7 +506,7 @@
           {% if show_women %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?gender=women" onclick="if(typeof window.navigateToGender==='function'){window.navigateToGender('women');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Women</span>
+              <span>{{ nav_women_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -497,7 +525,7 @@
           {% if show_bulk_orders %}
           <li class="mobile-nav-item">
             <a href="/pages/bulk-orders" onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal();}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
-              <span>{{ nav_bulk_orders_label | default: 'Bulk Orders (10+ Scrubs)' | escape }}</span>
+              <span>{{ nav_bulk_orders_label | default: 'Bulk Orders' | escape }}</span>
               <span class="nav-badge-pill" style="background: #0284c7; color: #ffffff;">{{ nav_bulk_orders_badge | default: 'INSTITUTIONAL' | escape }}</span>
             </a>
           </li>
@@ -509,7 +537,7 @@
           {% if show_scrubs %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=scrubs" onclick="if(typeof window.navigateToView==='function') window.navigateToView('category-scrubs'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-link">
-              <span>Scrubs Collection</span>
+              <span>{{ nav_scrubs_label | escape }}</span>
             </a>
             <div class="mobile-nav-sublist">
               <a href="{{ routes.collections_url }}/all?category=scrubs&article=sprinter" onclick="if(typeof window.navigateToBrand==='function') window.navigateToBrand('Sprinter'); if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer(); return false;" class="mobile-nav-sublink">↳ Sprinter Series (4-Way Stretch)</a>
@@ -524,7 +552,7 @@
           {% if show_lab_coats %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=lab-coats" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Lab Coats</span>
+              <span>{{ nav_lab_coats_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -533,7 +561,7 @@
           {% if show_caps %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=caps" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Caps (BunFit™)</span>
+              <span>{{ nav_caps_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -542,7 +570,7 @@
           {% if show_sleeves %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=sleeves" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Sleeves</span>
+              <span>{{ nav_sleeves_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -551,7 +579,7 @@
           {% if show_accessories %}
           <li class="mobile-nav-item">
             <a href="{{ routes.collections_url }}/all?category=accessories" onclick="if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
-              <span>Accessories</span>
+              <span>{{ nav_accessories_label | escape }}</span>
             </a>
           </li>
           {% endif %}
@@ -755,12 +783,24 @@
     },
     {
       "type": "header",
-      "content": "Studio & Bulk Order Badges"
+      "content": "Navigation Item Custom Labels"
+    },
+    {
+      "type": "text",
+      "id": "nav_men_label",
+      "label": "1. Men Nav Label",
+      "default": "Men"
+    },
+    {
+      "type": "text",
+      "id": "nav_women_label",
+      "label": "2. Women Nav Label",
+      "default": "Women"
     },
     {
       "type": "text",
       "id": "nav_studio_label",
-      "label": "Customizer Option Label",
+      "label": "3. Customizer Option Label",
       "default": "Customize Your Own Scrubs"
     },
     {
@@ -772,7 +812,7 @@
     {
       "type": "text",
       "id": "nav_bulk_orders_label",
-      "label": "Bulk Orders Option Label",
+      "label": "4. Bulk Orders Option Label",
       "default": "Bulk Orders"
     },
     {
@@ -783,9 +823,39 @@
     },
     {
       "type": "text",
+      "id": "nav_scrubs_label",
+      "label": "5. Scrubs Option Label",
+      "default": "Scrubs"
+    },
+    {
+      "type": "text",
+      "id": "nav_lab_coats_label",
+      "label": "6. Lab Coats Option Label",
+      "default": "Lab Coats"
+    },
+    {
+      "type": "text",
+      "id": "nav_caps_label",
+      "label": "7. Caps Option Label",
+      "default": "Caps"
+    },
+    {
+      "type": "text",
+      "id": "nav_sleeves_label",
+      "label": "8. Sleeves Option Label",
+      "default": "Sleeves"
+    },
+    {
+      "type": "text",
+      "id": "nav_accessories_label",
+      "label": "9. Essentials / Accessories Option Label",
+      "default": "Essentials"
+    },
+    {
+      "type": "text",
       "id": "nav_home_fitting_label",
-      "label": "Home Fitting Option Label",
-      "default": "BOOK A HOME FITTING"
+      "label": "10. Home Fitting Option Label",
+      "default": "Book a Home Fitting"
     },
     {
       "type": "text",
