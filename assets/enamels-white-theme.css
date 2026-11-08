@@ -4140,6 +4140,9 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
   overflow: hidden !important;
   background: var(--product-thumbnail-bg, #f8fafc) !important;
   box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   cursor: pointer;
 }
 
@@ -4152,7 +4155,9 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
   max-width: 100% !important;
   max-height: 100% !important;
   object-fit: var(--product-thumbnail-fit, contain) !important;
-  object-position: var(--product-thumbnail-pos, center) !important;
+  object-position: var(--product-thumbnail-pos, center center) !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
   display: block !important;
   margin: 0 !important;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
@@ -4942,7 +4947,7 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
 }
 .frubs-brand-tile-media {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 2 / 3 !important;
   overflow: hidden;
   background: #e2e8f0;
   position: relative;

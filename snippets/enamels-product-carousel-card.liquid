@@ -152,6 +152,8 @@
     <div class="enamels-carousel-card__info">
       {%- if prod_series != blank -%}
         <span class="enamels-carousel-card__series">{{ prod_series }}</span>
+      {%- else -%}
+        <span class="enamels-carousel-card__series" style="visibility: hidden;">&nbsp;</span>
       {%- endif -%}
 
       <h3 class="enamels-carousel-card__title">{{ prod.title | escape }}</h3>

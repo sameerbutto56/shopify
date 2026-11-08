@@ -17,6 +17,9 @@ export class PaginatedListAspectRatioHelper {
     '3_4': '0.75',
     '4_5': '0.8',
     landscape: '1.778',
+    adapt: '0.667',
+    auto: '0.667',
+    natural: '0.667'
   };
 
   /**
@@ -33,9 +36,9 @@ export class PaginatedListAspectRatioHelper {
    */
   processNewElements() {
     if (!Shopify.designMode) return;
-    // Wait for the DOM to update
+    // Wait for the DOM to update and enforce uniform aspect ratio
     requestAnimationFrame(() => {
-      this.#imageRatioSetting === 'adapt' ? this.#fixAdaptiveAspectRatios() : this.#applyFixedAspectRatio();
+      this.#applyFixedAspectRatio();
     });
   }
 

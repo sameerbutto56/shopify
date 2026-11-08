@@ -283,6 +283,9 @@
   background-color: #f1f5f9 !important;
   margin-bottom: 10px;
   aspect-ratio: var(--card-aspect-ratio, 2 / 3) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   box-sizing: border-box !important;
 }
 
@@ -297,7 +300,9 @@
   max-width: 100% !important;
   max-height: 100% !important;
   object-fit: var(--card-image-fit, contain) !important;
-  object-position: var(--card-image-pos, center) !important;
+  object-position: var(--card-image-pos, center center) !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
   display: block !important;
   margin: 0 !important;
   transition: opacity 0.3s ease, transform 0.4s ease;
@@ -368,7 +373,9 @@
   color: #008779;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  line-height: 1.2;
+  line-height: 1.4;
+  min-height: 14px;
+  display: block;
 }
 
 .enamels-carousel-card__title {

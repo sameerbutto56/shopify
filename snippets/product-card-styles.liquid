@@ -67,21 +67,24 @@
 
   /* 1200x1800 (2:3 Portrait) Product Card Presentation Standard */
   .card-gallery {
-    aspect-ratio: var(--gallery-aspect-ratio, 2 / 3);
-    background-color: var(--product-card-bg, #f8fafc);
+    aspect-ratio: var(--gallery-aspect-ratio, 2 / 3) !important;
+    background-color: var(--product-card-bg, #f8fafc) !important;
     border-radius: var(--product-card-corner-radius, 8px);
-    overflow: hidden;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
   }
 
   .card-gallery :is(img, .product-media-container img, slideshow-slide img) {
     object-fit: var(--product-media-fit, contain) !important;
-    object-position: var(--product-media-position, center) !important;
-    width: 100%;
-    height: 100%;
-    display: block;
+    object-position: var(--product-media-position, center center) !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 6px !important;
+    box-sizing: border-box !important;
+    display: block !important;
   }
 {% endstylesheet %}

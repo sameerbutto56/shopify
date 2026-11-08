@@ -82,7 +82,7 @@
   window.ThemeSettings = {
     enable_card_hover_slideshow: {{ section.settings.enable_card_hover_slideshow | default: true | json }},
     card_hover_interval: {{ section.settings.card_hover_interval | default: 1400 | json }},
-    card_image_aspect_ratio: {{ section.settings.card_image_aspect_ratio | default: '3/4' | json }},
+    card_image_aspect_ratio: {{ section.settings.card_image_aspect_ratio | default: '2/3' | json }},
     show_card_image_dots: {{ section.settings.show_card_image_dots | default: true | json }},
     card_transition_style: {{ section.settings.card_transition_style | default: 'crossfade' | json }}
   };
@@ -2423,7 +2423,7 @@
       const activeImg = activeImages[0] || (window.ShopifyThemeAssets?.[item.image] || item.image);
       const displayImg = window.ShopifyThemeAssets?.[activeImg] || activeImg;
       const animDelay = Math.min(idx * 35, 280);
-      const aspectRatio = window.ThemeSettings?.card_image_aspect_ratio || '3/4';
+      const aspectRatio = window.ThemeSettings?.card_image_aspect_ratio || '2/3';
 
       const colorsHtml = colors.map(c => {
         const isSelected = c.name === activeColorName;
@@ -2456,7 +2456,7 @@
           onmouseleave="window.handleCardHoverLeave(this, '${item.id}')"
           style="animation-delay: ${animDelay}ms;"
         >
-          <div class="card-thumb-wrap" onclick="window.openProductStudio('${item.id}', window.getProductCardColor('${item.id}'))">
+          <div class="card-thumb-wrap" data-aspect="${aspectRatio}" onclick="window.openProductStudio('${item.id}', window.getProductCardColor('${item.id}'))">
             <img
               src="${displayImg}"
               alt="${cleanTitle}"
@@ -6143,11 +6143,12 @@
       "id": "card_image_aspect_ratio",
       "label": "Product Card Aspect Ratio",
       "options": [
-        { "value": "3/4", "label": "Portrait (3:4) - Editorial Recommended" },
+        { "value": "2/3", "label": "2:3 Portrait (1200x1800 Standard - Recommended)" },
+        { "value": "3/4", "label": "Portrait (3:4)" },
         { "value": "1/1", "label": "Square (1:1)" },
         { "value": "4/5", "label": "Classic Apparel (4:5)" }
       ],
-      "default": "3/4"
+      "default": "2/3"
     },
     {
       "type": "select",

@@ -74,16 +74,21 @@
 
   /* Standard 1200x1800 (2:3 Portrait) Card Presentation */
   .card-gallery {
-    aspect-ratio: var(--gallery-aspect-ratio, 2 / 3);
-    background-color: var(--product-card-bg, #f8fafc);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    aspect-ratio: var(--gallery-aspect-ratio, 2 / 3) !important;
+    background-color: var(--product-card-bg, #f8fafc) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
   }
 
   .card-gallery img {
     object-fit: var(--product-media-fit, contain) !important;
-    object-position: var(--product-media-position, center) !important;
+    object-position: var(--product-media-position, center center) !important;
+    padding: 6px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 {% endstylesheet %}

@@ -324,12 +324,11 @@
     }
   }
 
-  /* This triggers iOS < 16.4 */
+  /* Fallback for legacy browsers without relative color syntax - preserve 2:3 thumbnail ratio */
   @supports not (background-color: rgb(from red 150 g b / alpha)) {
-    /* Force aspect ratio to auto for iOS < 16.4 since it's not compatible with the infinite pagination */
     .product-grid .product-media,
     .product-grid .product-media-container {
-      aspect-ratio: auto;
+      aspect-ratio: var(--gallery-aspect-ratio, 2 / 3);
     }
   }
 

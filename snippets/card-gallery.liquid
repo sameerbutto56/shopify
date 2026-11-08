@@ -67,8 +67,8 @@
       assign ratio = custom_w | append: ' / ' | append: custom_h
     when 'landscape'
       assign ratio = '16 / 9'
-    when 'adapt'
-      assign ratio = product.featured_media.preview_image.aspect_ratio | default: '2 / 3'
+    when 'adapt', 'natural', 'auto'
+      assign ratio = '2 / 3'
   endcase
 
   assign card_media_fit = block_settings.image_fit | default: settings.product_card_image_fit | default: 'contain'

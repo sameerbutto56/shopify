@@ -99,6 +99,9 @@
     render 'product-thumb-ratio', choice: section.settings.card_aspect_ratio
   endcapture
   assign card_aspect = card_aspect | strip
+  if card_aspect == blank or card_aspect == 'auto' or card_aspect == 'natural'
+    assign card_aspect = '2 / 3'
+  endif
   assign card_fit = section.settings.card_image_fit
   if card_fit == blank or card_fit == 'inherit'
     assign card_fit = settings.product_card_image_fit | default: 'contain'
@@ -620,6 +623,8 @@
                   <span class="enamels-cat-card__series">
                     {{ prod_series_display }}
                   </span>
+                {% else %}
+                  <span class="enamels-cat-card__series enamels-cat-card__series--empty">&nbsp;</span>
                 {% endif %}
 
                 <span class="enamels-cat-card__title">{{ prod.title | escape }}</span>
@@ -1398,6 +1403,9 @@
     background-color: var(--cat-card-bg, #f8fafc) !important;
     margin-bottom: 8px;
     position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     box-sizing: border-box !important;
   }
@@ -1417,7 +1425,9 @@
     max-width: 100% !important;
     max-height: 100% !important;
     object-fit: var(--cat-card-fit, contain) !important;
-    object-position: var(--cat-card-pos, center) !important;
+    object-position: var(--cat-card-pos, center center) !important;
+    padding: 6px !important;
+    box-sizing: border-box !important;
     display: block !important;
     margin: 0 !important;
     transition: opacity 0.3s ease;
@@ -1474,6 +1484,13 @@
     letter-spacing: 0.04em;
     color: #0284c7;
     text-transform: uppercase;
+    min-height: 14px;
+    display: block;
+    line-height: 1.4;
+  }
+
+  .enamels-cat-card__series--empty {
+    visibility: hidden;
   }
 
   .enamels-cat-card__title {
