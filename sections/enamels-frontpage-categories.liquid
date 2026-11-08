@@ -85,6 +85,11 @@
             {% assign is_intl_pill = true %}
           {% endif %}
 
+          {%- assign card_bg_val = block.settings.card_bg | default: section.settings.card_bg | default: '#dfdfdf' -%}
+          {%- if card_bg_val == blank or card_bg_val == 'rgba(0,0,0,0)' -%}
+            {%- assign card_bg_val = '#dfdfdf' -%}
+          {%- endif -%}
+
           <a
             href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
             {% if is_customizer_pill %}
@@ -95,6 +100,7 @@
               onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
             {% endif %}
             class="enamels-cat-card enamels-cat-card--carousel"
+            style="background-color: {{ card_bg_val }} !important;"
             {{ block.shopify_attributes }}
           >
             {% if card_badge != blank %}
@@ -182,6 +188,11 @@
               {% assign is_intl_pill = true %}
             {% endif %}
 
+            {%- assign card_bg_val = block.settings.card_bg | default: section.settings.card_bg | default: '#dfdfdf' -%}
+            {%- if card_bg_val == blank or card_bg_val == 'rgba(0,0,0,0)' -%}
+              {%- assign card_bg_val = '#dfdfdf' -%}
+            {%- endif -%}
+
             <a
               href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
               {% if is_customizer_pill %}
@@ -192,7 +203,7 @@
                 onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
               {% endif %}
               class="enamels-cat-card enamels-cat-card--grid"
-              style="--stagger-index: {{ forloop.index }};"
+              style="--stagger-index: {{ forloop.index }}; background-color: {{ card_bg_val }} !important;"
             >
               {% if card_badge != blank %}
                 <span class="enamels-cat-card__badge">{{ card_badge }}</span>
@@ -419,11 +430,12 @@
   }
 
   /* Category Card Base */
+  #enamels-cats-{{ section.id }} .enamels-cat-card,
   .enamels-cat-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: var(--cats-card-bg);
+    background-color: var(--cats-card-bg) !important;
     border-radius: var(--cats-card-radius);
     padding: var(--cats-card-pad-v) var(--cats-card-pad-h);
     text-decoration: none;
@@ -503,21 +515,28 @@
     z-index: 3;
   }
 
-  .enamels-cat-card__media {
-    flex: 0 0 65px;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    position: relative;
+  #enamels-cats-{{ section.id }} .enamels-cat-card__media,
+  .enamels-cats-section .enamels-cat-card__media {
+    flex: 0 0 65px !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    position: relative !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    aspect-ratio: auto !important;
+    width: auto !important;
   }
 
-  .enamels-cat-card__media img {
-    height: 100%;
-    width: auto;
-    max-height: var(--cats-card-img-max-h-desk);
-    object-fit: {{ section.settings.image_fit | default: 'contain' }};
-    display: block;
+  #enamels-cats-{{ section.id }} .enamels-cat-card__media img,
+  .enamels-cats-section .enamels-cat-card__media img {
+    position: static !important;
+    height: 100% !important;
+    width: auto !important;
+    max-height: var(--cats-card-img-max-h-desk) !important;
+    object-fit: {{ section.settings.image_fit | default: 'contain' }} !important;
+    display: block !important;
     transition: transform 0.3s ease;
   }
 
@@ -1260,6 +1279,11 @@
           "id": "fallback_asset",
           "label": "Asset File Name",
           "info": "e.g. enamels-cat-men.jpg"
+        },
+        {
+          "type": "color",
+          "id": "card_bg",
+          "label": "Card Background (Overrides section)"
         }
       ]
     }
