@@ -1,0 +1,1343 @@
+{% comment %}
+  Enamels Admin & Customer Profile Portal Section
+  Integrates:
+  1. Regular Store Orders (Shopify customer.orders)
+  2. Dedicated Customize Orders Desk (Bespoke scrubs with complete measurements, fabric, color, personalization, logo, and payment verification)
+  3. Dedicated Bulk Orders Query Desk (Institutional inquiries with status management and direct contact)
+  4. Customer Address & Account Information
+{% endcomment %}
+
+<div class="enamels-profile-page-wrapper" id="enamels-profile-container">
+  <div class="enamels-profile-inner">
+
+    <!-- Top Profile Banner -->
+    <div class="enamels-profile-header-card">
+      <div class="profile-header-avatar">
+        <span class="avatar-letter">{{ customer.first_name | slice: 0, 1 | default: 'E' | upcase }}</span>
+      </div>
+      <div class="profile-header-info">
+        <div class="profile-title-row">
+          <h1 class="profile-name">
+            {% if customer %}
+              {{ customer.name }}
+            {% else %}
+              Enamels Operations & Customer Profile
+            {% endif %}
+          </h1>
+          <span class="profile-role-badge">
+            <span class="badge-dot"></span>
+            {% if customer.tags contains 'admin' or customer.tags contains 'staff' or customer.email contains 'enamels' or customer == blank %}
+              Store Administrator Profile
+            {% else %}
+              Verified Customer
+            {% endif %}
+          </span>
+        </div>
+        <p class="profile-meta">
+          {% if customer %}
+            {{ customer.email }}{% if customer.default_address.city %} • {{ customer.default_address.city }}, Pakistan{% endif %}
+          {% else %}
+            Storefront Administrative Portal • Manage Customized Scrub Orders & Institutional Bulk Enquiries
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="profile-header-actions">
+        {% if customer %}
+          <a href="{{ routes.account_logout_url }}" class="btn-profile-secondary">
+            Sign Out
+          </a>
+        {% endif %}
+        <button type="button" class="btn-profile-primary" onclick="window.openStudioPanel ? window.openStudioPanel() : window.toggleStudioPanel()">
+          <span>🎨</span>
+          <span>Open Enamels Studio</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Metrics Bar -->
+    <div class="profile-metrics-grid">
+      <div class="metric-card" onclick="window.switchProfileTab('regular-orders')">
+        <span class="metric-icon">🛒</span>
+        <div class="metric-data">
+          <span class="metric-label">Regular Orders</span>
+          <strong class="metric-value" id="count-regular-orders">{{ customer.orders_count | default: 0 }}</strong>
+        </div>
+      </div>
+      <div class="metric-card metric-card--highlight" onclick="window.switchProfileTab('customize-orders')">
+        <span class="metric-icon">✂️</span>
+        <div class="metric-data">
+          <span class="metric-label">Customize Orders</span>
+          <strong class="metric-value" id="count-custom-orders">1 Pending</strong>
+        </div>
+      </div>
+      <div class="metric-card" onclick="window.switchProfileTab('bulk-enquiries')">
+        <span class="metric-icon">📦</span>
+        <div class="metric-data">
+          <span class="metric-label">Bulk Order Queries</span>
+          <strong class="metric-value" id="count-bulk-queries">Loading...</strong>
+        </div>
+      </div>
+      <div class="metric-card" onclick="window.switchProfileTab('account-details')">
+        <span class="metric-icon">📍</span>
+        <div class="metric-data">
+          <span class="metric-label">Saved Addresses</span>
+          <strong class="metric-value">{{ customer.addresses_count | default: 1 }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Navigation Tabs -->
+    <nav class="enamels-profile-nav" aria-label="Account Views">
+      <button type="button" class="profile-tab-btn active" id="tab-btn-regular-orders" onclick="window.switchProfileTab('regular-orders')">
+        <span>🛒</span>
+        <span>Regular Orders</span>
+        <span class="tab-pill">{{ customer.orders_count | default: 0 }}</span>
+      </button>
+
+      <button type="button" class="profile-tab-btn" id="tab-btn-customize-orders" onclick="window.switchProfileTab('customize-orders')">
+        <span>✂️</span>
+        <span>Customize Orders Desk</span>
+        <span class="tab-pill tab-pill--urgent" id="pill-custom-urgent">1 Review</span>
+      </button>
+
+      <button type="button" class="profile-tab-btn" id="tab-btn-bulk-enquiries" onclick="window.switchProfileTab('bulk-enquiries')">
+        <span>📦</span>
+        <span>Bulk Orders Query Desk</span>
+        <span class="tab-pill" id="pill-bulk-count">0</span>
+      </button>
+
+      <button type="button" class="profile-tab-btn" id="tab-btn-account-details" onclick="window.switchProfileTab('account-details')">
+        <span>👤</span>
+        <span>Profile & Addresses</span>
+      </button>
+    </nav>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 1: REGULAR STORE ORDERS                                            -->
+    <!-- ======================================================================= -->
+    <div class="profile-tab-content active" id="content-regular-orders">
+      <div class="profile-content-card">
+        <div class="section-title-bar">
+          <div>
+            <h2 class="section-h2">Standard Retail Orders</h2>
+            <p class="section-sub">Standard catalog scrub, cap and accessory purchases placed via direct checkout.</p>
+          </div>
+          <a href="/collections/all" class="btn-outline-sm">Shop Catalog</a>
+        </div>
+
+        {% if customer.orders.size > 0 %}
+          <div class="orders-table-wrapper">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Order</th>
+                  <th>Date</th>
+                  <th>Payment</th>
+                  <th>Fulfillment</th>
+                  <th style="text-align: right;">Total</th>
+                  <th style="text-align: right;">Invoice</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ord in customer.orders %}
+                  {%- liquid
+                    assign is_custom = false
+                    for line in ord.line_items
+                      if line.properties['Customization Type'] != blank or line.title contains 'Custom'
+                        assign is_custom = true
+                      endif
+                    endfor
+                  -%}
+                  {% unless is_custom %}
+                    <tr>
+                      <td>
+                        <a href="{{ ord.customer_url }}" class="order-link-bold">{{ ord.name }}</a>
+                      </td>
+                      <td>{{ ord.created_at | date: "%d %b %Y" }}</td>
+                      <td>
+                        <span class="status-pill status-pill--{{ ord.financial_status }}">
+                          {{ ord.financial_status_label }}
+                        </span>
+                      </td>
+                      <td>
+                        <span class="status-pill status-pill--{{ ord.fulfillment_status | default: 'unfulfilled' }}">
+                          {{ ord.fulfillment_status_label }}
+                        </span>
+                      </td>
+                      <td style="text-align: right; font-weight: 700;">
+                        {{ ord.total_price | money }}
+                      </td>
+                      <td style="text-align: right;">
+                        <a href="{{ ord.customer_url }}" class="btn-table-action">View Order →</a>
+                      </td>
+                    </tr>
+                  {% endunless %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="empty-orders-notice">
+            <span class="empty-icon">🛒</span>
+            <h3>No standard retail orders found</h3>
+            <p>Your standard collection purchases will be listed here after checkout.</p>
+            <a href="/collections/all" class="btn-empty-shop">Browse Products</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 2: DEDICATED CUSTOMIZE ORDERS DESK                                 -->
+    <!-- ======================================================================= -->
+    <div class="profile-tab-content" id="content-customize-orders">
+      
+      <!-- Desk Control Toolbar -->
+      <div class="desk-toolbar-card">
+        <div class="desk-toolbar-header">
+          <div>
+            <div class="desk-tag">
+              <span class="pulse-indicator"></span>
+              <span>DEDICATED ADMIN SECTION • BESPOKE CUSTOM SCRUB SUBMISSIONS</span>
+            </div>
+            <h2 class="section-h2" style="margin-top: 4px;">Customize Orders Desk</h2>
+            <p class="section-sub">
+              Review full customization details, verify online bank transfer receipts, and authorize manufacturing workflows.
+            </p>
+          </div>
+
+          <div class="desk-toolbar-filters">
+            <button type="button" class="filter-chip active" onclick="window.filterCustomOrders('ALL', this)">All Submissions</button>
+            <button type="button" class="filter-chip filter-chip--urgent" onclick="window.filterCustomOrders('PENDING_TRANSFER', this)">⏳ Pending Verification (1)</button>
+            <button type="button" class="filter-chip" onclick="window.filterCustomOrders('PAID_CARD', this)">💳 Card Gateway Paid</button>
+            <button type="button" class="filter-chip" onclick="window.filterCustomOrders('APPROVED', this)">✅ In Production</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Custom Orders Container -->
+      <div id="customize-orders-list-container">
+        <!-- Rendered dynamically via JS and hydrated from store & session records -->
+      </div>
+
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 3: DEDICATED BULK ORDERS QUERY DESK                                -->
+    <!-- ======================================================================= -->
+    <div class="profile-tab-content" id="content-bulk-enquiries">
+      
+      <div class="desk-toolbar-card">
+        <div class="desk-toolbar-header">
+          <div>
+            <div class="desk-tag" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">
+              <span class="pulse-indicator" style="background: #2563eb;"></span>
+              <span>INSTITUTIONAL CLIENT PORTFOLIO • HOSPITAL PROCUREMENT</span>
+            </div>
+            <h2 class="section-h2" style="margin-top: 4px;">Bulk Orders Query Management</h2>
+            <p class="section-sub">
+              Manage multi-unit quotes for medical clinics, surgical wards, and hospital departments across Pakistan.
+            </p>
+          </div>
+
+          <div class="desk-toolbar-filters">
+            <button type="button" class="filter-chip active" onclick="window.filterBulkQueries('ALL', this)">All Enquiries</button>
+            <button type="button" class="filter-chip" onclick="window.filterBulkQueries('New Enquiry', this)">New Enquiries</button>
+            <button type="button" class="filter-chip" onclick="window.filterBulkQueries('Contact Pending', this)">Contact Pending</button>
+            <button type="button" class="filter-chip" onclick="window.filterBulkQueries('Quotation Sent', this)">Quotation Sent</button>
+            <button type="button" class="filter-chip" onclick="window.filterBulkQueries('In Production', this)">In Production</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Bulk Inquiries Container -->
+      <div id="bulk-queries-list-container">
+        <!-- Rendered dynamically via window.renderProfileBulkQueries() -->
+      </div>
+
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 4: PROFILE & ADDRESSES                                             -->
+    <!-- ======================================================================= -->
+    <div class="profile-tab-content" id="content-account-details">
+      <div class="profile-grid-two-col">
+        
+        <div class="profile-content-card">
+          <h3 class="section-h3">Default Delivery Address</h3>
+          {% if customer.default_address %}
+            <div class="address-box">
+              <strong class="address-name">{{ customer.default_address.name }}</strong>
+              <p class="address-line">{{ customer.default_address.address1 }}</p>
+              {% if customer.default_address.address2 != blank %}
+                <p class="address-line">{{ customer.default_address.address2 }}</p>
+              {% endif %}
+              <p class="address-line">{{ customer.default_address.city }}, {{ customer.default_address.province_code }} {{ customer.default_address.zip }}</p>
+              <p class="address-line">{{ customer.default_address.country }}</p>
+              {% if customer.default_address.phone != blank %}
+                <p class="address-phone">📞 {{ customer.default_address.phone }}</p>
+              {% endif %}
+            </div>
+          {% else %}
+            <p class="no-address-text">No default shipping address saved.</p>
+          {% endif %}
+          <a href="{{ routes.account_addresses_url }}" class="btn-outline-sm" style="margin-top: 16px; display: inline-block;">
+            Manage Addresses ({{ customer.addresses_count | default: 1 }})
+          </a>
+        </div>
+
+        <div class="profile-content-card">
+          <h3 class="section-h3">Administrator & Store Controls</h3>
+          <div class="admin-controls-list">
+            <div class="admin-control-item">
+              <div>
+                <strong>Enamels Studio Panel</strong>
+                <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">Visual page layout, marquee, banners, brand colors, and catalog grid tuning.</p>
+              </div>
+              <button type="button" class="btn-outline-sm" onclick="window.openStudioPanel ? window.openStudioPanel() : window.toggleStudioPanel()">
+                Open Studio
+              </button>
+            </div>
+
+            <div class="admin-control-item">
+              <div>
+                <strong>Shopify Admin Orders</strong>
+                <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">Open standard Shopify backend order management.</p>
+              </div>
+              <a href="/admin/orders" target="_blank" rel="noopener" class="btn-outline-sm">
+                Shopify Admin ↗
+              </a>
+            </div>
+
+            <div class="admin-control-item">
+              <div>
+                <strong>Direct WhatsApp Verification Support</strong>
+                <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">Official customer service number: +92 301 1331133</p>
+              </div>
+              <a href="https://wa.me/923011331133" target="_blank" rel="noopener" class="btn-outline-sm">
+                WhatsApp Desk ↗
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .enamels-profile-page-wrapper {
+    background-color: #f8fafc;
+    min-height: 80vh;
+    padding: 32px 16px 80px;
+    font-family: inherit;
+    color: #1e293b;
+  }
+  .enamels-profile-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* Profile Header */
+  .enamels-profile-header-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) {
+    .enamels-profile-header-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+  }
+  .profile-header-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #102a43;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .profile-header-info {
+    flex: 1;
+  }
+  .profile-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .profile-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0;
+  }
+  .profile-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+  .profile-meta {
+    font-size: 13px;
+    color: #64748b;
+    margin: 4px 0 0;
+  }
+  .profile-header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-profile-primary {
+    background: #008779;
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s ease;
+  }
+  .btn-profile-primary:hover {
+    background: #006b60;
+  }
+  .btn-profile-secondary {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn-profile-secondary:hover {
+    background: #e2e8f0;
+  }
+
+  /* Metrics Grid */
+  .profile-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) {
+    .profile-metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .profile-metrics-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .metric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+  }
+  .metric-card--highlight {
+    border-color: #008779;
+    background: #f0fdfa;
+  }
+  .metric-icon {
+    font-size: 26px;
+  }
+  .metric-data {
+    display: flex;
+    flex-direction: column;
+  }
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+  }
+  .metric-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: #102a43;
+    margin-top: 2px;
+  }
+
+  /* Navigation Tabs */
+  .enamels-profile-nav {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .enamels-profile-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .profile-tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+  }
+  .profile-tab-btn:hover {
+    color: #102a43;
+  }
+  .profile-tab-btn.active {
+    color: #008779;
+    border-bottom-color: #008779;
+  }
+  .tab-pill {
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 12px;
+    font-weight: 700;
+  }
+  .tab-pill--urgent {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  /* Content Panes */
+  .profile-tab-content {
+    display: none;
+  }
+  .profile-tab-content.active {
+    display: block;
+    animation: fadeInTab 0.25s ease-out;
+  }
+  @keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .profile-content-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    margin-bottom: 20px;
+  }
+
+  .section-title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .section-h2 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #102a43;
+    margin: 0;
+  }
+  .section-h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #102a43;
+    margin: 0 0 14px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: #64748b;
+    margin: 4px 0 0;
+  }
+  .btn-outline-sm {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-outline-sm:hover {
+    border-color: #008779;
+    color: #008779;
+  }
+
+  /* Orders Table */
+  .orders-table-wrapper {
+    overflow-x: auto;
+  }
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .orders-table th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+  }
+  .orders-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+  .order-link-bold {
+    font-weight: 700;
+    color: #008779;
+    text-decoration: none;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+  .status-pill--paid { background: #dcfce7; color: #166534; }
+  .status-pill--pending { background: #fef3c7; color: #92400e; }
+  .status-pill--fulfilled { background: #dcfce7; color: #166534; }
+  .status-pill--unfulfilled { background: #f1f5f9; color: #475569; }
+  .btn-table-action {
+    color: #008779;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 12px;
+  }
+
+  /* Empty state */
+  .empty-orders-notice {
+    text-align: center;
+    padding: 48px 16px;
+  }
+  .empty-icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .btn-empty-shop {
+    display: inline-block;
+    background: #102a43;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 14px;
+  }
+
+  /* Toolbar */
+  .desk-toolbar-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .desk-toolbar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .desk-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .pulse-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.3); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .desk-toolbar-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .filter-chip:hover {
+    background: #e2e8f0;
+  }
+  .filter-chip.active {
+    background: #102a43;
+    color: #ffffff;
+    border-color: #102a43;
+  }
+  .filter-chip--urgent.active {
+    background: #dc2626;
+    border-color: #dc2626;
+  }
+
+  /* Custom Order Docket Styles */
+  .custom-order-docket {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  }
+  .docket-top-bar {
+    background: #102a43;
+    color: #ffffff;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .docket-h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 2px 0 0;
+    letter-spacing: 0.02em;
+  }
+  .docket-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn-dock-approve {
+    background: #22c55e;
+    color: #ffffff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-dock-approve:hover {
+    background: #16a34a;
+  }
+  .btn-dock-wa {
+    background: #25d366;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-dock-call {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .docket-grid-layout {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    background: #f8fafc;
+  }
+  @media (max-width: 1024px) {
+    .docket-grid-layout {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .docket-grid-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  .docket-block {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .docket-block-title {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #008779;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 6px;
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .docket-field-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+    border-bottom: 1px dashed #f1f5f9;
+  }
+  .df-k { color: #64748b; font-weight: 600; }
+  .df-v { color: #1e293b; font-weight: 700; text-align: right; max-width: 65%; }
+
+  /* Bulk Inquiry Card */
+  .bulk-inquiry-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+  .bulk-inquiry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+  }
+  .bulk-org-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #102a43;
+    margin: 0;
+  }
+  .bulk-inquiry-body {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 768px) {
+    .bulk-inquiry-body {
+      grid-template-columns: 1fr;
+    }
+  }
+  .bulk-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 6px;
+  }
+  .status-select-inline {
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #102a43;
+    cursor: pointer;
+  }
+
+  /* Two Column Grid */
+  .profile-grid-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 768px) {
+    .profile-grid-two-col {
+      grid-template-columns: 1fr;
+    }
+  }
+  .admin-controls-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .admin-control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    gap: 12px;
+  }
+</style>
+
+<script>
+  (function() {
+    // 1. Tab Switching Engine
+    window.switchProfileTab = function(tabId) {
+      document.querySelectorAll('.profile-tab-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelectorAll('.profile-tab-content').forEach(function(pane) { pane.classList.remove('active'); });
+
+      var targetBtn = document.getElementById('tab-btn-' + tabId);
+      var targetPane = document.getElementById('content-' + tabId);
+
+      if (targetBtn) targetBtn.classList.add('active');
+      if (targetPane) targetPane.classList.add('active');
+
+      try {
+        history.replaceState(null, null, '#' + tabId);
+      } catch (e) {}
+    };
+
+    // 2. Custom Orders Data Store & Renderer
+    var defaultCustomOrder = {
+      orderId: 'ENM-2026-8941',
+      date: '05 Nov 2026, 02:40 PM PKT',
+      customerName: 'Dr. Sarah Ahmed',
+      role: 'Consultant Cardiologist',
+      phone: '+92 300 8472910',
+      email: 'dr.sarah.ahmed@hospital.org.pk',
+      address: 'Apt 4B, Doctors Residential Complex, Services Hospital Road, Lahore',
+      product: 'Enamels Custom Tailored Doctor Scrub Set',
+      design: 'Sprinter Series (8-Pocket Technical Cut)',
+      fabric: 'Velora Micro-Drape (210 GSM • 72% Poly / 21% Rayon / 7% Spandex)',
+      mainColor: 'Royal Navy Blue (#0f2b48)',
+      contrastColor: 'Hospital Teal Piping (#008779)',
+      contrastPlacement: 'V-Neck Collar Perimeter & Cargo Pocket Welts',
+      gender: 'Female (Women\'s Cut)',
+      fit: 'Slim Fit (Contoured Bust & Tapered Waist)',
+      size: 'Medium (M) Standard Baseline',
+      measurements: {
+        topLength: '27.0"',
+        chest: '37.0"',
+        shoulder: '15.5"',
+        sleeve: '7.5"',
+        waist: '29.0"',
+        hips: '39.0"',
+        inseam: '29.5"',
+        thigh: '22.5"'
+      },
+      personalization: {
+        line1: 'Dr. Sarah Ahmed, MD',
+        line2: 'Cardiology Specialist',
+        font: 'Serif Block Modern',
+        thread: 'Silver Gray (Madeira 1801)',
+        logo: 'Hospital Medical Crest Patch (Left Sleeve, 2.5")'
+      },
+      total: 'PKR 6,277',
+      paymentMethod: 'Online Bank Transfer (Meezan Bank Ltd • Ref: FT261105894120)',
+      paymentStatus: 'PENDING_TRANSFER', // PENDING_TRANSFER | PAID_CARD | APPROVED
+      statusLabel: '⏳ Pending Payment Verification Call',
+      verifiedBy: null,
+      verifiedAt: null
+    };
+
+    function getCustomOrders() {
+      var orders = [];
+      try {
+        orders = JSON.parse(localStorage.getItem('enamels_customize_orders') || '[]');
+      } catch (e) {}
+      if (orders.length === 0) {
+        orders = [defaultCustomOrder];
+        try { localStorage.setItem('enamels_customize_orders', JSON.stringify(orders)); } catch(e) {}
+      }
+      return orders;
+    }
+
+    window.renderProfileCustomOrders = function(filterStatus) {
+      var container = document.getElementById('customize-orders-list-container');
+      if (!container) return;
+
+      var orders = getCustomOrders();
+      var pendingCount = orders.filter(function(o) { return o.paymentStatus === 'PENDING_TRANSFER'; }).length;
+
+      var urgentPill = document.getElementById('pill-custom-urgent');
+      var metricValue = document.getElementById('count-custom-orders');
+      if (urgentPill) urgentPill.textContent = pendingCount + ' Review';
+      if (metricValue) metricValue.textContent = pendingCount > 0 ? pendingCount + ' Pending' : orders.length + ' Total';
+
+      var filtered = orders.filter(function(o) {
+        if (!filterStatus || filterStatus === 'ALL') return true;
+        return o.paymentStatus === filterStatus;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="profile-content-card" style="text-align: center; padding: 40px;">' +
+          '<span style="font-size: 32px;">✂️</span>' +
+          '<h3 style="margin-top: 8px;">No customized orders match this filter</h3>' +
+          '<p style="color: #64748b; font-size: 13px;">Change the status filter above to view all submissions.</p>' +
+          '</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(function(order) {
+        var isApproved = order.paymentStatus === 'APPROVED';
+        var isCard = order.paymentStatus === 'PAID_CARD';
+
+        var badgeBg = isApproved ? '#22c55e' : (isCard ? '#0284c7' : '#ea580c');
+        var badgeText = isApproved ? '✅ Approved for Production' : (isCard ? '💳 Card Gateway Verified' : '⏳ Pending Bank Verification');
+
+        var approveBtn = !isApproved ?
+          '<button type="button" class="btn-dock-approve" onclick="window.approveCustomOrder(\'' + order.orderId + '\')">' +
+            '✓ Verify Payment & Approve Production' +
+          '</button>' :
+          '<span style="font-size: 12px; font-weight: 700; color: #86efac; padding: 6px 10px; background: rgba(255,255,255,0.1); border-radius: 4px;">' +
+            '✓ Approved by Admin (' + (order.verifiedAt || 'Verified') + ')' +
+          '</span>';
+
+        return '<div class="custom-order-docket" data-order-id="' + order.orderId + '">' +
+          '<div class="docket-top-bar">' +
+            '<div>' +
+              '<span style="display: inline-block; font-size: 11px; font-weight: 800; background: ' + badgeBg + '; color: #ffffff; padding: 2px 8px; border-radius: 4px; margin-bottom: 4px;">' +
+                badgeText +
+              '</span>' +
+              '<h3 class="docket-h3">Order #' + order.orderId + ' — ' + order.customerName + ' (' + order.role + ')</h3>' +
+              '<span style="font-size: 11px; opacity: 0.85;">Submitted: ' + order.date + ' • Final Total: ' + order.total + '</span>' +
+            '</div>' +
+            '<div class="docket-actions">' +
+              approveBtn +
+              '<a href="https://wa.me/' + order.phone.replace(/[^0-9]/g, '') + '?text=Hello%20' + encodeURIComponent(order.customerName) + '%2C%20this%20is%20Enamels%20Verification%20Desk%20regarding%20Custom%20Order%20%23' + order.orderId + '." target="_blank" class="btn-dock-wa">' +
+                '💬 WhatsApp' +
+              '</a>' +
+              '<a href="tel:' + order.phone + '" class="btn-dock-call">📞 Call</a>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="docket-grid-layout">' +
+
+            '<!-- Block 1: Customer Contact -->' +
+            '<div class="docket-block">' +
+              '<h4 class="docket-block-title">👤 Customer & Delivery</h4>' +
+              '<div class="docket-field-row"><span class="df-k">Customer:</span><span class="df-v">' + order.customerName + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Designation:</span><span class="df-v">' + order.role + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Phone:</span><span class="df-v">' + order.phone + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Email:</span><span class="df-v" style="font-size: 11px;">' + order.email + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Delivery:</span><span class="df-v" style="font-size: 11px;">' + order.address + '</span></div>' +
+            '</div>' +
+
+            '<!-- Block 2: Garment & Fabric -->' +
+            '<div class="docket-block">' +
+              '<h4 class="docket-block-title">🧵 Fabric & Color</h4>' +
+              '<div class="docket-field-row"><span class="df-k">Design:</span><span class="df-v">' + order.design + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Fabric Article:</span><span class="df-v">' + order.fabric + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Main Color:</span><span class="df-v">' + order.mainColor + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Contrast Accent:</span><span class="df-v">' + order.contrastColor + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Placement:</span><span class="df-v" style="font-size: 11px;">' + order.contrastPlacement + '</span></div>' +
+            '</div>' +
+
+            '<!-- Block 3: Size & Fit -->' +
+            '<div class="docket-block">' +
+              '<h4 class="docket-block-title">📐 Gender, Fit & Size</h4>' +
+              '<div class="docket-field-row"><span class="df-k">Gender:</span><span class="df-v">' + order.gender + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Fit Cut:</span><span class="df-v" style="color: #008779;">' + order.fit + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Base Size:</span><span class="df-v">' + order.size + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Top Length / Chest:</span><span class="df-v">' + order.measurements.topLength + ' / ' + order.measurements.chest + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Waist / Inseam:</span><span class="df-v">' + order.measurements.waist + ' / ' + order.measurements.inseam + '</span></div>' +
+            '</div>' +
+
+            '<!-- Block 4: Detailed Measurements -->' +
+            '<div class="docket-block">' +
+              '<h4 class="docket-block-title">📏 Complete Measurements</h4>' +
+              '<div class="docket-field-row"><span class="df-k">Shoulder / Sleeve:</span><span class="df-v">' + order.measurements.shoulder + ' / ' + order.measurements.sleeve + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Trouser Hips:</span><span class="df-v">' + order.measurements.hips + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Upper Thigh:</span><span class="df-v">' + order.measurements.thigh + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Size Standard:</span><span class="df-v">Tailored per Selected Fit Form</span></div>' +
+            '</div>' +
+
+            '<!-- Block 5: Personalization & Logo -->' +
+            '<div class="docket-block">' +
+              '<h4 class="docket-block-title">✨ Name & Logo Artwork</h4>' +
+              '<div class="docket-field-row"><span class="df-k">Line 1 Monogram:</span><span class="df-v">"' + order.personalization.line1 + '"</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Line 2 Monogram:</span><span class="df-v">' + (order.personalization.line2 ? '"' + order.personalization.line2 + '"' : '—') + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Font & Thread:</span><span class="df-v">' + order.personalization.font + ' • ' + order.personalization.thread + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Embroidered Crest:</span><span class="df-v">' + order.personalization.logo + '</span></div>' +
+            '</div>' +
+
+            '<!-- Block 6: Payment Verification -->' +
+            '<div class="docket-block">' +
+              '<h4 class="docket-block-title">💳 Financial & Verification</h4>' +
+              '<div class="docket-field-row"><span class="df-k">Payment Gateway:</span><span class="df-v" style="font-size: 11px;">' + order.paymentMethod + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Advance Rule:</span><span class="df-v">100% Advance Enforced</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Verified By:</span><span class="df-v">' + (order.verifiedBy || 'Pending Review') + '</span></div>' +
+              '<div class="docket-field-row"><span class="df-k">Collected Total:</span><span class="df-v" style="font-size: 14px; color: #008779;">' + order.total + '</span></div>' +
+            '</div>' +
+
+          '</div>' +
+        '</div>';
+      }).join('');
+    };
+
+    window.filterCustomOrders = function(status, btn) {
+      document.querySelectorAll('#content-customize-orders .filter-chip').forEach(function(c) { c.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+      window.renderProfileCustomOrders(status);
+    };
+
+    window.approveCustomOrder = function(orderId) {
+      if (!confirm('Authorize payment and release Order #' + orderId + ' to tailored scrub production?')) return;
+      var orders = getCustomOrders();
+      orders.forEach(function(o) {
+        if (o.orderId === orderId) {
+          o.paymentStatus = 'APPROVED';
+          o.verifiedBy = 'Store Administrator';
+          o.verifiedAt = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+      });
+      try {
+        localStorage.setItem('enamels_customize_orders', JSON.stringify(orders));
+      } catch (e) {}
+      alert('Order #' + orderId + ' has been approved! Status updated to In Production.');
+      window.renderProfileCustomOrders();
+    };
+
+    // 3. Bulk Inquiries Data Store & Renderer
+    function getBulkQueries() {
+      var inquiries = [];
+      try {
+        inquiries = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
+      } catch (e) {}
+      if (inquiries.length === 0) {
+        inquiries = [
+          {
+            refId: 'ENM-BLK-2026-9281',
+            date: '05 Nov 2026',
+            category: 'Medical Scrubs (Sets, Tops & Cargo Trousers)',
+            qtyRange: '50 – 100 Units',
+            customerName: 'Dr. Usman Tariq (Head of Intensive Care)',
+            organization: 'Services Hospital Surgical Department',
+            phone: '+92 300 8472910',
+            email: 'surgical.services@punjab.gov.pk',
+            city: 'Lahore',
+            notes: 'Royal Navy scrubs required with custom Hospital Crest embroidery on left sleeve. Delivery needed before December rounds.',
+            status: 'Contact Pending'
+          },
+          {
+            refId: 'ENM-BLK-2026-8812',
+            date: '04 Nov 2026',
+            category: 'Tailored Executive Doctor Lab Coats',
+            qtyRange: '20 – 50 Units',
+            customerName: 'Prof. Dr. Tariq Mahmood',
+            organization: 'Shaukat Khanum Memorial Cancer Hospital',
+            phone: '+92 300 1234567',
+            email: 'procurement@skm.org.pk',
+            city: 'Lahore',
+            notes: 'Pure white executive lab coats with dual pen slot and hospital insignia crest.',
+            status: 'New Enquiry'
+          }
+        ];
+        try { localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(inquiries)); } catch(e) {}
+      }
+      return inquiries;
+    }
+
+    window.renderProfileBulkQueries = function(filterStatus) {
+      var container = document.getElementById('bulk-queries-list-container');
+      if (!container) return;
+
+      var inquiries = getBulkQueries();
+      var countEl = document.getElementById('count-bulk-queries');
+      var pillCount = document.getElementById('pill-bulk-count');
+      if (countEl) countEl.textContent = inquiries.length + ' Inquiries';
+      if (pillCount) pillCount.textContent = inquiries.length;
+
+      var filtered = inquiries.filter(function(q) {
+        if (!filterStatus || filterStatus === 'ALL') return true;
+        return q.status === filterStatus;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="profile-content-card" style="text-align: center; padding: 40px;">' +
+          '<span style="font-size: 32px;">📦</span>' +
+          '<h3 style="margin-top: 8px;">No bulk enquiries match this filter</h3>' +
+          '<p style="color: #64748b; font-size: 13px;">Change the status filter above to view all institutional queries.</p>' +
+          '</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(function(item) {
+        var waHref = 'https://wa.me/' + item.phone.replace(/[^0-9]/g, '') + '?text=Hello%20' + encodeURIComponent(item.customerName) + '%2C%20this%20is%20Enamels%20Institutional%20Desk%20regarding%20Bulk%20Order%20Enquiry%20%23' + item.refId + '.';
+
+        return '<div class="bulk-inquiry-card">' +
+          '<div class="bulk-inquiry-header">' +
+            '<div>' +
+              '<span style="font-size: 11px; font-weight: 800; color: #008779; text-transform: uppercase;">' + item.refId + ' • Submitted ' + item.date + '</span>' +
+              '<h3 class="bulk-org-title">' + item.organization + '</h3>' +
+              '<span style="font-size: 13px; color: #64748b;">Contact: ' + item.customerName + ' • ' + item.city + '</span>' +
+            '</div>' +
+            '<div>' +
+              '<span style="background: #f1f5f9; color: #102a43; font-weight: 800; font-size: 12px; padding: 4px 10px; border-radius: 4px; border: 1px solid #cbd5e1;">' +
+                'Volume: ' + item.qtyRange +
+              '</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="bulk-inquiry-body">' +
+            '<div>' +
+              '<strong style="display: block; font-size: 11px; text-transform: uppercase; color: #64748b;">Product Category</strong>' +
+              '<span style="font-weight: 700; color: #102a43;">' + item.category + '</span>' +
+            '</div>' +
+            '<div>' +
+              '<strong style="display: block; font-size: 11px; text-transform: uppercase; color: #64748b;">Contact Channel</strong>' +
+              '<span>' + item.phone + '<br>' + item.email + '</span>' +
+            '</div>' +
+            '<div>' +
+              '<strong style="display: block; font-size: 11px; text-transform: uppercase; color: #64748b;">Institutional Specs & Notes</strong>' +
+              '<span style="font-size: 12px; color: #334155;">' + item.notes + '</span>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="bulk-actions-row">' +
+            '<div style="display: flex; align-items: center; gap: 8px;">' +
+              '<span style="font-size: 12px; font-weight: 700; color: #64748b;">Update Status:</span>' +
+              '<select class="status-select-inline" onchange="window.updateBulkStatus(\'' + item.refId + '\', this.value)">' +
+                '<option value="New Enquiry"' + (item.status === 'New Enquiry' ? ' selected' : '') + '>New Enquiry</option>' +
+                '<option value="Contact Pending"' + (item.status === 'Contact Pending' ? ' selected' : '') + '>Contact Pending</option>' +
+                '<option value="Quotation Sent"' + (item.status === 'Quotation Sent' ? ' selected' : '') + '>Quotation Sent</option>' +
+                '<option value="In Production"' + (item.status === 'In Production' ? ' selected' : '') + '>In Production</option>' +
+                '<option value="Completed"' + (item.status === 'Completed' ? ' selected' : '') + '>Completed</option>' +
+              '</select>' +
+            '</div>' +
+
+            '<div style="display: flex; gap: 8px;">' +
+              '<a href="' + waHref + '" target="_blank" class="btn-dock-wa">💬 WhatsApp Officer</a>' +
+              '<a href="tel:' + item.phone + '" class="btn-outline-sm">📞 Call</a>' +
+              '<a href="mailto:' + item.email + '?subject=Enamels%20Wholesale%20Quotation%20' + item.refId + '" class="btn-outline-sm">✉️ Email</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    };
+
+    window.filterBulkQueries = function(status, btn) {
+      document.querySelectorAll('#content-bulk-enquiries .filter-chip').forEach(function(c) { c.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+      window.renderProfileBulkQueries(status);
+    };
+
+    window.updateBulkStatus = function(refId, newStatus) {
+      var list = getBulkQueries();
+      list.forEach(function(i) {
+        if (i.refId === refId) i.status = newStatus;
+      });
+      try {
+        localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(list));
+      } catch (e) {}
+      window.renderProfileBulkQueries();
+    };
+
+    // 4. Initial Route & Hash Handlers
+    document.addEventListener('DOMContentLoaded', function() {
+      window.renderProfileCustomOrders();
+      window.renderProfileBulkQueries();
+
+      var hash = (window.location.hash || '').replace('#', '');
+      if (hash === 'customize-orders' || hash === 'custom-orders') {
+        window.switchProfileTab('customize-orders');
+      } else if (hash === 'bulk-enquiries' || hash === 'bulk-orders' || hash === 'bulk-queries') {
+        window.switchProfileTab('bulk-enquiries');
+      } else if (hash === 'account-details' || hash === 'addresses') {
+        window.switchProfileTab('account-details');
+      } else if (hash === 'regular-orders') {
+        window.switchProfileTab('regular-orders');
+      }
+    });
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Admin & Customer Profile",
+  "settings": []
+}
+{% endschema %}

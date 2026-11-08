@@ -156,6 +156,12 @@
     const activePanel = document.getElementById(`studio-content-${tabName}`);
     if (activeBtn) activeBtn.classList.add('active');
     if (activePanel) activePanel.classList.add('active');
+
+    if (tabName === 'custom-orders' && typeof window.renderStudioCustomOrders === 'function') {
+      window.renderStudioCustomOrders('ALL');
+    } else if (tabName === 'bulk-orders' && typeof window.renderStudioBulkQueries === 'function') {
+      window.renderStudioBulkQueries('ALL');
+    }
   };
 
   // Populate Input Fields from State
@@ -1300,6 +1306,223 @@
   if (window.location.search.includes('studio=true')) {
     setTimeout(window.openStudioPanel, 300);
   }
+
+  // ============================================================
+  // STUDIO: CUSTOMIZE ORDERS DESK & BULK ENQUIRIES INTEGRATION
+  // ============================================================
+  const defaultCustomOrder = {
+    orderId: 'ENM-2026-8941',
+    date: '05 Nov 2026, 02:40 PM PKT',
+    customerName: 'Dr. Sarah Ahmed',
+    role: 'Consultant Cardiologist',
+    phone: '+92 300 8472910',
+    email: 'dr.sarah.ahmed@hospital.org.pk',
+    address: 'Apt 4B, Doctors Residential Complex, Services Hospital Road, Lahore',
+    product: 'Enamels Custom Tailored Doctor Scrub Set',
+    design: 'Sprinter Series (8-Pocket Technical Cut)',
+    fabric: 'Velora Micro-Drape (210 GSM • 72% Poly / 21% Rayon / 7% Spandex)',
+    mainColor: 'Royal Navy Blue (#0f2b48)',
+    contrastColor: 'Hospital Teal Piping (#008779)',
+    contrastPlacement: 'V-Neck Collar Perimeter & Cargo Pocket Welts',
+    gender: 'Female (Women\'s Cut)',
+    fit: 'Slim Fit (Contoured Bust & Tapered Waist)',
+    size: 'Medium (M) Standard Baseline',
+    measurements: {
+      topLength: '27.0"', chest: '37.0"', shoulder: '15.5"', sleeve: '7.5"',
+      waist: '29.0"', hips: '39.0"', inseam: '29.5"', thigh: '22.5"'
+    },
+    personalization: {
+      line1: 'Dr. Sarah Ahmed, MD',
+      line2: 'Cardiology Specialist',
+      font: 'Serif Block Modern',
+      thread: 'Silver Gray (Madeira 1801)',
+      logo: 'Hospital Medical Crest Patch (Left Sleeve, 2.5")'
+    },
+    total: 'PKR 6,277',
+    paymentMethod: 'Online Bank Transfer (Meezan Bank Ltd • Ref: FT261105894120)',
+    paymentStatus: 'PENDING_TRANSFER',
+    statusLabel: '⏳ Pending Payment Verification Call'
+  };
+
+  function getStudioCustomOrders() {
+    let orders = [];
+    try {
+      orders = JSON.parse(localStorage.getItem('enamels_customize_orders') || '[]');
+    } catch(e) {}
+    if (!orders || orders.length === 0) {
+      orders = [defaultCustomOrder];
+      try { localStorage.setItem('enamels_customize_orders', JSON.stringify(orders)); } catch(e) {}
+    }
+    return orders;
+  }
+
+  window.renderStudioCustomOrders = function (filterStatus = 'ALL') {
+    const list = document.getElementById('studio-custom-orders-list');
+    if (!list) return;
+
+    const orders = getStudioCustomOrders();
+    const filtered = orders.filter(o => filterStatus === 'ALL' || o.paymentStatus === filterStatus);
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="text-align: center; padding: 24px 10px; color: #64748b; font-size: 12px;">No customized scrub orders match this filter.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(order => {
+      const isApproved = order.paymentStatus === 'APPROVED';
+      const isCard = order.paymentStatus === 'PAID_CARD';
+      const badgeBg = isApproved ? '#22c55e' : (isCard ? '#0284c7' : '#ea580c');
+      const badgeText = isApproved ? '✅ In Production' : (isCard ? '💳 Card Paid' : '⏳ Pending Bank Verification');
+
+      const approveBtn = !isApproved ? `
+        <button type="button" class="studio-btn-tiny" style="background:#22c55e; color:#fff;" onclick="window.approveCustomOrderFromStudio('${order.orderId}')">
+          ✓ Verify & Approve
+        </button>
+      ` : `<span style="font-size: 11px; font-weight: 700; color: #15803d;">✓ Production Authorized</span>`;
+
+      return `
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <div>
+              <span style="font-size: 10px; font-weight: 800; background: ${badgeBg}; color: #ffffff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 3px;">
+                ${badgeText}
+              </span>
+              <strong style="display: block; font-size: 13px; color: #102a43;">Order #${order.orderId} — ${escapeHtml(order.customerName)}</strong>
+              <span style="font-size: 11px; color: #64748b;">${escapeHtml(order.role)} • ${escapeHtml(order.phone)}</span>
+            </div>
+            <strong style="color: #008779; font-size: 13px;">${escapeHtml(order.total)}</strong>
+          </div>
+
+          <div style="background: #f8fafc; padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 11px; color: #334155; line-height: 1.5;">
+            <div><strong>Fabric:</strong> ${escapeHtml(order.fabric)}</div>
+            <div><strong>Color:</strong> ${escapeHtml(order.mainColor)} | <strong>Contrast:</strong> ${escapeHtml(order.contrastColor)}</div>
+            <div><strong>Fit & Size:</strong> ${escapeHtml(order.gender)} • ${escapeHtml(order.fit)} • ${escapeHtml(order.size)}</div>
+            <div><strong>Measurements:</strong> Top: ${order.measurements.topLength}L / ${order.measurements.chest}C | Pant: ${order.measurements.waist}W / ${order.measurements.inseam}I</div>
+            <div><strong>Embroidery:</strong> "${escapeHtml(order.personalization.line1)}" (${order.personalization.thread})</div>
+            <div><strong>Payment:</strong> ${escapeHtml(order.paymentMethod)}</div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap;">
+            ${approveBtn}
+            <div style="display: flex; gap: 6px;">
+              <a href="https://wa.me/${order.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(order.customerName)}%2C%20this%20is%20Enamels%20Operations%20Desk%20regarding%20Order%20%23${order.orderId}." target="_blank" class="studio-btn-tiny" style="background:#25d366; color:#fff; text-decoration:none;">
+                💬 WhatsApp
+              </a>
+              <a href="tel:${order.phone}" class="studio-btn-tiny" style="background:#f1f5f9; color:#334155; text-decoration:none;">
+                📞 Call
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  window.approveCustomOrderFromStudio = function (orderId) {
+    if (!confirm(`Authorize payment and release Order #${orderId} to tailored production?`)) return;
+    const orders = getStudioCustomOrders();
+    orders.forEach(o => {
+      if (o.orderId === orderId) {
+        o.paymentStatus = 'APPROVED';
+        o.verifiedBy = 'Store Administrator';
+        o.verifiedAt = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+    });
+    try { localStorage.setItem('enamels_customize_orders', JSON.stringify(orders)); } catch(e) {}
+    showToast(`Order #${orderId} approved for production!`);
+    window.renderStudioCustomOrders();
+  };
+
+  function getStudioBulkQueries() {
+    let list = [];
+    try {
+      list = JSON.parse(localStorage.getItem('enamels_bulk_enquiries') || '[]');
+    } catch(e) {}
+    if (!list || list.length === 0) {
+      list = [
+        {
+          refId: 'ENM-BLK-2026-9281',
+          date: '05 Nov 2026',
+          category: 'Medical Scrubs (Sets, Tops & Cargo Trousers)',
+          qtyRange: '50 – 100 Units',
+          customerName: 'Dr. Usman Tariq (Head of Intensive Care)',
+          organization: 'Services Hospital Surgical Department',
+          phone: '+92 300 8472910',
+          email: 'surgical.services@punjab.gov.pk',
+          city: 'Lahore',
+          notes: 'Royal Navy scrubs required with custom Hospital Crest embroidery on left sleeve.',
+          status: 'Contact Pending'
+        }
+      ];
+      try { localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(list)); } catch(e) {}
+    }
+    return list;
+  }
+
+  window.renderStudioBulkQueries = function (filterStatus = 'ALL') {
+    const list = document.getElementById('studio-bulk-queries-list');
+    if (!list) return;
+
+    const inquiries = getStudioBulkQueries();
+    const filtered = inquiries.filter(q => filterStatus === 'ALL' || q.status === filterStatus);
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="text-align: center; padding: 24px 10px; color: #64748b; font-size: 12px;">No bulk enquiries match this filter.</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(item => {
+      const waHref = `https://wa.me/${item.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(item.customerName)}%2C%20this%20is%20Enamels%20Institutional%20Desk%20regarding%20Bulk%20Enquiry%20%23${item.refId}.`;
+      return `
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+            <div>
+              <span style="font-size: 10px; font-weight: 800; color: #008779;">${item.refId} • ${item.date}</span>
+              <strong style="display: block; font-size: 13px; color: #102a43;">${escapeHtml(item.organization)}</strong>
+              <span style="font-size: 11px; color: #64748b;">${escapeHtml(item.customerName)} • ${item.city}</span>
+            </div>
+            <span style="background: #f1f5f9; color: #102a43; font-weight: 800; font-size: 11px; padding: 2px 6px; border-radius: 4px;">
+              ${escapeHtml(item.qtyRange)}
+            </span>
+          </div>
+
+          <div style="background: #f8fafc; padding: 6px 8px; border-radius: 4px; margin-bottom: 8px; font-size: 11px; color: #334155;">
+            <div><strong>Category:</strong> ${escapeHtml(item.category)}</div>
+            <div><strong>Requirements:</strong> ${escapeHtml(item.notes)}</div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <select class="studio-field-select" style="width: auto; padding: 3px 6px; font-size: 11px;" onchange="window.updateStudioBulkStatus('${item.refId}', this.value)">
+              <option value="New Enquiry"${item.status === 'New Enquiry' ? ' selected' : ''}>New Enquiry</option>
+              <option value="Contact Pending"${item.status === 'Contact Pending' ? ' selected' : ''}>Contact Pending</option>
+              <option value="Quotation Sent"${item.status === 'Quotation Sent' ? ' selected' : ''}>Quotation Sent</option>
+              <option value="In Production"${item.status === 'In Production' ? ' selected' : ''}>In Production</option>
+              <option value="Completed"${item.status === 'Completed' ? ' selected' : ''}>Completed</option>
+            </select>
+
+            <div style="display: flex; gap: 6px;">
+              <a href="${waHref}" target="_blank" class="studio-btn-tiny" style="background:#25d366; color:#fff; text-decoration:none;">
+                💬 WhatsApp
+              </a>
+              <a href="tel:${item.phone}" class="studio-btn-tiny" style="background:#f1f5f9; color:#334155; text-decoration:none;">
+                📞 Call
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  window.updateStudioBulkStatus = function (refId, newStatus) {
+    const list = getStudioBulkQueries();
+    list.forEach(i => {
+      if (i.refId === refId) i.status = newStatus;
+    });
+    try { localStorage.setItem('enamels_bulk_enquiries', JSON.stringify(list)); } catch(e) {}
+    showToast(`Bulk enquiry ${refId} updated to ${newStatus}`);
+    window.renderStudioBulkQueries();
+  };
 
   // Handle Shopify Section Re-renders
   document.addEventListener('shopify:section:load', function () {

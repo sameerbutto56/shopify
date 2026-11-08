@@ -1,0 +1,43 @@
+{% comment %}
+  Enamels Branded Customer Registration
+{% endcomment %}
+
+<div class="customer-auth-container" style="max-width: 480px; margin: 60px auto 100px; padding: 32px 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); font-family: inherit;">
+  <div style="text-align: center; margin-bottom: 24px;">
+    <h1 style="font-size: 24px; font-weight: 800; color: #102a43; margin: 0;">Create an Account</h1>
+    <p style="font-size: 13px; color: #64748b; margin: 6px 0 0;">Track orders, save bespoke scrub measurements, and manage bulk inquiries.</p>
+  </div>
+
+  {% form 'create_customer' %}
+    {{ form.errors | default_errors }}
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+      <div>
+        <label for="FirstName" style="display: block; font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px; text-transform: uppercase;">First Name</label>
+        <input type="text" name="customer[first_name]" id="FirstName" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+      </div>
+      <div>
+        <label for="LastName" style="display: block; font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px; text-transform: uppercase;">Last Name</label>
+        <input type="text" name="customer[last_name]" id="LastName" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+      </div>
+    </div>
+
+    <div style="margin-bottom: 14px;">
+      <label for="Email" style="display: block; font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px; text-transform: uppercase;">Email Address</label>
+      <input type="email" name="customer[email]" id="Email" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label for="CreatePassword" style="display: block; font-size: 11px; font-weight: 700; color: #334155; margin-bottom: 4px; text-transform: uppercase;">Password</label>
+      <input type="password" name="customer[password]" id="CreatePassword" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+    </div>
+
+    <button type="submit" style="width: 100%; background: #008779; color: #ffffff; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer;">
+      Create Account
+    </button>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 13px; color: #64748b;">
+      Already have an account? <a href="{{ routes.account_login_url }}" style="color: #102a43; font-weight: 700; text-decoration: none;">Sign in</a>
+    </div>
+  {% endform %}
+</div>

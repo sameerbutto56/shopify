@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "admin_profile": {
+      "type": "enamels-admin-profile",
+      "settings": {}
+    }
+  },
+  "order": [
+    "admin_profile"
+  ]
+}

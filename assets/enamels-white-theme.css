@@ -225,6 +225,63 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
   padding: 6px;
 }
 
+/* Header Account & Admin Profile Dropdown */
+.header-account-wrap {
+  position: relative;
+}
+.header-account-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 260px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  padding: 8px 0;
+  display: none;
+  z-index: 1000;
+  animation: fadeInDrop 0.2s ease-out;
+}
+@keyframes fadeInDrop {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.header-account-wrap:hover .header-account-dropdown,
+.header-account-wrap:focus-within .header-account-dropdown {
+  display: block;
+}
+.had-header {
+  padding: 10px 16px 8px;
+}
+.had-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 4px 0;
+}
+.had-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.had-item:hover {
+  background: #f8fafc;
+  color: #008779;
+}
+.had-item--highlight {
+  color: #008779;
+  font-weight: 700;
+}
+.had-icon {
+  font-size: 15px;
+}
+
 .cart-bubble-badge {
   background-color: var(--enamels-accent-red);
   color: #ffffff;

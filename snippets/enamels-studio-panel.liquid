@@ -60,6 +60,14 @@
       <span>🎨</span>
       <span>Design</span>
     </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('custom-orders')" id="studio-tab-custom-orders" style="background: rgba(0, 135, 121, 0.1); border-left: 2px solid #008779;">
+      <span>✂️</span>
+      <span>Customize Orders</span>
+    </button>
+    <button type="button" class="enamels-studio-tab-btn" onclick="window.switchStudioTab('bulk-orders')" id="studio-tab-bulk-orders" style="background: rgba(30, 58, 138, 0.08); border-left: 2px solid #1e3a8a;">
+      <span>📦</span>
+      <span>Bulk Enquiries</span>
+    </button>
   </nav>
 
   <!-- Studio Content Body -->
@@ -471,6 +479,62 @@
             <option value="12px">12px (Soft Pill)</option>
             <option value="0px">0px (Sharp Modern)</option>
           </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 7: DEDICATED CUSTOMIZE ORDERS DESK    -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-custom-orders">
+      <div class="studio-card" style="border-left: 3px solid #008779;">
+        <div class="studio-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="studio-card-title">✂️ Customize Orders Desk</h3>
+          <a href="/account#customize-orders" target="_blank" style="font-size: 11px; font-weight: 700; color: #008779; text-decoration: none;">
+            Full Page View ↗
+          </a>
+        </div>
+        <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px;">
+          Review incoming tailored scrub orders, verify bank transfers, and release to production.
+        </p>
+
+        <div style="display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;">
+          <button type="button" class="studio-btn-tiny" style="background:#102a43; color:#fff;" onclick="window.renderStudioCustomOrders ? window.renderStudioCustomOrders('ALL') : null">All</button>
+          <button type="button" class="studio-btn-tiny" style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca;" onclick="window.renderStudioCustomOrders ? window.renderStudioCustomOrders('PENDING_TRANSFER') : null">⏳ Pending (1)</button>
+          <button type="button" class="studio-btn-tiny" style="background:#e0f2fe; color:#0369a1;" onclick="window.renderStudioCustomOrders ? window.renderStudioCustomOrders('PAID_CARD') : null">💳 Card Paid</button>
+          <button type="button" class="studio-btn-tiny" style="background:#dcfce7; color:#15803d;" onclick="window.renderStudioCustomOrders ? window.renderStudioCustomOrders('APPROVED') : null">✅ Approved</button>
+        </div>
+
+        <div id="studio-custom-orders-list">
+          <!-- Populated by window.renderStudioCustomOrders() -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 8: DEDICATED BULK ENQUIRIES DESK      -->
+    <!-- ========================================== -->
+    <div class="enamels-studio-panel-content" id="studio-content-bulk-orders">
+      <div class="studio-card" style="border-left: 3px solid #1e3a8a;">
+        <div class="studio-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="studio-card-title">📦 Bulk Orders Query Desk</h3>
+          <a href="/account#bulk-enquiries" target="_blank" style="font-size: 11px; font-weight: 700; color: #1e3a8a; text-decoration: none;">
+            Full Page View ↗
+          </a>
+        </div>
+        <p style="font-size: 12px; color: #64748b; margin: 4px 0 12px;">
+          Institutional quotes for medical clinics, hospitals, and surgical departments.
+        </p>
+
+        <div style="display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;">
+          <button type="button" class="studio-btn-tiny" style="background:#102a43; color:#fff;" onclick="window.renderStudioBulkQueries ? window.renderStudioBulkQueries('ALL') : null">All</button>
+          <button type="button" class="studio-btn-tiny" style="background:#e0f2fe; color:#0369a1;" onclick="window.renderStudioBulkQueries ? window.renderStudioBulkQueries('New Enquiry') : null">New Enquiry</button>
+          <button type="button" class="studio-btn-tiny" style="background:#fef3c7; color:#92400e;" onclick="window.renderStudioBulkQueries ? window.renderStudioBulkQueries('Contact Pending') : null">Contact Pending</button>
+          <button type="button" class="studio-btn-tiny" style="background:#dcfce7; color:#15803d;" onclick="window.renderStudioBulkQueries ? window.renderStudioBulkQueries('In Production') : null">In Production</button>
+        </div>
+
+        <div id="studio-bulk-queries-list">
+          <!-- Populated by window.renderStudioBulkQueries() -->
         </div>
       </div>
     </div>

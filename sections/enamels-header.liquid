@@ -148,13 +148,49 @@
         {% endif %}
 
         {% if show_account %}
-        <!-- Customer Account Link -->
-        <a href="{{ routes.account_url }}" class="header-action-btn" aria-label="Customer Account" title="My Account" style="color: inherit; text-decoration: none;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </a>
+        <!-- Customer Account & Admin Profile Link & Dropdown -->
+        <div class="header-account-wrap" style="position: relative;">
+          <a href="{{ routes.account_url }}" class="header-action-btn" aria-label="Customer Account & Admin Profile" title="My Account & Admin Portal" style="color: inherit; text-decoration: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </a>
+          <div class="header-account-dropdown">
+            <div class="had-header">
+              <strong style="display: block; font-size: 13px; color: #102a43;">
+                {% if customer %}{{ customer.name }}{% else %}Store Profile & Admin{% endif %}
+              </strong>
+              <span style="font-size: 11px; color: #64748b;">
+                {% if customer %}{{ customer.email }}{% else %}Operations & Orders Desk{% endif %}
+              </span>
+            </div>
+            <div class="had-divider"></div>
+            <a href="{{ routes.account_url }}" class="had-item">
+              <span class="had-icon">👤</span>
+              <span>My Profile & Orders</span>
+            </a>
+            <a href="{{ routes.account_url }}#customize-orders" class="had-item had-item--highlight">
+              <span class="had-icon">✂️</span>
+              <span>Customize Orders Desk</span>
+            </a>
+            <a href="{{ routes.account_url }}#bulk-enquiries" class="had-item">
+              <span class="had-icon">📦</span>
+              <span>Bulk Orders Query Desk</span>
+            </a>
+            <button type="button" class="had-item" onclick="window.openStudioPanel ? window.openStudioPanel() : window.toggleStudioPanel()" style="width: 100%; border: none; background: none; font-family: inherit; cursor: pointer; text-align: left;">
+              <span class="had-icon">🎨</span>
+              <span>Enamels Studio Panel</span>
+            </button>
+            {% if customer %}
+              <div class="had-divider"></div>
+              <a href="{{ routes.account_logout_url }}" class="had-item" style="color: #dc2626;">
+                <span class="had-icon">🚪</span>
+                <span>Sign Out</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
         {% endif %}
 
         {% if show_wishlist %}
