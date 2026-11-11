@@ -48,16 +48,18 @@
 
     <!-- 1. Initial Collapsed Carousel -->
     <div class="enamels-cats-carousel-wrap" data-carousel-wrap>
-      <button
-        type="button"
-        class="enamels-cat-arrow enamels-cat-arrow--left"
-        aria-label="Scroll left"
-        data-cat-prev
-      >
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
+      {% if section.settings.show_arrows != false or section.settings.show_arrows_mobile %}
+        <button
+          type="button"
+          class="enamels-cat-arrow enamels-cat-arrow--left {% unless section.settings.show_arrows_mobile %}enamels-cat-arrow--hide-mob{% endunless %} {% if section.settings.show_arrows == false %}enamels-cat-arrow--hide-desk{% endif %}"
+          aria-label="Scroll left"
+          data-cat-prev
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      {% endif %}
 
       <div class="enamels-cats-track" data-carousel-track tabindex="0" role="region" aria-label="Category carousel">
         {% for block in section.blocks %}
@@ -88,6 +90,13 @@
           {%- assign card_bg_val = block.settings.card_bg | default: section.settings.card_bg | default: '#dfdfdf' -%}
           {%- if card_bg_val == blank or card_bg_val == 'rgba(0,0,0,0)' -%}
             {%- assign card_bg_val = '#dfdfdf' -%}
+          {%- endif -%}
+
+          {%- assign show_card_arrow = false -%}
+          {%- if section.settings.show_pill_arrow and block.settings.show_arrow != false -%}
+            {%- assign show_card_arrow = true -%}
+          {%- elsif block.settings.show_arrow -%}
+            {%- assign show_card_arrow = true -%}
           {%- endif -%}
 
           <a
@@ -133,20 +142,30 @@
                 >
               {% endif %}
             </div>
+
+            {% if show_card_arrow %}
+              <span class="enamels-cat-card__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </span>
+            {% endif %}
           </a>
         {% endfor %}
       </div>
 
-      <button
-        type="button"
-        class="enamels-cat-arrow enamels-cat-arrow--right"
-        aria-label="Scroll right"
-        data-cat-next
-      >
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
+      {% if section.settings.show_arrows != false or section.settings.show_arrows_mobile %}
+        <button
+          type="button"
+          class="enamels-cat-arrow enamels-cat-arrow--right {% unless section.settings.show_arrows_mobile %}enamels-cat-arrow--hide-mob{% endunless %} {% if section.settings.show_arrows == false %}enamels-cat-arrow--hide-desk{% endif %}"
+          aria-label="Scroll right"
+          data-cat-next
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      {% endif %}
     </div>
 
     <!-- 2. Expandable Grid View (Reveals underneath smoothly) -->
@@ -193,6 +212,13 @@
               {%- assign card_bg_val = '#dfdfdf' -%}
             {%- endif -%}
 
+            {%- assign show_card_arrow = false -%}
+            {%- if section.settings.show_pill_arrow and block.settings.show_arrow != false -%}
+              {%- assign show_card_arrow = true -%}
+            {%- elsif block.settings.show_arrow -%}
+              {%- assign show_card_arrow = true -%}
+            {%- endif -%}
+
             <a
               href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
               {% if is_customizer_pill %}
@@ -235,6 +261,14 @@
                   >
                 {% endif %}
               </div>
+
+              {% if show_card_arrow %}
+                <span class="enamels-cat-card__arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </span>
+              {% endif %}
             </a>
           {% endfor %}
         </div>
@@ -274,6 +308,12 @@
     --cats-pad-bot-mob: {{ section.settings.padding_bottom_mobile | default: 20 }}px;
     --cats-container-max-w: {{ section.settings.container_max_width | default: 1320 }}px;
     --cats-mob-card-w: {{ section.settings.card_width_mobile | default: 72 }}%;
+    --cats-arrow-bg: {{ section.settings.arrow_bg | default: '#ffffff' }};
+    --cats-arrow-color: {{ section.settings.arrow_color | default: '#111111' }};
+    --cats-arrow-border: {{ section.settings.arrow_border_color | default: 'rgba(0,0,0,0.12)' }};
+    --cats-arrow-size-desk: {{ section.settings.arrow_size | default: 36 }}px;
+    --cats-arrow-size-mob: {{ section.settings.arrow_size_mobile | default: 32 }}px;
+    --cats-pill-arrow-color: {{ section.settings.pill_arrow_color | default: '#111111' }};
 
     padding-top: var(--cats-pad-top-desk);
     padding-bottom: var(--cats-pad-bot-desk);
@@ -379,27 +419,29 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
+    width: var(--cats-arrow-size-desk, 36px);
+    height: var(--cats-arrow-size-desk, 36px);
     border-radius: 50%;
-    background-color: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    color: #222222;
+    background-color: var(--cats-arrow-bg, #ffffff);
+    border: 1px solid var(--cats-arrow-border, rgba(0, 0, 0, 0.12));
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    color: var(--cats-arrow-color, #111111);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 5;
+    z-index: 8;
     padding: 0;
-    transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
-    opacity: 0.9;
+    transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    opacity: 0.95;
+    outline: none;
   }
 
   .enamels-cat-arrow:hover {
     background-color: #f7f7f7;
     opacity: 1;
     transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
   }
 
   .enamels-cat-arrow--left {
@@ -410,19 +452,31 @@
     right: -14px;
   }
 
+  .enamels-cat-arrow--hide-desk {
+    display: none !important;
+  }
+
   /* Carousel Track */
   .enamels-cats-track {
     display: flex;
     gap: var(--cats-gap-desk);
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding: 6px 2px;
     width: 100%;
     align-items: stretch;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+  }
+
+  .enamels-cats-track:active {
+    cursor: grabbing;
   }
 
   .enamels-cats-track::-webkit-scrollbar {
@@ -544,6 +598,24 @@
     transform: scale(1.05);
   }
 
+  /* Pill Card Arrow Icon (Inside Each Pill) */
+  .enamels-cat-card__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: 6px;
+    color: var(--cats-pill-arrow-color, #111111);
+    opacity: 0.7;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    z-index: 2;
+  }
+
+  .enamels-cat-card:hover .enamels-cat-card__arrow {
+    transform: translateX(3px);
+    opacity: 1;
+  }
+
   /* 2. Expandable Drawer Section */
   .enamels-cats-drawer {
     display: grid;
@@ -655,7 +727,21 @@
     }
 
     .enamels-cat-arrow {
-      display: none;
+      width: var(--cats-arrow-size-mob, 32px);
+      height: var(--cats-arrow-size-mob, 32px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+    }
+
+    .enamels-cat-arrow--left {
+      left: 2px;
+    }
+
+    .enamels-cat-arrow--right {
+      right: 2px;
+    }
+
+    .enamels-cat-arrow--hide-mob {
+      display: none !important;
     }
 
     .enamels-cats-track {
@@ -746,31 +832,95 @@
       const prevBtn = section.querySelector('[data-cat-prev]');
       const nextBtn = section.querySelector('[data-cat-next]');
 
-      // Carousel Arrow Navigation
-      if (track && prevBtn && nextBtn) {
-        const scrollStep = () => track.clientWidth * 0.75;
+      // Carousel Arrow Navigation & Mouse Drag-to-Scroll
+      if (track) {
+        const scrollStep = () => Math.max(180, track.clientWidth * 0.7);
 
-        prevBtn.onclick = () => {
-          track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
-        };
+        if (prevBtn) {
+          prevBtn.onclick = (e) => {
+            e.preventDefault();
+            track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+          };
+        }
 
-        nextBtn.onclick = () => {
-          track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
-        };
+        if (nextBtn) {
+          nextBtn.onclick = (e) => {
+            e.preventDefault();
+            track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+          };
+        }
 
         // Update arrow visibility based on scroll position
         const updateArrows = () => {
-          const atStart = track.scrollLeft <= 5;
-          const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
-          prevBtn.style.opacity = atStart ? '0.3' : '1';
+          if (!prevBtn || !nextBtn) return;
+          const maxScroll = track.scrollWidth - track.clientWidth - 4;
+          const atStart = track.scrollLeft <= 4;
+          const atEnd = track.scrollLeft >= maxScroll;
+          prevBtn.style.opacity = atStart ? '0.35' : '1';
           prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
-          nextBtn.style.opacity = atEnd ? '0.3' : '1';
+          nextBtn.style.opacity = atEnd ? '0.35' : '1';
           nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
         };
 
         track.addEventListener('scroll', updateArrows, { passive: true });
         window.addEventListener('resize', updateArrows, { passive: true });
-        updateArrows();
+        setTimeout(updateArrows, 100);
+
+        // Smooth Mouse Click-and-Drag Scrolling for Desktop & Theme Editor Preview
+        let isDown = false;
+        let startX = 0;
+        let scrollStart = 0;
+        let hasMoved = false;
+
+        track.addEventListener('mousedown', (e) => {
+          if (e.button !== 0) return;
+          isDown = true;
+          hasMoved = false;
+          startX = e.pageX - track.offsetLeft;
+          scrollStart = track.scrollLeft;
+          track.style.scrollBehavior = 'auto';
+          track.style.cursor = 'grabbing';
+          track.style.userSelect = 'none';
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (!isDown) return;
+          isDown = false;
+          track.style.scrollBehavior = 'smooth';
+          track.style.cursor = 'grab';
+          track.style.userSelect = '';
+          setTimeout(() => { hasMoved = false; }, 60);
+        });
+
+        track.addEventListener('mouseleave', () => {
+          if (!isDown) return;
+          isDown = false;
+          track.style.scrollBehavior = 'smooth';
+          track.style.cursor = 'grab';
+          track.style.userSelect = '';
+        });
+
+        track.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const currentX = e.pageX - track.offsetLeft;
+          const walk = (currentX - startX) * 1.4;
+          if (Math.abs(walk) > 4) {
+            hasMoved = true;
+          }
+          track.scrollLeft = scrollStart - walk;
+        });
+
+        // Suppress accidental card clicks if user was dragging
+        track.querySelectorAll('.enamels-cat-card').forEach((card) => {
+          card.addEventListener('click', (e) => {
+            if (hasMoved) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+          }, true);
+        });
       }
 
       // View All / Show Less Expand & Collapse
@@ -1237,6 +1387,76 @@
       "unit": "px",
       "label": "Padding Bottom (Mobile)",
       "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Carousel Navigation Arrows (End of Pills)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Navigation Arrows (Desktop)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows_mobile",
+      "label": "Show Navigation Arrows (Mobile)",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "min": 24,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrow Button Size (Desktop)",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "arrow_size_mobile",
+      "min": 24,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrow Button Size (Mobile)",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg",
+      "label": "Arrow Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow Icon Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Arrow Border Color",
+      "default": "rgba(0,0,0,0.12)"
+    },
+    {
+      "type": "header",
+      "content": "Pill Card Arrow Icon (Inside Each Pill)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pill_arrow",
+      "label": "Show Arrow Icon at End of Each Pill",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "pill_arrow_color",
+      "label": "Pill Arrow Icon Color",
+      "default": "#111111"
     }
   ],
   "blocks": [
@@ -1287,6 +1507,12 @@
           "type": "color",
           "id": "card_bg",
           "label": "Card Background (Overrides section)"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_arrow",
+          "label": "Show Arrow Icon on this Pill",
+          "default": true
         }
       ]
     }
