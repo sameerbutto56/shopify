@@ -283,10 +283,7 @@ body[data-active-view]:not([data-active-view="home"]) .shopify-section:has(#home
 }
 
 /* Store Admin Quick Launch Bar - Completely hidden from customer-facing storefront */
-.enamels-admin-top-bar,
-.studio-trigger-pill,
-.enamels-studio-trigger-btn,
-#enamels-studio-trigger {
+.enamels-admin-top-bar {
   display: none !important;
 }
 
