@@ -9,8 +9,10 @@
 
 {%- liquid
   assign is_server_admin = false
-  if customer and (customer.tags contains 'admin' or customer.tags contains 'staff' or customer.tags contains 'owner')
-    assign is_server_admin = true
+  if customer
+    if customer.tags contains 'admin' or customer.tags contains 'staff' or customer.tags contains 'owner'
+      assign is_server_admin = true
+    endif
   endif
 -%}
 
