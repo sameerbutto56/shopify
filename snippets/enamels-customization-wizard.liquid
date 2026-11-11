@@ -340,7 +340,7 @@
       </div>
 
       <!-- Action Button directly on this step -->
-      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(1)">← Back to Fabric</button>
         <button type="button" class="btn-select-next" style="width: auto; padding: 14px 32px;" onclick="window.enamelsSaveColorsAndNext()">
           Select & Next →
@@ -484,7 +484,7 @@
         {%- endif -%}
       </div>
 
-      <div style="margin-top: 24px;">
+      <div class="wizard-nav-actions" style="margin-top: 24px;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(2)">← Back to Color & Contrast</button>
       </div>
     </div>
@@ -515,7 +515,7 @@
       <!-- 2. Female 3-Fit Selector (Dynamic when Female is selected) -->
       <div id="female-fit-container" style="display: none; margin-bottom: 20px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 16px;">
         <label class="form-label" style="margin-bottom: 8px;">B. Choose Female Fit Silhouette:</label>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div class="female-fit-grid">
           <button type="button" class="female-fit-card active" id="ffit-slim" onclick="window.enamelsSetFemaleFit('slim')">
             <strong style="display:block; font-size:13px; color:#102a43;">Slim Fit</strong>
             <span style="font-size:11px; color:#64748b;">Tailored waist & contoured silhouette</span>
@@ -539,8 +539,8 @@
         </span>
       </div>
 
-      <!-- 4. Size Selection Chips -->
-      <div class="size-chips-bar" role="radiogroup" aria-label="Standard Sizes">
+      <!-- 4. Size Selection Chips (Dynamic from Admin Configuration) -->
+      <div class="size-chips-bar" id="wiz-size-chips-container" role="radiogroup" aria-label="Standard Sizes">
         <button type="button" class="size-chip-btn" data-size="S" onclick="window.enamelsSelectStandardSize('S')">Small (S)</button>
         <button type="button" class="size-chip-btn active" data-size="M" onclick="window.enamelsSelectStandardSize('M')">Medium (M)</button>
         <button type="button" class="size-chip-btn" data-size="L" onclick="window.enamelsSelectStandardSize('L')">Large (L)</button>
@@ -549,7 +549,7 @@
         <button type="button" class="size-chip-btn size-chip-custom" data-size="Custom" id="size-chip-custom-btn" onclick="window.enamelsSelectCustomDirectly()">Custom Fit</button>
       </div>
 
-      <!-- Measurements Container (Pre-populated from Enamels Size Chart) -->
+      <!-- Measurements Container (Pre-populated from Dynamic Size Chart) -->
       <div class="custom-measurements-panel" id="measurements-container-step4">
         <div class="measurements-header">
           <div>
@@ -566,61 +566,14 @@
           ✨ Measurement changed! Selected size has automatically switched to <strong>Custom</strong>.
         </div>
 
-        <!-- 8 Measurements Inputs Grid -->
-        <div class="measurements-inputs-grid">
-          <!-- Top Length -->
-          <div class="measurement-field">
-            <label class="m-label">Top Length <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_top_length" class="m-input" value="29" oninput="window.enamelsHandleMeasurementInput('topLength', this.value)">
-            <span class="m-hint">Shoulder to lower hem</span>
-          </div>
-          <!-- Chest / Bust -->
-          <div class="measurement-field">
-            <label class="m-label">Chest / Bust <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_chest" class="m-input" value="40" oninput="window.enamelsHandleMeasurementInput('chest', this.value)">
-            <span class="m-hint">Circumference around chest</span>
-          </div>
-          <!-- Shoulder -->
-          <div class="measurement-field">
-            <label class="m-label">Shoulder Width <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_shoulder" class="m-input" value="18.5" oninput="window.enamelsHandleMeasurementInput('shoulder', this.value)">
-            <span class="m-hint">Shoulder seam tip to tip</span>
-          </div>
-          <!-- Sleeve -->
-          <div class="measurement-field">
-            <label class="m-label">Sleeve Length <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_sleeve" class="m-input" value="8.5" oninput="window.enamelsHandleMeasurementInput('sleeve', this.value)">
-            <span class="m-hint">Shoulder down to sleeve cuff</span>
-          </div>
-          <!-- Pant Waist -->
-          <div class="measurement-field">
-            <label class="m-label">Pant Waist <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_pant_waist" class="m-input" value="33" oninput="window.enamelsHandleMeasurementInput('pantWaist', this.value)">
-            <span class="m-hint">Natural waist circumference</span>
-          </div>
-          <!-- Pant Hip -->
-          <div class="measurement-field">
-            <label class="m-label">Pant Hips <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_pant_hip" class="m-input" value="42" oninput="window.enamelsHandleMeasurementInput('pantHip', this.value)">
-            <span class="m-hint">Fullest circumference around hips</span>
-          </div>
-          <!-- Pant Inseam -->
-          <div class="measurement-field">
-            <label class="m-label">Pant Length / Inseam <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_pant_inseam" class="m-input" value="30.5" oninput="window.enamelsHandleMeasurementInput('pantInseam', this.value)">
-            <span class="m-hint">Crotch straight to bottom cuff</span>
-          </div>
-          <!-- Thigh -->
-          <div class="measurement-field">
-            <label class="m-label">Thigh Width <span class="m-unit-lbl">(in)</span></label>
-            <input type="number" step="0.5" id="wiz_m_thigh" class="m-input" value="24.5" oninput="window.enamelsHandleMeasurementInput('thigh', this.value)">
-            <span class="m-hint">Upper thigh circumference</span>
-          </div>
+        <!-- Dynamic Measurements Inputs Grid -->
+        <div class="measurements-inputs-grid" id="wiz-measurements-grid">
+          <!-- Populated dynamically by window.renderDynamicMeasurementInputs() -->
         </div>
       </div>
 
       <!-- Action Button directly on this step -->
-      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(3)">← Back to Design</button>
         <button type="button" class="btn-select-next" style="width: auto; padding: 14px 32px;" onclick="window.enamelsSaveSizeAndNext()">
           Select & Next →
@@ -804,7 +757,7 @@
       </div>
 
       <!-- Action Button directly on this step -->
-      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(4)">← Back to Size & Fit</button>
         <button type="button" class="btn-select-next" style="width: auto; padding: 14px 32px;" onclick="window.enamelsSavePersonalizationAndNext()">
           Continue to Review →
@@ -918,7 +871,7 @@
         </div>
       </div>
 
-      <div style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(5)">← Back to Personalization</button>
         <button type="button" class="btn-select-next" style="width: auto; padding: 14px 36px;" onclick="window.enamelsGoStep(7)">
           Proceed to Payment & Delivery →
@@ -1062,7 +1015,7 @@
         </div>
       </div>
 
-      <div style="margin-top: 24px;">
+      <div class="wizard-nav-actions" style="margin-top: 24px;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(6)">← Back to Review</button>
       </div>
     </div>
@@ -2084,6 +2037,25 @@
   }
 
   /* Mobile-First Responsiveness & Touch Optimization */
+  .female-fit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  @media (max-width: 640px) {
+    .female-fit-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  }
+
+  .wizard-nav-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
   .enamels-mobile-step-pill-indicator {
     display: none;
     background: #f0fdfa;
@@ -2109,6 +2081,49 @@
       padding: 6px 10px;
       min-height: 44px;
     }
+    .wizard-nav-actions {
+      flex-direction: column-reverse;
+      gap: 10px;
+      width: 100%;
+    }
+    .wizard-nav-actions .btn-select-next,
+    .wizard-nav-actions .btn-step-prev {
+      width: 100% !important;
+      min-height: 48px;
+      justify-content: center;
+      text-align: center;
+      margin-top: 0;
+    }
+    .size-chips-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .size-chips-bar .size-chip-custom {
+      grid-column: 1 / -1;
+    }
+    .size-chip-btn {
+      width: 100%;
+      padding: 12px 6px;
+      font-size: 13px;
+      text-align: center;
+      min-height: 46px;
+    }
+    .custom-measurements-panel {
+      padding: 14px 10px;
+    }
+    .measurements-header {
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .measurements-inputs-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .measurement-field {
+      min-width: 0;
+    }
     /* iOS input auto-zoom prevention */
     .m-input,
     .form-input,
@@ -2121,6 +2136,25 @@
     select,
     textarea {
       font-size: 16px !important;
+    }
+    .m-input {
+      min-height: 44px;
+      box-sizing: border-box;
+      width: 100%;
+      padding: 8px 10px;
+    }
+    .m-label {
+      font-size: 11px;
+    }
+    .m-hint {
+      font-size: 9.5px;
+    }
+    .gender-pill {
+      flex: 1;
+      justify-content: center;
+      padding: 12px 10px;
+      font-size: 13px;
+      min-height: 44px;
     }
     /* Large comfortable touch targets */
     .cust-swatch-circle,
@@ -2149,42 +2183,115 @@
     }
     .design-category-filters::-webkit-scrollbar { display: none; }
   }
+
+  @media (max-width: 375px) {
+    .measurements-inputs-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 
 <script>
   (function initRebuiltCustomizer() {
-    // Official Enamels Male & Female Size Charts (Inches)
-    var ENAMELS_MALE_SIZE_CHART = {
-      'S':  { topLength: 28, chest: 38, shoulder: 17.5, sleeve: 8.0, pantWaist: 30, pantHip: 39, pantInseam: 30, thigh: 23 },
-      'M':  { topLength: 29, chest: 40, shoulder: 18.5, sleeve: 8.5, pantWaist: 33, pantHip: 42, pantInseam: 30.5, thigh: 24.5 },
-      'L':  { topLength: 30, chest: 43, shoulder: 19.5, sleeve: 9.0, pantWaist: 36, pantHip: 45, pantInseam: 31, thigh: 26 },
-      'XL': { topLength: 31, chest: 46, shoulder: 20.5, sleeve: 9.5, pantWaist: 40, pantHip: 48, pantInseam: 31.5, thigh: 27.5 },
-      '2XL':{ topLength: 32, chest: 49, shoulder: 21.5, sleeve: 10.0, pantWaist: 44, pantHip: 51, pantInseam: 32, thigh: 29 }
+    // =========================================================================
+    // DYNAMIC SIZE & FIT CONFIGURATION ENGINE (ADMIN-CONFIGURABLE STANDARDS)
+    // =========================================================================
+    var DEFAULT_ENAMELS_SIZE_FIT_CONFIG = {
+      version: 2,
+      lastUpdated: new Date().toISOString(),
+      fields: [
+        { key: 'topLength', label: 'Top Length', hint: 'Shoulder down to lower hem', defaultUnit: 'in' },
+        { key: 'chest', label: 'Chest / Bust', hint: 'Circumference around widest chest', defaultUnit: 'in' },
+        { key: 'shoulder', label: 'Shoulder Width', hint: 'Seam to seam across back', defaultUnit: 'in' },
+        { key: 'sleeve', label: 'Sleeve Length', hint: 'Shoulder tip down to cuff', defaultUnit: 'in' },
+        { key: 'pantWaist', label: 'Pant Waist', hint: 'Natural waist circumference', defaultUnit: 'in' },
+        { key: 'pantHip', label: 'Pant Hips', hint: 'Widest circumference around hips', defaultUnit: 'in' },
+        { key: 'pantInseam', label: 'Pant Inseam', hint: 'Crotch straight to bottom cuff', defaultUnit: 'in' },
+        { key: 'thigh', label: 'Thigh Width', hint: 'Upper thigh circumference', defaultUnit: 'in' }
+      ],
+      fits: {
+        male: {
+          key: 'male',
+          title: 'Male Scrubs (Standard Fit)',
+          gender: 'male',
+          sizes: ['S', 'M', 'L', 'XL', '2XL'],
+          chart: {
+            'S':   { topLength: 28, chest: 38, shoulder: 17.5, sleeve: 8.0, pantWaist: 30, pantHip: 39, pantInseam: 30, thigh: 23 },
+            'M':   { topLength: 29, chest: 40, shoulder: 18.5, sleeve: 8.5, pantWaist: 33, pantHip: 42, pantInseam: 30.5, thigh: 24.5 },
+            'L':   { topLength: 30, chest: 43, shoulder: 19.5, sleeve: 9.0, pantWaist: 36, pantHip: 45, pantInseam: 31, thigh: 26 },
+            'XL':  { topLength: 31, chest: 46, shoulder: 20.5, sleeve: 9.5, pantWaist: 40, pantHip: 48, pantInseam: 31.5, thigh: 27.5 },
+            '2XL': { topLength: 32, chest: 49, shoulder: 21.5, sleeve: 10.0, pantWaist: 44, pantHip: 51, pantInseam: 32, thigh: 29 }
+          }
+        },
+        female_slim: {
+          key: 'female_slim',
+          title: 'Female: Slim Fit',
+          gender: 'female',
+          fitSlug: 'slim',
+          sizes: ['S', 'M', 'L', 'XL', '2XL'],
+          chart: {
+            'S':   { topLength: 26.0, chest: 35.0, shoulder: 15.0, sleeve: 7.0, pantWaist: 27.0, pantHip: 37.0, pantInseam: 29.0, thigh: 21.5 },
+            'M':   { topLength: 27.0, chest: 37.0, shoulder: 15.5, sleeve: 7.5, pantWaist: 29.0, pantHip: 39.0, pantInseam: 29.5, thigh: 22.5 },
+            'L':   { topLength: 28.0, chest: 40.0, shoulder: 16.5, sleeve: 8.0, pantWaist: 32.0, pantHip: 42.0, pantInseam: 30.0, thigh: 24.0 },
+            'XL':  { topLength: 29.0, chest: 43.0, shoulder: 17.5, sleeve: 8.5, pantWaist: 35.0, pantHip: 45.0, pantInseam: 30.5, thigh: 25.5 },
+            '2XL': { topLength: 30.0, chest: 46.0, shoulder: 18.5, sleeve: 9.0, pantWaist: 39.0, pantHip: 48.0, pantInseam: 31.0, thigh: 27.0 }
+          }
+        },
+        female_regular: {
+          key: 'female_regular',
+          title: 'Female: Regular Fit',
+          gender: 'female',
+          fitSlug: 'regular',
+          sizes: ['S', 'M', 'L', 'XL', '2XL'],
+          chart: {
+            'S':   { topLength: 26.5, chest: 36.5, shoulder: 15.5, sleeve: 7.2, pantWaist: 28.0, pantHip: 38.0, pantInseam: 29.0, thigh: 22.0 },
+            'M':   { topLength: 27.5, chest: 38.5, shoulder: 16.0, sleeve: 7.7, pantWaist: 30.5, pantHip: 40.5, pantInseam: 29.5, thigh: 23.5 },
+            'L':   { topLength: 28.5, chest: 41.5, shoulder: 17.0, sleeve: 8.2, pantWaist: 33.5, pantHip: 43.5, pantInseam: 30.0, thigh: 25.0 },
+            'XL':  { topLength: 29.5, chest: 44.5, shoulder: 18.0, sleeve: 8.7, pantWaist: 37.0, pantHip: 46.5, pantInseam: 30.5, thigh: 26.5 },
+            '2XL': { topLength: 30.5, chest: 47.5, shoulder: 19.0, sleeve: 9.2, pantWaist: 41.0, pantHip: 49.5, pantInseam: 31.0, thigh: 28.0 }
+          }
+        },
+        female_loose: {
+          key: 'female_loose',
+          title: 'Female: Loose Fit',
+          gender: 'female',
+          fitSlug: 'loose',
+          sizes: ['S', 'M', 'L', 'XL', '2XL'],
+          chart: {
+            'S':   { topLength: 27.5, chest: 38.5, shoulder: 16.0, sleeve: 7.5, pantWaist: 30.0, pantHip: 40.0, pantInseam: 29.5, thigh: 23.0 },
+            'M':   { topLength: 28.5, chest: 40.5, shoulder: 16.8, sleeve: 8.0, pantWaist: 32.5, pantHip: 42.5, pantInseam: 30.0, thigh: 24.5 },
+            'L':   { topLength: 29.5, chest: 43.5, shoulder: 17.8, sleeve: 8.5, pantWaist: 35.5, pantHip: 45.5, pantInseam: 30.5, thigh: 26.0 },
+            'XL':  { topLength: 30.5, chest: 46.5, shoulder: 18.8, sleeve: 9.0, pantWaist: 39.0, pantHip: 48.5, pantInseam: 31.0, thigh: 27.5 },
+            '2XL': { topLength: 31.5, chest: 49.5, shoulder: 19.8, sleeve: 9.5, pantWaist: 43.0, pantHip: 51.5, pantInseam: 31.5, thigh: 29.0 }
+          }
+        }
+      }
     };
 
-    var ENAMELS_FEMALE_SLIM_CHART = {
-      'S':  { topLength: 26.0, chest: 35.0, shoulder: 15.0, sleeve: 7.0, pantWaist: 27.0, pantHip: 37.0, pantInseam: 29.0, thigh: 21.5 },
-      'M':  { topLength: 27.0, chest: 37.0, shoulder: 15.5, sleeve: 7.5, pantWaist: 29.0, pantHip: 39.0, pantInseam: 29.5, thigh: 22.5 },
-      'L':  { topLength: 28.0, chest: 40.0, shoulder: 16.5, sleeve: 8.0, pantWaist: 32.0, pantHip: 42.0, pantInseam: 30.0, thigh: 24.0 },
-      'XL': { topLength: 29.0, chest: 43.0, shoulder: 17.5, sleeve: 8.5, pantWaist: 35.0, pantHip: 45.0, pantInseam: 30.5, thigh: 25.5 },
-      '2XL':{ topLength: 30.0, chest: 46.0, shoulder: 18.5, sleeve: 9.0, pantWaist: 39.0, pantHip: 48.0, pantInseam: 31.0, thigh: 27.0 }
-    };
+    function getActiveSizeFitConfig() {
+      try {
+        var raw = localStorage.getItem('enamels_size_fit_config_v2') || localStorage.getItem('enamels_size_fit_config');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.fits && parsed.fields) return parsed;
+        }
+      } catch(e) {}
+      return DEFAULT_ENAMELS_SIZE_FIT_CONFIG;
+    }
 
-    var ENAMELS_FEMALE_REGULAR_CHART = {
-      'S':  { topLength: 26.5, chest: 36.5, shoulder: 15.5, sleeve: 7.2, pantWaist: 28.0, pantHip: 38.0, pantInseam: 29.0, thigh: 22.0 },
-      'M':  { topLength: 27.5, chest: 38.5, shoulder: 16.0, sleeve: 7.7, pantWaist: 30.5, pantHip: 40.5, pantInseam: 29.5, thigh: 23.5 },
-      'L':  { topLength: 28.5, chest: 41.5, shoulder: 17.0, sleeve: 8.2, pantWaist: 33.5, pantHip: 43.5, pantInseam: 30.0, thigh: 25.0 },
-      'XL': { topLength: 29.5, chest: 44.5, shoulder: 18.0, sleeve: 8.7, pantWaist: 37.0, pantHip: 46.5, pantInseam: 30.5, thigh: 26.5 },
-      '2XL':{ topLength: 30.5, chest: 47.5, shoulder: 19.0, sleeve: 9.2, pantWaist: 41.0, pantHip: 49.5, pantInseam: 31.0, thigh: 28.0 }
-    };
+    function getActiveFitTarget() {
+      var cfg = getActiveSizeFitConfig();
+      if (state.gender === 'female') {
+        var fKey = 'female_' + (state.femaleFit || 'slim');
+        return (cfg.fits && cfg.fits[fKey]) ? cfg.fits[fKey] : DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fits[fKey];
+      }
+      return (cfg.fits && cfg.fits.male) ? cfg.fits.male : DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fits.male;
+    }
 
-    var ENAMELS_FEMALE_LOOSE_CHART = {
-      'S':  { topLength: 27.5, chest: 38.5, shoulder: 16.0, sleeve: 7.5, pantWaist: 30.0, pantHip: 40.0, pantInseam: 29.5, thigh: 23.0 },
-      'M':  { topLength: 28.5, chest: 40.5, shoulder: 16.8, sleeve: 8.0, pantWaist: 32.5, pantHip: 42.5, pantInseam: 30.0, thigh: 24.5 },
-      'L':  { topLength: 29.5, chest: 43.5, shoulder: 17.8, sleeve: 8.5, pantWaist: 35.5, pantHip: 45.5, pantInseam: 30.5, thigh: 26.0 },
-      'XL': { topLength: 30.5, chest: 46.5, shoulder: 18.8, sleeve: 9.0, pantWaist: 39.0, pantHip: 48.5, pantInseam: 31.0, thigh: 27.5 },
-      '2XL':{ topLength: 31.5, chest: 49.5, shoulder: 19.8, sleeve: 9.5, pantWaist: 43.0, pantHip: 51.5, pantInseam: 31.5, thigh: 29.0 }
-    };
+    function getActiveSizeChart() {
+      var target = getActiveFitTarget();
+      return (target && target.chart) ? target.chart : {};
+    }
 
     // Fabric-to-Color Mapping (Strict Dynamic Colors per Fabric)
     var FABRIC_COLORS = {
@@ -2374,13 +2481,25 @@
       var rSize = document.getElementById('rev-size-name');
       var rMText = document.getElementById('rev-measurements-text');
       if (rSize) {
-        var fitLabel = state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'MALE';
-        rSize.textContent = (state.isCustomSize ? 'Custom Tailored Fit' : 'Size ' + state.size) + ' (' + fitLabel + ')';
+        var targetFit = getActiveFitTarget();
+        rSize.textContent = (state.isCustomSize ? 'Custom Tailored Fit' : 'Size ' + state.size) + ' (' + targetFit.title + ')';
       }
       if (rMText) {
         var m = state.measurements;
         var u = state.unit;
-        rMText.textContent = 'Length: ' + m.topLength + u + ', Chest: ' + m.chest + u + ', Shoulder: ' + m.shoulder + u + ', Sleeve: ' + m.sleeve + u + ', Waist: ' + m.pantWaist + u + ', Hips: ' + m.pantHip + u + ', Inseam: ' + m.pantInseam + u + ', Thigh: ' + m.thigh + u;
+        var cfg = getActiveSizeFitConfig();
+        var fList = cfg.fields || DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fields;
+        var mStrings = [];
+        fList.forEach(function(f) {
+          if (m[f.key] !== undefined) {
+            var val = m[f.key];
+            if (u === 'cm' && typeof val === 'number') {
+              val = Math.round(val * 2.54 * 10) / 10;
+            }
+            mStrings.push(f.label + ': ' + val + u);
+          }
+        });
+        rMText.textContent = mStrings.join(', ');
       }
 
       var rEmbName = document.getElementById('rev-emb-name');
@@ -2627,6 +2746,74 @@
       window.enamelsGoStep(4);
     };
 
+    // =========================================================================
+    // DYNAMIC SIZE & MEASUREMENTS DOM RENDERERS
+    // =========================================================================
+    window.renderDynamicSizeChips = function() {
+      var container = document.getElementById('wiz-size-chips-container');
+      if (!container) return;
+      var target = getActiveFitTarget();
+      var sizes = target.sizes || ['S', 'M', 'L', 'XL', '2XL'];
+
+      if (!state.isCustomSize && sizes.indexOf(state.size) === -1) {
+        state.size = sizes[0] || 'M';
+      }
+
+      var html = '';
+      sizes.forEach(function(s) {
+        var isActive = (!state.isCustomSize && state.size === s);
+        html += '<button type="button" class="size-chip-btn' + (isActive ? ' active' : '') + '" data-size="' + s + '" onclick="window.enamelsSelectStandardSize(\'' + s + '\')">' + s + '</button>';
+      });
+
+      var isCustomActive = state.isCustomSize;
+      html += '<button type="button" class="size-chip-btn size-chip-custom' + (isCustomActive ? ' active' : '') + '" data-size="Custom" id="size-chip-custom-btn" onclick="window.enamelsSelectCustomDirectly()">Custom Fit</button>';
+
+      container.innerHTML = html;
+    };
+
+    window.renderDynamicMeasurementInputs = function() {
+      var grid = document.getElementById('wiz-measurements-grid');
+      if (!grid) return;
+      var cfg = getActiveSizeFitConfig();
+      var fields = cfg.fields || DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fields;
+      var target = getActiveFitTarget();
+      var chart = (target && target.chart) ? target.chart : {};
+      var sizeData = chart[state.size] || {};
+
+      var heading = document.getElementById('m-chart-heading');
+      if (heading) {
+        if (state.isCustomSize) {
+          heading.textContent = 'Custom Bespoke Measurements (' + target.title + ')';
+        } else {
+          heading.textContent = state.size + ' Standard Measurements (' + target.title + ')';
+        }
+      }
+
+      var html = '';
+      fields.forEach(function(f) {
+        var val = state.measurements[f.key];
+        if (val === undefined || (!state.isCustomSize && sizeData[f.key] !== undefined)) {
+          val = sizeData[f.key];
+          state.measurements[f.key] = val;
+        }
+        if (val === undefined) val = '';
+
+        var unitLbl = state.unit === 'cm' ? '(cm)' : '(in)';
+        var displayVal = val;
+        if (state.unit === 'cm' && typeof val === 'number') {
+          displayVal = Math.round(val * 2.54 * 10) / 10;
+        }
+
+        html += '<div class="measurement-field">' +
+          '<label class="m-label">' + f.label + ' <span class="m-unit-lbl">' + unitLbl + '</span></label>' +
+          '<input type="number" step="0.5" id="wiz_m_' + f.key + '" class="m-input" value="' + displayVal + '" oninput="window.enamelsHandleMeasurementInput(\'' + f.key + '\', this.value)">' +
+          '<span class="m-hint">' + (f.hint || '') + '</span>' +
+        '</div>';
+      });
+
+      grid.innerHTML = html;
+    };
+
     // 4. Gender Selection Handler
     window.enamelsSetGender = function(genderKey) {
       state.gender = genderKey;
@@ -2644,8 +2831,17 @@
         if (femaleContainer) femaleContainer.style.display = 'none';
       }
 
-      // Re-populate active measurements
-      window.enamelsSelectStandardSize(state.size);
+      var target = getActiveFitTarget();
+      var defaultSize = (target.sizes && target.sizes.indexOf(state.size) !== -1) ? state.size : (target.sizes[0] || 'M');
+      state.size = defaultSize;
+      state.isCustomSize = false;
+
+      var alertBox = document.getElementById('auto-custom-pill-alert');
+      if (alertBox) alertBox.style.display = 'none';
+
+      window.renderDynamicSizeChips();
+      window.renderDynamicMeasurementInputs();
+      updateReviewAndPaymentUI();
     };
 
     // 4. Female Fit Handler (Slim, Regular, Loose)
@@ -2653,11 +2849,20 @@
       state.femaleFit = fitKey;
       var cards = document.querySelectorAll('.female-fit-card');
       cards.forEach(function(c) { c.classList.remove('active'); });
-      var target = document.getElementById('ffit-' + fitKey);
-      if (target) target.classList.add('active');
+      var targetEl = document.getElementById('ffit-' + fitKey);
+      if (targetEl) targetEl.classList.add('active');
 
-      // Re-populate active measurements with new fit curve
-      window.enamelsSelectStandardSize(state.size);
+      var target = getActiveFitTarget();
+      var defaultSize = (target.sizes && target.sizes.indexOf(state.size) !== -1) ? state.size : (target.sizes[0] || 'M');
+      state.size = defaultSize;
+      state.isCustomSize = false;
+
+      var alertBox = document.getElementById('auto-custom-pill-alert');
+      if (alertBox) alertBox.style.display = 'none';
+
+      window.renderDynamicSizeChips();
+      window.renderDynamicMeasurementInputs();
+      updateReviewAndPaymentUI();
     };
 
     // 4. Size & Fit Selection (with Enamels Standard Size Chart & Auto Custom Detection)
@@ -2669,51 +2874,23 @@
       state.size = sizeKey;
       state.isCustomSize = false;
 
-      var chips = document.querySelectorAll('.size-chip-btn');
-      chips.forEach(function(c) {
-        c.classList.remove('active');
-        if (c.getAttribute('data-size') === sizeKey) c.classList.add('active');
-      });
-
       var alertBox = document.getElementById('auto-custom-pill-alert');
       if (alertBox) alertBox.style.display = 'none';
 
-      var heading = document.getElementById('m-chart-heading');
-      if (heading) {
-        var fitContext = state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'MALE';
-        heading.textContent = sizeKey + ' Standard Measurements (' + fitContext + ')';
-      }
+      var chart = getActiveSizeChart();
+      var sizeData = chart[sizeKey] || {};
 
-      var chart = getActiveSizeChart()[sizeKey];
-      if (chart) {
-        state.measurements.topLength = chart.topLength;
-        state.measurements.chest = chart.chest;
-        state.measurements.shoulder = chart.shoulder;
-        state.measurements.sleeve = chart.sleeve;
-        state.measurements.pantWaist = chart.pantWaist;
-        state.measurements.pantHip = chart.pantHip;
-        state.measurements.pantInseam = chart.pantInseam;
-        state.measurements.thigh = chart.thigh;
+      var cfg = getActiveSizeFitConfig();
+      var fields = cfg.fields || DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fields;
 
-        var elTL = document.getElementById('wiz_m_top_length');
-        var elCh = document.getElementById('wiz_m_chest');
-        var elSh = document.getElementById('wiz_m_shoulder');
-        var elSl = document.getElementById('wiz_m_sleeve');
-        var elPW = document.getElementById('wiz_m_pant_waist');
-        var elPH = document.getElementById('wiz_m_pant_hip');
-        var elPI = document.getElementById('wiz_m_pant_inseam');
-        var elTh = document.getElementById('wiz_m_thigh');
+      fields.forEach(function(f) {
+        if (sizeData[f.key] !== undefined) {
+          state.measurements[f.key] = sizeData[f.key];
+        }
+      });
 
-        if (elTL) elTL.value = chart.topLength;
-        if (elCh) elCh.value = chart.chest;
-        if (elSh) elSh.value = chart.shoulder;
-        if (elSl) elSl.value = chart.sleeve;
-        if (elPW) elPW.value = chart.pantWaist;
-        if (elPH) elPH.value = chart.pantHip;
-        if (elPI) elPI.value = chart.pantInseam;
-        if (elTh) elTh.value = chart.thigh;
-      }
-
+      window.renderDynamicSizeChips();
+      window.renderDynamicMeasurementInputs();
       updateReviewAndPaymentUI();
     };
 
@@ -2721,39 +2898,38 @@
       state.size = 'Custom';
       state.isCustomSize = true;
 
-      var chips = document.querySelectorAll('.size-chip-btn');
-      chips.forEach(function(c) {
-        c.classList.remove('active');
-        if (c.getAttribute('data-size') === 'Custom') c.classList.add('active');
-      });
-
-      var heading = document.getElementById('m-chart-heading');
-      if (heading) heading.textContent = 'Custom Bespoke Measurements';
+      window.renderDynamicSizeChips();
 
       var alertBox = document.getElementById('auto-custom-pill-alert');
       if (alertBox) alertBox.style.display = 'block';
+
+      var heading = document.getElementById('m-chart-heading');
+      var target = getActiveFitTarget();
+      if (heading) heading.textContent = 'Custom Bespoke Measurements (' + target.title + ')';
 
       updateReviewAndPaymentUI();
     };
 
     window.enamelsHandleMeasurementInput = function(fieldKey, value) {
-      state.measurements[fieldKey] = parseFloat(value) || value;
+      var num = parseFloat(value);
+      if (state.unit === 'cm' && !isNaN(num)) {
+        state.measurements[fieldKey] = Math.round((num / 2.54) * 10) / 10;
+      } else {
+        state.measurements[fieldKey] = !isNaN(num) ? num : value;
+      }
 
       if (!state.isCustomSize) {
         state.isCustomSize = true;
         state.size = 'Custom';
 
-        var chips = document.querySelectorAll('.size-chip-btn');
-        chips.forEach(function(c) {
-          c.classList.remove('active');
-          if (c.getAttribute('data-size') === 'Custom') c.classList.add('active');
-        });
-
-        var heading = document.getElementById('m-chart-heading');
-        if (heading) heading.textContent = 'Custom Bespoke Measurements';
+        window.renderDynamicSizeChips();
 
         var alertBox = document.getElementById('auto-custom-pill-alert');
         if (alertBox) alertBox.style.display = 'block';
+
+        var heading = document.getElementById('m-chart-heading');
+        var target = getActiveFitTarget();
+        if (heading) heading.textContent = 'Custom Bespoke Measurements (' + target.title + ')';
       }
 
       updateReviewAndPaymentUI();
@@ -2767,11 +2943,7 @@
         if (b.getAttribute('data-unit') === unit) b.classList.add('active');
       });
 
-      var unitLabels = document.querySelectorAll('.m-unit-lbl');
-      unitLabels.forEach(function(lbl) {
-        lbl.textContent = '(' + unit + ')';
-      });
-
+      window.renderDynamicMeasurementInputs();
       updateReviewAndPaymentUI();
     };
 
@@ -3006,10 +3178,20 @@
         'Custom Sizing': state.isCustomSize ? 'Yes' : 'No'
       };
 
-      // Add measurements
-      var m = state.measurements;
-      var u = state.unit;
-      props['Measurement Specs'] = 'Length ' + m.topLength + u + ', Chest ' + m.chest + u + ', Shoulder ' + m.shoulder + u + ', Sleeve ' + m.sleeve + u + ', Waist ' + m.pantWaist + u + ', Hips ' + m.pantHip + u + ', Inseam ' + m.pantInseam + u + ', Thigh ' + m.thigh + u;
+      // Add measurements dynamically from configured fields
+      var cfg = getActiveSizeFitConfig();
+      var fList = cfg.fields || DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fields;
+      var specParts = [];
+      fList.forEach(function(f) {
+        if (state.measurements[f.key] !== undefined) {
+          var val = state.measurements[f.key];
+          if (state.unit === 'cm' && typeof val === 'number') {
+            val = Math.round(val * 2.54 * 10) / 10;
+          }
+          specParts.push(f.label + ': ' + val + state.unit);
+        }
+      });
+      props['Measurement Specs'] = specParts.join(', ');
 
       // Personalization
       if (state.personalization.placement !== 'none' && state.personalization.line1) {
@@ -3040,6 +3222,79 @@
       props['Customer Email'] = cd.email;
       props['Delivery Address'] = cd.address + ', ' + cd.city + (cd.province ? ', ' + cd.province : '') + (cd.zip ? ' ' + cd.zip : '') + ', ' + (cd.country || 'Pakistan');
       props['Payment Status'] = state.paymentMethod === 'card' ? 'Card — verified by Shopify gateway at checkout' : 'Bank Transfer — Pending Payment Verification';
+
+      // Construct complete custom order docket for Admin Profile & Customer Account synchronization
+      var customOrderDocket = {
+        id: 'CUST-' + Date.now().toString().slice(-6),
+        orderNumber: 'CUST-' + Math.floor(100000 + Math.random() * 900000),
+        createdAt: new Date().toISOString(),
+        dateFormatted: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        customer: {
+          name: cd.name,
+          phone: cd.phone,
+          email: cd.email,
+          address: cd.address,
+          city: cd.city,
+          province: cd.province,
+          zip: cd.zip,
+          country: cd.country || 'Pakistan'
+        },
+        garment: {
+          collection: state.collection.title,
+          design: state.design.name,
+          designId: state.design.id,
+          variantId: state.design.variantId,
+          fabric: state.fabric.name,
+          fabricFee: state.fabric.fee,
+          mainColor: state.color.name,
+          mainColorHex: state.color.hex,
+          contrast: state.contrast.name,
+          gender: state.gender === 'female' ? 'Female' : 'Male',
+          femaleFit: state.femaleFit,
+          fitLabel: state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'Male Standard Fit',
+          size: state.size,
+          isCustomSize: state.isCustomSize,
+          unit: state.unit,
+          measurements: Object.assign({}, state.measurements)
+        },
+        personalization: {
+          placement: state.personalization.placement,
+          line1: state.personalization.line1,
+          line2: state.personalization.line2,
+          extraLines: (state.personalization.extraLines || []).slice(),
+          thread: state.personalization.thread,
+          fee: f.embFee,
+          logoType: state.personalization.logoType,
+          logoFileName: state.personalization.logoFileName,
+          logoFileSize: state.personalization.logoFileSize,
+          logoFileData: state.personalization.logoFileData
+        },
+        financials: {
+          productValue: f.productValue,
+          basePrice: f.base,
+          fabricFee: f.fabricFee,
+          embroideryFee: f.embFee,
+          deliveryFee: f.deliveryFee,
+          cardFee: f.cardFee,
+          onlineDiscount: f.onlineDiscount,
+          finalTotal: f.finalTotal
+        },
+        paymentMethod: state.paymentMethod,
+        paymentStatus: state.paymentMethod === 'card' ? 'Payment Verified (Card Gateway)' : 'Pending Verification (Bank Transfer)',
+        orderStatus: 'Production Queue',
+        productionStatus: 'Awaiting Tailoring Cut',
+        specsSummary: props['Measurement Specs'],
+        lineItemProperties: props
+      };
+
+      try {
+        var existingOrders = JSON.parse(localStorage.getItem('enamels_customize_orders') || localStorage.getItem('enamels_custom_orders') || '[]');
+        if (!Array.isArray(existingOrders)) existingOrders = [];
+        existingOrders.unshift(customOrderDocket);
+        localStorage.setItem('enamels_customize_orders', JSON.stringify(existingOrders));
+        localStorage.setItem('enamels_custom_orders', JSON.stringify(existingOrders));
+        window.dispatchEvent(new CustomEvent('enamels:custom_order_created', { detail: customOrderDocket }));
+      } catch(e) {}
 
       var cartAttrs = {
         'Order Type': 'Customized Scrub',
@@ -3170,12 +3425,24 @@
       // Render default fabric colors for Crown
       renderFabricColors('crown');
 
-      // Pre-populate medium measurements on load
+      // Pre-populate dynamic size chips and measurements
+      if (typeof window.renderDynamicSizeChips === 'function') window.renderDynamicSizeChips();
+      if (typeof window.renderDynamicMeasurementInputs === 'function') window.renderDynamicMeasurementInputs();
       window.enamelsSelectStandardSize('M');
+
+      // Listen for Admin size configuration updates across tabs/windows
+      window.addEventListener('enamels:size_config_updated', function() {
+        if (typeof window.renderDynamicSizeChips === 'function') window.renderDynamicSizeChips();
+        if (typeof window.renderDynamicMeasurementInputs === 'function') window.renderDynamicMeasurementInputs();
+        updateReviewAndPaymentUI();
+      });
     });
 
     if (document.readyState === 'interactive' || document.readyState === 'complete') {
       renderFabricColors('crown');
+      if (typeof window.renderDynamicSizeChips === 'function') window.renderDynamicSizeChips();
+      if (typeof window.renderDynamicMeasurementInputs === 'function') window.renderDynamicMeasurementInputs();
+      window.enamelsSelectStandardSize('M');
       updateReviewAndPaymentUI();
     }
   })();

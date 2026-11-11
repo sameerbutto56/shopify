@@ -555,7 +555,7 @@
 
       var allCustom = [];
       try {
-        var raw = localStorage.getItem('enamels_custom_orders');
+        var raw = localStorage.getItem('enamels_customize_orders') || localStorage.getItem('enamels_custom_orders');
         if (raw) allCustom = JSON.parse(raw);
       } catch (e) {}
 
