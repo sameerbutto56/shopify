@@ -21,13 +21,15 @@
     {%- render 'stylesheets' -%}
     {{ 'enamels-white-theme.css' | asset_url | stylesheet_tag }}
     {{ 'enamels-3d-tilt.css' | asset_url | stylesheet_tag }}
-    {{ 'enamels-studio.css' | asset_url | stylesheet_tag }}
+    {%- if request.path contains 'admin' -%}
+      {{ 'enamels-studio.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'enamels-studio.js' | asset_url }}" defer></script>
+    {%- endif -%}
     <link rel="stylesheet" href="{{ 'enamels-hanging-rail.css' | asset_url }}&v=wardrobe-anim-v3">
     <link rel="stylesheet" href="{{ 'enamels-rtl.css' | asset_url }}" id="enamels-rtl-stylesheet">
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}
     <script src="{{ 'enamels-catalogue-data.js' | asset_url }}&v=wardrobe-anim-v3" defer></script>
-    <script src="{{ 'enamels-studio.js' | asset_url }}" defer></script>
     <script src="{{ 'enamels-hanging-rail.js' | asset_url }}&v=wardrobe-anim-v3" defer></script>
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-palette' -%}
@@ -269,7 +271,6 @@
     {% endif %}
 
     {% render 'whatsapp-floating-button' %}
-    {% render 'enamels-studio-panel' %}
     {% render 'enamels-customizer-modal' %}
     {% render 'enamels-bulk-orders-modal' %}
     {% render 'enamels-international-modal' %}

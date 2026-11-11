@@ -2082,47 +2082,72 @@
       min-height: 44px;
     }
     .wizard-nav-actions {
-      flex-direction: column-reverse;
-      gap: 10px;
-      width: 100%;
+      flex-direction: column-reverse !important;
+      gap: 12px !important;
+      width: 100% !important;
+      margin-top: 24px !important;
+      padding-bottom: 60px !important;
     }
     .wizard-nav-actions .btn-select-next,
     .wizard-nav-actions .btn-step-prev {
       width: 100% !important;
-      min-height: 48px;
-      justify-content: center;
-      text-align: center;
-      margin-top: 0;
+      min-height: 50px !important;
+      justify-content: center !important;
+      text-align: center !important;
+      margin-top: 0 !important;
+      font-size: 15px !important;
+    }
+    .enamels-customizer-main {
+      padding: 14px 12px 100px !important;
     }
     .size-chips-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-    .size-chips-bar .size-chip-custom {
-      grid-column: 1 / -1;
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      margin-bottom: 20px !important;
     }
     .size-chip-btn {
-      width: 100%;
-      padding: 12px 6px;
-      font-size: 13px;
-      text-align: center;
-      min-height: 46px;
+      flex: 1 1 calc(33.333% - 8px) !important;
+      min-width: 80px !important;
+      min-height: 48px !important;
+      padding: 10px 8px !important;
+      font-size: 13px !important;
+      text-align: center !important;
+      box-sizing: border-box !important;
+    }
+    .size-chip-btn.size-chip-custom {
+      flex: 1 1 100% !important;
+      width: 100% !important;
     }
     .custom-measurements-panel {
-      padding: 14px 10px;
+      padding: 16px 12px 24px !important;
+      background: #f8fafc !important;
+      border: 1.5px solid #cbd5e1 !important;
+      border-radius: 12px !important;
+      margin-bottom: 20px !important;
+      box-sizing: border-box !important;
     }
     .measurements-header {
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-start;
+      flex-direction: column !important;
+      gap: 10px !important;
+      align-items: flex-start !important;
+      margin-bottom: 16px !important;
     }
+    /* Fully responsive vertical stack for all measurement fields on mobile */
     .measurements-inputs-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      width: 100% !important;
     }
     .measurement-field {
-      min-width: 0;
+      width: 100% !important;
+      min-width: 0 !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      padding: 12px !important;
+      box-sizing: border-box !important;
     }
     /* iOS input auto-zoom prevention */
     .m-input,
@@ -2138,23 +2163,43 @@
       font-size: 16px !important;
     }
     .m-input {
-      min-height: 44px;
-      box-sizing: border-box;
-      width: 100%;
-      padding: 8px 10px;
+      font-size: 16px !important;
+      min-height: 48px !important;
+      height: 48px !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+      padding: 10px 14px !important;
+      border: 1.5px solid #cbd5e1 !important;
+      border-radius: 8px !important;
+      background: #f8fafc !important;
+      font-weight: 700 !important;
+      color: #102a43 !important;
     }
     .m-label {
-      font-size: 11px;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #102a43 !important;
+      margin-bottom: 6px !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
     }
     .m-hint {
-      font-size: 9.5px;
+      font-size: 11px !important;
+      color: #64748b !important;
+      margin-top: 5px !important;
+      display: block !important;
+      white-space: normal !important;
+      line-height: 1.4 !important;
     }
     .gender-pill {
-      flex: 1;
-      justify-content: center;
-      padding: 12px 10px;
-      font-size: 13px;
-      min-height: 44px;
+      flex: 1 1 0 !important;
+      width: 50% !important;
+      justify-content: center !important;
+      padding: 12px 10px !important;
+      font-size: 13px !important;
+      min-height: 48px !important;
+      box-sizing: border-box !important;
     }
     /* Large comfortable touch targets */
     .cust-swatch-circle,
@@ -2162,18 +2207,9 @@
       width: 44px;
       height: 44px;
     }
-    .size-chip-btn {
-      min-height: 44px;
-      min-width: 44px;
-    }
     .thread-chip {
       min-height: 44px;
       padding: 8px 14px;
-    }
-    .btn-select-next,
-    .btn-step-prev {
-      min-height: 46px;
-      padding: 12px 20px;
     }
     .design-category-filters {
       overflow-x: auto;
@@ -2182,12 +2218,6 @@
       padding: 4px 0 8px;
     }
     .design-category-filters::-webkit-scrollbar { display: none; }
-  }
-
-  @media (max-width: 375px) {
-    .measurements-inputs-grid {
-      grid-template-columns: 1fr;
-    }
   }
 </style>
 
@@ -2611,8 +2641,15 @@
 
       updateReviewAndPaymentUI();
 
+      var modalBody = document.querySelector('.enamels-customizer-modal-body');
+      if (modalBody) {
+        modalBody.scrollTop = 0;
+      }
+
       var root = document.getElementById('enamels-customizer-app');
-      if (root) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (root && typeof root.scrollIntoView === 'function') {
+        try { root.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e) {}
+      }
     };
 
     // 1. Dynamic Fabric-Based Color Swatches Renderer
