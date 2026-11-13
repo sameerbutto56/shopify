@@ -64,6 +64,7 @@
 
     <div class="customizer-wizard-embed-container">
       {% render 'enamels-customization-wizard',
+        section: section,
         design_collection: section.settings.design_collection,
         design_collections_list: section.settings.design_collections_list,
         logo_collection: section.settings.logo_collection,
@@ -268,6 +269,150 @@
       "step": 2,
       "unit": "px",
       "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Step 1: Fabric Selection Settings"
+    },
+    {
+      "type": "text",
+      "id": "step1_title",
+      "label": "Step 1 Heading",
+      "default": "Select Technical Clinical Fabric"
+    },
+    {
+      "type": "textarea",
+      "id": "step1_subtitle",
+      "label": "Step 1 Subheading",
+      "default": "Choose the medical-grade textile tailored for your shift duration and hospital environment."
+    },
+    {
+      "type": "header",
+      "content": "Step 2: Color & Contrast Settings"
+    },
+    {
+      "type": "text",
+      "id": "step2_title",
+      "label": "Step 2 Heading",
+      "default": "Select Scrub Color & Contrast"
+    },
+    {
+      "type": "textarea",
+      "id": "step2_subtitle",
+      "label": "Step 2 Subheading",
+      "default": "Pick your approved medical scrub shade and optional contrast accents."
+    },
+    {
+      "type": "header",
+      "content": "Step 3: Design Selection Settings"
+    },
+    {
+      "type": "text",
+      "id": "step3_title",
+      "label": "Step 3 Heading",
+      "default": "Select Scrub Design Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "step3_subtitle",
+      "label": "Step 3 Subheading",
+      "default": "Select a scrub collection to view available bespoke styles and colors."
+    },
+    {
+      "type": "header",
+      "content": "Step 4: Size & Fit Settings"
+    },
+    {
+      "type": "text",
+      "id": "step4_title",
+      "label": "Step 4 Heading",
+      "default": "Size & Fit Selection"
+    },
+    {
+      "type": "textarea",
+      "id": "step4_subtitle",
+      "label": "Step 4 Subheading",
+      "default": "Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut."
+    },
+    {
+      "type": "textarea",
+      "id": "step4_notice",
+      "label": "Step 4 Warning Notice",
+      "default": "Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements."
+    },
+    {
+      "type": "header",
+      "content": "Step 5: Personalization & Logo Settings"
+    },
+    {
+      "type": "text",
+      "id": "step5_title",
+      "label": "Step 5 Heading",
+      "default": "Doctor & Staff Personalization"
+    },
+    {
+      "type": "textarea",
+      "id": "step5_subtitle",
+      "label": "Step 5 Subheading",
+      "default": "Add official computerized embroidery: Doctor Name, credentials, and hospital crest."
+    },
+    {
+      "type": "text",
+      "id": "line1_label",
+      "label": "Line 1 Field Label",
+      "default": "Line 1: Doctor / Staff Name"
+    },
+    {
+      "type": "range",
+      "id": "line1_max",
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "label": "Line 1 Character Limit",
+      "default": 45
+    },
+    {
+      "type": "text",
+      "id": "line2_label",
+      "label": "Line 2 Field Label",
+      "default": "Line 2: Title / Department / Hospital"
+    },
+    {
+      "type": "range",
+      "id": "line2_max",
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "label": "Line 2 Character Limit",
+      "default": 45
+    },
+    {
+      "type": "header",
+      "content": "Step 6: Review & Checkout Settings"
+    },
+    {
+      "type": "text",
+      "id": "step6_title",
+      "label": "Step 6 Heading",
+      "default": "Review Your Customized Scrub"
+    },
+    {
+      "type": "textarea",
+      "id": "step6_subtitle",
+      "label": "Step 6 Subheading",
+      "default": "Verify every specification before proceeding directly to secure checkout."
+    },
+    {
+      "type": "text",
+      "id": "checkout_btn_label",
+      "label": "Checkout Button Label",
+      "default": "Proceed to Checkout →"
+    },
+    {
+      "type": "textarea",
+      "id": "checkout_notice",
+      "label": "Payment Options & Advance Notice",
+      "default": "100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout."
     }
   ],
   "presets": [

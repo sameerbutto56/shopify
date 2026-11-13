@@ -33,12 +33,42 @@
   if logo_collection != blank
     assign target_logo_col = collections[logo_collection]
   endif
+  if target_logo_col == blank or target_logo_col.products.size == 0
+    if collections['logos'] != blank and collections['logos'].products.size > 0
+      assign target_logo_col = collections['logos']
+    elsif collections['hospital-logos'] != blank and collections['hospital-logos'].products.size > 0
+      assign target_logo_col = collections['hospital-logos']
+    elsif collections['crests'] != blank and collections['crests'].products.size > 0
+      assign target_logo_col = collections['crests']
+    endif
+  endif
 
   # Dynamic Fabric Collection
   assign target_fabric_col = nil
   if fabric_collection != blank
     assign target_fabric_col = collections[fabric_collection]
   endif
+
+  # Step Headings & Text (Editable in Shopify Studio / Theme Editor)
+  assign step1_title = section.settings.step1_title | default: 'Select Technical Clinical Fabric'
+  assign step1_subtitle = section.settings.step1_subtitle | default: 'Choose the medical-grade textile tailored for your shift duration and hospital environment.'
+  assign step2_title = section.settings.step2_title | default: 'Select Scrub Color & Contrast'
+  assign step2_subtitle = section.settings.step2_subtitle | default: 'Pick your approved medical scrub shade and optional contrast accents.'
+  assign step3_title = section.settings.step3_title | default: 'Select Scrub Design Collection'
+  assign step3_subtitle = section.settings.step3_subtitle | default: 'Select a scrub collection to view available bespoke styles and colors.'
+  assign step4_title = section.settings.step4_title | default: 'Size & Fit Selection'
+  assign step4_subtitle = section.settings.step4_subtitle | default: 'Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut.'
+  assign step4_notice = section.settings.step4_notice | default: 'Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements.'
+  assign step5_title = section.settings.step5_title | default: 'Doctor & Staff Personalization'
+  assign step5_subtitle = section.settings.step5_subtitle | default: 'Add official computerized embroidery: Doctor Name, credentials, and hospital crest.'
+  assign line1_label = section.settings.line1_label | default: 'Line 1: Doctor / Staff Name'
+  assign line1_max = section.settings.line1_max | default: 45
+  assign line2_label = section.settings.line2_label | default: 'Line 2: Title / Department / Hospital'
+  assign line2_max = section.settings.line2_max | default: 45
+  assign step6_title = section.settings.step6_title | default: 'Review Your Customized Scrub'
+  assign step6_subtitle = section.settings.step6_subtitle | default: 'Verify every specification before proceeding directly to secure checkout.'
+  assign checkout_btn_label = section.settings.checkout_btn_label | default: 'Proceed to Checkout →'
+  assign checkout_notice = section.settings.checkout_notice | default: '100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout.'
 -%}
 
 <div class="enamels-customizer-engine" id="enamels-customizer-app">
@@ -52,7 +82,7 @@
     </div>
   </div>
 
-  <!-- Stepper Progress Bar -->
+  <!-- Stepper Progress Bar (Single Checkout 6-Step Flow) -->
   <div class="enamels-stepper-bar-wrap">
     <div class="enamels-stepper-bar" role="tablist">
       <button type="button" class="enamels-step-btn active" data-step="1" id="step-btn-1">
@@ -77,18 +107,14 @@
       </button>
       <button type="button" class="enamels-step-btn" data-step="6" id="step-btn-6">
         <span class="step-circle">6</span>
-        <span class="step-name">Review</span>
-      </button>
-      <button type="button" class="enamels-step-btn" data-step="7" id="step-btn-7">
-        <span class="step-circle">7</span>
-        <span class="step-name">Payment</span>
+        <span class="step-name">Review & Checkout</span>
       </button>
     </div>
   </div>
 
   <!-- Mobile Step Pill Indicator -->
   <div class="enamels-mobile-step-pill-indicator">
-    <span>Step <strong id="enamels-mob-curr-num">1</strong> of 7:</span>
+    <span>Step <strong id="enamels-mob-curr-num">1</strong> of 6:</span>
     <strong id="enamels-mob-curr-title" style="color: #008779;">Fabric Selection</strong>
   </div>
 
@@ -100,14 +126,14 @@
          ========================================================================= -->
     <div class="enamels-wizard-pane active" id="wizard-pane-1" data-step-index="1">
       <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 1 of 7</span>
-        <h3 class="pane-title">Select Technical Clinical Fabric</h3>
-        <p class="pane-subtitle">Choose the medical-grade textile tailored for your shift duration and hospital environment.</p>
+        <span class="pane-eyebrow">Step 1 of 6</span>
+        <h3 class="pane-title">{{ step1_title }}</h3>
+        <p class="pane-subtitle">{{ step1_subtitle }}</p>
       </div>
 
       <div class="enamels-fabric-grid">
         <!-- Fabric 1: Crown -->
-        <div class="enamels-fabric-card active" data-fabric-id="crown" data-fabric-name="Crown™ Technical Clinical Fabric" data-fabric-fee="0">
+        <div class="enamels-fabric-card active" data-fabric-id="crown" data-fabric-name="Crown™ Technical Clinical Fabric" data-fabric-fee="0" onclick="window.enamelsSelectFabricAndNext('crown', 'Crown™ Technical Clinical Fabric', 0, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('crown', 'Crown™ Technical Clinical Fabric', 0, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
             <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="Crown Technical Fabric" width="320" height="220" loading="eager">
             <span class="fabric-badge">Crown Series</span>
@@ -124,14 +150,11 @@
               <span class="tech-tag">Fluid Repellent</span>
               <span class="tech-tag">Wrinkle-Free</span>
             </div>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('crown', 'Crown™ Technical Clinical Fabric', 0, this)">
-              Select & Next →
-            </button>
           </div>
         </div>
 
         <!-- Fabric 2: Sprinter -->
-        <div class="enamels-fabric-card" data-fabric-id="sprinter" data-fabric-name="Sprinter™ Active Performance Weave" data-fabric-fee="350">
+        <div class="enamels-fabric-card" data-fabric-id="sprinter" data-fabric-name="Sprinter™ Active Performance Weave" data-fabric-fee="350" onclick="window.enamelsSelectFabricAndNext('sprinter', 'Sprinter™ Active Performance Weave', 350, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('sprinter', 'Sprinter™ Active Performance Weave', 350, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
             <img src="{{ 'banner-velora.jpg' | asset_url }}" alt="Sprinter Performance Fabric" width="320" height="220" loading="lazy">
             <span class="fabric-badge badge-pro">Sprinter Series</span>
@@ -148,14 +171,11 @@
               <span class="tech-tag">Moisture Wicking</span>
               <span class="tech-tag">Cooling</span>
             </div>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('sprinter', 'Sprinter™ Active Performance Weave', 350, this)">
-              Select & Next →
-            </button>
           </div>
         </div>
 
         <!-- Fabric 3: Tender -->
-        <div class="enamels-fabric-card" data-fabric-id="tender" data-fabric-name="Tender™ Ultra-Soft Touch Microfiber" data-fabric-fee="450">
+        <div class="enamels-fabric-card" data-fabric-id="tender" data-fabric-name="Tender™ Ultra-Soft Touch Microfiber" data-fabric-fee="450" onclick="window.enamelsSelectFabricAndNext('tender', 'Tender™ Ultra-Soft Touch Microfiber', 450, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('tender', 'Tender™ Ultra-Soft Touch Microfiber', 450, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
             <img src="{{ 'enamels-na-seagreen.jpg' | asset_url }}" alt="Tender Ultra-Soft Touch" width="320" height="220" loading="lazy">
             <span class="fabric-badge badge-vip">Tender Series</span>
@@ -172,14 +192,11 @@
               <span class="tech-tag">Hypoallergenic</span>
               <span class="tech-tag">Silky Drape</span>
             </div>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('tender', 'Tender™ Ultra-Soft Touch Microfiber', 450, this)">
-              Select & Next →
-            </button>
           </div>
         </div>
 
         <!-- Fabric 4: Flex Twill -->
-        <div class="enamels-fabric-card" data-fabric-id="flex-twill" data-fabric-name="4-Way Flex Twill" data-fabric-fee="0">
+        <div class="enamels-fabric-card" data-fabric-id="flex-twill" data-fabric-name="4-Way Flex Twill" data-fabric-fee="0" onclick="window.enamelsSelectFabricAndNext('flex-twill', '4-Way Flex Twill', 0, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('flex-twill', '4-Way Flex Twill', 0, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
             <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="4-Way Flex Twill" width="320" height="220" loading="lazy">
             <span class="fabric-badge">Standard Included</span>
@@ -196,14 +213,11 @@
               <span class="tech-tag">Anti-Static</span>
               <span class="tech-tag">Breathable</span>
             </div>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('flex-twill', '4-Way Flex Twill', 0, this)">
-              Select & Next →
-            </button>
           </div>
         </div>
 
         <!-- Fabric 5: Aerocool -->
-        <div class="enamels-fabric-card" data-fabric-id="aerocool" data-fabric-name="Aerocool™ Micro-Drape" data-fabric-fee="500">
+        <div class="enamels-fabric-card" data-fabric-id="aerocool" data-fabric-name="Aerocool™ Micro-Drape" data-fabric-fee="500" onclick="window.enamelsSelectFabricAndNext('aerocool', 'Aerocool™ Micro-Drape', 500, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('aerocool', 'Aerocool™ Micro-Drape', 500, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
             <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Aerocool Micro-Drape" width="320" height="220" loading="lazy">
             <span class="fabric-badge badge-pro">ICU & ER Grade</span>
@@ -220,14 +234,11 @@
               <span class="tech-tag">Fluid Barrier</span>
               <span class="tech-tag">Fast-Drying</span>
             </div>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('aerocool', 'Aerocool™ Micro-Drape', 500, this)">
-              Select & Next →
-            </button>
           </div>
         </div>
 
         <!-- Fabric 6: Executive -->
-        <div class="enamels-fabric-card" data-fabric-id="executive" data-fabric-name="Executive Heavyweight Stretch" data-fabric-fee="750">
+        <div class="enamels-fabric-card" data-fabric-id="executive" data-fabric-name="Executive Heavyweight Stretch" data-fabric-fee="750" onclick="window.enamelsSelectFabricAndNext('executive', 'Executive Heavyweight Stretch', 750, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('executive', 'Executive Heavyweight Stretch', 750, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
             <img src="{{ 'enamels-na-black.jpg' | asset_url }}" alt="Executive Heavyweight Stretch" width="320" height="220" loading="lazy">
             <span class="fabric-badge badge-vip">Consultant Edition</span>
@@ -244,9 +255,6 @@
               <span class="tech-tag">Fade-Resistant</span>
               <span class="tech-tag">Crisp Drape</span>
             </div>
-            <button type="button" class="btn-select-next" onclick="window.enamelsSelectFabricAndNext('executive', 'Executive Heavyweight Stretch', 750, this)">
-              Select & Next →
-            </button>
           </div>
         </div>
       </div>
@@ -257,9 +265,9 @@
          ========================================================================= -->
     <div class="enamels-wizard-pane" id="wizard-pane-2" data-step-index="2">
       <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 2 of 7</span>
-        <h3 class="pane-title">Color & Contrast</h3>
-        <p class="pane-subtitle">Select your base scrub shade, followed by optional contrast trim styling.</p>
+        <span class="pane-eyebrow">Step 2 of 6</span>
+        <h3 class="pane-title">{{ step2_title }}</h3>
+        <p class="pane-subtitle">{{ step2_subtitle }}</p>
       </div>
 
       <!-- Section A: Main Color -->
@@ -353,9 +361,9 @@
          ========================================================================= -->
     <div class="enamels-wizard-pane" id="wizard-pane-3" data-step-index="3">
       <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 3 of 7</span>
-        <h3 class="pane-title">Select Scrub Design Collection</h3>
-        <p class="pane-subtitle">Select a scrub collection to view available bespoke styles and colors.</p>
+        <span class="pane-eyebrow">Step 3 of 6</span>
+        <h3 class="pane-title">{{ step3_title }}</h3>
+        <p class="pane-subtitle">{{ step3_subtitle }}</p>
       </div>
 
       <!-- 3A. Dynamic Collection Category Selector -->
@@ -455,7 +463,13 @@
               data-col="{{ prod_series_tag }}"
               data-gender="{{ prod_gender }}"
               data-colors="{{ prod_colors_string | escape }}"
+              onclick="window.enamelsSelectDesignAndNext('{{ prod.id }}', '{{ first_var.id }}', '{{ prod.title | escape }}', {{ p_price_num }}, '{{ p_media_url }}', this)"
+              role="button"
+              tabindex="0"
+              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectDesignAndNext('{{ prod.id }}', '{{ first_var.id }}', '{{ prod.title | escape }}', {{ p_price_num }}, '{{ p_media_url }}', this);}"
+              style="cursor: pointer;"
             >
+              <script type="application/json" class="design-variants-data">{{ prod.variants | json }}</script>
               <div class="design-card-media">
                 {% if p_media_url != blank %}
                   <img src="{{ p_media_url }}" alt="{{ prod.title | escape }}" width="300" height="380" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
@@ -467,13 +481,6 @@
                 <h4 class="design-card-title">{{ prod.title | escape }}</h4>
                 <span class="design-card-sub">{{ prod.type | default: 'Medical Scrub Suit' }}</span>
                 <span class="design-card-price">{{ prod.price | money_without_trailing_zeros }}</span>
-                <button
-                  type="button"
-                  class="btn-select-next"
-                  onclick="window.enamelsSelectDesignAndNext('{{ prod.id }}', '{{ first_var.id }}', '{{ prod.title | escape }}', {{ p_price_num }}, '{{ p_media_url }}', this)"
-                >
-                  Select & Next →
-                </button>
               </div>
             </div>
           {%- endfor -%}
@@ -494,9 +501,9 @@
          ========================================================================= -->
     <div class="enamels-wizard-pane" id="wizard-pane-4" data-step-index="4">
       <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 4 of 7</span>
-        <h3 class="pane-title">Size & Fit Selection</h3>
-        <p class="pane-subtitle">Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut.</p>
+        <span class="pane-eyebrow">Step 4 of 6</span>
+        <h3 class="pane-title">{{ step4_title }}</h3>
+        <p class="pane-subtitle">{{ step4_subtitle }}</p>
       </div>
 
       <!-- 1. Gender Selector -->
@@ -535,7 +542,7 @@
       <div class="enamels-mandatory-fit-notice" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 10px;">
         <span style="font-size: 20px; line-height: 1;">⚠️</span>
         <span style="font-size: 13px; font-weight: 700; color: #92400e; line-height: 1.45;">
-          Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements.
+          {{ step4_notice }}
         </span>
       </div>
 
@@ -586,9 +593,9 @@
          ========================================================================= -->
     <div class="enamels-wizard-pane" id="wizard-pane-5" data-step-index="5">
       <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 5 of 7</span>
-        <h3 class="pane-title">Doctor & Staff Personalization</h3>
-        <p class="pane-subtitle">Add official computerized embroidery: Doctor Name, credentials, and hospital crest.</p>
+        <span class="pane-eyebrow">Step 5 of 6</span>
+        <h3 class="pane-title">{{ step5_title }}</h3>
+        <p class="pane-subtitle">{{ step5_subtitle }}</p>
       </div>
 
       <div class="enamels-personalization-box">
@@ -629,21 +636,21 @@
           <!-- Line 1: Compulsory -->
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label for="wiz-cust-name-1" class="form-label" style="margin: 0;">Line 1: Doctor / Staff Name:</label>
+              <label for="wiz-cust-name-1" class="form-label" style="margin: 0;">{{ line1_label }}:</label>
               <span style="font-size: 11px; font-weight: 700; color: #e11d48; background: #ffe4e6; padding: 2px 8px; border-radius: 4px;">* Compulsory</span>
             </div>
-            <input type="text" id="wiz-cust-name-1" class="form-input" placeholder="e.g. Dr. Sarah Ahmed, MD" maxlength="45" oninput="window.enamelsUpdateEmbLines()">
-            <span class="form-hint">Maximum 45 characters. Primary engraving line.</span>
+            <input type="text" id="wiz-cust-name-1" class="form-input" placeholder="e.g. Dr. Sarah Ahmed, MD" maxlength="{{ line1_max }}" oninput="window.enamelsUpdateEmbLines()">
+            <span class="form-hint">Maximum {{ line1_max }} characters. Primary engraving line.</span>
           </div>
 
           <!-- Line 2: Optional -->
           <div class="form-group" style="margin-top: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label for="wiz-cust-name-2" class="form-label" style="margin: 0;">Line 2: Title / Department / Hospital:</label>
+              <label for="wiz-cust-name-2" class="form-label" style="margin: 0;">{{ line2_label }}:</label>
               <span style="font-size: 11px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">Optional</span>
             </div>
-            <input type="text" id="wiz-cust-name-2" class="form-input" placeholder="e.g. Consultant Cardiologist" maxlength="45" oninput="window.enamelsUpdateEmbLines()">
-            <span class="form-hint">Appears directly beneath Line 1.</span>
+            <input type="text" id="wiz-cust-name-2" class="form-input" placeholder="e.g. Consultant Cardiologist" maxlength="{{ line2_max }}" oninput="window.enamelsUpdateEmbLines()">
+            <span class="form-hint">Maximum {{ line2_max }} characters. Appears directly beneath Line 1.</span>
           </div>
 
           <!-- Extra Dynamic Lines Container -->
@@ -766,13 +773,13 @@
     </div>
 
     <!-- =========================================================================
-         STEP 6: REVIEW
+         STEP 6: REVIEW & DIRECT SHOPIFY CHECKOUT
          ========================================================================= -->
     <div class="enamels-wizard-pane" id="wizard-pane-6" data-step-index="6">
       <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 6 of 7</span>
-        <h3 class="pane-title">Review Your Customized Scrub</h3>
-        <p class="pane-subtitle">Verify every specification before proceeding to payment and order confirmation.</p>
+        <span class="pane-eyebrow">Step 6 of 6</span>
+        <h3 class="pane-title">{{ step6_title }}</h3>
+        <p class="pane-subtitle">{{ step6_subtitle }}</p>
       </div>
 
       <div class="review-summary-card">
@@ -869,154 +876,23 @@
             <strong id="rev-pbreak-subtotal" style="color: #008779;">PKR 6,400</strong>
           </div>
         </div>
+
+        <!-- Single Checkout Transparent Payment Rule Box -->
+        <div class="checkout-advance-notice-box" style="margin: 20px 0 6px; background: #f0fdfa; border: 1.5px solid #99f6e4; border-radius: 10px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px;">
+          <span style="font-size: 22px; line-height: 1;">🔒</span>
+          <div>
+            <strong style="color: #0f766e; font-size: 13px; display: block; margin-bottom: 2px;">Single Official Shopify Checkout</strong>
+            <span style="font-size: 12px; color: #334155; line-height: 1.45;">{{ checkout_notice }}</span>
+          </div>
+        </div>
       </div>
 
       <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(5)">← Back to Personalization</button>
-        <button type="button" class="btn-select-next" style="width: auto; padding: 14px 36px;" onclick="window.enamelsGoStep(7)">
-          Proceed to Payment & Delivery →
+        <button type="button" class="btn-select-next" id="btn-submit-to-checkout" style="width: auto; padding: 14px 36px; background: #008779; color: #ffffff; font-size: 15px; font-weight: 800; border-radius: 8px; cursor: pointer;" onclick="window.enamelsSubmitToShopifyCheckout()">
+          <span class="btn-checkout-text">{{ checkout_btn_label }}</span>
+          <span class="btn-checkout-loader" style="display: none;">Connecting to Shopify Checkout...</span>
         </button>
-      </div>
-    </div>
-
-    <!-- =========================================================================
-         STEP 7: PAYMENT, DELIVERY & ORDER SUBMISSION
-         ========================================================================= -->
-    <div class="enamels-wizard-pane" id="wizard-pane-7" data-step-index="7">
-      <div class="enamels-pane-head">
-        <span class="pane-eyebrow">Step 7 of 7</span>
-        <h3 class="pane-title">Payment & Delivery Method</h3>
-        <p class="pane-subtitle">Customized scrubs require 100% advance payment. Cash on Delivery is strictly unavailable.</p>
-      </div>
-
-      <div class="payment-rules-card">
-        
-        <!-- Delivery Country Selection -->
-        <div class="delivery-destination-block" style="margin-bottom: 24px;">
-          <label class="form-label">Delivery Destination:</label>
-          <div class="delivery-options-grid">
-            <label class="delivery-chip active" onclick="window.enamelsSetDestination('pk')">
-              <input type="radio" name="wiz_delivery_dest" value="pk" checked>
-              <div class="delivery-chip-content">
-                <strong>🇵🇰 Pakistan Delivery</strong>
-                <span>Standard Delivery: PKR 250 flat</span>
-              </div>
-            </label>
-            <label class="delivery-chip" onclick="window.enamelsSetDestination('intl')">
-              <input type="radio" name="wiz_delivery_dest" value="intl">
-              <div class="delivery-chip-content">
-                <strong>🌍 International Worldwide Delivery</strong>
-                <span>PKR 4,000 per scrub unit</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Customer & Delivery Details (collected once; passed to checkout prefilled) -->
-        <div class="wiz-customer-details" id="wiz-customer-details" style="margin-bottom: 24px;">
-          <label class="form-label">Your Contact &amp; Delivery Details:</label>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-            <input type="text" id="wiz-cd-name" class="wiz-cd-input" autocomplete="name" placeholder="Full name *" required>
-            <input type="tel" id="wiz-cd-phone" class="wiz-cd-input" autocomplete="tel" placeholder="Phone number *" required>
-            <input type="email" id="wiz-cd-email" class="wiz-cd-input" autocomplete="email" placeholder="Email *" required>
-            <input type="text" id="wiz-cd-city" class="wiz-cd-input" autocomplete="address-level2" placeholder="City *" required>
-            <input type="text" id="wiz-cd-address" class="wiz-cd-input" autocomplete="address-line1" placeholder="Complete delivery address *" required style="grid-column:1/-1;">
-            <input type="text" id="wiz-cd-province" class="wiz-cd-input" autocomplete="address-level1" placeholder="Province / State">
-            <input type="text" id="wiz-cd-zip" class="wiz-cd-input" autocomplete="postal-code" placeholder="Postal code">
-            <input type="text" id="wiz-cd-country" class="wiz-cd-input" autocomplete="country-name" placeholder="Country" value="Pakistan">
-          </div>
-          <p id="wiz-cd-error" role="alert" style="display:none; color:#dc2626; font-size:12px; margin:8px 0 0;"></p>
-        </div>
-
-        <!-- Payment Method Selection -->
-        <div class="payment-selection-block" style="margin-bottom: 24px;">
-          <label class="form-label">Select Advance Payment Method:</label>
-          
-          <!-- OPTION A: Card Payment -->
-          <label class="payment-method-card active" onclick="window.enamelsSetPaymentMethod('card')">
-            <input type="radio" name="wiz_payment_method" value="card" checked>
-            <div class="pm-card-body">
-              <div class="pm-card-header">
-                <span class="pm-card-title">💳 Card Payment (Debit / Credit / Visa / Mastercard)</span>
-                <span class="pm-card-fee-badge">+4% Bank Charge</span>
-              </div>
-              <p class="pm-card-note">4% additional bank charges apply to card payments.</p>
-            </div>
-          </label>
-
-          <!-- OPTION B: Online Bank Transfer -->
-          <label class="payment-method-card" onclick="window.enamelsSetPaymentMethod('bank_transfer')">
-            <input type="radio" name="wiz_payment_method" value="bank_transfer">
-            <div class="pm-card-body">
-              <div class="pm-card-header">
-                <span class="pm-card-title">🏦 Online Bank Transfer (Direct IBAN / Raast / Nayapay)</span>
-                <span class="pm-card-discount-badge">Get 2% Discount</span>
-              </div>
-              <p class="pm-card-note">Get 2% Discount on Online Transfer (applied to product value only).</p>
-            </div>
-          </label>
-        </div>
-
-        <!-- Strict COD Restriction Notice -->
-        <div class="cod-restriction-notice">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
-          </svg>
-          <div>
-            <strong>Cash on Delivery (COD) Not Available</strong>
-            <p style="margin: 2px 0 0; font-size: 11px;">Because your medical scrub is custom-tailored with bespoke sizing and personalized doctor embroidery, 100% advance payment is required.</p>
-          </div>
-        </div>
-
-        <!-- Final Transparent Calculation Box -->
-        <div class="final-calculation-summary" style="margin-top: 24px; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 20px;">
-          <div style="font-size: 14px; font-weight: 800; color: #102a43; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
-            Order Calculation Breakdown
-          </div>
-          
-          <div class="calc-row">
-            <span>Product Base Value:</span>
-            <span id="calc-base-val">PKR 6,400</span>
-          </div>
-          <div class="calc-row">
-            <span>Fabric Surcharge:</span>
-            <span id="calc-fabric-val">+PKR 0</span>
-          </div>
-          <div class="calc-row">
-            <span>Personalization / Logo:</span>
-            <span id="calc-emb-val">+PKR 0</span>
-          </div>
-          <div class="calc-row" id="calc-discount-row" style="display: none; color: #16a34a; font-weight: 600;">
-            <span>Online Transfer 2% Discount (Product only):</span>
-            <span id="calc-discount-val">-PKR 128</span>
-          </div>
-          <div class="calc-row" id="calc-card-fee-row" style="color: #475569;">
-            <span>Card Bank Charges (4%):</span>
-            <span id="calc-card-fee-val">+PKR 256</span>
-          </div>
-          <div class="calc-row">
-            <span>Delivery Charges:</span>
-            <span id="calc-delivery-val">+PKR 250</span>
-          </div>
-          
-          <div class="calc-row final-total-row">
-            <strong>Final Payable Amount:</strong>
-            <strong id="calc-final-total" class="final-highlight">PKR 6,906</strong>
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <div style="margin-top: 24px;">
-          <button type="button" class="btn-submit-custom-order" id="btn-submit-order-final" onclick="window.enamelsFinalizeOrderSubmission()">
-            <span class="btn-submit-text">Confirm & Pay <span id="btn-final-price-display">PKR 6,906</span> →</span>
-            <span class="btn-submit-loader" style="display: none;">Securing Order & Redirecting...</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="wizard-nav-actions" style="margin-top: 24px;">
-        <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(6)">← Back to Review</button>
       </div>
     </div>
 
@@ -1218,6 +1094,7 @@
     background: #ffffff;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
     transition: all 0.2s ease;
   }
   .enamels-fabric-card:hover {
@@ -1412,6 +1289,7 @@
     background: #ffffff;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
     transition: all 0.2s ease;
   }
   .enamels-design-card:hover {
@@ -2101,22 +1979,21 @@
       padding: 14px 12px 100px !important;
     }
     .size-chips-bar {
-      display: flex !important;
-      flex-wrap: wrap !important;
-      gap: 8px !important;
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
       margin-bottom: 20px !important;
     }
     .size-chip-btn {
-      flex: 1 1 calc(33.333% - 8px) !important;
-      min-width: 80px !important;
+      width: 100% !important;
       min-height: 48px !important;
-      padding: 10px 8px !important;
-      font-size: 13px !important;
+      padding: 12px 10px !important;
+      font-size: 14px !important;
       text-align: center !important;
       box-sizing: border-box !important;
     }
     .size-chip-btn.size-chip-custom {
-      flex: 1 1 100% !important;
+      grid-column: 1 / -1 !important;
       width: 100% !important;
     }
     .custom-measurements-panel {
@@ -2602,13 +2479,12 @@
       3: 'Design Selection',
       4: 'Size & Fit',
       5: 'Personalization',
-      6: 'Order Review',
-      7: 'Payment & Delivery'
+      6: 'Review & Checkout'
     };
 
     window.enamelsGoStep = function(stepNum) {
       if (stepNum < 1) stepNum = 1;
-      if (stepNum > 7) stepNum = 7;
+      if (stepNum > 6) stepNum = 6;
       state.currentStep = stepNum;
 
       var panes = document.querySelectorAll('.enamels-wizard-pane');
@@ -2777,6 +2653,12 @@
           if (!state.design.variantId && c.getAttribute('data-variant-id')) {
             state.design.variantId = c.getAttribute('data-variant-id');
           }
+          try {
+            var varScript = c.querySelector('.design-variants-data');
+            if (varScript) {
+              state.design.variants = JSON.parse(varScript.textContent);
+            }
+          } catch(e) {}
         }
       });
 
@@ -2784,7 +2666,7 @@
     };
 
     // =========================================================================
-    // DYNAMIC SIZE & MEASUREMENTS DOM RENDERERS
+    // DYNAMIC SIZE & MEASUREMENTS DOM RENDERERS (OPTIMIZED INSTANT UI)
     // =========================================================================
     window.renderDynamicSizeChips = function() {
       var container = document.getElementById('wiz-size-chips-container');
@@ -2794,6 +2676,17 @@
 
       if (!state.isCustomSize && sizes.indexOf(state.size) === -1) {
         state.size = sizes[0] || 'M';
+      }
+
+      // Fast path: toggle active classes without tearing down DOM
+      var existingBtns = container.querySelectorAll('.size-chip-btn');
+      if (existingBtns.length > 0) {
+        existingBtns.forEach(function(btn) {
+          var s = btn.getAttribute('data-size');
+          var isActive = (!state.isCustomSize && s === state.size) || (state.isCustomSize && s === 'Custom');
+          btn.classList.toggle('active', isActive);
+        });
+        return;
       }
 
       var html = '';
@@ -2824,6 +2717,29 @@
         } else {
           heading.textContent = state.size + ' Standard Measurements (' + target.title + ')';
         }
+      }
+
+      // Fast path: update input values in-place without destroying DOM elements
+      var existingInputs = grid.querySelectorAll('.m-input');
+      if (existingInputs.length > 0) {
+        fields.forEach(function(f) {
+          var val = state.measurements[f.key];
+          if (val === undefined || (!state.isCustomSize && sizeData[f.key] !== undefined)) {
+            val = sizeData[f.key];
+            state.measurements[f.key] = val;
+          }
+          if (val === undefined) val = '';
+          var unitLbl = state.unit === 'cm' ? '(cm)' : '(in)';
+          var displayVal = val;
+          if (state.unit === 'cm' && typeof val === 'number') {
+            displayVal = Math.round(val * 2.54 * 10) / 10;
+          }
+          var input = document.getElementById('wiz_m_' + f.key);
+          if (input) input.value = displayVal;
+          var unitSpan = input ? input.closest('.measurement-field').querySelector('.m-unit-lbl') : null;
+          if (unitSpan) unitSpan.textContent = unitLbl;
+        });
+        return;
       }
 
       var html = '';
@@ -2876,6 +2792,11 @@
       var alertBox = document.getElementById('auto-custom-pill-alert');
       if (alertBox) alertBox.style.display = 'none';
 
+      var container = document.getElementById('wiz-size-chips-container');
+      if (container) container.innerHTML = '';
+      var grid = document.getElementById('wiz-measurements-grid');
+      if (grid) grid.innerHTML = '';
+
       window.renderDynamicSizeChips();
       window.renderDynamicMeasurementInputs();
       updateReviewAndPaymentUI();
@@ -2896,6 +2817,11 @@
 
       var alertBox = document.getElementById('auto-custom-pill-alert');
       if (alertBox) alertBox.style.display = 'none';
+
+      var container = document.getElementById('wiz-size-chips-container');
+      if (container) container.innerHTML = '';
+      var grid = document.getElementById('wiz-measurements-grid');
+      if (grid) grid.innerHTML = '';
 
       window.renderDynamicSizeChips();
       window.renderDynamicMeasurementInputs();
@@ -3165,53 +3091,33 @@
       updateReviewAndPaymentUI();
     };
 
-    // 8. Order Submission via Shopify AJAX API
-    window.enamelsFinalizeOrderSubmission = function() {
-      var btn = document.getElementById('btn-submit-order-final');
-      var btnText = btn ? btn.querySelector('.btn-submit-text') : null;
-      var btnLoader = btn ? btn.querySelector('.btn-submit-loader') : null;
-
-      // Validate customer details (collected here so checkout can be prefilled)
-      var cdIds = { name: 'wiz-cd-name', phone: 'wiz-cd-phone', email: 'wiz-cd-email', city: 'wiz-cd-city', address: 'wiz-cd-address', province: 'wiz-cd-province', zip: 'wiz-cd-zip', country: 'wiz-cd-country' };
-      var cd = {};
-      Object.keys(cdIds).forEach(function(k) {
-        var el = document.getElementById(cdIds[k]);
-        cd[k] = el ? el.value.trim() : '';
-        if (el) el.classList.remove('invalid');
-      });
-      var cdErr = document.getElementById('wiz-cd-error');
-      var missing = ['name', 'phone', 'email', 'city', 'address'].filter(function(k) { return !cd[k]; });
-      var emailBad = cd.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cd.email);
-      if (missing.length || emailBad) {
-        missing.forEach(function(k) { document.getElementById(cdIds[k]).classList.add('invalid'); });
-        if (emailBad) document.getElementById(cdIds.email).classList.add('invalid');
-        if (cdErr) {
-          cdErr.textContent = emailBad && !missing.length ? 'Please enter a valid email address.' : 'Please fill in all required contact and delivery details.';
-          cdErr.style.display = 'block';
-        }
-        var firstBad = document.querySelector('.wiz-cd-input.invalid');
-        if (firstBad) firstBad.focus();
-        return;
-      }
-      if (cdErr) cdErr.style.display = 'none';
+    // =========================================================================
+    // 8. SINGLE OFFICIAL SHOPIFY CHECKOUT ENGINE
+    // =========================================================================
+    window.enamelsSubmitToShopifyCheckout = function() {
+      var btn = document.getElementById('btn-submit-to-checkout') || document.getElementById('btn-submit-order-final');
+      var btnText = btn ? (btn.querySelector('.btn-checkout-text') || btn.querySelector('.btn-submit-text')) : null;
+      var btnLoader = btn ? (btn.querySelector('.btn-checkout-loader') || btn.querySelector('.btn-submit-loader')) : null;
 
       if (btn) btn.disabled = true;
       if (btnText) btnText.style.display = 'none';
       if (btnLoader) btnLoader.style.display = 'inline-block';
 
       var f = calculateFinancials();
+      var targetFit = getActiveFitTarget();
 
-      // Collect line item properties with full audit trail
+      // Collect line item properties carrying 100% complete customization specs into Shopify Checkout & Admin
       var props = {
-        'Customization Type': 'Bespoke Scrub Customizer',
-        'Fabric': state.fabric.name + (state.fabric.fee > 0 ? ' (+PKR ' + state.fabric.fee + ')' : ''),
+        'Customization Type': 'Bespoke Medical Scrub',
+        'Product Design': state.design.name,
         'Design Collection': state.collection.title,
-        'Design Silhouette': state.design.name,
+        'Fabric': state.fabric.name + (state.fabric.fee > 0 ? ' (+PKR ' + state.fabric.fee + ')' : ''),
         'Main Color': state.color.name,
-        'Contrast Option': state.contrast.name,
+        'Contrast Trim': state.contrast.name,
         'Gender': state.gender === 'female' ? 'Female' : 'Male',
-        'Fit Style': state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'Male Standard Fit',
-        'Size Fit': state.isCustomSize ? 'Custom Tailored Fit' : 'Standard ' + state.size,
+        'Fit Silhouette': targetFit.title,
+        'Selected Size': state.isCustomSize ? 'Custom Fit' : state.size,
+        'Size & Fit': (state.isCustomSize ? 'Custom Tailored Fit' : ('Size ' + state.size)) + ' (' + targetFit.title + ')',
         'Custom Sizing': state.isCustomSize ? 'Yes' : 'No'
       };
 
@@ -3219,68 +3125,85 @@
       var cfg = getActiveSizeFitConfig();
       var fList = cfg.fields || DEFAULT_ENAMELS_SIZE_FIT_CONFIG.fields;
       var specParts = [];
-      fList.forEach(function(f) {
-        if (state.measurements[f.key] !== undefined) {
-          var val = state.measurements[f.key];
+      fList.forEach(function(fld) {
+        if (state.measurements[fld.key] !== undefined) {
+          var val = state.measurements[fld.key];
           if (state.unit === 'cm' && typeof val === 'number') {
             val = Math.round(val * 2.54 * 10) / 10;
           }
-          specParts.push(f.label + ': ' + val + state.unit);
+          specParts.push(fld.label + ': ' + val + state.unit);
         }
       });
-      props['Measurement Specs'] = specParts.join(', ');
+      props['Custom Measurements'] = specParts.join(', ');
 
       // Personalization
       if (state.personalization.placement !== 'none' && state.personalization.line1) {
-        props['Engraving Line 1 (Required)'] = state.personalization.line1;
-        if (state.personalization.line2) props['Engraving Line 2'] = state.personalization.line2;
-        if (state.personalization.extraLines.length > 0) {
+        props['Personalization Placement'] = state.personalization.placement;
+        props['Doctor Name (Line 1)'] = state.personalization.line1;
+        if (state.personalization.line2) props['Title / Dept (Line 2)'] = state.personalization.line2;
+        if (state.personalization.extraLines && state.personalization.extraLines.length > 0) {
           props['Additional Engraving Lines'] = state.personalization.extraLines.join(' | ');
         }
-        props['Personalization Placement'] = state.personalization.placement;
         props['Thread Color'] = state.personalization.thread;
       }
       if (state.personalization.logoType !== 'none') {
         if (state.personalization.logoType === 'custom_upload') {
-          props['Logo Option'] = 'Uploaded Custom Logo (' + (state.personalization.logoFileName || 'File attached') + ')';
+          props['Hospital Logo'] = 'Uploaded Custom Logo (' + (state.personalization.logoFileName || 'File attached') + ')';
           props['Logo File Attached'] = state.personalization.logoFileName + ' (' + state.personalization.logoFileSize + ')';
         } else {
-          props['Logo Option'] = state.personalization.logoType === 'crest' ? 'Hospital Crest (+PKR 450)' : 'Silicone Patch (+PKR 550)';
+          props['Hospital Logo'] = state.personalization.logoType === 'crest' ? 'Hospital Crest (+PKR 450)' : 'Silicone Patch (+PKR 550)';
         }
       }
 
-      // Payment & Delivery terms
-      props['Payment Method'] = state.paymentMethod === 'card' ? 'Card Payment (+4% Gateway Verified)' : 'Online Bank Transfer (2% Discount • Pending Verification)';
-      props['Delivery Destination'] = state.deliveryDest === 'intl' ? 'International Worldwide Dispatch (PKR 4,000 / unit)' : 'Pakistan Standard (PKR 250)';
-      props['Advance Payment Rule'] = '100% Advance Payment Required — Cash on Delivery Not Allowed';
-      props['Calculated Final Total'] = 'PKR ' + f.finalTotal.toLocaleString();
-      props['Customer Name'] = cd.name;
-      props['Customer Phone'] = cd.phone;
-      props['Customer Email'] = cd.email;
-      props['Delivery Address'] = cd.address + ', ' + cd.city + (cd.province ? ', ' + cd.province : '') + (cd.zip ? ' ' + cd.zip : '') + ', ' + (cd.country || 'Pakistan');
-      props['Payment Status'] = state.paymentMethod === 'card' ? 'Card — verified by Shopify gateway at checkout' : 'Bank Transfer — Pending Payment Verification';
+      props['Advance Payment Rule'] = '100% Advance Payment Required (Card Payment or Online Bank Transfer at Checkout)';
+      props['Calculated Garment Value'] = 'PKR ' + f.productValue.toLocaleString();
+      if (f.embFee > 0) props['Personalization Add-on'] = '+PKR ' + f.embFee.toLocaleString();
 
-      // Construct complete custom order docket for Admin Profile & Customer Account synchronization
+      // Resolve matching variant ID for the selected design and selected size
+      var targetVariantId = null;
+      if (state.design.variants && state.design.variants.length > 0) {
+        var desiredSize = (state.size || '').trim().toUpperCase();
+        for (var v = 0; v < state.design.variants.length; v++) {
+          var vr = state.design.variants[v];
+          var vrTitle = (vr.title || '').trim().toUpperCase();
+          var optValues = (vr.options || []).map(function(o) { return String(o).trim().toUpperCase(); });
+          if (vrTitle === desiredSize || optValues.indexOf(desiredSize) !== -1) {
+            targetVariantId = vr.id;
+            break;
+          }
+        }
+        if (!targetVariantId) {
+          for (var v2 = 0; v2 < state.design.variants.length; v2++) {
+            var vr2 = state.design.variants[v2];
+            var vrTitle2 = (vr2.title || '').trim().toUpperCase();
+            if (desiredSize === 'S' && (vrTitle2.indexOf('SMALL') !== -1 || vrTitle2 === 'S')) { targetVariantId = vr2.id; break; }
+            if (desiredSize === 'M' && (vrTitle2.indexOf('MEDIUM') !== -1 || vrTitle2 === 'M')) { targetVariantId = vr2.id; break; }
+            if (desiredSize === 'L' && (vrTitle2.indexOf('LARGE') !== -1 && vrTitle2.indexOf('XL') === -1)) { targetVariantId = vr2.id; break; }
+            if (desiredSize === 'XL' && (vrTitle2.indexOf('XL') !== -1 || vrTitle2.indexOf('EXTRA LARGE') !== -1)) { targetVariantId = vr2.id; break; }
+            if (desiredSize === '2XL' && (vrTitle2.indexOf('2XL') !== -1 || vrTitle2.indexOf('XXL') !== -1)) { targetVariantId = vr2.id; break; }
+          }
+        }
+      }
+
+      if (!targetVariantId) {
+        targetVariantId = state.design.variantId;
+      }
+      if (!targetVariantId) {
+        var firstCard = document.querySelector('.enamels-design-card[data-variant-id]');
+        if (firstCard) targetVariantId = firstCard.getAttribute('data-variant-id');
+      }
+
+      // Record custom order docket for Admin Profile tracking
       var customOrderDocket = {
         id: 'CUST-' + Date.now().toString().slice(-6),
         orderNumber: 'CUST-' + Math.floor(100000 + Math.random() * 900000),
         createdAt: new Date().toISOString(),
         dateFormatted: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        customer: {
-          name: cd.name,
-          phone: cd.phone,
-          email: cd.email,
-          address: cd.address,
-          city: cd.city,
-          province: cd.province,
-          zip: cd.zip,
-          country: cd.country || 'Pakistan'
-        },
         garment: {
           collection: state.collection.title,
           design: state.design.name,
           designId: state.design.id,
-          variantId: state.design.variantId,
+          variantId: targetVariantId,
           fabric: state.fabric.name,
           fabricFee: state.fabric.fee,
           mainColor: state.color.name,
@@ -3288,7 +3211,7 @@
           contrast: state.contrast.name,
           gender: state.gender === 'female' ? 'Female' : 'Male',
           femaleFit: state.femaleFit,
-          fitLabel: state.gender === 'female' ? ('Female ' + state.femaleFit.toUpperCase() + ' FIT') : 'Male Standard Fit',
+          fitLabel: targetFit.title,
           size: state.size,
           isCustomSize: state.isCustomSize,
           unit: state.unit,
@@ -3303,24 +3226,18 @@
           fee: f.embFee,
           logoType: state.personalization.logoType,
           logoFileName: state.personalization.logoFileName,
-          logoFileSize: state.personalization.logoFileSize,
-          logoFileData: state.personalization.logoFileData
+          logoFileSize: state.personalization.logoFileSize
         },
         financials: {
           productValue: f.productValue,
           basePrice: f.base,
           fabricFee: f.fabricFee,
-          embroideryFee: f.embFee,
-          deliveryFee: f.deliveryFee,
-          cardFee: f.cardFee,
-          onlineDiscount: f.onlineDiscount,
-          finalTotal: f.finalTotal
+          embroideryFee: f.embFee
         },
-        paymentMethod: state.paymentMethod,
-        paymentStatus: state.paymentMethod === 'card' ? 'Payment Verified (Card Gateway)' : 'Pending Verification (Bank Transfer)',
+        paymentStatus: 'Pending Verification (Shopify Checkout)',
         orderStatus: 'Production Queue',
         productionStatus: 'Awaiting Tailoring Cut',
-        specsSummary: props['Measurement Specs'],
+        specsSummary: props['Custom Measurements'],
         lineItemProperties: props
       };
 
@@ -3333,97 +3250,45 @@
         window.dispatchEvent(new CustomEvent('enamels:custom_order_created', { detail: customOrderDocket }));
       } catch(e) {}
 
-      var cartAttrs = {
-        'Order Type': 'Customized Scrub',
-        'Payment Method': props['Payment Method'],
-        'Payment Status': props['Payment Status'],
-        'Customer Phone': cd.phone
-      };
-
-      // Prefill Shopify checkout so the customer never retypes contact/address details
-      function buildCheckoutUrl() {
-        var parts = ['checkout[email]=' + encodeURIComponent(cd.email)];
-        var nm = cd.name.split(/\s+/);
-        var first = nm.shift();
-        var last = nm.join(' ') || first;
-        var countryName = cd.country || 'Pakistan';
-        var addr = {
-          first_name: first, last_name: last, address1: cd.address, city: cd.city,
-          province: cd.province, zip: cd.zip, country: countryName, phone: cd.phone
+      function postAndRedirect(varId) {
+        var postData = {
+          items: [{
+            id: varId,
+            quantity: 1,
+            properties: props
+          }]
         };
-        Object.keys(addr).forEach(function(k) {
-          if (addr[k]) parts.push('checkout[shipping_address][' + k + ']=' + encodeURIComponent(addr[k]));
-        });
-        parts.push('note=' + encodeURIComponent('Customized Scrub — ' + props['Payment Status']));
-        return '/checkout?' + parts.join('&');
-      }
 
-      var postData = {
-        quantity: 1,
-        properties: props
-      };
-
-      function sendToCart(variantId) {
-        postData.id = variantId;
-        fetch('/cart.js', { headers: { 'Accept': 'application/json' } })
-        .then(function(r) { return r.json(); })
-        .then(function(cart) {
-          var others = (cart.items || []).filter(function(i) { return !(i.properties && i.properties['Customization Type']); });
-          if (others.length && !window.confirm('Your cart has other items. Customized scrubs use their own checkout, so the cart will be cleared first. Continue?')) {
-            throw new Error('cancelled');
-          }
-          return others.length ? fetch('/cart/clear.js', { method: 'POST' }) : null;
-        })
-        .then(function() {
-          return fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(postData)
-          });
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(postData)
         })
         .then(function(res) {
           if (!res.ok) throw new Error('Cart add response error');
           return res.json();
         })
         .then(function() {
-          return fetch('/cart/update.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ attributes: cartAttrs })
-          });
-        })
-        .then(function() {
-          if (btnLoader) btnLoader.textContent = state.paymentMethod === 'card' ? 'Redirecting to secure card payment...' : 'Opening secure checkout (select Bank Transfer)...';
-          try {
-            sessionStorage.setItem('enamels_payment_method', state.paymentMethod);
-            sessionStorage.setItem('enamels_delivery_dest', state.deliveryDest);
-          } catch(e) {}
-          window.location.href = buildCheckoutUrl();
+          if (btnLoader) btnLoader.textContent = 'Redirecting to Shopify Checkout...';
+          window.location.href = '/checkout';
         })
         .catch(function(err) {
           if (btn) btn.disabled = false;
           if (btnText) btnText.style.display = '';
           if (btnLoader) btnLoader.style.display = 'none';
-          if (err && err.message !== 'cancelled') alert('Could not submit your customized order. Please try again.');
+          alert('Could not add customized scrub to checkout. Redirecting to cart...');
+          window.location.href = '/cart';
         });
       }
 
-      var finalVariantId = state.design.variantId;
-      if (!finalVariantId) {
-        var firstCard = document.querySelector('.enamels-design-card[data-variant-id]');
-        if (firstCard) {
-          finalVariantId = firstCard.getAttribute('data-variant-id');
-        }
-      }
-
-      if (finalVariantId) {
-        sendToCart(finalVariantId);
+      if (targetVariantId) {
+        postAndRedirect(targetVariantId);
       } else {
         fetch('/products.json?limit=1')
           .then(function(r) { return r.json(); })
           .then(function(data) {
             if (data && data.products && data.products[0] && data.products[0].variants && data.products[0].variants[0]) {
-              sendToCart(data.products[0].variants[0].id);
+              postAndRedirect(data.products[0].variants[0].id);
             } else {
               window.location.href = '/cart';
             }
@@ -3433,6 +3298,9 @@
           });
       }
     };
+
+    // Backward-compatible alias for any residual callers
+    window.enamelsFinalizeOrderSubmission = window.enamelsSubmitToShopifyCheckout;
 
     // Initialize DOM handlers
     document.addEventListener('DOMContentLoaded', function() {
