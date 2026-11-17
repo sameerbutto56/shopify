@@ -4266,6 +4266,19 @@
       let subtotal = 0;
       let hasAdvanceItem = false;
 
+      const isCustomizedCart = cart.some(item =>
+        item.requiresAdvancePayment ||
+        item.isCustomSize ||
+        item.customization ||
+        (item.properties && (
+          item.properties['Customization Type'] ||
+          item.properties['Custom Sizing'] === 'Yes' ||
+          item.properties['Custom Measurements'] ||
+          item.properties['Tailoring Specification']
+        ))
+      );
+      if (isCustomizedCart) hasAdvanceItem = true;
+
       container.innerHTML = cart.map((item, idx) => {
         const itemLineTotal = (item.unitPrice || 0) * (item.quantity || 1);
         subtotal += itemLineTotal;
@@ -4312,6 +4325,33 @@
 
       if (subtotalEl) subtotalEl.textContent = `Rs. ${subtotal.toLocaleString()}`;
       if (advanceAlert) advanceAlert.style.display = hasAdvanceItem ? 'flex' : 'none';
+
+      const codBtn = document.getElementById('btn-cart-cod-option');
+      const codBadge = document.getElementById('cart-cod-trust-badge');
+      if (codBtn) {
+        if (hasAdvanceItem) {
+          codBtn.style.opacity = '0.5';
+          codBtn.style.background = '#f1f5f9';
+          codBtn.style.borderColor = '#cbd5e1';
+          codBtn.style.color = '#94a3b8';
+          codBtn.title = 'Cash on Delivery is unavailable for tailored bespoke scrubs (100% advance payment required).';
+        } else {
+          codBtn.style.opacity = '1';
+          codBtn.style.background = '#f0fdf4';
+          codBtn.style.borderColor = '#86efac';
+          codBtn.style.color = '#166534';
+          codBtn.title = '';
+        }
+      }
+      if (codBadge) {
+        if (hasAdvanceItem) {
+          codBadge.innerHTML = '⚠️ <strong>Advance Payment Required:</strong> Cash on Delivery is unavailable for bespoke customized scrubs.';
+          codBadge.style.color = '#b45309';
+        } else {
+          codBadge.innerHTML = 'Cash on Delivery available across all cities in Pakistan • Nationwide Trax / TCS';
+          codBadge.style.color = '#94a3b8';
+        }
+      }
 
       // Free shipping progress calculation (Rs. 7,000 threshold)
       const threshold = 7000;
@@ -4363,6 +4403,23 @@
       if (!cart.length) {
         alert('Your cart is empty. Please select a product first.');
         return;
+      }
+
+      const isCustomizedCart = cart.some(item =>
+        item.requiresAdvancePayment ||
+        item.isCustomSize ||
+        item.customization ||
+        (item.properties && (
+          item.properties['Customization Type'] ||
+          item.properties['Custom Sizing'] === 'Yes' ||
+          item.properties['Custom Measurements'] ||
+          item.properties['Tailoring Specification']
+        ))
+      );
+
+      if (mode === 'cod' && isCustomizedCart) {
+        alert('Notice: Cash on Delivery is unavailable for tailored bespoke scrubs. Because customized medical apparel is individually crafted to custom clinician measurements, full advance payment via Card Payment or Online Bank Transfer is required.');
+        mode = 'bank';
       }
 
       window.closeCartDrawer();
@@ -4460,7 +4517,11 @@
                   'Scrub Units (Q)': comp.Q,
                   'Chargeable Add-on Units (A)': comp.A,
                   'Estimated Shipping (PKR)': shipResult.shippingFee,
-                  'Shipping Rate Calculation': shipResult.formulaText
+                  'Shipping Rate Calculation': shipResult.formulaText,
+                  'customized_order': isCustomizedCart ? 'true' : 'false',
+                  'payment_rule': isCustomizedCart ? 'advance_payment_only' : 'standard',
+                  'cod_eligible': isCustomizedCart ? 'false' : 'true',
+                  'Advance Payment Required': isCustomizedCart ? 'Yes (100% Advance Payment for Customized Garments)' : 'Standard Delivery Rules'
                 }
               })
             });

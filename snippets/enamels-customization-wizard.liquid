@@ -373,14 +373,6 @@
             <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#008779; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">🩺</span>
             <span>All Designs</span>
           </button>
-          <button type="button" class="design-cat-pill" data-col-handle="male" onclick="window.enamelsSwitchDesignCollection('male', 'Male Medical Scrubs')">
-            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#0f172a; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">👨</span>
-            <span>Male Scrubs</span>
-          </button>
-          <button type="button" class="design-cat-pill" data-col-handle="female" onclick="window.enamelsSwitchDesignCollection('female', 'Female Medical Scrubs')">
-            <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#ec4899; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">👩</span>
-            <span>Female Scrubs</span>
-          </button>
           <button type="button" class="design-cat-pill" data-col-handle="crown" onclick="window.enamelsSwitchDesignCollection('crown', 'Crown™ Series')">
             <span class="pill-thumb" style="display:inline-flex; align-items:center; justify-content:center; background:#0284c7; color:#fff; border-radius:50%; width:32px; height:32px; font-size:14px;">👑</span>
             <span>Crown Series</span>
@@ -1998,14 +1990,21 @@
     }
     .size-chips-bar {
       display: grid !important;
-      grid-template-columns: repeat(2, 1fr) !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       gap: 10px !important;
       margin-bottom: 20px !important;
+      max-height: 114px !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding: 2px 4px 6px 2px !important;
+      box-sizing: border-box !important;
+      scrollbar-width: thin !important;
     }
     .size-chip-btn {
       width: 100% !important;
       min-height: 48px !important;
-      padding: 12px 10px !important;
+      height: 48px !important;
+      padding: 10px 8px !important;
       font-size: 14px !important;
       text-align: center !important;
       box-sizing: border-box !important;
@@ -2665,15 +2664,12 @@
       var labelEl = document.getElementById('active-collection-title-display');
       if (labelEl) labelEl.textContent = colTitle;
 
-      // Filter design cards by collection or category
+      // Filter design cards by collection or category (product-wise)
       var cards = document.querySelectorAll('.enamels-design-card');
       cards.forEach(function(c) {
         var cardCol = c.getAttribute('data-col');
-        var cardGender = c.getAttribute('data-gender') || 'all';
         if (colHandle === 'all') {
           c.style.display = 'flex';
-        } else if (colHandle === 'male' || colHandle === 'female') {
-          c.style.display = (cardGender === colHandle || cardGender === 'all') ? 'flex' : 'none';
         } else if (cardCol === colHandle) {
           c.style.display = 'flex';
         } else {
@@ -2889,6 +2885,15 @@
       state.size = sizeKey;
       state.isCustomSize = false;
 
+      // Instant 0ms visual feedback
+      var container = document.getElementById('wiz-size-chips-container');
+      if (container) {
+        var btns = container.querySelectorAll('.size-chip-btn');
+        btns.forEach(function(b) {
+          b.classList.toggle('active', b.getAttribute('data-size') === sizeKey);
+        });
+      }
+
       var alertBox = document.getElementById('auto-custom-pill-alert');
       if (alertBox) alertBox.style.display = 'none';
 
@@ -2904,7 +2909,6 @@
         }
       });
 
-      window.renderDynamicSizeChips();
       window.renderDynamicMeasurementInputs();
       updateReviewAndPaymentUI();
     };
@@ -2913,7 +2917,14 @@
       state.size = 'Custom';
       state.isCustomSize = true;
 
-      window.renderDynamicSizeChips();
+      // Instant 0ms visual feedback
+      var container = document.getElementById('wiz-size-chips-container');
+      if (container) {
+        var btns = container.querySelectorAll('.size-chip-btn');
+        btns.forEach(function(b) {
+          b.classList.toggle('active', b.getAttribute('data-size') === 'Custom');
+        });
+      }
 
       var alertBox = document.getElementById('auto-custom-pill-alert');
       if (alertBox) alertBox.style.display = 'block';
@@ -3144,6 +3155,118 @@
     };
 
     // =========================================================================
+    // VARIANT & DESIGN RESOLUTION ENGINE (ACCURATE CUSTOMER SIZE MAPPING)
+    // =========================================================================
+    function findMatchingVariant(variants, desiredSize, desiredColor) {
+      if (!variants || !variants.length) return null;
+
+      var normSize = (desiredSize || '').trim().toUpperCase();
+      var normColor = (desiredColor || '').trim().toUpperCase();
+
+      var sizeKeys = [];
+      if (normSize === 'S' || normSize.indexOf('SMALL') !== -1) {
+        sizeKeys = ['S', 'SMALL', 'SM'];
+      } else if (normSize === 'M' || normSize.indexOf('MEDIUM') !== -1) {
+        sizeKeys = ['M', 'MEDIUM', 'MED'];
+      } else if (normSize === 'L' || (normSize.indexOf('LARGE') !== -1 && normSize.indexOf('XL') === -1)) {
+        sizeKeys = ['L', 'LARGE'];
+      } else if (normSize === 'XL' || normSize.indexOf('EXTRA LARGE') !== -1 || normSize === 'X-LARGE') {
+        sizeKeys = ['XL', 'EXTRA LARGE', '1XL', 'X-LARGE'];
+      } else if (normSize === '2XL' || normSize.indexOf('XXL') !== -1 || normSize.indexOf('DOUBLE XL') !== -1) {
+        sizeKeys = ['2XL', 'XXL', '2-XL', 'DOUBLE XL', 'XX-LARGE'];
+      } else if (normSize === 'XS' || normSize.indexOf('EXTRA SMALL') !== -1) {
+        sizeKeys = ['XS', 'EXTRA SMALL', 'X-SMALL'];
+      } else if (normSize === 'CUSTOM') {
+        return variants[0].id;
+      } else {
+        sizeKeys = [normSize];
+      }
+
+      function variantMatchesSize(vr) {
+        var vTitle = (vr.title || '').trim().toUpperCase();
+        var optValues = [];
+        if (Array.isArray(vr.options)) {
+          optValues = vr.options.map(function(o) { return String(o).trim().toUpperCase(); });
+        }
+        if (vr.option1) optValues.push(String(vr.option1).trim().toUpperCase());
+        if (vr.option2) optValues.push(String(vr.option2).trim().toUpperCase());
+        if (vr.option3) optValues.push(String(vr.option3).trim().toUpperCase());
+
+        for (var i = 0; i < sizeKeys.length; i++) {
+          var k = sizeKeys[i];
+          if (vTitle === k) return true;
+          if (optValues.indexOf(k) !== -1) return true;
+
+          // Word-boundary token match in title (e.g. "Ceil Blue / L" or "Large / Navy")
+          var re = new RegExp('(^|[/\\s,-])' + k.replace('-', '\\-') + '([/\\s,-]|$)', 'i');
+          if (re.test(vTitle)) {
+            // Guard against "L" matching inside "XL" or "2XL"
+            if (k === 'L' && (vTitle.indexOf('XL') !== -1 || vTitle.indexOf('2XL') !== -1)) {
+              continue;
+            }
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function variantMatchesColor(vr) {
+        if (!normColor) return true;
+        var vTitle = (vr.title || '').trim().toUpperCase();
+        var optValues = [];
+        if (Array.isArray(vr.options)) optValues = vr.options.map(function(o) { return String(o).trim().toUpperCase(); });
+        if (vr.option1) optValues.push(String(vr.option1).trim().toUpperCase());
+        if (vr.option2) optValues.push(String(vr.option2).trim().toUpperCase());
+        if (vr.option3) optValues.push(String(vr.option3).trim().toUpperCase());
+
+        var colorWord = normColor.split(' ')[0] || normColor;
+        if (vTitle.indexOf(normColor) !== -1 || vTitle.indexOf(colorWord) !== -1) return true;
+        for (var j = 0; j < optValues.length; j++) {
+          if (optValues[j].indexOf(normColor) !== -1 || optValues[j].indexOf(colorWord) !== -1) return true;
+        }
+        return false;
+      }
+
+      // Priority 1: Match BOTH size and color
+      for (var a = 0; a < variants.length; a++) {
+        if (variantMatchesSize(variants[a]) && variantMatchesColor(variants[a])) {
+          return variants[a].id;
+        }
+      }
+
+      // Priority 2: Match size
+      for (var b = 0; b < variants.length; b++) {
+        if (variantMatchesSize(variants[b])) {
+          return variants[b].id;
+        }
+      }
+
+      // Priority 3: Match color
+      for (var c = 0; c < variants.length; c++) {
+        if (variantMatchesColor(variants[c])) {
+          return variants[c].id;
+        }
+      }
+
+      return variants[0].id;
+    }
+
+    function initActiveDesignData() {
+      var activeCard = document.querySelector('.enamels-design-card.active') || document.querySelector('.enamels-design-card');
+      if (activeCard) {
+        state.design.id = activeCard.getAttribute('data-design-id') || state.design.id;
+        state.design.variantId = activeCard.getAttribute('data-variant-id') || state.design.variantId;
+        state.design.name = activeCard.getAttribute('data-design-name') || state.design.name;
+        state.design.basePrice = parseFloat(activeCard.getAttribute('data-design-price')) || state.design.basePrice || 6400;
+        state.design.img = activeCard.getAttribute('data-design-img') || state.design.img;
+        try {
+          var varScript = activeCard.querySelector('.design-variants-data');
+          if (varScript) state.design.variants = JSON.parse(varScript.textContent);
+        } catch(e) {}
+      }
+    }
+
+    // =========================================================================
     // 8. SINGLE OFFICIAL SHOPIFY CHECKOUT ENGINE
     // =========================================================================
     window.enamelsSubmitToShopifyCheckout = function() {
@@ -3155,8 +3278,11 @@
       if (btnText) btnText.style.display = 'none';
       if (btnLoader) btnLoader.style.display = 'inline-block';
 
+      initActiveDesignData();
+
       var f = calculateFinancials();
       var targetFit = getActiveFitTarget();
+      var sizeDisplayName = state.isCustomSize ? 'Custom Fit' : (state.size || 'Medium (M)');
 
       // Collect line item properties carrying 100% complete customization specs into Shopify Checkout & Admin
       var props = {
@@ -3168,9 +3294,12 @@
         'Contrast Trim': state.contrast.name,
         'Gender': state.gender === 'female' ? 'Female' : 'Male',
         'Fit Silhouette': targetFit.title,
-        'Selected Size': state.isCustomSize ? 'Custom Fit' : state.size,
+        'Selected Size': sizeDisplayName,
+        'Size': sizeDisplayName,
         'Size & Fit': (state.isCustomSize ? 'Custom Tailored Fit' : ('Size ' + state.size)) + ' (' + targetFit.title + ')',
-        'Custom Sizing': state.isCustomSize ? 'Yes' : 'No'
+        'Custom Sizing': state.isCustomSize ? 'Yes' : 'No',
+        'Advance Payment Required': '100% Advance Payment Required',
+        'COD Available': 'No (Customized garments require full advance payment via Card or Online Bank Transfer)'
       };
 
       // Add measurements dynamically from configured fields
@@ -3211,32 +3340,11 @@
       props['Calculated Garment Value'] = 'PKR ' + f.productValue.toLocaleString();
       if (f.embFee > 0) props['Personalization Add-on'] = '+PKR ' + f.embFee.toLocaleString();
 
-      // Resolve matching variant ID for the selected design and selected size
+      // Resolve exact matching variant ID for the customer's selected size and color
       var targetVariantId = null;
       if (state.design.variants && state.design.variants.length > 0) {
-        var desiredSize = (state.size || '').trim().toUpperCase();
-        for (var v = 0; v < state.design.variants.length; v++) {
-          var vr = state.design.variants[v];
-          var vrTitle = (vr.title || '').trim().toUpperCase();
-          var optValues = (vr.options || []).map(function(o) { return String(o).trim().toUpperCase(); });
-          if (vrTitle === desiredSize || optValues.indexOf(desiredSize) !== -1) {
-            targetVariantId = vr.id;
-            break;
-          }
-        }
-        if (!targetVariantId) {
-          for (var v2 = 0; v2 < state.design.variants.length; v2++) {
-            var vr2 = state.design.variants[v2];
-            var vrTitle2 = (vr2.title || '').trim().toUpperCase();
-            if (desiredSize === 'S' && (vrTitle2.indexOf('SMALL') !== -1 || vrTitle2 === 'S')) { targetVariantId = vr2.id; break; }
-            if (desiredSize === 'M' && (vrTitle2.indexOf('MEDIUM') !== -1 || vrTitle2 === 'M')) { targetVariantId = vr2.id; break; }
-            if (desiredSize === 'L' && (vrTitle2.indexOf('LARGE') !== -1 && vrTitle2.indexOf('XL') === -1)) { targetVariantId = vr2.id; break; }
-            if (desiredSize === 'XL' && (vrTitle2.indexOf('XL') !== -1 || vrTitle2.indexOf('EXTRA LARGE') !== -1)) { targetVariantId = vr2.id; break; }
-            if (desiredSize === '2XL' && (vrTitle2.indexOf('2XL') !== -1 || vrTitle2.indexOf('XXL') !== -1)) { targetVariantId = vr2.id; break; }
-          }
-        }
+        targetVariantId = findMatchingVariant(state.design.variants, state.size, state.color.name);
       }
-
       if (!targetVariantId) {
         targetVariantId = state.design.variantId;
       }
@@ -3311,11 +3419,42 @@
           }]
         };
 
-        fetch('/cart/add.js', {
+        // First set cart attributes to enforce customized_order advance payment checkout rules
+        fetch('/cart/update.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(postData)
-        })
+          body: JSON.stringify({
+            attributes: {
+              'customized_order': 'true',
+              'payment_rule': 'advance_payment_only',
+              'cod_eligible': 'false',
+              'Advance Payment Required': 'Yes (100% Advance Payment for Customized Garments)',
+              'Order Category': 'Bespoke Scrub Customization'
+            }
+          })
+        }).finally(function() {
+          fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(postData)
+          })
+          .then(function(res) {
+            if (!res.ok) throw new Error('Cart add response error');
+            return res.json();
+          })
+          .then(function() {
+            if (btnLoader) btnLoader.textContent = 'Redirecting to Shopify Checkout...';
+            window.location.href = '/checkout';
+          })
+          .catch(function(err) {
+            if (btn) btn.disabled = false;
+            if (btnText) btnText.style.display = '';
+            if (btnLoader) btnLoader.style.display = 'none';
+            alert('Could not add customized scrub to checkout. Redirecting to cart...');
+            window.location.href = '/cart';
+          });
+        });
+      }
         .then(function(res) {
           if (!res.ok) throw new Error('Cart add response error');
           return res.json();
@@ -3383,9 +3522,14 @@
       renderFabricColors('crown');
 
       // Pre-populate dynamic size chips and measurements
+      initActiveDesignData();
       if (typeof window.renderDynamicSizeChips === 'function') window.renderDynamicSizeChips();
       if (typeof window.renderDynamicMeasurementInputs === 'function') window.renderDynamicMeasurementInputs();
-      window.enamelsSelectStandardSize('M');
+      if (!state.size) {
+        window.enamelsSelectStandardSize('M');
+      } else {
+        updateReviewAndPaymentUI();
+      }
 
       // Listen for Admin size configuration updates across tabs/windows
       window.addEventListener('enamels:size_config_updated', function() {
@@ -3397,10 +3541,14 @@
 
     if (document.readyState === 'interactive' || document.readyState === 'complete') {
       renderFabricColors('crown');
+      initActiveDesignData();
       if (typeof window.renderDynamicSizeChips === 'function') window.renderDynamicSizeChips();
       if (typeof window.renderDynamicMeasurementInputs === 'function') window.renderDynamicMeasurementInputs();
-      window.enamelsSelectStandardSize('M');
-      updateReviewAndPaymentUI();
+      if (!state.size) {
+        window.enamelsSelectStandardSize('M');
+      } else {
+        updateReviewAndPaymentUI();
+      }
     }
   })();
 </script>
