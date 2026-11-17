@@ -13,7 +13,11 @@
 {%- liquid
   # Dynamic Source Resolution
   assign target_design_col = nil
-  if design_collection != blank
+  if section.settings.design_collection != blank
+    assign target_design_col = collections[section.settings.design_collection]
+  elsif settings.customizer_design_collection != blank
+    assign target_design_col = collections[settings.customizer_design_collection]
+  elsif design_collection != blank
     assign target_design_col = collections[design_collection]
   endif
   if target_design_col == blank or target_design_col.products.size == 0
@@ -30,7 +34,11 @@
 
   # Dynamic Logo Collection
   assign target_logo_col = nil
-  if logo_collection != blank
+  if section.settings.logo_collection != blank
+    assign target_logo_col = collections[section.settings.logo_collection]
+  elsif settings.customizer_logo_collection != blank
+    assign target_logo_col = collections[settings.customizer_logo_collection]
+  elsif logo_collection != blank
     assign target_logo_col = collections[logo_collection]
   endif
   if target_logo_col == blank or target_logo_col.products.size == 0
@@ -45,30 +53,70 @@
 
   # Dynamic Fabric Collection
   assign target_fabric_col = nil
-  if fabric_collection != blank
+  if section.settings.fabric_collection != blank
+    assign target_fabric_col = collections[section.settings.fabric_collection]
+  elsif settings.customizer_fabric_collection != blank
+    assign target_fabric_col = collections[settings.customizer_fabric_collection]
+  elsif fabric_collection != blank
     assign target_fabric_col = collections[fabric_collection]
   endif
 
+  # Top continuous alert marquee
+  assign customizer_marquee_alert = section.settings.customizer_marquee_alert | default: settings.customizer_marquee_alert | default: '🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.'
+
   # Step Headings & Text (Editable in Shopify Studio / Theme Editor)
-  assign step1_title = section.settings.step1_title | default: 'Select Technical Clinical Fabric'
-  assign step1_subtitle = section.settings.step1_subtitle | default: 'Choose the medical-grade textile tailored for your shift duration and hospital environment.'
-  assign step2_title = section.settings.step2_title | default: 'Select Scrub Color & Contrast'
-  assign step2_subtitle = section.settings.step2_subtitle | default: 'Pick your approved medical scrub shade and optional contrast accents.'
-  assign step3_title = section.settings.step3_title | default: 'Select Scrub Design Collection'
-  assign step3_subtitle = section.settings.step3_subtitle | default: 'Select a scrub collection to view available bespoke styles and colors.'
-  assign step4_title = section.settings.step4_title | default: 'Size & Fit Selection'
-  assign step4_subtitle = section.settings.step4_subtitle | default: 'Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut.'
-  assign step4_notice = section.settings.step4_notice | default: 'Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements.'
-  assign step5_title = section.settings.step5_title | default: 'Doctor & Staff Personalization'
-  assign step5_subtitle = section.settings.step5_subtitle | default: 'Add official computerized embroidery: Doctor Name, credentials, and hospital crest.'
-  assign line1_label = section.settings.line1_label | default: 'Line 1: Doctor / Staff Name'
-  assign line1_max = section.settings.line1_max | default: 45
-  assign line2_label = section.settings.line2_label | default: 'Line 2: Title / Department / Hospital'
-  assign line2_max = section.settings.line2_max | default: 45
-  assign step6_title = section.settings.step6_title | default: 'Review Your Customized Scrub'
-  assign step6_subtitle = section.settings.step6_subtitle | default: 'Verify every specification before proceeding directly to secure checkout.'
-  assign checkout_btn_label = section.settings.checkout_btn_label | default: 'Proceed to Checkout →'
-  assign checkout_notice = section.settings.checkout_notice | default: '100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout.'
+  assign step1_title = section.settings.step1_title | default: settings.customizer_step1_title | default: 'Select Technical Clinical Fabric'
+  assign step1_subtitle = section.settings.step1_subtitle | default: settings.customizer_step1_subtitle | default: 'Choose the medical-grade textile tailored for your shift duration and hospital environment.'
+
+  assign step2_title = section.settings.step2_title | default: settings.customizer_step2_title | default: 'Select Scrub Color & Contrast'
+  assign step2_subtitle = section.settings.step2_subtitle | default: settings.customizer_step2_subtitle | default: 'Pick your approved medical scrub shade and optional contrast accents.'
+  assign main_color_heading = section.settings.main_color_heading | default: settings.customizer_main_color_heading | default: 'A. Main Color'
+  assign contrast_heading = section.settings.contrast_heading | default: settings.customizer_contrast_heading | default: 'B. Contrast (If Applicable)'
+  assign contrast_help = section.settings.contrast_help | default: settings.customizer_contrast_help | default: 'Select an optional contrast shade for neckline piping, pocket borders, or sleeve trim. (Leave as None for standard monochrome).'
+  assign contrast_none_label = section.settings.contrast_none_label | default: settings.customizer_contrast_none_label | default: 'None / Monochrome'
+
+  assign step3_title = section.settings.step3_title | default: settings.customizer_step3_title | default: 'Select Scrub Design Collection'
+  assign step3_subtitle = section.settings.step3_subtitle | default: settings.customizer_step3_subtitle | default: 'Select a scrub collection to view available bespoke styles and colors.'
+  assign showing_designs_prefix = section.settings.showing_designs_prefix | default: settings.customizer_showing_designs_prefix | default: 'Showing Designs from:'
+
+  assign step4_title = section.settings.step4_title | default: settings.customizer_step4_title | default: 'Size & Fit Selection'
+  assign step4_subtitle = section.settings.step4_subtitle | default: settings.customizer_step4_subtitle | default: 'Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut.'
+  assign step4_notice = section.settings.step4_notice | default: settings.customizer_step4_notice | default: 'Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements.'
+  assign gender_male_label = section.settings.gender_male_label | default: settings.customizer_gender_male_label | default: 'Male Scrubs'
+  assign gender_female_label = section.settings.gender_female_label | default: settings.customizer_gender_female_label | default: 'Female Scrubs'
+  assign female_fit_heading = section.settings.female_fit_heading | default: settings.customizer_female_fit_heading | default: 'B. Choose Female Fit Silhouette:'
+  assign measurements_heading = section.settings.measurements_heading | default: settings.customizer_measurements_heading | default: 'Standard Measurements'
+  assign measurements_desc = section.settings.measurements_desc | default: settings.customizer_measurements_desc | default: 'Alter any measurement field to automatically customize your scrub fit.'
+  assign auto_custom_alert = section.settings.auto_custom_alert | default: settings.customizer_auto_custom_alert | default: '✨ Measurement changed! Selected size has automatically switched to Custom.'
+
+  assign step5_title = section.settings.step5_title | default: settings.customizer_step5_title | default: 'Doctor & Staff Personalization'
+  assign step5_subtitle = section.settings.step5_subtitle | default: settings.customizer_step5_subtitle | default: 'Add official computerized embroidery: Doctor Name, credentials, and hospital crest.'
+  assign placement_heading = section.settings.placement_heading | default: settings.customizer_placement_heading | default: 'Name Embroidery Placement:'
+  assign line1_label = section.settings.line1_label | default: settings.customizer_line1_label | default: 'Line 1: Doctor / Staff Name'
+  assign line1_placeholder = section.settings.line1_placeholder | default: settings.customizer_line1_placeholder | default: 'e.g. Dr. Sarah Ahmed, MD'
+  assign line1_max = section.settings.line1_max | default: settings.customizer_line1_max | default: 45
+  assign line2_label = section.settings.line2_label | default: settings.customizer_line2_label | default: 'Line 2: Title / Department / Hospital'
+  assign line2_placeholder = section.settings.line2_placeholder | default: settings.customizer_line2_placeholder | default: 'e.g. Consultant Cardiologist'
+  assign line2_max = section.settings.line2_max | default: settings.customizer_line2_max | default: 45
+  assign thread_heading = section.settings.thread_heading | default: settings.customizer_thread_heading | default: 'Embroidery Thread Color:'
+  assign font_heading = section.settings.font_heading | default: settings.customizer_font_heading | default: 'Computerized Embroidery Font:'
+  assign logo_heading = section.settings.logo_heading | default: settings.customizer_logo_heading | default: 'Hospital / Clinic Logo Embroidery:'
+  assign enable_logo_upload = true
+  if section.settings.enable_logo_upload == false or settings.customizer_enable_logo_upload == false
+    assign enable_logo_upload = false
+  endif
+  assign logo_upload_fee = section.settings.logo_upload_fee | default: settings.customizer_logo_upload_fee | default: 550
+  assign logo_upload_hint = section.settings.logo_upload_hint | default: settings.customizer_logo_upload_hint | default: 'Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File will be digitized for high-precision embroidery.'
+
+  assign step6_title = section.settings.step6_title | default: settings.customizer_step6_title | default: 'Review Your Customized Scrub'
+  assign step6_subtitle = section.settings.step6_subtitle | default: settings.customizer_step6_subtitle | default: 'Verify every specification before proceeding directly to secure checkout.'
+  assign review_base_label = section.settings.review_base_label | default: settings.customizer_review_base_label | default: 'Product Base Value:'
+  assign review_fabric_label = section.settings.review_fabric_label | default: settings.customizer_review_fabric_label | default: 'Fabric Add-On:'
+  assign review_emb_label = section.settings.review_emb_label | default: settings.customizer_review_emb_label | default: 'Personalization & Logo:'
+  assign review_subtotal_label = section.settings.review_subtotal_label | default: settings.customizer_review_subtotal_label | default: 'Subtotal (Garment Value):'
+  assign checkout_btn_label = section.settings.checkout_btn_label | default: settings.customizer_checkout_btn_label | default: 'Proceed to Checkout →'
+  assign checkout_notice = section.settings.checkout_notice | default: settings.customizer_checkout_notice | default: '100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout.'
+  assign checkout_loading_text = section.settings.checkout_loading_text | default: settings.customizer_checkout_loading_text | default: 'Connecting to Shopify Checkout...'
 -%}
 
 <div class="enamels-customizer-engine" id="enamels-customizer-app">
@@ -76,9 +124,9 @@
   <!-- 1. Continuous Red Payment Alert Marquee Banner -->
   <div class="enamels-payment-alert-marquee" role="alert" aria-live="polite">
     <div class="marquee-track">
-      <span class="marquee-item">🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.</span>
-      <span class="marquee-item">🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.</span>
-      <span class="marquee-item">🚨 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available.</span>
+      <span class="marquee-item">{{ customizer_marquee_alert | escape }}</span>
+      <span class="marquee-item">{{ customizer_marquee_alert | escape }}</span>
+      <span class="marquee-item">{{ customizer_marquee_alert | escape }}</span>
     </div>
   </div>
 
@@ -131,7 +179,49 @@
         <p class="pane-subtitle">{{ step1_subtitle }}</p>
       </div>
 
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'instruction_note' and block.settings.step == '1' and block.settings.visible -%}
+          <div class="customizer-callout-block callout--{{ block.settings.style }}" style="margin: 14px 0 18px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px; background: {% if block.settings.style == 'warning' %}#fffbeb{% elsif block.settings.style == 'important' %}#fff1f2{% elsif block.settings.style == 'plain' %}#f8fafc{% else %}#f0fdfa{% endif %}; border: 1.5px solid {% if block.settings.style == 'warning' %}#fde68a{% elsif block.settings.style == 'important' %}#fecdd3{% elsif block.settings.style == 'plain' %}#e2e8f0{% else %}#99f6e4{% endif %};" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank %}<span style="font-size: 18px; line-height: 1;">{{ block.settings.icon }}</span>{% endif %}
+            <div>
+              {% if block.settings.heading != blank %}<strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 2px;">{{ block.settings.heading | escape }}</strong>{% endif %}
+              {% if block.settings.text != blank %}<span style="font-size: 12px; color: #475569; line-height: 1.45;">{{ block.settings.text | escape }}</span>{% endif %}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
       <div class="enamels-fabric-grid">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'fabric_card' and block.settings.visible -%}
+            <div class="enamels-fabric-card" data-fabric-id="{{ block.id }}" data-fabric-name="{{ block.settings.title | escape }}" data-fabric-fee="{{ block.settings.price | default: 0 }}" onclick="window.enamelsSelectFabricAndNext('{{ block.id }}', '{{ block.settings.title | escape }}', {{ block.settings.price | default: 0 }}, this)" role="button" tabindex="0" style="cursor: pointer;" {{ block.shopify_attributes }}>
+              <div class="fabric-card-media">
+                {% if block.settings.image != blank %}
+                  <img src="{{ block.settings.image | image_url: width: 320 }}" alt="{{ block.settings.title | escape }}" width="320" height="220" loading="lazy">
+                {% else %}
+                  <img src="{{ 'enamels-na-blue.jpg' | asset_url }}" alt="{{ block.settings.title | escape }}" width="320" height="220" loading="lazy">
+                {% endif %}
+                {% if block.settings.badge != blank %}<span class="fabric-badge">{{ block.settings.badge | escape }}</span>{% endif %}
+              </div>
+              <div class="fabric-card-body">
+                <div class="fabric-header">
+                  <h4 class="fabric-title">{{ block.settings.title | escape }}</h4>
+                  <span class="fabric-price">+PKR {{ block.settings.price | default: 0 }}</span>
+                </div>
+                {% if block.settings.subtitle != blank %}<div style="font-size: 12px; font-weight: 600; color: #008779; margin-bottom: 4px;">{{ block.settings.subtitle | escape }}</div>{% endif %}
+                {% if block.settings.description != blank %}<p class="fabric-desc">{{ block.settings.description | escape }}</p>{% endif %}
+                {% if block.settings.tags != blank %}
+                  <div class="tech-tag-row">
+                    {% assign f_tags = block.settings.tags | split: ',' %}
+                    {% for t in f_tags %}
+                      <span class="tech-tag">{{ t | strip }}</span>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
         <!-- Fabric 1: Crown -->
         <div class="enamels-fabric-card active" data-fabric-id="crown" data-fabric-name="Crown™ Technical Clinical Fabric" data-fabric-fee="0" onclick="window.enamelsSelectFabricAndNext('crown', 'Crown™ Technical Clinical Fabric', 0, this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.enamelsSelectFabricAndNext('crown', 'Crown™ Technical Clinical Fabric', 0, this);}" style="cursor: pointer;">
           <div class="fabric-card-media">
@@ -270,11 +360,23 @@
         <p class="pane-subtitle">{{ step2_subtitle }}</p>
       </div>
 
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'instruction_note' and block.settings.step == '2' and block.settings.visible -%}
+          <div class="customizer-callout-block callout--{{ block.settings.style }}" style="margin: 14px 0 18px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px; background: {% if block.settings.style == 'warning' %}#fffbeb{% elsif block.settings.style == 'important' %}#fff1f2{% elsif block.settings.style == 'plain' %}#f8fafc{% else %}#f0fdfa{% endif %}; border: 1.5px solid {% if block.settings.style == 'warning' %}#fde68a{% elsif block.settings.style == 'important' %}#fecdd3{% elsif block.settings.style == 'plain' %}#e2e8f0{% else %}#99f6e4{% endif %};" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank %}<span style="font-size: 18px; line-height: 1;">{{ block.settings.icon }}</span>{% endif %}
+            <div>
+              {% if block.settings.heading != blank %}<strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 2px;">{{ block.settings.heading | escape }}</strong>{% endif %}
+              {% if block.settings.text != blank %}<span style="font-size: 12px; color: #475569; line-height: 1.45;">{{ block.settings.text | escape }}</span>{% endif %}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
       <!-- Section A: Main Color -->
       <div class="color-selection-section">
         <div class="color-section-header">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <h4 class="sub-heading-title" style="margin: 0;">A. Main Color</h4>
+            <h4 class="sub-heading-title" style="margin: 0;">{{ main_color_heading }}</h4>
             <span id="active-fabric-color-context" style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; border: 1px solid #99f6e4; padding: 2px 8px; border-radius: 999px;">Crown™ Colors</span>
           </div>
           <span class="selected-shade-pill">Selected: <strong id="active-main-color-label">Crown Ceil Blue</strong></span>
@@ -317,13 +419,13 @@
       <!-- Section B: Contrast (If Applicable) -->
       <div class="contrast-selection-section" style="margin-top: 32px; padding-top: 24px; border-top: 1px dashed #cbd5e1;">
         <div class="color-section-header">
-          <h4 class="sub-heading-title">B. Contrast (If Applicable)</h4>
-          <span class="selected-shade-pill">Contrast: <strong id="active-contrast-label">None / Monochrome</strong></span>
+          <h4 class="sub-heading-title">{{ contrast_heading }}</h4>
+          <span class="selected-shade-pill">Contrast: <strong id="active-contrast-label">{{ contrast_none_label }}</strong></span>
         </div>
-        <p style="font-size: 12px; color: #64748b; margin: 4px 0 14px;">Select an optional contrast shade for neckline piping, pocket borders, or sleeve trim. (Leave as None for standard monochrome).</p>
+        <p style="font-size: 12px; color: #64748b; margin: 4px 0 14px;">{{ contrast_help }}</p>
 
         <div class="enamels-contrast-swatches-grid" role="radiogroup" aria-label="Contrast Color">
-          <button type="button" class="contrast-swatch-circle active" data-contrast-name="None / Monochrome" data-contrast-hex="transparent" style="--swatch-bg: #ffffff; border: 2px dashed #94a3b8;" title="None">
+          <button type="button" class="contrast-swatch-circle active" data-contrast-name="{{ contrast_none_label }}" data-contrast-hex="transparent" style="--swatch-bg: #ffffff; border: 2px dashed #94a3b8;" title="{{ contrast_none_label }}">
             <span style="font-size: 11px; font-weight: 700; color: #64748b;">None</span>
           </button>
           <button type="button" class="contrast-swatch-circle" data-contrast-name="Contrast Pure White" data-contrast-hex="#ffffff" style="--swatch-bg: #ffffff;" title="White">
@@ -365,6 +467,18 @@
         <h3 class="pane-title">{{ step3_title }}</h3>
         <p class="pane-subtitle">{{ step3_subtitle }}</p>
       </div>
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'instruction_note' and block.settings.step == '3' and block.settings.visible -%}
+          <div class="customizer-callout-block callout--{{ block.settings.style }}" style="margin: 14px 0 18px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px; background: {% if block.settings.style == 'warning' %}#fffbeb{% elsif block.settings.style == 'important' %}#fff1f2{% elsif block.settings.style == 'plain' %}#f8fafc{% else %}#f0fdfa{% endif %}; border: 1.5px solid {% if block.settings.style == 'warning' %}#fde68a{% elsif block.settings.style == 'important' %}#fecdd3{% elsif block.settings.style == 'plain' %}#e2e8f0{% else %}#99f6e4{% endif %};" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank %}<span style="font-size: 18px; line-height: 1;">{{ block.settings.icon }}</span>{% endif %}
+            <div>
+              {% if block.settings.heading != blank %}<strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 2px;">{{ block.settings.heading | escape }}</strong>{% endif %}
+              {% if block.settings.text != blank %}<span style="font-size: 12px; color: #475569; line-height: 1.45;">{{ block.settings.text | escape }}</span>{% endif %}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
 
       <!-- 3A. Dynamic Collection Category Selector -->
       <div class="design-collection-selector-wrap">
@@ -498,22 +612,34 @@
         <p class="pane-subtitle">{{ step4_subtitle }}</p>
       </div>
 
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'instruction_note' and block.settings.step == '4' and block.settings.visible -%}
+          <div class="customizer-callout-block callout--{{ block.settings.style }}" style="margin: 14px 0 18px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px; background: {% if block.settings.style == 'warning' %}#fffbeb{% elsif block.settings.style == 'important' %}#fff1f2{% elsif block.settings.style == 'plain' %}#f8fafc{% else %}#f0fdfa{% endif %}; border: 1.5px solid {% if block.settings.style == 'warning' %}#fde68a{% elsif block.settings.style == 'important' %}#fecdd3{% elsif block.settings.style == 'plain' %}#e2e8f0{% else %}#99f6e4{% endif %};" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank %}<span style="font-size: 18px; line-height: 1;">{{ block.settings.icon }}</span>{% endif %}
+            <div>
+              {% if block.settings.heading != blank %}<strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 2px;">{{ block.settings.heading | escape }}</strong>{% endif %}
+              {% if block.settings.text != blank %}<span style="font-size: 12px; color: #475569; line-height: 1.45;">{{ block.settings.text | escape }}</span>{% endif %}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
       <!-- 1. Gender Selector -->
       <div class="form-group" style="margin-bottom: 18px;">
         <label class="form-label">A. Select Gender:</label>
         <div style="display: flex; gap: 12px;">
           <button type="button" class="gender-pill active" id="gender-pill-male" onclick="window.enamelsSetGender('male')">
-            <span style="font-size: 16px;">👨</span> Male Scrubs
+            <span style="font-size: 16px;">👨</span> {{ gender_male_label }}
           </button>
           <button type="button" class="gender-pill" id="gender-pill-female" onclick="window.enamelsSetGender('female')">
-            <span style="font-size: 16px;">👩</span> Female Scrubs
+            <span style="font-size: 16px;">👩</span> {{ gender_female_label }}
           </button>
         </div>
       </div>
 
       <!-- 2. Female 3-Fit Selector (Dynamic when Female is selected) -->
       <div id="female-fit-container" style="display: none; margin-bottom: 20px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 16px;">
-        <label class="form-label" style="margin-bottom: 8px;">B. Choose Female Fit Silhouette:</label>
+        <label class="form-label" style="margin-bottom: 8px;">{{ female_fit_heading }}</label>
         <div class="female-fit-grid">
           <button type="button" class="female-fit-card active" id="ffit-slim" onclick="window.enamelsSetFemaleFit('slim')">
             <strong style="display:block; font-size:13px; color:#102a43;">Slim Fit</strong>
@@ -552,8 +678,8 @@
       <div class="custom-measurements-panel" id="measurements-container-step4">
         <div class="measurements-header">
           <div>
-            <h4 class="measurements-title" id="m-chart-heading">Medium (M) Standard Measurements</h4>
-            <p class="measurements-desc">Alter any measurement field to automatically customize your scrub fit.</p>
+            <h4 class="measurements-title" id="m-chart-heading">Medium (M) {{ measurements_heading }}</h4>
+            <p class="measurements-desc">{{ measurements_desc }}</p>
           </div>
           <div class="unit-toggle-group">
             <button type="button" class="unit-btn active" data-unit="in" onclick="window.enamelsSetUnit('in')">Inches (in)</button>
@@ -562,7 +688,7 @@
         </div>
 
         <div class="auto-custom-alert" id="auto-custom-pill-alert" style="display: none;">
-          ✨ Measurement changed! Selected size has automatically switched to <strong>Custom</strong>.
+          {{ auto_custom_alert }}
         </div>
 
         <!-- Dynamic Measurements Inputs Grid -->
@@ -590,10 +716,22 @@
         <p class="pane-subtitle">{{ step5_subtitle }}</p>
       </div>
 
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'instruction_note' and block.settings.step == '5' and block.settings.visible -%}
+          <div class="customizer-callout-block callout--{{ block.settings.style }}" style="margin: 14px 0 18px; padding: 12px 16px; border-radius: 8px; display: flex; align-items: flex-start; gap: 10px; background: {% if block.settings.style == 'warning' %}#fffbeb{% elsif block.settings.style == 'important' %}#fff1f2{% elsif block.settings.style == 'plain' %}#f8fafc{% else %}#f0fdfa{% endif %}; border: 1.5px solid {% if block.settings.style == 'warning' %}#fde68a{% elsif block.settings.style == 'important' %}#fecdd3{% elsif block.settings.style == 'plain' %}#e2e8f0{% else %}#99f6e4{% endif %};" {{ block.shopify_attributes }}>
+            {% if block.settings.icon != blank %}<span style="font-size: 18px; line-height: 1;">{{ block.settings.icon }}</span>{% endif %}
+            <div>
+              {% if block.settings.heading != blank %}<strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 2px;">{{ block.settings.heading | escape }}</strong>{% endif %}
+              {% if block.settings.text != blank %}<span style="font-size: 12px; color: #475569; line-height: 1.45;">{{ block.settings.text | escape }}</span>{% endif %}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
       <div class="enamels-personalization-box">
         <!-- Placement Radio Group -->
         <div class="form-group">
-          <label class="form-label">Name Embroidery Placement:</label>
+          <label class="form-label">{{ placement_heading }}</label>
           <div class="placement-options-grid">
             <label class="placement-pill active" onclick="window.enamelsSetPlacement('none', 0, this)">
               <input type="radio" name="wiz_emb_placement" value="none" checked>
@@ -631,7 +769,7 @@
               <label for="wiz-cust-name-1" class="form-label" style="margin: 0;">{{ line1_label }}:</label>
               <span style="font-size: 11px; font-weight: 700; color: #e11d48; background: #ffe4e6; padding: 2px 8px; border-radius: 4px;">* Compulsory</span>
             </div>
-            <input type="text" id="wiz-cust-name-1" class="form-input" placeholder="e.g. Dr. Sarah Ahmed, MD" maxlength="{{ line1_max }}" oninput="window.enamelsUpdateEmbLines()">
+            <input type="text" id="wiz-cust-name-1" class="form-input" placeholder="{{ line1_placeholder | escape }}" maxlength="{{ line1_max }}" oninput="window.enamelsUpdateEmbLines()">
             <span class="form-hint">Maximum {{ line1_max }} characters. Primary engraving line.</span>
           </div>
 
@@ -641,9 +779,40 @@
               <label for="wiz-cust-name-2" class="form-label" style="margin: 0;">{{ line2_label }}:</label>
               <span style="font-size: 11px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">Optional</span>
             </div>
-            <input type="text" id="wiz-cust-name-2" class="form-input" placeholder="e.g. Consultant Cardiologist" maxlength="{{ line2_max }}" oninput="window.enamelsUpdateEmbLines()">
+            <input type="text" id="wiz-cust-name-2" class="form-input" placeholder="{{ line2_placeholder | escape }}" maxlength="{{ line2_max }}" oninput="window.enamelsUpdateEmbLines()">
             <span class="form-hint">Maximum {{ line2_max }} characters. Appears directly beneath Line 1.</span>
           </div>
+
+          <!-- Studio-Configured Custom Engraving Field Blocks -->
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'personalization_field' and block.settings.visible -%}
+              <div class="form-group wiz-custom-field-group" style="margin-top: 14px;" {{ block.shopify_attributes }}>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label for="wiz-extra-field-{{ block.id }}" class="form-label" style="margin: 0;">{{ block.settings.field_label | escape }}:</label>
+                  {% if block.settings.is_required %}
+                    <span style="font-size: 11px; font-weight: 700; color: #e11d48; background: #ffe4e6; padding: 2px 8px; border-radius: 4px;">* Compulsory</span>
+                  {% elsif block.settings.additional_fee > 0 %}
+                    <span style="font-size: 11px; font-weight: 700; color: #008779; background: #e6fffa; padding: 2px 8px; border-radius: 4px;">+PKR {{ block.settings.additional_fee }}</span>
+                  {% else %}
+                    <span style="font-size: 11px; font-weight: 600; color: #64748b; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">Optional</span>
+                  {% endif %}
+                </div>
+                <input
+                  type="text"
+                  id="wiz-extra-field-{{ block.id }}"
+                  class="form-input wiz-extra-custom-field"
+                  data-field-name="{{ block.settings.field_label | escape }}"
+                  data-field-fee="{{ block.settings.additional_fee | default: 0 }}"
+                  placeholder="{{ block.settings.placeholder | escape }}"
+                  maxlength="{{ block.settings.max_chars | default: 45 }}"
+                  oninput="window.enamelsUpdateEmbLines()"
+                >
+                {% if block.settings.help_text != blank %}
+                  <span class="form-hint">{{ block.settings.help_text | escape }}</span>
+                {% endif %}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
 
           <!-- Extra Dynamic Lines Container -->
           <div id="wiz-extra-emb-lines-container" style="margin-top: 10px;"></div>
@@ -656,7 +825,7 @@
           </div>
 
           <div class="form-group" style="margin-top: 18px;">
-            <label class="form-label">Thread Color:</label>
+            <label class="form-label">{{ thread_heading }}</label>
             <div class="thread-color-grid">
               <button type="button" class="thread-chip active" data-thread="Pure White" onclick="window.enamelsSetThread('Pure White', '#ffffff', this)">
                 <span class="thread-dot" style="background: #ffffff; border: 1px solid #ccc;"></span> White
@@ -690,9 +859,9 @@
           </div>
         </div>
 
-        <!-- Custom Logo Option (Collection Logo or Custom File Upload) -->
+        <!-- Custom Logo Option (Collection Logo, Section Blocks, or Custom File Upload) -->
         <div class="form-group" style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-          <label class="form-label">Hospital / Clinic Logo Embroidery:</label>
+          <label class="form-label">{{ logo_heading }}</label>
           <div class="logo-options-grid">
             <label class="logo-chip active" onclick="window.enamelsSetLogo('none', 0, this)">
               <input type="radio" name="wiz_logo_type" value="none" checked>
@@ -719,39 +888,57 @@
                 <span>Silicone Logo Patch (+PKR 550)</span>
               </label>
             {%- endif -%}
-            <!-- Upload Custom Logo File Option -->
-            <label class="logo-chip" onclick="window.enamelsSetLogo('custom_upload', 550, this)">
-              <input type="radio" name="wiz_logo_type" value="custom_upload">
-              <span>📎 Upload Custom Logo (+PKR 550)</span>
-            </label>
+
+            <!-- Studio-Configured Custom Logo Blocks -->
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'logo_item' and block.settings.title != blank -%}
+                <label class="logo-chip" onclick="window.enamelsSetLogo('{{ block.settings.title | handleize }}', {{ block.settings.price | default: 0 }}, this)" {{ block.shopify_attributes }}>
+                  <input type="radio" name="wiz_logo_type" value="{{ block.settings.title | handleize }}">
+                  {%- if block.settings.image != blank -%}
+                    <img src="{{ block.settings.image | image_url: width: 60 }}" alt="{{ block.settings.title | escape }}" width="22" height="22" style="border-radius: 4px; object-fit: contain; vertical-align: middle; margin-right: 6px;">
+                  {%- endif -%}
+                  <span>{{ block.settings.title | escape }} (+PKR {{ block.settings.price | default: 0 }})</span>
+                </label>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if enable_logo_upload -%}
+              <!-- Upload Custom Logo File Option -->
+              <label class="logo-chip" onclick="window.enamelsSetLogo('custom_upload', {{ logo_upload_fee }}, this)">
+                <input type="radio" name="wiz_logo_type" value="custom_upload">
+                <span>📎 Upload Custom Logo (+PKR {{ logo_upload_fee }})</span>
+              </label>
+            {%- endif -%}
           </div>
 
-          <!-- Custom Logo File Upload Box (Shown when custom_upload selected) -->
-          <div id="wiz-logo-upload-box" style="display: none; margin-top: 14px; background: #f8fafc; border: 1.5px dashed #008779; border-radius: 8px; padding: 16px;">
-            <div style="display: flex; align-items: flex-start; gap: 12px;">
-              <span style="font-size: 24px;">📁</span>
-              <div style="flex: 1;">
-                <label for="wiz-logo-file-input" style="display: block; font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 4px;">
-                  Select Logo File (PNG, JPG, SVG, PDF • Max 10MB):
-                </label>
-                <input
-                  type="file"
-                  id="wiz-logo-file-input"
-                  accept=".png,.jpg,.jpeg,.svg,.pdf"
-                  onchange="window.enamelsHandleLogoFileUpload(this)"
-                  style="font-size: 12px; margin-top: 4px;"
-                >
-                <span class="form-hint">Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File will be digitized for high-precision embroidery.</span>
-                <div id="wiz-logo-file-preview-strip" style="display: none; margin-top: 10px; align-items: center; gap: 10px; background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                  <img id="wiz-logo-thumb-preview" src="" alt="Logo Preview" style="width: 36px; height: 36px; object-fit: contain; border-radius: 4px; display: none;">
-                  <div style="font-size: 12px;">
-                    <strong id="wiz-logo-file-name" style="color: #102a43; display: block;">logo.png</strong>
-                    <span id="wiz-logo-file-size" style="color: #64748b; font-size: 11px;">1.2 MB • Attached successfully</span>
+          {%- if enable_logo_upload -%}
+            <!-- Custom Logo File Upload Box (Shown when custom_upload selected) -->
+            <div id="wiz-logo-upload-box" style="display: none; margin-top: 14px; background: #f8fafc; border: 1.5px dashed #008779; border-radius: 8px; padding: 16px;">
+              <div style="display: flex; align-items: flex-start; gap: 12px;">
+                <span style="font-size: 24px;">📁</span>
+                <div style="flex: 1;">
+                  <label for="wiz-logo-file-input" style="display: block; font-size: 13px; font-weight: 700; color: #102a43; margin-bottom: 4px;">
+                    Select Logo File (PNG, JPG, SVG, PDF • Max 10MB):
+                  </label>
+                  <input
+                    type="file"
+                    id="wiz-logo-file-input"
+                    accept=".png,.jpg,.jpeg,.svg,.pdf"
+                    onchange="window.enamelsHandleLogoFileUpload(this)"
+                    style="font-size: 12px; margin-top: 4px;"
+                  >
+                  <span class="form-hint">{{ logo_upload_hint }}</span>
+                  <div id="wiz-logo-file-preview-strip" style="display: none; margin-top: 10px; align-items: center; gap: 10px; background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                    <img id="wiz-logo-thumb-preview" src="" alt="Logo Preview" style="width: 36px; height: 36px; object-fit: contain; border-radius: 4px; display: none;">
+                    <div style="font-size: 12px;">
+                      <strong id="wiz-logo-file-name" style="color: #102a43; display: block;">logo.png</strong>
+                      <span id="wiz-logo-file-size" style="color: #64748b; font-size: 11px;">1.2 MB • Attached successfully</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          {%- endif -%}
         </div>
       </div>
 
@@ -852,20 +1039,25 @@
         <!-- Financial Breakdown -->
         <div class="review-price-breakdown">
           <div class="price-row">
-            <span>Product Base Value:</span>
+            <span>{{ review_base_label }}</span>
             <span id="rev-pbreak-base">PKR 6,400</span>
           </div>
           <div class="price-row">
-            <span>Fabric Add-On:</span>
+            <span>{{ review_fabric_label }}</span>
             <span id="rev-pbreak-fabric">+PKR 0</span>
           </div>
           <div class="price-row">
-            <span>Personalization & Logo:</span>
+            <span>{{ review_emb_label }}</span>
             <span id="rev-pbreak-emb">+PKR 0</span>
           </div>
           <div class="price-row total-row">
-            <strong>Subtotal (Garment Value):</strong>
+            <strong>{{ review_subtotal_label }}</strong>
             <strong id="rev-pbreak-subtotal" style="color: #008779;">PKR 6,400</strong>
+          </div>
+          <!-- 2% Online Bank Transfer Instant Discount Preview -->
+          <div class="price-row" id="rev-pbreak-bank-discount-row" style="background: #f0fdf4; padding: 6px 10px; border-radius: 6px; margin-top: 6px; border: 1px dashed #86efac;">
+            <span style="font-size: 12px; font-weight: 700; color: #166534;">⚡ Bank Transfer Discount (2%):</span>
+            <span id="rev-pbreak-bank-discount" style="font-size: 12px; font-weight: 800; color: #15803d;">-PKR 128</span>
           </div>
         </div>
 
@@ -883,7 +1075,7 @@
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(5)">← Back to Personalization</button>
         <button type="button" class="btn-select-next" id="btn-submit-to-checkout" style="width: auto; padding: 14px 36px; background: #008779; color: #ffffff; font-size: 15px; font-weight: 800; border-radius: 8px; cursor: pointer;" onclick="window.enamelsSubmitToShopifyCheckout()">
           <span class="btn-checkout-text">{{ checkout_btn_label }}</span>
-          <span class="btn-checkout-loader" style="display: none;">Connecting to Shopify Checkout...</span>
+          <span class="btn-checkout-loader" style="display: none;">{{ checkout_loading_text }}</span>
         </button>
       </div>
     </div>
@@ -2026,7 +2218,7 @@
       color: #ffffff !important;
     }
     .custom-measurements-panel {
-      padding: 16px 12px 24px !important;
+      padding: 14px 10px 20px !important;
       background: #f8fafc !important;
       border: 1.5px solid #cbd5e1 !important;
       border-radius: 12px !important;
@@ -2034,7 +2226,7 @@
       box-sizing: border-box !important;
       width: 100% !important;
       max-width: 100% !important;
-      overflow: hidden !important;
+      overflow: visible !important;
     }
     .measurements-header {
       flex-direction: column !important;
@@ -2046,13 +2238,14 @@
     .measurements-inputs-grid {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 8px !important;
+      gap: 10px 8px !important;
       width: 100% !important;
       box-sizing: border-box !important;
     }
-    @media (max-width: 340px) {
+    @media (max-width: 360px) {
       .measurements-inputs-grid {
         grid-template-columns: 1fr !important;
+        gap: 10px !important;
       }
     }
     .measurement-field {
@@ -2064,25 +2257,36 @@
       border-radius: 8px !important;
       padding: 10px 8px !important;
       box-sizing: border-box !important;
-      overflow: hidden !important;
+      overflow: visible !important;
     }
     .m-label {
-      font-size: 11px !important;
+      font-size: 12px !important;
       font-weight: 700 !important;
       color: #102a43 !important;
       margin-bottom: 4px !important;
+      display: block !important;
       white-space: normal !important;
       word-break: break-word !important;
       overflow-wrap: break-word !important;
-      line-height: 1.25 !important;
+      line-height: 1.35 !important;
+    }
+    .m-label .m-unit-lbl {
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      color: #64748b !important;
+      display: inline-block !important;
+      white-space: nowrap !important;
+      margin-left: 2px !important;
     }
     .m-hint {
-      font-size: 9.5px !important;
+      font-size: 10px !important;
       color: #64748b !important;
-      margin-top: 3px !important;
-      line-height: 1.2 !important;
+      margin-top: 4px !important;
+      line-height: 1.3 !important;
       white-space: normal !important;
       word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      display: block !important;
     }
     /* iOS input auto-zoom prevention */
     .m-input,
@@ -2099,33 +2303,16 @@
     }
     .m-input {
       font-size: 16px !important;
-      min-height: 48px !important;
-      height: 48px !important;
+      min-height: 44px !important;
+      height: 44px !important;
       box-sizing: border-box !important;
       width: 100% !important;
-      padding: 10px 14px !important;
+      padding: 8px 10px !important;
       border: 1.5px solid #cbd5e1 !important;
       border-radius: 8px !important;
       background: #f8fafc !important;
       font-weight: 700 !important;
       color: #102a43 !important;
-    }
-    .m-label {
-      font-size: 13px !important;
-      font-weight: 700 !important;
-      color: #102a43 !important;
-      margin-bottom: 6px !important;
-      display: flex !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-    }
-    .m-hint {
-      font-size: 11px !important;
-      color: #64748b !important;
-      margin-top: 5px !important;
-      display: block !important;
-      white-space: normal !important;
-      line-height: 1.4 !important;
     }
     .gender-pill {
       flex: 1 1 0 !important;
@@ -2499,10 +2686,17 @@
       var rBase = document.getElementById('rev-pbreak-base');
       var rFabP = document.getElementById('rev-pbreak-fabric');
       var rEmbP = document.getElementById('rev-pbreak-emb');
-      if (rSub) rSub.textContent = 'PKR ' + (f.productValue + f.embFee).toLocaleString();
+      var totalGarmentValue = f.productValue + f.embFee;
+      if (rSub) rSub.textContent = 'PKR ' + totalGarmentValue.toLocaleString();
       if (rBase) rBase.textContent = 'PKR ' + f.base.toLocaleString();
       if (rFabP) rFabP.textContent = f.fabricFee > 0 ? '+PKR ' + f.fabricFee.toLocaleString() : '+PKR 0';
       if (rEmbP) rEmbP.textContent = f.embFee > 0 ? '+PKR ' + f.embFee.toLocaleString() : '+PKR 0';
+
+      var rBankDisc = document.getElementById('rev-pbreak-bank-discount');
+      if (rBankDisc) {
+        var bankDiscAmount = Math.round(totalGarmentValue * 0.02);
+        rBankDisc.textContent = '-PKR ' + bankDiscAmount.toLocaleString();
+      }
 
       // Step 7: Final Calculations UI
       var cBase = document.getElementById('calc-base-val');
@@ -3465,22 +3659,6 @@
             alert('Could not add customized scrub to checkout. Redirecting to cart...');
             window.location.href = '/cart';
           });
-        });
-      }
-        .then(function(res) {
-          if (!res.ok) throw new Error('Cart add response error');
-          return res.json();
-        })
-        .then(function() {
-          if (btnLoader) btnLoader.textContent = 'Redirecting to Shopify Checkout...';
-          window.location.href = '/checkout';
-        })
-        .catch(function(err) {
-          if (btn) btn.disabled = false;
-          if (btnText) btnText.style.display = '';
-          if (btnLoader) btnLoader.style.display = 'none';
-          alert('Could not add customized scrub to checkout. Redirecting to cart...');
-          window.location.href = '/cart';
         });
       }
 

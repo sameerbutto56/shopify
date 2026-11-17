@@ -2264,14 +2264,14 @@
         "id": "shipping_intl_scrub_rate",
         "label": "International Charge Per Scrub (PKR)",
         "default": 4000,
-        "info": "Applied per scrub set in international orders (Q × PKR 4,000)."
+        "info": "Applied per scrub set in international orders (Q \u00d7 PKR 4,000)."
       },
       {
         "type": "number",
         "id": "shipping_intl_addon_rate",
         "label": "International Charge Per Add-on Unit (PKR)",
         "default": 1800,
-        "info": "Applied per chargeable add-on unit (A × PKR 1,800), e.g. custom embroidery, caps, sleeves."
+        "info": "Applied per chargeable add-on unit (A \u00d7 PKR 1,800), e.g. custom embroidery, caps, sleeves."
       },
       {
         "type": "textarea",
@@ -2431,6 +2431,369 @@
         "id": "enamels_bank_iban",
         "label": "IBAN",
         "default": "PK36MEZN0001020104928172"
+      }
+    ]
+  },
+  {
+    "name": "Customize Your Own Scrub (Studio)",
+    "settings": [
+      {
+        "type": "header",
+        "content": "General Studio & Top Marquee"
+      },
+      {
+        "type": "text",
+        "id": "customizer_badge",
+        "label": "Modal Top Badge",
+        "default": "Official Clinical Personalization"
+      },
+      {
+        "type": "text",
+        "id": "customizer_modal_title",
+        "label": "Modal Main Title",
+        "default": "Customize Your Own Scrub"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_marquee_alert",
+        "label": "Top Continuous Alert Marquee Text",
+        "default": "\ud83d\udea8 IMPORTANT: Customized Scrubs Require 100% Advance Payment. Cash on Delivery (COD) Is Not Available."
+      },
+      {
+        "type": "header",
+        "content": "Step 1: Fabric Selection"
+      },
+      {
+        "type": "text",
+        "id": "customizer_step1_title",
+        "label": "Step 1 Heading",
+        "default": "Select Technical Clinical Fabric"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step1_subtitle",
+        "label": "Step 1 Subheading",
+        "default": "Choose the medical-grade textile tailored for your shift duration and hospital environment."
+      },
+      {
+        "type": "collection",
+        "id": "customizer_fabric_collection",
+        "label": "Technical Fabric Options Collection",
+        "info": "Optional collection of fabric products/swatches. If empty, standard technical fabrics are shown."
+      },
+      {
+        "type": "header",
+        "content": "Step 2: Color & Contrast"
+      },
+      {
+        "type": "text",
+        "id": "customizer_step2_title",
+        "label": "Step 2 Heading",
+        "default": "Select Scrub Color & Contrast"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step2_subtitle",
+        "label": "Step 2 Subheading",
+        "default": "Pick your approved medical scrub shade and optional contrast accents."
+      },
+      {
+        "type": "text",
+        "id": "customizer_main_color_heading",
+        "label": "Main Color Section Heading",
+        "default": "A. Main Color"
+      },
+      {
+        "type": "text",
+        "id": "customizer_contrast_heading",
+        "label": "Contrast Section Heading",
+        "default": "B. Contrast (If Applicable)"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_contrast_help",
+        "label": "Contrast Helper Instructions",
+        "default": "Select an optional contrast shade for neckline piping, pocket borders, or sleeve trim. (Leave as None for standard monochrome)."
+      },
+      {
+        "type": "text",
+        "id": "customizer_contrast_none_label",
+        "label": "Contrast None Option Label",
+        "default": "None / Monochrome"
+      },
+      {
+        "type": "header",
+        "content": "Step 3: Design Selection"
+      },
+      {
+        "type": "text",
+        "id": "customizer_step3_title",
+        "label": "Step 3 Heading",
+        "default": "Select Scrub Design Collection"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step3_subtitle",
+        "label": "Step 3 Subheading",
+        "default": "Select a scrub collection to view available bespoke styles and colors."
+      },
+      {
+        "type": "collection",
+        "id": "customizer_design_collection",
+        "label": "Primary Design Collection",
+        "info": "Loads genuine products to customize. Default: All Scrubs."
+      },
+      {
+        "type": "collection_list",
+        "id": "customizer_design_collections_list",
+        "label": "Selectable Design / Series Collections Tabs",
+        "info": "Pick multiple collections (e.g. Crown, Velora, Sprinter) for step 3 filter pills."
+      },
+      {
+        "type": "text",
+        "id": "customizer_showing_designs_prefix",
+        "label": "Showing Designs Banner Prefix",
+        "default": "Showing Designs from:"
+      },
+      {
+        "type": "header",
+        "content": "Step 4: Size & Fit"
+      },
+      {
+        "type": "text",
+        "id": "customizer_step4_title",
+        "label": "Step 4 Heading",
+        "default": "Size & Fit Selection"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step4_subtitle",
+        "label": "Step 4 Subheading",
+        "default": "Choose your gender and desired fit silhouette. Altering any measurement value automatically customizes your tailored cut."
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step4_notice",
+        "label": "Step 4 Warning Notice",
+        "default": "Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements."
+      },
+      {
+        "type": "text",
+        "id": "customizer_gender_male_label",
+        "label": "Male Option Label",
+        "default": "Male Scrubs"
+      },
+      {
+        "type": "text",
+        "id": "customizer_gender_female_label",
+        "label": "Female Option Label",
+        "default": "Female Scrubs"
+      },
+      {
+        "type": "text",
+        "id": "customizer_female_fit_heading",
+        "label": "Female Fit Heading",
+        "default": "B. Choose Female Fit Silhouette:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_measurements_heading",
+        "label": "Measurements Chart Heading",
+        "default": "Standard Measurements"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_measurements_desc",
+        "label": "Measurements Instructions",
+        "default": "Alter any measurement field to automatically customize your scrub fit."
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_auto_custom_alert",
+        "label": "Auto-Custom Size Detection Message",
+        "default": "\u2728 Measurement changed! Selected size has automatically switched to Custom."
+      },
+      {
+        "type": "header",
+        "content": "Step 5: Personalization & Logo"
+      },
+      {
+        "type": "text",
+        "id": "customizer_step5_title",
+        "label": "Step 5 Heading",
+        "default": "Doctor & Staff Personalization"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step5_subtitle",
+        "label": "Step 5 Subheading",
+        "default": "Add official computerized embroidery: Doctor Name, credentials, and hospital crest."
+      },
+      {
+        "type": "text",
+        "id": "customizer_placement_heading",
+        "label": "Placement Heading",
+        "default": "Name Embroidery Placement:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_line1_label",
+        "label": "Line 1 Field Label",
+        "default": "Line 1: Doctor / Staff Name"
+      },
+      {
+        "type": "text",
+        "id": "customizer_line1_placeholder",
+        "label": "Line 1 Placeholder",
+        "default": "e.g. Dr. Sarah Ahmed, MD"
+      },
+      {
+        "type": "range",
+        "id": "customizer_line1_max",
+        "min": 20,
+        "max": 60,
+        "step": 1,
+        "label": "Line 1 Character Limit",
+        "default": 45
+      },
+      {
+        "type": "text",
+        "id": "customizer_line2_label",
+        "label": "Line 2 Field Label",
+        "default": "Line 2: Title / Department / Hospital"
+      },
+      {
+        "type": "text",
+        "id": "customizer_line2_placeholder",
+        "label": "Line 2 Placeholder",
+        "default": "e.g. Consultant Cardiologist"
+      },
+      {
+        "type": "range",
+        "id": "customizer_line2_max",
+        "min": 20,
+        "max": 60,
+        "step": 1,
+        "label": "Line 2 Character Limit",
+        "default": 45
+      },
+      {
+        "type": "text",
+        "id": "customizer_line3_label",
+        "label": "Line 3 Field Label",
+        "default": "Line 3: Additional Engraving (Optional)"
+      },
+      {
+        "type": "text",
+        "id": "customizer_line3_placeholder",
+        "label": "Line 3 Placeholder",
+        "default": "e.g. Head of Surgery Department"
+      },
+      {
+        "type": "number",
+        "id": "customizer_line3_fee",
+        "label": "Line 3 Additional Fee (PKR)",
+        "default": 250
+      },
+      {
+        "type": "text",
+        "id": "customizer_thread_heading",
+        "label": "Thread Color Heading",
+        "default": "Embroidery Thread Color:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_font_heading",
+        "label": "Embroidery Font Heading",
+        "default": "Computerized Embroidery Font:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_logo_heading",
+        "label": "Logo Section Heading",
+        "default": "Hospital / Clinic Logo Embroidery:"
+      },
+      {
+        "type": "collection",
+        "id": "customizer_logo_collection",
+        "label": "Logo & Crest Options Collection",
+        "info": "Dedicated collection for selectable hospital crests, silicone patches, and emblems. Real products and prices will be loaded dynamically."
+      },
+      {
+        "type": "checkbox",
+        "id": "customizer_enable_logo_upload",
+        "label": "Enable Customer Logo Upload",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "customizer_logo_upload_fee",
+        "label": "Logo Upload Fee (PKR)",
+        "default": 550
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_logo_upload_hint",
+        "label": "Logo Upload Instructions Note",
+        "default": "Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File will be digitized for high-precision embroidery."
+      },
+      {
+        "type": "header",
+        "content": "Step 6: Review & Native Checkout"
+      },
+      {
+        "type": "text",
+        "id": "customizer_step6_title",
+        "label": "Step 6 Heading",
+        "default": "Review Your Customized Scrub"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_step6_subtitle",
+        "label": "Step 6 Subheading",
+        "default": "Verify every specification before proceeding directly to secure checkout."
+      },
+      {
+        "type": "text",
+        "id": "customizer_review_base_label",
+        "label": "Product Base Value Label",
+        "default": "Product Base Value:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_review_fabric_label",
+        "label": "Fabric Add-On Label",
+        "default": "Fabric Add-On:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_review_emb_label",
+        "label": "Personalization & Logo Label",
+        "default": "Personalization & Logo:"
+      },
+      {
+        "type": "text",
+        "id": "customizer_review_subtotal_label",
+        "label": "Subtotal Label",
+        "default": "Subtotal (Garment Value):"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_checkout_notice",
+        "label": "Checkout Advance Notice Text",
+        "default": "100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout."
+      },
+      {
+        "type": "text",
+        "id": "customizer_checkout_btn_label",
+        "label": "Checkout Button Label",
+        "default": "Proceed to Checkout \u2192"
+      },
+      {
+        "type": "text",
+        "id": "customizer_checkout_loading_text",
+        "label": "Checkout Button Loading Label",
+        "default": "Connecting to Shopify Checkout..."
       }
     ]
   }

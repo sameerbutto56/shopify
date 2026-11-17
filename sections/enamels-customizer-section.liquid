@@ -86,6 +86,10 @@
   "class": "section-enamels-customizer",
   "settings": [
     {
+      "type": "header",
+      "content": "Section Header & Container"
+    },
+    {
       "type": "checkbox",
       "id": "show_header",
       "label": "Show section header",
@@ -176,39 +180,6 @@
       "id": "fabric_collection",
       "label": "Technical Fabric Options Collection",
       "info": "Optional collection of fabric products/swatches. If blank, standard clinical fabrics are used."
-    },
-    {
-      "type": "header",
-      "content": "Add-On Products & Services (Optional)"
-    },
-    {
-      "type": "paragraph",
-      "content": "Select existing products to bill separately in checkout for customization and accessories. If left blank, details attach as line-item order properties."
-    },
-    {
-      "type": "product",
-      "id": "embroidery_product",
-      "label": "Name Embroidery Service Product"
-    },
-    {
-      "type": "product",
-      "id": "patch_product",
-      "label": "Name Patch Service Product"
-    },
-    {
-      "type": "product",
-      "id": "logo_product",
-      "label": "Hospital Logo Service Product"
-    },
-    {
-      "type": "product",
-      "id": "cap_product",
-      "label": "Matching Cap Companion Product"
-    },
-    {
-      "type": "product",
-      "id": "sleeves_product",
-      "label": "Arm Sleeves Companion Product"
     },
     {
       "type": "header",
@@ -303,6 +274,30 @@
       "default": "Pick your approved medical scrub shade and optional contrast accents."
     },
     {
+      "type": "text",
+      "id": "main_color_heading",
+      "label": "Main Color Section Heading",
+      "default": "A. Main Color"
+    },
+    {
+      "type": "text",
+      "id": "contrast_heading",
+      "label": "Contrast Section Heading",
+      "default": "B. Contrast (If Applicable)"
+    },
+    {
+      "type": "textarea",
+      "id": "contrast_help",
+      "label": "Contrast Helper Instructions",
+      "default": "Select an optional contrast shade for neckline piping, pocket borders, or sleeve trim. (Leave as None for standard monochrome)."
+    },
+    {
+      "type": "text",
+      "id": "contrast_none_label",
+      "label": "Contrast None Option Label",
+      "default": "None / Monochrome"
+    },
+    {
       "type": "header",
       "content": "Step 3: Design Selection Settings"
     },
@@ -317,6 +312,12 @@
       "id": "step3_subtitle",
       "label": "Step 3 Subheading",
       "default": "Select a scrub collection to view available bespoke styles and colors."
+    },
+    {
+      "type": "text",
+      "id": "showing_designs_prefix",
+      "label": "Showing Designs Banner Prefix",
+      "default": "Showing Designs from:"
     },
     {
       "type": "header",
@@ -341,6 +342,42 @@
       "default": "Please select your size carefully. Your customized scrub will be manufactured according to the selected size and measurements."
     },
     {
+      "type": "text",
+      "id": "gender_male_label",
+      "label": "Male Option Label",
+      "default": "Male Scrubs"
+    },
+    {
+      "type": "text",
+      "id": "gender_female_label",
+      "label": "Female Option Label",
+      "default": "Female Scrubs"
+    },
+    {
+      "type": "text",
+      "id": "female_fit_heading",
+      "label": "Female Fit Heading",
+      "default": "B. Choose Female Fit Silhouette:"
+    },
+    {
+      "type": "text",
+      "id": "measurements_heading",
+      "label": "Measurements Chart Heading",
+      "default": "Standard Measurements"
+    },
+    {
+      "type": "textarea",
+      "id": "measurements_desc",
+      "label": "Measurements Instructions",
+      "default": "Alter any measurement field to automatically customize your scrub fit."
+    },
+    {
+      "type": "textarea",
+      "id": "auto_custom_alert",
+      "label": "Auto-Custom Size Detection Message",
+      "default": "✨ Measurement changed! Selected size has automatically switched to Custom."
+    },
+    {
       "type": "header",
       "content": "Step 5: Personalization & Logo Settings"
     },
@@ -358,9 +395,21 @@
     },
     {
       "type": "text",
+      "id": "placement_heading",
+      "label": "Placement Heading",
+      "default": "Name Embroidery Placement:"
+    },
+    {
+      "type": "text",
       "id": "line1_label",
       "label": "Line 1 Field Label",
       "default": "Line 1: Doctor / Staff Name"
+    },
+    {
+      "type": "text",
+      "id": "line1_placeholder",
+      "label": "Line 1 Placeholder",
+      "default": "e.g. Dr. Sarah Ahmed, MD"
     },
     {
       "type": "range",
@@ -378,6 +427,12 @@
       "default": "Line 2: Title / Department / Hospital"
     },
     {
+      "type": "text",
+      "id": "line2_placeholder",
+      "label": "Line 2 Placeholder",
+      "default": "e.g. Consultant Cardiologist"
+    },
+    {
       "type": "range",
       "id": "line2_max",
       "min": 20,
@@ -385,6 +440,42 @@
       "step": 1,
       "label": "Line 2 Character Limit",
       "default": 45
+    },
+    {
+      "type": "text",
+      "id": "thread_heading",
+      "label": "Thread Color Heading",
+      "default": "Embroidery Thread Color:"
+    },
+    {
+      "type": "text",
+      "id": "font_heading",
+      "label": "Embroidery Font Heading",
+      "default": "Computerized Embroidery Font:"
+    },
+    {
+      "type": "text",
+      "id": "logo_heading",
+      "label": "Logo Section Heading",
+      "default": "Hospital / Clinic Logo Embroidery:"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_logo_upload",
+      "label": "Enable Customer Logo Upload",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "logo_upload_fee",
+      "label": "Logo Upload Fee (PKR)",
+      "default": 550
+    },
+    {
+      "type": "textarea",
+      "id": "logo_upload_hint",
+      "label": "Logo Upload Instructions Note",
+      "default": "Accepted formats: High-res PNG, JPG, SVG, or vector PDF up to 10MB. File will be digitized for high-precision embroidery."
     },
     {
       "type": "header",
@@ -404,15 +495,242 @@
     },
     {
       "type": "text",
-      "id": "checkout_btn_label",
-      "label": "Checkout Button Label",
-      "default": "Proceed to Checkout →"
+      "id": "review_base_label",
+      "label": "Product Base Value Label",
+      "default": "Product Base Value:"
+    },
+    {
+      "type": "text",
+      "id": "review_fabric_label",
+      "label": "Fabric Add-On Label",
+      "default": "Fabric Add-On:"
+    },
+    {
+      "type": "text",
+      "id": "review_emb_label",
+      "label": "Personalization & Logo Label",
+      "default": "Personalization & Logo:"
+    },
+    {
+      "type": "text",
+      "id": "review_subtotal_label",
+      "label": "Subtotal Label",
+      "default": "Subtotal (Garment Value):"
     },
     {
       "type": "textarea",
       "id": "checkout_notice",
       "label": "Payment Options & Advance Notice",
       "default": "100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout."
+    },
+    {
+      "type": "text",
+      "id": "checkout_btn_label",
+      "label": "Checkout Button Label",
+      "default": "Proceed to Checkout →"
+    },
+    {
+      "type": "text",
+      "id": "checkout_loading_text",
+      "label": "Checkout Button Loading Label",
+      "default": "Connecting to Shopify Checkout..."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "instruction_note",
+      "name": "Instruction / Note",
+      "settings": [
+        {
+          "type": "select",
+          "id": "step",
+          "label": "Display in Step",
+          "options": [
+            { "value": "1", "label": "Step 1: Fabric" },
+            { "value": "2", "label": "Step 2: Color & Contrast" },
+            { "value": "3", "label": "Step 3: Design" },
+            { "value": "4", "label": "Step 4: Size & Fit" },
+            { "value": "5", "label": "Step 5: Personalization & Logo" },
+            { "value": "6", "label": "Step 6: Review & Checkout" }
+          ],
+          "default": "1"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Callout Style",
+          "options": [
+            { "value": "info", "label": "Information (Teal / Blue)" },
+            { "value": "warning", "label": "Warning Alert (Amber)" },
+            { "value": "important", "label": "Important Notice (Rose / Red)" },
+            { "value": "plain", "label": "Plain Text Note" }
+          ],
+          "default": "info"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Emoji Icon (Optional)",
+          "default": "ℹ️"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Note Heading",
+          "default": "Important Specification"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Instruction Text",
+          "default": "Enter your specific instructions or guidelines here."
+        },
+        {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Visible to Customers",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "personalization_field",
+      "name": "Extra Engraving Field",
+      "settings": [
+        {
+          "type": "text",
+          "id": "field_label",
+          "label": "Field Label",
+          "default": "Line 3: Department / Title"
+        },
+        {
+          "type": "text",
+          "id": "placeholder",
+          "label": "Input Placeholder",
+          "default": "e.g. Head of Surgery"
+        },
+        {
+          "type": "range",
+          "id": "max_chars",
+          "min": 15,
+          "max": 60,
+          "step": 1,
+          "label": "Max Characters",
+          "default": 45
+        },
+        {
+          "type": "number",
+          "id": "additional_fee",
+          "label": "Additional Charge (PKR)",
+          "default": 250
+        },
+        {
+          "type": "text",
+          "id": "help_text",
+          "label": "Helper Text Below Field",
+          "default": "Optional third line of chest embroidery."
+        },
+        {
+          "type": "checkbox",
+          "id": "is_required",
+          "label": "Compulsory Field",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Visible",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "fabric_card",
+      "name": "Custom Fabric Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Fabric Name",
+          "default": "AeroDrape™ 4-Way Stretch"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Fabric Composition",
+          "default": "74% Poly, 20% Rayon, 6% Spandex"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Card Badge Text",
+          "default": "PREMIUM"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Fabric Description",
+          "default": "Engineered for 24-hour shifts with fluid resistance and breathable micro-mesh."
+        },
+        {
+          "type": "text",
+          "id": "tags",
+          "label": "Feature Tags (comma separated)",
+          "default": "4-Way Stretch, Fluid Repellent, Wrinkle Free"
+        },
+        {
+          "type": "number",
+          "id": "price",
+          "label": "Additional Price (PKR)",
+          "default": 0
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Fabric Swatch Image"
+        },
+        {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Visible",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "logo_item",
+      "name": "Custom Logo Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Hospital / Clinic Logo Name",
+          "default": "Medical College & Hospital Crest"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Left Arm Sleeve Emblem"
+        },
+        {
+          "type": "number",
+          "id": "price",
+          "label": "Embroidered Logo Fee (PKR)",
+          "default": 450
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Logo Artwork Image"
+        },
+        {
+          "type": "checkbox",
+          "id": "visible",
+          "label": "Visible",
+          "default": true
+        }
+      ]
     }
   ],
   "presets": [
