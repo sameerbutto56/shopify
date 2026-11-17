@@ -472,7 +472,7 @@
               <script type="application/json" class="design-variants-data">{{ prod.variants | json }}</script>
               <div class="design-card-media">
                 {% if p_media_url != blank %}
-                  <img src="{{ p_media_url }}" alt="{{ prod.title | escape }}" width="300" height="380" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                  <img src="{{ p_media_url }}" alt="{{ prod.title | escape }}" width="300" height="380" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">
                 {% else %}
                   <div style="width: 100%; height: 260px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 700;">🩺 ENAMELS</div>
                 {% endif %}
@@ -1484,21 +1484,33 @@
 
   .measurements-inputs-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
   }
   @media (max-width: 768px) {
-    .measurements-inputs-grid { grid-template-columns: repeat(2, 1fr); }
+    .measurements-inputs-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
   }
   .measurement-field {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
   .m-label {
     font-size: 12px;
     font-weight: 700;
     color: #102a43;
     margin-bottom: 4px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.3;
   }
   .m-input {
     padding: 8px 10px;
@@ -1507,12 +1519,18 @@
     font-size: 13px;
     outline: none;
     background: #ffffff;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
   }
   .m-input:focus { border-color: #008779; }
   .m-hint {
     font-size: 10px;
     color: #64748b;
     margin-top: 3px;
+    white-space: normal;
+    word-break: break-word;
   }
 
   /* STEP 5: Personalization */
@@ -2003,6 +2021,9 @@
       border-radius: 12px !important;
       margin-bottom: 20px !important;
       box-sizing: border-box !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
     }
     .measurements-header {
       flex-direction: column !important;
@@ -2010,21 +2031,47 @@
       align-items: flex-start !important;
       margin-bottom: 16px !important;
     }
-    /* Fully responsive vertical stack for all measurement fields on mobile */
+    /* Fully responsive, zero-clipping measurement fields grid on mobile */
     .measurements-inputs-grid {
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 12px !important;
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 8px !important;
       width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    @media (max-width: 340px) {
+      .measurements-inputs-grid {
+        grid-template-columns: 1fr !important;
+      }
     }
     .measurement-field {
       width: 100% !important;
+      max-width: 100% !important;
       min-width: 0 !important;
       background: #ffffff !important;
       border: 1px solid #e2e8f0 !important;
       border-radius: 8px !important;
-      padding: 12px !important;
+      padding: 10px 8px !important;
       box-sizing: border-box !important;
+      overflow: hidden !important;
+    }
+    .m-label {
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      color: #102a43 !important;
+      margin-bottom: 4px !important;
+      white-space: normal !important;
+      word-break: break-word !important;
+      overflow-wrap: break-word !important;
+      line-height: 1.25 !important;
+    }
+    .m-hint {
+      font-size: 9.5px !important;
+      color: #64748b !important;
+      margin-top: 3px !important;
+      line-height: 1.2 !important;
+      white-space: normal !important;
+      word-break: break-word !important;
     }
     /* iOS input auto-zoom prevention */
     .m-input,
@@ -2100,6 +2147,11 @@
 
 <script>
   (function initRebuiltCustomizer() {
+    // Prevent double execution / memory thrashing if snippet is mounted multiple times
+    if (window.__ENAMELS_CUSTOMIZER_INITIALIZED__) {
+      return;
+    }
+    window.__ENAMELS_CUSTOMIZER_INITIALIZED__ = true;
     // =========================================================================
     // DYNAMIC SIZE & FIT CONFIGURATION ENGINE (ADMIN-CONFIGURABLE STANDARDS)
     // =========================================================================

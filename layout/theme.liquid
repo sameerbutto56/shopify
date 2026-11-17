@@ -270,7 +270,9 @@
 
     {% render 'whatsapp-floating-button' %}
     {% render 'enamels-studio-panel' %}
-    {% render 'enamels-customizer-modal' %}
+    {% unless template.suffix == 'customizer' or page.handle == 'customizer' %}
+      {% render 'enamels-customizer-modal' %}
+    {% endunless %}
     {% render 'enamels-bulk-orders-modal' %}
     {% render 'enamels-international-modal' %}
     {% render 'enamels-international-delivery' %}
