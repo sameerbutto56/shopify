@@ -1991,27 +1991,39 @@
     .size-chips-bar {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 10px !important;
-      margin-bottom: 20px !important;
-      max-height: 114px !important;
-      overflow-y: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-      padding: 2px 4px 6px 2px !important;
+      gap: 8px !important;
+      margin-bottom: 16px !important;
+      max-height: none !important;
+      overflow: visible !important;
+      padding: 0 !important;
       box-sizing: border-box !important;
-      scrollbar-width: thin !important;
     }
     .size-chip-btn {
       width: 100% !important;
-      min-height: 48px !important;
-      height: 48px !important;
-      padding: 10px 8px !important;
-      font-size: 14px !important;
+      min-height: 42px !important;
+      height: 42px !important;
+      padding: 8px 6px !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
       text-align: center !important;
       box-sizing: border-box !important;
+      border-radius: 8px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      touch-action: manipulation !important;
     }
     .size-chip-btn.size-chip-custom {
-      grid-column: 1 / -1 !important;
+      grid-column: auto !important;
       width: 100% !important;
+      background: #f0fdfa !important;
+      border: 1.5px dashed #0d9488 !important;
+      color: #0d9488 !important;
+    }
+    .size-chip-btn.size-chip-custom.active {
+      background: #008779 !important;
+      border-style: solid !important;
+      color: #ffffff !important;
     }
     .custom-measurements-panel {
       padding: 16px 12px 24px !important;

@@ -55,9 +55,19 @@
           aria-label="Scroll left"
           data-cat-prev
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
+          {% if section.settings.arrow_icon_style == 'arrow' %}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          {% elsif section.settings.arrow_icon_style == 'bold_chevron' %}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          {% else %}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          {% endif %}
         </button>
       {% endif %}
 
@@ -98,6 +108,13 @@
           {%- elsif block.settings.show_arrow -%}
             {%- assign show_card_arrow = true -%}
           {%- endif -%}
+
+          {%- assign card_arrow_color = block.settings.arrow_color | default: section.settings.pill_arrow_color | default: '#111111' -%}
+          {%- assign card_arrow_style = block.settings.arrow_icon_override | default: 'default' -%}
+          {%- if card_arrow_style == 'default' or card_arrow_style == blank -%}
+            {%- assign card_arrow_style = section.settings.pill_arrow_style | default: 'chevron' -%}
+          {%- endif -%}
+          {%- assign card_arrow_size = section.settings.pill_arrow_size | default: 13 -%}
 
           <a
             href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
@@ -144,10 +161,24 @@
             </div>
 
             {% if show_card_arrow %}
-              <span class="enamels-cat-card__arrow" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
+              <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
+                {% if card_arrow_style == 'arrow' %}
+                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                {% elsif card_arrow_style == 'long_arrow' %}
+                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
+                  </svg>
+                {% elsif card_arrow_style == 'external' %}
+                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                {% else %}
+                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                {% endif %}
               </span>
             {% endif %}
           </a>
@@ -161,9 +192,19 @@
           aria-label="Scroll right"
           data-cat-next
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
+          {% if section.settings.arrow_icon_style == 'arrow' %}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          {% elsif section.settings.arrow_icon_style == 'bold_chevron' %}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          {% else %}
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          {% endif %}
         </button>
       {% endif %}
     </div>
@@ -219,6 +260,13 @@
               {%- assign show_card_arrow = true -%}
             {%- endif -%}
 
+            {%- assign card_arrow_color = block.settings.arrow_color | default: section.settings.pill_arrow_color | default: '#111111' -%}
+            {%- assign card_arrow_style = block.settings.arrow_icon_override | default: 'default' -%}
+            {%- if card_arrow_style == 'default' or card_arrow_style == blank -%}
+              {%- assign card_arrow_style = section.settings.pill_arrow_style | default: 'chevron' -%}
+            {%- endif -%}
+            {%- assign card_arrow_size = section.settings.pill_arrow_size | default: 13 -%}
+
             <a
               href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
               {% if is_customizer_pill %}
@@ -263,10 +311,24 @@
               </div>
 
               {% if show_card_arrow %}
-                <span class="enamels-cat-card__arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
+                <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
+                  {% if card_arrow_style == 'arrow' %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  {% elsif card_arrow_style == 'long_arrow' %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
+                    </svg>
+                  {% elsif card_arrow_style == 'external' %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  {% endif %}
                 </span>
               {% endif %}
             </a>
@@ -314,6 +376,7 @@
     --cats-arrow-size-desk: {{ section.settings.arrow_size | default: 36 }}px;
     --cats-arrow-size-mob: {{ section.settings.arrow_size_mobile | default: 32 }}px;
     --cats-pill-arrow-color: {{ section.settings.pill_arrow_color | default: '#111111' }};
+    --cats-pill-arrow-size: {{ section.settings.pill_arrow_size | default: 13 }}px;
 
     padding-top: var(--cats-pad-top-desk);
     padding-bottom: var(--cats-pad-bot-desk);
@@ -832,41 +895,68 @@
       const prevBtn = section.querySelector('[data-cat-prev]');
       const nextBtn = section.querySelector('[data-cat-next]');
 
-      // Carousel Arrow Navigation & Mouse Drag-to-Scroll
+      // Carousel Arrow Navigation & Smooth Scrolling
       if (track) {
-        const scrollStep = () => Math.max(180, track.clientWidth * 0.7);
+        const getCardWidth = () => {
+          const firstCard = track.querySelector('.enamels-cat-card');
+          if (firstCard && firstCard.offsetWidth > 40) {
+            return firstCard.offsetWidth + 12;
+          }
+          return Math.max(180, track.clientWidth * 0.75);
+        };
 
         if (prevBtn) {
           prevBtn.onclick = (e) => {
             e.preventDefault();
-            track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+            e.stopPropagation();
+            const step = getCardWidth() * 1.5;
+            if (track.scrollLeft <= 8) {
+              // Smooth scroll to end
+              track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+            } else {
+              track.scrollBy({ left: -step, behavior: 'smooth' });
+            }
           };
         }
 
         if (nextBtn) {
           nextBtn.onclick = (e) => {
             e.preventDefault();
-            track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+            e.stopPropagation();
+            const step = getCardWidth() * 1.5;
+            const maxScroll = track.scrollWidth - track.clientWidth - 8;
+            if (track.scrollLeft >= maxScroll) {
+              // Smooth scroll back to beginning
+              track.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+              track.scrollBy({ left: step, behavior: 'smooth' });
+            }
           };
         }
 
-        // Update arrow visibility based on scroll position
+        // Keep arrows ALWAYS active and clickable
         const updateArrows = () => {
           if (!prevBtn || !nextBtn) return;
-          const maxScroll = track.scrollWidth - track.clientWidth - 4;
-          const atStart = track.scrollLeft <= 4;
+          const maxScroll = track.scrollWidth - track.clientWidth - 6;
+          const atStart = track.scrollLeft <= 6;
           const atEnd = track.scrollLeft >= maxScroll;
-          prevBtn.style.opacity = atStart ? '0.35' : '1';
-          prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
-          nextBtn.style.opacity = atEnd ? '0.35' : '1';
-          nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+          // Never set pointerEvents = 'none' so arrows are always editable/clickable
+          prevBtn.style.opacity = atStart ? '0.75' : '1';
+          prevBtn.style.pointerEvents = 'auto';
+          nextBtn.style.opacity = atEnd ? '0.75' : '1';
+          nextBtn.style.pointerEvents = 'auto';
         };
 
         track.addEventListener('scroll', updateArrows, { passive: true });
         window.addEventListener('resize', updateArrows, { passive: true });
-        setTimeout(updateArrows, 100);
+        setTimeout(updateArrows, 150);
 
-        // Smooth Mouse Click-and-Drag Scrolling for Desktop & Theme Editor Preview
+        // Prevent native HTML5 link drag which kills mousemove
+        track.addEventListener('dragstart', (e) => {
+          e.preventDefault();
+        });
+
+        // Mouse Drag to Scroll
         let isDown = false;
         let startX = 0;
         let scrollStart = 0;
@@ -889,7 +979,7 @@
           track.style.scrollBehavior = 'smooth';
           track.style.cursor = 'grab';
           track.style.userSelect = '';
-          setTimeout(() => { hasMoved = false; }, 60);
+          setTimeout(() => { hasMoved = false; }, 80);
         });
 
         track.addEventListener('mouseleave', () => {
@@ -904,8 +994,8 @@
           if (!isDown) return;
           e.preventDefault();
           const currentX = e.pageX - track.offsetLeft;
-          const walk = (currentX - startX) * 1.4;
-          if (Math.abs(walk) > 4) {
+          const walk = (currentX - startX) * 1.5;
+          if (Math.abs(walk) > 5) {
             hasMoved = true;
           }
           track.scrollLeft = scrollStart - walk;
@@ -921,6 +1011,18 @@
             }
           }, true);
         });
+
+        // Horizontal Mouse Wheel Scroll
+        track.addEventListener('wheel', (e) => {
+          if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && !e.shiftKey) {
+            const canScrollLeft = e.deltaY < 0 && track.scrollLeft > 0;
+            const canScrollRight = e.deltaY > 0 && track.scrollLeft < (track.scrollWidth - track.clientWidth - 2);
+            if (canScrollLeft || canScrollRight) {
+              e.preventDefault();
+              track.scrollLeft += e.deltaY;
+            }
+          }
+        }, { passive: false });
       }
 
       // View All / Show Less Expand & Collapse
@@ -1443,6 +1545,17 @@
       "default": "rgba(0,0,0,0.12)"
     },
     {
+      "type": "select",
+      "id": "arrow_icon_style",
+      "label": "Carousel Arrow Style",
+      "options": [
+        { "value": "chevron", "label": "Chevron (< >)" },
+        { "value": "arrow", "label": "Arrow (← →)" },
+        { "value": "bold_chevron", "label": "Bold Chevron" }
+      ],
+      "default": "chevron"
+    },
+    {
       "type": "header",
       "content": "Pill Card Arrow Icon (Inside Each Pill)"
     },
@@ -1451,6 +1564,28 @@
       "id": "show_pill_arrow",
       "label": "Show Arrow Icon at End of Each Pill",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "pill_arrow_style",
+      "label": "Pill Arrow Style",
+      "options": [
+        { "value": "chevron", "label": "Chevron Right (>)" },
+        { "value": "arrow", "label": "Slim Arrow (→)" },
+        { "value": "long_arrow", "label": "Long Arrow (⟶)" },
+        { "value": "external", "label": "Corner Arrow (↗)" }
+      ],
+      "default": "chevron"
+    },
+    {
+      "type": "range",
+      "id": "pill_arrow_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Pill Arrow Icon Size",
+      "default": 13
     },
     {
       "type": "color",
@@ -1513,6 +1648,24 @@
           "id": "show_arrow",
           "label": "Show Arrow Icon on this Pill",
           "default": true
+        },
+        {
+          "type": "color",
+          "id": "arrow_color",
+          "label": "Custom Arrow Color for this Pill"
+        },
+        {
+          "type": "select",
+          "id": "arrow_icon_override",
+          "label": "Arrow Icon Style for this Pill",
+          "options": [
+            { "value": "default", "label": "Default (Follow Section)" },
+            { "value": "chevron", "label": "Chevron Right (>)" },
+            { "value": "arrow", "label": "Slim Arrow (→)" },
+            { "value": "long_arrow", "label": "Long Arrow (⟶)" },
+            { "value": "external", "label": "Corner Arrow (↗)" }
+          ],
+          "default": "default"
         }
       ]
     }
