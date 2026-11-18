@@ -2784,6 +2784,76 @@
         "default": "100% advance payment required for bespoke personalized apparel. Select Card Payment or Online Bank Transfer (Direct IBAN / Raast) at Shopify Checkout."
       },
       {
+        "type": "header",
+        "content": "Advance Payment Instruction Box"
+      },
+      {
+        "type": "checkbox",
+        "id": "customizer_advance_pay_show",
+        "label": "Show Advance Payment Information Card",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "customizer_advance_pay_heading",
+        "label": "Advance Payment Card Heading",
+        "default": "Advance Payment Policy & Verification Instructions"
+      },
+      {
+        "type": "text",
+        "id": "customizer_advance_pay_badge",
+        "label": "Advance Payment Card Badge",
+        "default": "100% ADVANCE PAYMENT"
+      },
+      {
+        "type": "text",
+        "id": "customizer_advance_pay_line1_title",
+        "label": "Line 1 Title",
+        "default": "1. Bespoke Tailoring Requirement"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_advance_pay_line1_desc",
+        "label": "Line 1 Description",
+        "default": "Customized scrubs are crafted specifically to your personal measurements, personalized embroidery, and hospital insignia. Cash on Delivery (COD) is strictly unavailable."
+      },
+      {
+        "type": "text",
+        "id": "customizer_advance_pay_line2_title",
+        "label": "Line 2 Title",
+        "default": "2. Available Payment Gateways"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_advance_pay_line2_desc",
+        "label": "Line 2 Description",
+        "default": "Pay seamlessly through Shopify official checkout via Credit/Debit Card or Online Bank Transfer. Enjoy an instant 2% discount on subtotal when paying via Online Bank Transfer."
+      },
+      {
+        "type": "text",
+        "id": "customizer_advance_pay_line3_title",
+        "label": "Line 3 Title",
+        "default": "3. Verification & Tailoring Timeline"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_advance_pay_line3_desc",
+        "label": "Line 3 Description",
+        "default": "For Online Bank Transfer orders, please send your payment transaction screenshot/receipt with your Order # to our official WhatsApp. Tailoring begins immediately once payment is verified."
+      },
+      {
+        "type": "text",
+        "id": "customizer_advance_pay_line4_title",
+        "label": "Line 4 Title",
+        "default": "4. Mixed Cart Policy"
+      },
+      {
+        "type": "textarea",
+        "id": "customizer_advance_pay_line4_desc",
+        "label": "Line 4 Description",
+        "default": "If your order combines customized scrubs with standard ready-to-wear apparel, 100% advance payment applies to the entire order."
+      },
+      {
         "type": "text",
         "id": "customizer_checkout_btn_label",
         "label": "Checkout Button Label",

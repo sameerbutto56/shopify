@@ -116,72 +116,136 @@
           {%- endif -%}
           {%- assign card_arrow_size = section.settings.pill_arrow_size | default: 13 -%}
 
-          <a
-            href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
-            {% if is_customizer_pill %}
-              onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
-            {% elsif is_bulk_pill %}
-              onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
-            {% elsif is_intl_pill %}
-              onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
-            {% endif %}
-            class="enamels-cat-card enamels-cat-card--carousel"
-            style="background-color: {{ card_bg_val }} !important;"
-            {{ block.shopify_attributes }}
-          >
-            {% if card_badge != blank %}
-              <span class="enamels-cat-card__badge">{{ card_badge }}</span>
-            {% endif %}
+          {%- assign effective_mode = block.settings.display_mode | default: 'default' -%}
+          {%- if effective_mode == 'default' or effective_mode == blank -%}
+            {%- assign effective_mode = section.settings.pill_display_mode | default: 'image_cover' -%}
+          {%- endif -%}
 
-            <div class="enamels-cat-card__content">
-              <span class="enamels-cat-card__title">{{ card_title }}</span>
-              {% if card_subtitle != blank %}
-                <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
+          {%- assign img_pos = block.settings.image_position | default: section.settings.pill_image_position | default: 'center' -%}
+          {%- assign img_fit = section.settings.pill_image_fit | default: 'cover' -%}
+
+          {%- assign has_image = false -%}
+          {%- if card_img != blank or card_fallback != blank -%}
+            {%- assign has_image = true -%}
+          {%- endif -%}
+
+          {%- assign is_full_image = false -%}
+          {%- if effective_mode == 'image_cover' and has_image -%}
+            {%- assign is_full_image = true -%}
+          {%- endif -%}
+
+          {%- if is_full_image -%}
+            <!-- Full-Size Image Only Pill Tile (Covers Complete Predefined Pill Area) -->
+            <a
+              href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
+              {% if is_customizer_pill %}
+                onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+              {% elsif is_bulk_pill %}
+                onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+              {% elsif is_intl_pill %}
+                onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
               {% endif %}
-            </div>
+              class="enamels-cat-card enamels-cat-card--carousel enamels-cat-card--full-image"
+              style="background-color: {{ card_bg_val }} !important;"
+              aria-label="{{ card_title | escape }}"
+              title="{{ card_title | escape }}"
+              {{ block.shopify_attributes }}
+            >
+              {% if card_badge != blank %}
+                <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+              {% endif %}
 
-            <div class="enamels-cat-card__media">
               {% if card_img != blank %}
                 <img
-                  src="{{ card_img | image_url: width: 320 }}"
+                  src="{{ card_img | image_url: width: 600 }}"
                   alt="{{ card_title | escape }}"
+                  class="enamels-cat-full-image"
                   loading="lazy"
-                  width="120"
-                  height="70"
+                  width="240"
+                  height="120"
+                  style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
                 >
               {% elsif card_fallback != blank %}
                 <img
                   src="{{ card_fallback | asset_url }}"
                   alt="{{ card_title | escape }}"
+                  class="enamels-cat-full-image"
                   loading="lazy"
-                  width="120"
-                  height="70"
+                  width="240"
+                  height="120"
+                  style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
                 >
               {% endif %}
-            </div>
+            </a>
+          {%- else -%}
+            <!-- Standard Text + Small Side Thumbnail Pill Card -->
+            <a
+              href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
+              {% if is_customizer_pill %}
+                onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+              {% elsif is_bulk_pill %}
+                onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+              {% elsif is_intl_pill %}
+                onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
+              {% endif %}
+              class="enamels-cat-card enamels-cat-card--carousel"
+              style="background-color: {{ card_bg_val }} !important;"
+              {{ block.shopify_attributes }}
+            >
+              {% if card_badge != blank %}
+                <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+              {% endif %}
 
-            {% if show_card_arrow %}
-              <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
-                {% if card_arrow_style == 'arrow' %}
-                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
-                  </svg>
-                {% elsif card_arrow_style == 'long_arrow' %}
-                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
-                  </svg>
-                {% elsif card_arrow_style == 'external' %}
-                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                {% else %}
-                  <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
+              <div class="enamels-cat-card__content">
+                <span class="enamels-cat-card__title">{{ card_title }}</span>
+                {% if card_subtitle != blank %}
+                  <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
                 {% endif %}
-              </span>
-            {% endif %}
-          </a>
+              </div>
+
+              <div class="enamels-cat-card__media">
+                {% if card_img != blank %}
+                  <img
+                    src="{{ card_img | image_url: width: 320 }}"
+                    alt="{{ card_title | escape }}"
+                    loading="lazy"
+                    width="120"
+                    height="70"
+                  >
+                {% elsif card_fallback != blank %}
+                  <img
+                    src="{{ card_fallback | asset_url }}"
+                    alt="{{ card_title | escape }}"
+                    loading="lazy"
+                    width="120"
+                    height="70"
+                  >
+                {% endif %}
+              </div>
+
+              {% if show_card_arrow %}
+                <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
+                  {% if card_arrow_style == 'arrow' %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  {% elsif card_arrow_style == 'long_arrow' %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
+                    </svg>
+                  {% elsif card_arrow_style == 'external' %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  {% endif %}
+                </span>
+              {% endif %}
+            </a>
+          {%- endif -%}
         {% endfor %}
       </div>
 
@@ -267,71 +331,133 @@
             {%- endif -%}
             {%- assign card_arrow_size = section.settings.pill_arrow_size | default: 13 -%}
 
-            <a
-              href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
-              {% if is_customizer_pill %}
-                onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
-              {% elsif is_bulk_pill %}
-                onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
-              {% elsif is_intl_pill %}
-                onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
-              {% endif %}
-              class="enamels-cat-card enamels-cat-card--grid"
-              style="--stagger-index: {{ forloop.index }}; background-color: {{ card_bg_val }} !important;"
-            >
-              {% if card_badge != blank %}
-                <span class="enamels-cat-card__badge">{{ card_badge }}</span>
-              {% endif %}
+            {%- assign effective_mode = block.settings.display_mode | default: 'default' -%}
+            {%- if effective_mode == 'default' or effective_mode == blank -%}
+              {%- assign effective_mode = section.settings.pill_display_mode | default: 'image_cover' -%}
+            {%- endif -%}
 
-              <div class="enamels-cat-card__content">
-                <span class="enamels-cat-card__title">{{ card_title }}</span>
-                {% if card_subtitle != blank %}
-                  <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
+            {%- assign img_pos = block.settings.image_position | default: section.settings.pill_image_position | default: 'center' -%}
+            {%- assign img_fit = section.settings.pill_image_fit | default: 'cover' -%}
+
+            {%- assign has_image = false -%}
+            {%- if card_img != blank or card_fallback != blank -%}
+              {%- assign has_image = true -%}
+            {%- endif -%}
+
+            {%- assign is_full_image = false -%}
+            {%- if effective_mode == 'image_cover' and has_image -%}
+              {%- assign is_full_image = true -%}
+            {%- endif -%}
+
+            {%- if is_full_image -%}
+              <!-- Full-Size Image Only Pill Tile in Grid -->
+              <a
+                href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
+                {% if is_customizer_pill %}
+                  onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+                {% elsif is_bulk_pill %}
+                  onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+                {% elsif is_intl_pill %}
+                  onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
                 {% endif %}
-              </div>
+                class="enamels-cat-card enamels-cat-card--grid enamels-cat-card--full-image"
+                style="--stagger-index: {{ forloop.index }}; background-color: {{ card_bg_val }} !important;"
+                aria-label="{{ card_title | escape }}"
+                title="{{ card_title | escape }}"
+              >
+                {% if card_badge != blank %}
+                  <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+                {% endif %}
 
-              <div class="enamels-cat-card__media">
                 {% if card_img != blank %}
                   <img
-                    src="{{ card_img | image_url: width: 360 }}"
+                    src="{{ card_img | image_url: width: 600 }}"
                     alt="{{ card_title | escape }}"
+                    class="enamels-cat-full-image"
                     loading="lazy"
-                    width="140"
-                    height="80"
+                    width="240"
+                    height="120"
+                    style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
                   >
                 {% elsif card_fallback != blank %}
                   <img
                     src="{{ card_fallback | asset_url }}"
                     alt="{{ card_title | escape }}"
+                    class="enamels-cat-full-image"
                     loading="lazy"
-                    width="140"
-                    height="80"
+                    width="240"
+                    height="120"
+                    style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
                   >
                 {% endif %}
-              </div>
+              </a>
+            {%- else -%}
+              <a
+                href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
+                {% if is_customizer_pill %}
+                  onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+                {% elsif is_bulk_pill %}
+                  onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+                {% elsif is_intl_pill %}
+                  onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
+                {% endif %}
+                class="enamels-cat-card enamels-cat-card--grid"
+                style="--stagger-index: {{ forloop.index }}; background-color: {{ card_bg_val }} !important;"
+              >
+                {% if card_badge != blank %}
+                  <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+                {% endif %}
 
-              {% if show_card_arrow %}
-                <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
-                  {% if card_arrow_style == 'arrow' %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  {% elsif card_arrow_style == 'long_arrow' %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
-                    </svg>
-                  {% elsif card_arrow_style == 'external' %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                  {% else %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
+                <div class="enamels-cat-card__content">
+                  <span class="enamels-cat-card__title">{{ card_title }}</span>
+                  {% if card_subtitle != blank %}
+                    <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
                   {% endif %}
-                </span>
-              {% endif %}
-            </a>
+                </div>
+
+                <div class="enamels-cat-card__media">
+                  {% if card_img != blank %}
+                    <img
+                      src="{{ card_img | image_url: width: 360 }}"
+                      alt="{{ card_title | escape }}"
+                      loading="lazy"
+                      width="140"
+                      height="80"
+                    >
+                  {% elsif card_fallback != blank %}
+                    <img
+                      src="{{ card_fallback | asset_url }}"
+                      alt="{{ card_title | escape }}"
+                      loading="lazy"
+                      width="140"
+                      height="80"
+                    >
+                  {% endif %}
+                </div>
+
+                {% if show_card_arrow %}
+                  <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
+                    {% if card_arrow_style == 'arrow' %}
+                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    {% elsif card_arrow_style == 'long_arrow' %}
+                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
+                      </svg>
+                    {% elsif card_arrow_style == 'external' %}
+                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+                      </svg>
+                    {% else %}
+                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    {% endif %}
+                  </span>
+                {% endif %}
+              </a>
+            {%- endif -%}
           {% endfor %}
         </div>
       </div>
@@ -677,6 +803,64 @@
   .enamels-cat-card:hover .enamels-cat-card__arrow {
     transform: translateX(3px);
     opacity: 1;
+  }
+
+  /* Full-Size Thumbnail Display in Category / Size Pills */
+  #enamels-cats-{{ section.id }} .enamels-cat-card--full-image,
+  .enamels-cat-card--full-image {
+    padding: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: block !important;
+    height: var(--cats-card-h-desk) !important;
+    min-height: var(--cats-card-h-desk) !important;
+    max-height: var(--cats-card-h-desk) !important;
+    border-radius: var(--cats-card-radius) !important;
+    box-sizing: border-box !important;
+    border: 2px solid transparent !important;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+  }
+
+  @media (max-width: 767px) {
+    #enamels-cats-{{ section.id }} .enamels-cat-card--full-image,
+    .enamels-cat-card--full-image {
+      height: var(--cats-card-h-mob) !important;
+      min-height: var(--cats-card-h-mob) !important;
+      max-height: var(--cats-card-h-mob) !important;
+    }
+  }
+
+  #enamels-cats-{{ section.id }} .enamels-cat-card--full-image .enamels-cat-full-image,
+  .enamels-cat-card--full-image .enamels-cat-full-image {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: var(--cats-card-radius) !important;
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1) !important;
+  }
+
+  .enamels-cat-card--full-image:hover .enamels-cat-full-image {
+    transform: scale(1.04);
+  }
+
+  /* Clear Selection States */
+  .enamels-cat-card--full-image.active,
+  .enamels-cat-card--full-image:focus-visible,
+  .enamels-cat-card--full-image[aria-current="true"] {
+    border-color: #008779 !important;
+    box-shadow: 0 0 0 2px #008779, 0 4px 12px rgba(0, 135, 121, 0.2) !important;
+    outline: none !important;
   }
 
   /* 2. Expandable Drawer Section */
@@ -1592,6 +1776,44 @@
       "id": "pill_arrow_color",
       "label": "Pill Arrow Icon Color",
       "default": "#111111"
+    },
+    {
+      "type": "header",
+      "content": "Pill Thumbnail Display Settings"
+    },
+    {
+      "type": "select",
+      "id": "pill_display_mode",
+      "label": "Thumbnail Display Mode",
+      "options": [
+        { "value": "image_cover", "label": "Full-Size Image Tile (Fills Entire Pill Area, No Text)" },
+        { "value": "text_and_thumbnail", "label": "Text with Small Side Thumbnail" }
+      ],
+      "default": "image_cover",
+      "info": "Full-Size Image Tile expands the image to cover 100% width and height of the pill with no text overlay."
+    },
+    {
+      "type": "select",
+      "id": "pill_image_fit",
+      "label": "Image Object Fit",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill Entire Pill Tile)" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "pill_image_position",
+      "label": "Default Image Position",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
     }
   ],
   "blocks": [
@@ -1599,6 +1821,30 @@
       "type": "category_pill",
       "name": "Category Card",
       "settings": [
+        {
+          "type": "select",
+          "id": "display_mode",
+          "label": "Display Mode for this Pill",
+          "options": [
+            { "value": "default", "label": "Default (Follow Section)" },
+            { "value": "image_cover", "label": "Full-Size Image Tile (No Text)" },
+            { "value": "text_and_thumbnail", "label": "Text + Small Side Thumbnail" }
+          ],
+          "default": "default"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image Crop Position",
+          "options": [
+            { "value": "center", "label": "Center" },
+            { "value": "top", "label": "Top" },
+            { "value": "bottom", "label": "Bottom" },
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "center"
+        },
         {
           "type": "text",
           "id": "title",

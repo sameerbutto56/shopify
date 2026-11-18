@@ -41,11 +41,8 @@
   <!-- Drawer Footer: Subtotal & Checkout -->
   <div class="drawer-footer-checkout">
     <!-- Advance Payment Alert in Cart -->
-    <div id="cart-advance-payment-warning" class="advance-payment-alert-box" style="display: none; margin-bottom: 14px; padding: 10px 14px;">
-      <span class="advance-alert-icon" style="font-size: 14px;">⚠️</span>
-      <p class="advance-alert-text" style="font-size: 11px;">
-        {{ section.settings.advance_payment_notice | default: 'Customized items in cart require advance payment before tailoring commences.' | escape }}
-      </p>
+    <div id="cart-advance-payment-warning" class="advance-payment-alert-box" style="display: none; margin-bottom: 14px; padding: 0; background: transparent; border: none;">
+      {% render 'enamels-advance-payment-notice' %}
     </div>
 
     <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px;">

@@ -413,40 +413,46 @@ class PredictiveSearchComponent extends Component {
     const url = new URL(window.location.href);
     url.searchParams.delete('page');
 
-    const emptySectionMarkup = await sectionRenderer.getSectionHTML(emptySectionId, false, url);
-    const parsedEmptySectionMarkup = new DOMParser()
-      .parseFromString(emptySectionMarkup, 'text/html')
-      .querySelector('.predictive-search-empty-section');
+    try {
+      const emptySectionMarkup = await sectionRenderer.getSectionHTML(emptySectionId, false, url);
+      if (!emptySectionMarkup) return;
 
-    if (!parsedEmptySectionMarkup) throw new Error('No empty section markup found');
+      const parsedEmptySectionMarkup = new DOMParser()
+        .parseFromString(emptySectionMarkup, 'text/html')
+        .querySelector('.predictive-search-empty-section');
 
-    /** This needs to be awaited and not .then so the DOM is already morphed
-     * when #closeResults is called and therefore the height is animated */
-    const viewedProducts = RecentlyViewed.getProducts();
+      if (!parsedEmptySectionMarkup) return;
 
-    if (viewedProducts.length > 0) {
-      const recentlyViewedMarkup = await this.#getRecentlyViewedProductsMarkup();
-      if (!recentlyViewedMarkup) return;
+      /** This needs to be awaited and not .then so the DOM is already morphed
+       * when #closeResults is called and therefore the height is animated */
+      const viewedProducts = RecentlyViewed.getProducts();
 
-      const parsedRecentlyViewedMarkup = new DOMParser().parseFromString(recentlyViewedMarkup, 'text/html');
-      const recentlyViewedProductsHtml = parsedRecentlyViewedMarkup.getElementById('predictive-search-products');
-      if (!recentlyViewedProductsHtml) return;
+      if (viewedProducts.length > 0) {
+        const recentlyViewedMarkup = await this.#getRecentlyViewedProductsMarkup();
+        if (!recentlyViewedMarkup) return;
 
-      for (const child of recentlyViewedProductsHtml.children) {
-        if (child instanceof HTMLElement) {
-          child.setAttribute('ref', 'recentlyViewedWrapper');
+        const parsedRecentlyViewedMarkup = new DOMParser().parseFromString(recentlyViewedMarkup, 'text/html');
+        const recentlyViewedProductsHtml = parsedRecentlyViewedMarkup.getElementById('predictive-search-products');
+        if (!recentlyViewedProductsHtml) return;
+
+        for (const child of recentlyViewedProductsHtml.children) {
+          if (child instanceof HTMLElement) {
+            child.setAttribute('ref', 'recentlyViewedWrapper');
+          }
         }
+
+        const collectionElement = parsedEmptySectionMarkup.querySelector('#predictive-search-products');
+        if (!collectionElement) return;
+        collectionElement.prepend(...recentlyViewedProductsHtml.children);
       }
 
-      const collectionElement = parsedEmptySectionMarkup.querySelector('#predictive-search-products');
-      if (!collectionElement) return;
-      collectionElement.prepend(...recentlyViewedProductsHtml.children);
+      if (abortController.signal.aborted) return;
+
+      morph(predictiveSearchResults, parsedEmptySectionMarkup);
+      this.#resetScrollPositions();
+    } catch (e) {
+      // Gracefully prevent unhandled promise rejections in theme editor / preview
     }
-
-    if (abortController.signal.aborted) return;
-
-    morph(predictiveSearchResults, parsedEmptySectionMarkup);
-    this.#resetScrollPositions();
   };
 }
 

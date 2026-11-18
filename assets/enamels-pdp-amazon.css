@@ -652,6 +652,24 @@
   overflow: hidden;
 }
 
+/* Full-bleed image display when size pill has thumbnail */
+.pdp-size-pill:has(img),
+.pdp-size-pill.has-img,
+.pdp-size-btn:has(img) {
+  padding: 0 !important;
+}
+
+.pdp-size-pill img,
+.pdp-size-btn img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  border-radius: inherit !important;
+  margin: 0 !important;
+}
+
 .pdp-size-pill:hover:not(.unavailable):not(:disabled),
 .pdp-size-btn:hover:not(:disabled) {
   border-color: #008779;
