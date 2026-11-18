@@ -283,16 +283,61 @@
       {{ content_for_additional_checkout_buttons }}
     </div>
   {% endif %}
+
+  <!-- 2% Instant Online Bank Transfer Discount Checkout Link -->
+  {%- unless cart == empty -%}
+    <a
+      href="/checkout?discount=BANK2"
+      class="cart__bank-discount-button"
+      style="display: flex; align-items: center; justify-content: space-between; background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; padding: 12px 16px; border-radius: var(--button-border-radius, 8px); font-size: 13px; font-weight: 700; text-decoration: none; margin-top: 8px; transition: all 0.2s ease;"
+    >
+      <span style="display: flex; align-items: center; gap: 6px;">
+        <span>⚡</span>
+        <span>Pay via Online Bank Transfer</span>
+      </span>
+      <span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800;">SAVE 2%</span>
+    </a>
+  {%- endunless -%}
 </div>
 
-<div class="cart-trust-badges">
-  <div class="cart-trust-item">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-      <circle cx="12" cy="12" r="2"></circle>
-    </svg>
-    <span>Cash on Delivery Available</span>
+{%- liquid
+  assign has_customized_item = false
+  for item in cart.items
+    if item.properties['Custom Measurements'] != blank or item.properties['Tailoring Specification'] != blank or item.properties['Embroidery Line 1'] != blank or item.properties['Article Category'] == 'Customized Medical Scrub' or item.properties['Bespoke Garment ID'] != blank or item.product.tags contains 'customized' or item.product.tags contains 'custom'
+      assign has_customized_item = true
+      break
+    endif
+  endfor
+-%}
+
+{%- if has_customized_item -%}
+  <div class="cart-advance-payment-banner" style="margin-top: 10px; background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #92400e; display: flex; align-items: flex-start; gap: 8px;">
+    <span style="font-size: 15px; line-height: 1;">⚠️</span>
+    <div>
+      <strong style="display: block; margin-bottom: 2px;">100% Advance Payment Required for Customized Scrubs</strong>
+      <span>Bespoke items are tailored to clinician measurements. Cash on Delivery is unavailable for this order. Please select Card Payment or Online Bank Transfer at checkout.</span>
+    </div>
   </div>
+{%- endif -%}
+
+<div class="cart-trust-badges">
+  {%- if has_customized_item -%}
+    <div class="cart-trust-item" style="color: #b45309; font-weight: 700;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <span>100% Advance Payment</span>
+    </div>
+  {%- else -%}
+    <div class="cart-trust-item">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+        <circle cx="12" cy="12" r="2"></circle>
+      </svg>
+      <span>Cash on Delivery Available</span>
+    </div>
+  {%- endif -%}
   <div class="cart-trust-item">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>

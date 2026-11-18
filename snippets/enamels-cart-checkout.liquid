@@ -63,21 +63,20 @@
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px;">
-      <button type="button" class="btn-proceed-checkout" id="btn-cart-shopify-checkout" onclick="window.proceedToShopifyCheckout()" style="background: #102a43; color: #ffffff; padding: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(16,42,67,0.18);">
-        <span>Proceed to Checkout (Shopify)</span>
+      <!-- Main Standard Checkout Button -->
+      <button type="button" class="btn-proceed-checkout" id="btn-cart-shopify-checkout" onclick="window.proceedToShopifyCheckout('standard')" style="background: #102a43; color: #ffffff; padding: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(16,42,67,0.18); border-radius: 8px; cursor: pointer;">
+        <span id="btn-cart-checkout-text">Proceed to Official Checkout</span>
         <span aria-hidden="true">→</span>
       </button>
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
-        <button type="button" id="btn-cart-cod-option" class="gender-pill-btn" onclick="window.openCheckoutModal('cod')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 4px; font-size: 11px; font-weight: 700; background: #f0fdf4; border: 1px solid #86efac; color: #166534;">
-          💵 Cash on Delivery
-        </button>
-        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('bank')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 4px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #102a43;">
-          🏦 Bank Transfer
-        </button>
-        <button type="button" class="gender-pill-btn" onclick="window.openCheckoutModal('rep')" style="width: 100%; text-align: center; border-radius: 4px; padding: 10px 4px; font-size: 11px; font-weight: 700; background: #e6fffa; border: 1px solid #99f6e4; color: #008779;">
-          💬 Concierge
-        </button>
-      </div>
+
+      <!-- 2% Instant Bank Transfer Discount Button -->
+      <button type="button" class="btn-bank-discount-checkout" id="btn-cart-bank-discount" onclick="window.proceedToShopifyCheckout('bank_transfer')" style="background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; padding: 11px 14px; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: space-between; border-radius: 8px; cursor: pointer;">
+        <span style="display: flex; align-items: center; gap: 6px;">
+          <span>⚡</span>
+          <span>Online Bank Transfer Checkout</span>
+        </span>
+        <span style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800;">SAVE 2%</span>
+      </button>
     </div>
 
     <div style="margin-top: 10px; text-align: center; font-size: 11px; color: #94a3b8;" id="cart-cod-trust-badge">
@@ -716,8 +715,8 @@
       if (modal) modal.style.display = 'none';
     };
 
-    // Real Shopify Checkout Bridge & Cart Synchronization
-    window.proceedToShopifyCheckout = async function() {
+    // Real Shopify Checkout Bridge & Cart Synchronization (Native Shopify Checkout)
+    window.proceedToShopifyCheckout = async function(paymentIntent = 'standard') {
       const cart = getStoredCart();
       if (!cart || !cart.length) {
         alert('Your cart is empty. Please select a product first.');
@@ -725,14 +724,34 @@
       }
 
       const checkoutBtn = document.getElementById('btn-cart-shopify-checkout');
+      const checkoutText = document.getElementById('btn-cart-checkout-text');
       if (checkoutBtn) {
         checkoutBtn.disabled = true;
-        checkoutBtn.innerHTML = 'Connecting to Shopify Checkout...';
+        if (checkoutText) checkoutText.textContent = 'Connecting to Shopify Checkout...';
       }
 
       try {
         // Clear Shopify cart first
         await fetch('/cart/clear.js', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+
+        // Identify customized cart items reliably
+        const isCustomizedCart = cart.some(item =>
+          Boolean(item.requiresAdvancePayment ||
+          item.isCustomSize ||
+          item.customSize ||
+          item.customization ||
+          item.category === 'bespoke' ||
+          (item.properties && (
+            item.properties['Customization Type'] ||
+            item.properties['Custom Sizing'] === 'Yes' ||
+            item.properties['Custom Measurements'] ||
+            item.properties['Tailoring Specification'] ||
+            item.properties['Embroidery Line 1'] ||
+            item.properties['Hospital Crest / Logo'] ||
+            item.properties['Article Category'] === 'Customized Medical Scrub' ||
+            item.properties['Bespoke Garment ID']
+          )))
+        );
 
         // Build item payloads with customizer line-item properties
         const fallbackVariantId = window.ShopifyLiveProducts?.[0]?.variants?.[0]?.id || null;
@@ -743,6 +762,9 @@
           if (item.size && !props['Size']) props['Size'] = item.size;
           if (item.isCustomSize && !props['Tailoring Specification']) {
             props['Tailoring Specification'] = 'Custom Tailored Specification (C)';
+          }
+          if (isCustomizedCart && !props['Advance Payment Required']) {
+            props['Advance Payment Required'] = '100% Advance Payment Required (COD Disabled)';
           }
 
           const variantId = item.variantId || item.variant_id || fallbackVariantId;
@@ -770,49 +792,60 @@
         }
 
         // Synchronize destination and shipping rate attributes before redirecting
+        let destCountry = 'Pakistan';
+        let comp = { Q: cart.length, A: 0 };
+        let shipResult = { shippingFee: 250, formulaText: 'Standard Courier' };
         if (typeof window.calculateShippingCharges === 'function') {
-          try {
-            const destCountry = (typeof window.getActiveShippingCountry === 'function')
-              ? window.getActiveShippingCountry()
-              : (localStorage.getItem('enamels_delivery_country') || 'Pakistan');
-            const subtotal = cart.reduce((sum, it) => sum + ((it.unitPrice || it.price || 0) * (it.quantity || 1)), 0);
-            const comp = typeof window.analyzeCartComposition === 'function'
-              ? window.analyzeCartComposition(cart)
-              : { Q: cart.length, A: 0 };
-            const shipResult = window.calculateShippingCharges(destCountry, subtotal, cart);
-            const isDom = !destCountry || destCountry.toLowerCase() === 'pk' || destCountry.toLowerCase().includes('pak');
+          destCountry = (typeof window.getActiveShippingCountry === 'function')
+            ? window.getActiveShippingCountry()
+            : (localStorage.getItem('enamels_delivery_country') || 'Pakistan');
+          const subtotal = cart.reduce((sum, it) => sum + ((it.unitPrice || it.price || 0) * (it.quantity || 1)), 0);
+          comp = typeof window.analyzeCartComposition === 'function'
+            ? window.analyzeCartComposition(cart)
+            : { Q: cart.length, A: 0 };
+          shipResult = window.calculateShippingCharges(destCountry, subtotal, cart);
+        }
+        const isDom = !destCountry || destCountry.toLowerCase() === 'pk' || destCountry.toLowerCase().includes('pak');
 
-            await fetch('/cart/update.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                attributes: {
-                  'Delivery Country Code': isDom ? 'PK' : destCountry,
-                  'Delivery Destination': isDom ? 'Pakistan' : destCountry,
-                  'Scrub Units (Q)': comp.Q,
-                  'Chargeable Add-on Units (A)': comp.A,
-                  'Estimated Shipping (PKR)': shipResult.shippingFee,
-                  'Shipping Rate Calculation': shipResult.formulaText,
-                  'customized_order': isCustomizedCart ? 'true' : 'false',
-                  'payment_rule': isCustomizedCart ? 'advance_payment_only' : 'standard',
-                  'cod_eligible': isCustomizedCart ? 'false' : 'true',
-                  'Advance Payment Required': isCustomizedCart ? 'Yes (100% Advance Payment for Customized Garments)' : 'Standard Delivery Rules'
-                }
-              })
-            });
-          } catch (shipErr) {
-            console.warn('Shipping attributes sync warning:', shipErr);
-          }
+        const cartAttributes = {
+          'Delivery Country Code': isDom ? 'PK' : destCountry,
+          'Delivery Destination': isDom ? 'Pakistan' : destCountry,
+          'Scrub Units (Q)': comp.Q,
+          'Chargeable Add-on Units (A)': comp.A,
+          'Estimated Shipping (PKR)': shipResult.shippingFee,
+          'Shipping Rate Calculation': shipResult.formulaText,
+          'customized_order': isCustomizedCart ? 'true' : 'false',
+          'payment_rule': isCustomizedCart ? 'advance_payment_only' : 'standard',
+          'cod_eligible': isCustomizedCart ? 'false' : 'true',
+          'Advance Payment Required': isCustomizedCart ? 'Yes (100% Advance Payment for Customized Garments)' : 'Standard Delivery Rules'
+        };
+
+        if (paymentIntent === 'bank_transfer') {
+          cartAttributes['payment_intent'] = 'bank_transfer';
+          cartAttributes['discount_code'] = 'BANK2';
+          cartAttributes['eligible_bank_discount'] = '2% on Subtotal';
+        } else {
+          cartAttributes['payment_intent'] = 'standard';
         }
 
-        window.location.href = '/checkout';
+        await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ attributes: cartAttributes })
+        });
+
+        if (paymentIntent === 'bank_transfer') {
+          window.location.href = '/checkout?discount=BANK2';
+        } else {
+          window.location.href = '/checkout';
+        }
       } catch (err) {
         console.error('Shopify checkout sync error:', err);
         window.location.href = '/checkout';
       } finally {
         if (checkoutBtn) {
           checkoutBtn.disabled = false;
-          checkoutBtn.innerHTML = 'Proceed to Shopify Checkout <span aria-hidden="true">→</span>';
+          if (checkoutText) checkoutText.textContent = 'Proceed to Official Checkout';
         }
       }
     };

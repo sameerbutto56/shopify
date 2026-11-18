@@ -1071,12 +1071,19 @@
         </div>
       </div>
 
-      <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="wizard-nav-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
         <button type="button" class="btn-step-prev" onclick="window.enamelsGoStep(5)">← Back to Personalization</button>
-        <button type="button" class="btn-select-next" id="btn-submit-to-checkout" style="width: auto; padding: 14px 36px; background: #008779; color: #ffffff; font-size: 15px; font-weight: 800; border-radius: 8px; cursor: pointer;" onclick="window.enamelsSubmitToShopifyCheckout()">
-          <span class="btn-checkout-text">{{ checkout_btn_label }}</span>
-          <span class="btn-checkout-loader" style="display: none;">{{ checkout_loading_text }}</span>
-        </button>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <!-- 2% Instant Bank Transfer Discount Checkout Button -->
+          <button type="button" class="btn-bank-checkout-action" id="btn-submit-bank-checkout" style="padding: 14px 22px; background: #f0fdf4; border: 2px solid #86efac; color: #166534; font-size: 14px; font-weight: 800; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="window.enamelsSubmitToShopifyCheckout('bank_transfer')">
+            <span>⚡ Bank Transfer (Save 2%) →</span>
+          </button>
+          <!-- Standard / Card Payment Checkout Button -->
+          <button type="button" class="btn-select-next" id="btn-submit-to-checkout" style="width: auto; padding: 14px 32px; background: #008779; color: #ffffff; font-size: 15px; font-weight: 800; border-radius: 8px; cursor: pointer;" onclick="window.enamelsSubmitToShopifyCheckout('standard')">
+            <span class="btn-checkout-text">{{ checkout_btn_label }}</span>
+            <span class="btn-checkout-loader" style="display: none;">{{ checkout_loading_text }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -3475,8 +3482,11 @@
     // =========================================================================
     // 8. SINGLE OFFICIAL SHOPIFY CHECKOUT ENGINE
     // =========================================================================
-    window.enamelsSubmitToShopifyCheckout = function() {
-      var btn = document.getElementById('btn-submit-to-checkout') || document.getElementById('btn-submit-order-final');
+    window.enamelsSubmitToShopifyCheckout = function(paymentMode) {
+      paymentMode = paymentMode || 'standard';
+      var isBankMode = (paymentMode === 'bank_transfer');
+
+      var btn = isBankMode ? document.getElementById('btn-submit-bank-checkout') : (document.getElementById('btn-submit-to-checkout') || document.getElementById('btn-submit-order-final'));
       var btnText = btn ? (btn.querySelector('.btn-checkout-text') || btn.querySelector('.btn-submit-text')) : null;
       var btnLoader = btn ? (btn.querySelector('.btn-checkout-loader') || btn.querySelector('.btn-submit-loader')) : null;
 
@@ -3625,19 +3635,26 @@
           }]
         };
 
+        var cartAttrs = {
+          'customized_order': 'true',
+          'payment_rule': 'advance_payment_only',
+          'cod_eligible': 'false',
+          'Advance Payment Required': 'Yes (100% Advance Payment for Customized Garments)',
+          'Order Category': 'Bespoke Scrub Customization'
+        };
+        if (isBankMode) {
+          cartAttrs['payment_intent'] = 'bank_transfer';
+          cartAttrs['discount_code'] = 'BANK2';
+          cartAttrs['eligible_bank_discount'] = '2% on Subtotal';
+        } else {
+          cartAttrs['payment_intent'] = 'standard';
+        }
+
         // First set cart attributes to enforce customized_order advance payment checkout rules
         fetch('/cart/update.js', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            attributes: {
-              'customized_order': 'true',
-              'payment_rule': 'advance_payment_only',
-              'cod_eligible': 'false',
-              'Advance Payment Required': 'Yes (100% Advance Payment for Customized Garments)',
-              'Order Category': 'Bespoke Scrub Customization'
-            }
-          })
+          body: JSON.stringify({ attributes: cartAttrs })
         }).finally(function() {
           fetch('/cart/add.js', {
             method: 'POST',
@@ -3650,7 +3667,11 @@
           })
           .then(function() {
             if (btnLoader) btnLoader.textContent = 'Redirecting to Shopify Checkout...';
-            window.location.href = '/checkout';
+            if (isBankMode) {
+              window.location.href = '/checkout?discount=BANK2';
+            } else {
+              window.location.href = '/checkout';
+            }
           })
           .catch(function(err) {
             if (btn) btn.disabled = false;
