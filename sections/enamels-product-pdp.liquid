@@ -687,7 +687,7 @@
                     <div class="pdp-bundle-item-left">
                       <input type="checkbox" id="pdp-add-cap-{{ section.id }}" class="pdp-bundle-checkbox" data-addon-type="cap" data-price="145000" />
                       <label for="pdp-add-cap-{{ section.id }}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <img src="{{ 'demo-bunfit-extra-volume-scrub-cap-navy.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="BunFit Scrub Cap" class="pdp-bundle-thumb" />
+                        <img src="{{ 'demo-bunfit-extra-volume-scrub-cap-navy.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="BunFit Scrub Cap" class="pdp-bundle-thumb" width="90" height="90" loading="lazy" />
                         <div>
                           <div class="pdp-bundle-title">BunFit™ Surgical Cap (Matching Navy)</div>
                           <div class="pdp-bundle-price">+PKR 1,450</div>
@@ -701,7 +701,7 @@
                     <div class="pdp-bundle-item-left">
                       <input type="checkbox" id="pdp-add-sleeves-{{ section.id }}" class="pdp-bundle-checkbox" data-addon-type="sleeves" data-price="75000" />
                       <label for="pdp-add-sleeves-{{ section.id }}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <img src="{{ 'demo-med-sleeves-compression-arms.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="Med Sleeves" class="pdp-bundle-thumb" />
+                        <img src="{{ 'demo-med-sleeves-compression-arms.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="Med Sleeves" class="pdp-bundle-thumb" width="90" height="90" loading="lazy" />
                         <div>
                           <div class="pdp-bundle-title">Med Sleeves Graduated Compression Arms</div>
                           <div class="pdp-bundle-price">+PKR 750</div>
@@ -1251,7 +1251,7 @@
   <div class="pdp-modal-overlay pdp-lightbox-overlay" id="pdp-fullscreen-modal-{{ section.id }}" role="dialog" aria-modal="true" style="display: none;">
     <button type="button" class="pdp-lightbox-close" id="pdp-close-fullscreen-btn" aria-label="Close Lightbox">✕</button>
     <div class="pdp-lightbox-body">
-      <img src="" id="pdp-lightbox-img" class="pdp-lightbox-img" alt="{{ product.title | escape }}" />
+      <img src="" id="pdp-lightbox-img" class="pdp-lightbox-img" alt="{{ product.title | escape }}" width="1200" height="1200" loading="lazy" />
     </div>
   </div>
 

@@ -577,7 +577,7 @@
           <div
             class="enamels-cat-card"
             data-product-id="{{ prod.id }}"
-            data-gender="{% if is_unisex %}unisex{% elsif is_men %}men{% elsif is_women %}women{% else %}unisex{% endif %}"
+            data-gender="{% if is_unisex %}unisex{% elsif is_men and is_women %}unisex{% elsif is_men %}men{% elsif is_women %}women{% else %}unisex{% endif %}"
             data-category="{{ prod_cat }}"
             data-article="{{ prod_article }}"
             data-title="{{ prod.title | escape }}"
