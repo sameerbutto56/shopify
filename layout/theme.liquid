@@ -22,13 +22,10 @@
     {{ 'enamels-white-theme.css' | asset_url | stylesheet_tag }}
     {{ 'enamels-3d-tilt.css' | asset_url | stylesheet_tag }}
     {{ 'enamels-studio.css' | asset_url | stylesheet_tag }}
-    <link rel="stylesheet" href="{{ 'enamels-hanging-rail.css' | asset_url }}&v=wardrobe-anim-v3">
     <link rel="stylesheet" href="{{ 'enamels-rtl.css' | asset_url }}" id="enamels-rtl-stylesheet">
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'scripts' -%}
-    <script src="{{ 'enamels-catalogue-data.js' | asset_url }}&v=wardrobe-anim-v3" defer></script>
     <script src="{{ 'enamels-studio.js' | asset_url }}" defer></script>
-    <script src="{{ 'enamels-hanging-rail.js' | asset_url }}&v=wardrobe-anim-v3" defer></script>
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-palette' -%}
 
@@ -275,6 +272,5 @@
     {% endunless %}
     {% render 'enamels-bulk-orders-modal' %}
     {% render 'enamels-international-modal' %}
-    {% render 'enamels-international-delivery' %}
   </body>
 </html>
