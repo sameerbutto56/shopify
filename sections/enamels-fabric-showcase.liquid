@@ -1,0 +1,559 @@
+{% comment %}
+  Section: enamels-fabric-showcase.liquid
+  Description: Interactive Technical Fabric Showcase with rating meters, clinical specs, and customization CTAs.
+{% endcomment %}
+
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: '#ffffff'
+  assign eyebrow = section.settings.eyebrow | default: 'ENGINEERED CLINICAL TEXTILES'
+  assign title = section.settings.title | default: 'Explore Our Technical Fabrics'
+  assign subtitle = section.settings.subtitle | default: 'Precision-woven for intense hospital shifts. Discover the tactile science behind our antimicrobial, fluid-repellent, and 4-way stretch clinical weaves.'
+-%}
+
+<section class="enamels-fabric-showcase-section" style="background-color: {{ bg_color }};" aria-label="{{ title | escape }}">
+  <div class="page-container" style="max-width: 1320px; margin: 0 auto; padding: 60px 20px;">
+    
+    <!-- Section Header -->
+    <div class="fabric-showcase-header" style="text-align: center; max-width: 760px; margin: 0 auto 48px;">
+      {% if eyebrow != blank %}
+        <span class="fabric-eyebrow">{{ eyebrow | escape }}</span>
+      {% endif %}
+      {% if title != blank %}
+        <h2 class="fabric-title">{{ title | escape }}</h2>
+      {% endif %}
+      {% if subtitle != blank %}
+        <p class="fabric-subtitle">{{ subtitle | escape }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Fabric Grid -->
+    <div class="fabric-cards-grid">
+      {% for block in section.blocks %}
+        {%- liquid
+          assign b_name = block.settings.title | default: 'Technical Fabric'
+          assign b_sub = block.settings.tagline | default: 'Clinical Grade Performance'
+          assign b_desc = block.settings.description
+          assign b_soft = block.settings.rating_softness | default: 5
+          assign b_breath = block.settings.rating_breathability | default: 4
+          assign b_stretch = block.settings.rating_stretch | default: 5
+          assign b_dur = block.settings.rating_durability | default: 5
+          assign b_badges = block.settings.badges | split: ','
+          assign b_link = block.settings.explore_link | default: '/collections/all'
+          assign b_custom_link = block.settings.customize_link | default: '/pages/customize-your-own-scrub'
+          assign b_image = block.settings.image
+        -%}
+        <div class="enamels-fabric-card" id="shopify-block-{{ block.id }}" {{ block.shopify_attributes }}>
+          
+          <!-- Card Image & Badge Banner -->
+          <div class="fabric-card-media-wrap">
+            {% if b_image != blank %}
+              <img
+                src="{{ b_image | image_url: width: 600 }}"
+                alt="{{ b_name | escape }}"
+                loading="lazy"
+                decoding="async"
+                width="600"
+                height="340"
+                class="fabric-card-img"
+              >
+            {% else %}
+              <div class="fabric-card-img-placeholder" style="background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);">
+                <span class="placeholder-icon">🔬</span>
+              </div>
+            {% endif %}
+
+            <div class="fabric-badge-strip">
+              {% for badge in b_badges %}
+                {% assign b_trimmed = badge | strip %}
+                {% if b_trimmed != blank %}
+                  <span class="fabric-feature-pill">{{ b_trimmed }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Card Content -->
+          <div class="fabric-card-body">
+            <div class="fabric-card-meta">
+              <h3 class="fabric-card-title">{{ b_name }}</h3>
+              <span class="fabric-card-tagline">{{ b_sub }}</span>
+            </div>
+
+            {% if b_desc != blank %}
+              <p class="fabric-card-desc">{{ b_desc }}</p>
+            {% endif %}
+
+            <!-- Performance Metrics Radar / Bars -->
+            <div class="fabric-metrics-panel" aria-label="Performance Metrics for {{ b_name | escape }}">
+              
+              <!-- Softness Meter -->
+              <div class="metric-meter-row">
+                <div class="metric-info">
+                  <span class="metric-name">Silky Softness</span>
+                  <span class="metric-score">{{ b_soft }} / 5</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" style="width: {{ b_soft | times: 20 }}%;"></div>
+                </div>
+              </div>
+
+              <!-- Breathability Meter -->
+              <div class="metric-meter-row">
+                <div class="metric-info">
+                  <span class="metric-name">Thermal Breathability</span>
+                  <span class="metric-score">{{ b_breath }} / 5</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" style="width: {{ b_breath | times: 20 }}%;"></div>
+                </div>
+              </div>
+
+              <!-- 4-Way Stretch Meter -->
+              <div class="metric-meter-row">
+                <div class="metric-info">
+                  <span class="metric-name">4-Way Micro-Stretch</span>
+                  <span class="metric-score">{{ b_stretch }} / 5</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" style="width: {{ b_stretch | times: 20 }}%;"></div>
+                </div>
+              </div>
+
+              <!-- Durability Meter -->
+              <div class="metric-meter-row">
+                <div class="metric-info">
+                  <span class="metric-name">Autoclave & Wash Resilience</span>
+                  <span class="metric-score">{{ b_dur }} / 5</span>
+                </div>
+                <div class="metric-track">
+                  <div class="metric-fill" style="width: {{ b_dur | times: 20 }}%;"></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Action CTAs -->
+            <div class="fabric-actions-row">
+              <a href="{{ b_link }}" class="btn-fabric-explore">
+                <span>View Collection</span>
+                <span class="arrow-icon">→</span>
+              </a>
+              <a href="{{ b_custom_link }}" class="btn-fabric-customize">
+                <span>Customize in this Fabric</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .enamels-fabric-showcase-section {
+    padding: 20px 0;
+    border-top: 1px solid #f1f5f9;
+  }
+  .fabric-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #008779;
+    background: #e6fffa;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .fabric-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    margin: 0 0 12px;
+  }
+  .fabric-subtitle {
+    font-size: 15px;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .fabric-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 991px) {
+    .fabric-cards-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .fabric-title {
+      font-size: 26px;
+    }
+  }
+  .enamels-fabric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .enamels-fabric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 135, 121, 0.1);
+    border-color: #008779;
+  }
+  .fabric-card-media-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #f8fafc;
+  }
+  .fabric-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .enamels-fabric-card:hover .fabric-card-img {
+    transform: scale(1.03);
+  }
+  .fabric-card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+  }
+  .fabric-badge-strip {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    z-index: 2;
+  }
+  .fabric-feature-pill {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    padding: 4px 10px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+  .fabric-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
+  .fabric-card-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .fabric-card-tagline {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #008779;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .fabric-card-desc {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0 0 20px;
+  }
+  .fabric-metrics-panel {
+    background: #f8fafc;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .metric-meter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .metric-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+  .metric-name {
+    font-weight: 600;
+    color: #334155;
+  }
+  .metric-score {
+    font-weight: 700;
+    color: #008779;
+    font-size: 11px;
+  }
+  .metric-track {
+    width: 100%;
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .metric-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #008779 0%, #14b8a6 100%);
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .fabric-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: auto;
+  }
+  @media (max-width: 480px) {
+    .fabric-actions-row {
+      grid-template-columns: 1fr;
+    }
+  }
+  .btn-fabric-explore,
+  .btn-fabric-customize {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  .btn-fabric-explore {
+    background: #0f172a;
+    color: #ffffff;
+  }
+  .btn-fabric-explore:hover {
+    background: #1e293b;
+    color: #ffffff;
+  }
+  .btn-fabric-customize {
+    background: #f0fdfa;
+    color: #008779;
+    border: 1.5px solid #99f6e4;
+  }
+  .btn-fabric-customize:hover {
+    background: #008779;
+    color: #ffffff;
+    border-color: #008779;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Explore Our Fabrics",
+  "tag": "section",
+  "class": "section-enamels-fabrics",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Tag",
+      "default": "ENGINEERED CLINICAL TEXTILES"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "Explore Our Technical Fabrics"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Precision-woven for intense hospital shifts. Discover the tactile science behind our antimicrobial, fluid-repellent, and 4-way stretch clinical weaves."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "fabric_card",
+      "name": "Fabric Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Fabric Lifestyle Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Fabric Name",
+          "default": "Velora™ Micro-Drape"
+        },
+        {
+          "type": "text",
+          "id": "tagline",
+          "label": "Fabric Tagline",
+          "default": "Ultra-Soft Fluid-Repellent Luxury"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Ultra-fine clinical microfiber offering liquid barrier repellency, buttery-soft drape, and all-day temperature regulation in fast-paced hospital theaters."
+        },
+        {
+          "type": "text",
+          "id": "badges",
+          "label": "Feature Badges (comma separated)",
+          "default": "Fluid Repellent, Autoclave Safe, Anti-Static, Wrinkle Free"
+        },
+        {
+          "type": "range",
+          "id": "rating_softness",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Softness Score (1-5)",
+          "default": 5
+        },
+        {
+          "type": "range",
+          "id": "rating_breathability",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Breathability Score (1-5)",
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "rating_stretch",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "4-Way Stretch Score (1-5)",
+          "default": 5
+        },
+        {
+          "type": "range",
+          "id": "rating_durability",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Durability & Wash Score (1-5)",
+          "default": 5
+        },
+        {
+          "type": "url",
+          "id": "explore_link",
+          "label": "View Collection URL",
+          "default": "/collections/all"
+        },
+        {
+          "type": "url",
+          "id": "customize_link",
+          "label": "Customize URL",
+          "default": "/pages/customize-your-own-scrub"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Explore Our Fabrics",
+      "blocks": [
+        {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Velora™ Micro-Drape",
+            "tagline": "Fluid-Repellent Silky Weave",
+            "description": "Ultra-fine clinical microfiber with hydrophobic droplet roll-off, featherweight softness, and effortless movement through 24-hour ward shifts.",
+            "badges": "Fluid Barrier, Wrinkle Free, Autoclave Safe, Zero Shrinkage",
+            "rating_softness": 5,
+            "rating_breathability": 4,
+            "rating_stretch": 5,
+            "rating_durability": 5,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        },
+        {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Crown™ Technical Stretch",
+            "tagline": "Heavy-Duty 4-Way Technical Twill",
+            "description": "Engineered for surgeons and intensive care physicians needing maximum tear resistance, four-way elasticity, and rich color retention.",
+            "badges": "4-Way Stretch, High Tensile Strength, Antimicrobial, Deep Color Lock",
+            "rating_softness": 4,
+            "rating_breathability": 5,
+            "rating_stretch": 5,
+            "rating_durability": 5,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        },
+        {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Sprinter™ FlexFit",
+            "tagline": "Athletic Moisture-Wicking Performance",
+            "description": "Inspired by athletic sportswear, Sprinter FlexFit keeps you cool under theater spotlights with rapid moisture evacuation and ribbed side-flex zones.",
+            "badges": "Cooling Tech, Fast Evaporation, Featherlight, 360° Movement",
+            "rating_softness": 5,
+            "rating_breathability": 5,
+            "rating_stretch": 5,
+            "rating_durability": 4,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        },
+        {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Helium™ Micro-Weave",
+            "tagline": "Featherlight Summer Clinical Fabric",
+            "description": "Specially formulated for hot clinical summers, Helium Micro-Weave delivers superior airflow without compromising opacity or professional structure.",
+            "badges": "Ultra Breathable, 100% Non-Sheer, Quick-Dry, Heat Dissipating",
+            "rating_softness": 4,
+            "rating_breathability": 5,
+            "rating_stretch": 4,
+            "rating_durability": 5,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

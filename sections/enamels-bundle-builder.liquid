@@ -1,0 +1,647 @@
+{% comment %}
+  Section: enamels-bundle-builder.liquid
+  Description: Interactive Clinical Bundle Builder with category tabs, real variant pickers, live discount calculation, and multi-item cart submission.
+{% endcomment %}
+
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: '#f8fafc'
+  assign eyebrow = section.settings.eyebrow | default: 'CREATE YOUR COMPLETE CLINICAL SET'
+  assign title = section.settings.title | default: 'Build Your Clinical Bundle & Save'
+  assign subtitle = section.settings.subtitle | default: 'Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery.'
+
+  assign col_tops = collections[section.settings.col_tops]
+  assign col_trousers = collections[section.settings.col_trousers]
+  assign col_labcoats = collections[section.settings.col_labcoats]
+  assign col_caps = collections[section.settings.col_caps]
+  assign col_accessories = collections[section.settings.col_accessories]
+
+  if col_tops == blank and collections['tops'] != blank
+    assign col_tops = collections['tops']
+  endif
+  if col_trousers == blank and collections['trousers'] != blank
+    assign col_trousers = collections['trousers']
+  endif
+  if col_labcoats == blank and collections['lab-coats'] != blank
+    assign col_labcoats = collections['lab-coats']
+  endif
+  if col_caps == blank and collections['caps'] != blank
+    assign col_caps = collections['caps']
+  endif
+  if col_accessories == blank and collections['accessories'] != blank
+    assign col_accessories = collections['accessories']
+  endif
+
+  # Fallback to general collections if specific ones are empty
+  if col_tops == blank
+    assign col_tops = collections['all']
+  endif
+-%}
+
+<section class="enamels-bundle-builder-section" id="enamels-bundle-builder-{{ section.id }}" style="background-color: {{ bg_color }};" aria-label="{{ title | escape }}">
+  <div class="page-container" style="max-width: 1320px; margin: 0 auto; padding: 60px 20px 100px;">
+    
+    <!-- Section Header -->
+    <div class="bundle-header" style="text-align: center; max-width: 760px; margin: 0 auto 36px;">
+      {% if eyebrow != blank %}
+        <span class="bundle-eyebrow">{{ eyebrow | escape }}</span>
+      {% endif %}
+      {% if title != blank %}
+        <h2 class="bundle-title">{{ title | escape }}</h2>
+      {% endif %}
+      {% if subtitle != blank %}
+        <p class="bundle-subtitle">{{ subtitle | escape }}</p>
+      {% endif %}
+
+      <!-- Tiered Discount Ribbon -->
+      <div class="bundle-tiers-ribbon">
+        <div class="tier-step active" id="tier-step-1">
+          <span class="tier-bullet">1</span>
+          <span class="tier-label">Pick Any 2: <strong>5% Off</strong></span>
+        </div>
+        <div class="tier-divider"></div>
+        <div class="tier-step" id="tier-step-2">
+          <span class="tier-bullet">2</span>
+          <span class="tier-label">Pick Any 3+: <strong>10% Off</strong></span>
+        </div>
+        <div class="tier-divider"></div>
+        <div class="tier-step">
+          <span class="tier-bullet">🚚</span>
+          <span class="tier-label">Nationwide <strong>Free Shipping</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Tabs Navigation -->
+    <div class="bundle-tabs-container">
+      <div class="bundle-tabs-scroller" role="tablist">
+        <button type="button" class="bundle-tab-btn active" role="tab" aria-selected="true" data-tab="tops" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'tops')">
+          <span class="tab-icon">🥼</span>
+          <span class="tab-text">1. Scrub Tops</span>
+          <span class="tab-count-badge" id="b-count-tops-{{ section.id }}">0</span>
+        </button>
+
+        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="trousers" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'trousers')">
+          <span class="tab-icon">👖</span>
+          <span class="tab-text">2. Scrub Trousers</span>
+          <span class="tab-count-badge" id="b-count-trousers-{{ section.id }}">0</span>
+        </button>
+
+        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="labcoats" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'labcoats')">
+          <span class="tab-icon">🩺</span>
+          <span class="tab-text">3. Lab Coats</span>
+          <span class="tab-count-badge" id="b-count-labcoats-{{ section.id }}">0</span>
+        </button>
+
+        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="caps" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'caps')">
+          <span class="tab-icon">🧢</span>
+          <span class="tab-text">4. Surgical Caps</span>
+          <span class="tab-count-badge" id="b-count-caps-{{ section.id }}">0</span>
+        </button>
+
+        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="accessories" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'accessories')">
+          <span class="tab-icon">✨</span>
+          <span class="tab-text">5. Underscrubs / Gear</span>
+          <span class="tab-count-badge" id="b-count-accessories-{{ section.id }}">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Panels Container -->
+    <div class="bundle-tab-panels">
+      
+      <!-- Panel 1: Tops -->
+      <div class="bundle-panel active" id="bpanel-{{ section.id }}-tops" role="tabpanel">
+        {% render 'enamels-bundle-product-grid', collection_obj: col_tops, section_id: section.id, category_key: 'tops' %}
+      </div>
+
+      <!-- Panel 2: Trousers -->
+      <div class="bundle-panel" id="bpanel-{{ section.id }}-trousers" role="tabpanel" style="display: none;">
+        {% render 'enamels-bundle-product-grid', collection_obj: col_trousers, section_id: section.id, category_key: 'trousers' %}
+      </div>
+
+      <!-- Panel 3: Lab Coats -->
+      <div class="bundle-panel" id="bpanel-{{ section.id }}-labcoats" role="tabpanel" style="display: none;">
+        {% render 'enamels-bundle-product-grid', collection_obj: col_labcoats, section_id: section.id, category_key: 'labcoats' %}
+      </div>
+
+      <!-- Panel 4: Caps -->
+      <div class="bundle-panel" id="bpanel-{{ section.id }}-caps" role="tabpanel" style="display: none;">
+        {% render 'enamels-bundle-product-grid', collection_obj: col_caps, section_id: section.id, category_key: 'caps' %}
+      </div>
+
+      <!-- Panel 5: Accessories -->
+      <div class="bundle-panel" id="bpanel-{{ section.id }}-accessories" role="tabpanel" style="display: none;">
+        {% render 'enamels-bundle-product-grid', collection_obj: col_accessories, section_id: section.id, category_key: 'accessories' %}
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Sticky Bottom Bundle Summary Bar -->
+  <div class="enamels-sticky-bundle-bar" id="sticky-bundle-bar-{{ section.id }}">
+    <div class="page-container" style="max-width: 1320px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+      
+      <!-- Selected Items Mini Previews -->
+      <div class="bundle-bar-left" style="display: flex; align-items: center; gap: 14px;">
+        <div class="bundle-bar-items-tray" id="bundle-tray-{{ section.id }}">
+          <div class="tray-empty-hint">Select items to start your bundle</div>
+        </div>
+        <div class="bundle-bar-meta">
+          <div class="bundle-count-line"><strong id="bundle-total-count-{{ section.id }}">0</strong> items selected</div>
+          <div class="bundle-discount-badge" id="bundle-tier-badge-{{ section.id }}">Add 2 items for 5% off</div>
+        </div>
+      </div>
+
+      <!-- Price & Checkout CTA -->
+      <div class="bundle-bar-right" style="display: flex; align-items: center; gap: 16px;">
+        <div class="bundle-price-box" style="text-align: right;">
+          <div class="bundle-original-price" id="bundle-original-price-{{ section.id }}" style="display: none;">PKR 0</div>
+          <div class="bundle-final-price" id="bundle-final-price-{{ section.id }}">PKR 0</div>
+        </div>
+        <button type="button" class="btn-add-bundle-cart" id="btn-add-bundle-{{ section.id }}" disabled onclick="window.enamelsSubmitBundleToCart('{{ section.id }}')">
+          <span class="btn-text">Add Bundle to Cart</span>
+          <span class="btn-loading" style="display: none;">Adding to Cart...</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  .enamels-bundle-builder-section {
+    position: relative;
+    border-top: 1px solid #e2e8f0;
+  }
+  .bundle-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #008779;
+    background: #e6fffa;
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .bundle-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    margin: 0 0 12px;
+  }
+  .bundle-subtitle {
+    font-size: 15px;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 auto 24px;
+  }
+  .bundle-tiers-ribbon {
+    display: inline-flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 6px 16px;
+    gap: 12px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+  }
+  @media (max-width: 768px) {
+    .bundle-tiers-ribbon {
+      flex-direction: column;
+      border-radius: 12px;
+      align-items: flex-start;
+      padding: 12px;
+      width: 100%;
+    }
+    .tier-divider { display: none; }
+  }
+  .tier-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #475569;
+  }
+  .tier-step.active {
+    color: #008779;
+    font-weight: 700;
+  }
+  .tier-bullet {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .tier-step.active .tier-bullet {
+    background: #008779;
+    color: #ffffff;
+  }
+  .tier-divider {
+    width: 1px;
+    height: 16px;
+    background: #cbd5e1;
+  }
+
+  /* Tabs Bar */
+  .bundle-tabs-container {
+    margin-bottom: 32px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .bundle-tabs-scroller {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scrollbar-width: none;
+  }
+  .bundle-tabs-scroller::-webkit-scrollbar { display: none; }
+  .bundle-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .bundle-tab-btn:hover {
+    border-color: #008779;
+    color: #008779;
+  }
+  .bundle-tab-btn.active {
+    background: #008779;
+    border-color: #008779;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 135, 121, 0.2);
+  }
+  .tab-count-badge {
+    background: rgba(0, 0, 0, 0.08);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+  .bundle-tab-btn.active .tab-count-badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+
+  /* Sticky Summary Bar */
+  .enamels-sticky-bundle-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 2px solid #008779;
+    box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.12);
+    z-index: 99;
+  }
+  .bundle-bar-items-tray {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tray-empty-hint {
+    font-size: 12px;
+    color: #64748b;
+    font-style: italic;
+  }
+  .tray-item-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    border: 1.5px solid #008779;
+    object-fit: cover;
+    background: #f8fafc;
+  }
+  .bundle-bar-meta {
+    font-size: 13px;
+  }
+  .bundle-count-line {
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .bundle-discount-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #008779;
+  }
+  .bundle-original-price {
+    font-size: 12px;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+  .bundle-final-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .btn-add-bundle-cart {
+    padding: 14px 28px;
+    background: #008779;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-add-bundle-cart:hover:not(:disabled) {
+    background: #006f63;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 135, 121, 0.25);
+  }
+  .btn-add-bundle-cart:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+(function() {
+  var bundleState = {};
+
+  window.enamelsSwitchBundleTab = function(sectionId, tabKey) {
+    var sectionEl = document.getElementById('enamels-bundle-builder-' + sectionId);
+    if (!sectionEl) return;
+    
+    var tabs = sectionEl.querySelectorAll('.bundle-tab-btn');
+    tabs.forEach(function(t) {
+      var isTarget = t.getAttribute('data-tab') === tabKey;
+      t.classList.toggle('active', isTarget);
+      t.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+    });
+
+    var panels = sectionEl.querySelectorAll('.bundle-panel');
+    panels.forEach(function(p) {
+      p.style.display = 'none';
+      p.classList.remove('active');
+    });
+
+    var activePanel = document.getElementById('bpanel-' + sectionId + '-' + tabKey);
+    if (activePanel) {
+      activePanel.style.display = 'block';
+      activePanel.classList.add('active');
+    }
+  };
+
+  window.enamelsToggleBundleItem = function(sectionId, itemData) {
+    if (!bundleState[sectionId]) bundleState[sectionId] = [];
+    var list = bundleState[sectionId];
+    
+    var existingIndex = -1;
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].variantId === itemData.variantId) {
+        existingIndex = i;
+        break;
+      }
+    }
+
+    if (existingIndex !== -1) {
+      list.splice(existingIndex, 1);
+    } else {
+      list.push(itemData);
+    }
+
+    renderBundleSummary(sectionId);
+  };
+
+  function renderBundleSummary(sectionId) {
+    var list = bundleState[sectionId] || [];
+    var totalCount = list.length;
+    var subtotal = 0;
+    var trayEl = document.getElementById('bundle-tray-' + sectionId);
+    var countEl = document.getElementById('bundle-total-count-' + sectionId);
+    var origPriceEl = document.getElementById('bundle-original-price-' + sectionId);
+    var finalPriceEl = document.getElementById('bundle-final-price-' + sectionId);
+    var badgeEl = document.getElementById('bundle-tier-badge-' + sectionId);
+    var btn = document.getElementById('btn-add-bundle-' + sectionId);
+
+    // Update Category Badges
+    var catCounts = { tops: 0, trousers: 0, labcoats: 0, caps: 0, accessories: 0 };
+    list.forEach(function(item) {
+      subtotal += item.price;
+      if (item.category && catCounts[item.category] !== undefined) {
+        catCounts[item.category]++;
+      }
+    });
+
+    ['tops', 'trousers', 'labcoats', 'caps', 'accessories'].forEach(function(c) {
+      var el = document.getElementById('b-count-' + c + '-' + sectionId);
+      if (el) el.textContent = catCounts[c];
+    });
+
+    if (countEl) countEl.textContent = totalCount;
+
+    // Render Tray Thumbs
+    if (trayEl) {
+      if (totalCount === 0) {
+        trayEl.innerHTML = '<div class="tray-empty-hint">Select items to start your bundle</div>';
+      } else {
+        var html = '';
+        list.forEach(function(it) {
+          html += '<img src="' + it.img + '" alt="' + it.title.replace(/"/g, '&quot;') + '" class="tray-item-thumb" title="' + it.title.replace(/"/g, '&quot;') + '">';
+        });
+        trayEl.innerHTML = html;
+      }
+    }
+
+    // Calculate Discount Tiers
+    var discountPercent = 0;
+    if (totalCount >= 3) {
+      discountPercent = 10;
+    } else if (totalCount >= 2) {
+      discountPercent = 5;
+    }
+
+    var finalPrice = subtotal * (1 - (discountPercent / 100));
+
+    if (badgeEl) {
+      if (discountPercent === 10) {
+        badgeEl.textContent = '🎉 10% Bundle Discount Applied!';
+        badgeEl.style.color = '#15803d';
+      } else if (discountPercent === 5) {
+        badgeEl.textContent = '✨ 5% Bundle Discount Applied! Add 1 more for 10% off';
+        badgeEl.style.color = '#008779';
+      } else if (totalCount === 1) {
+        badgeEl.textContent = 'Add 1 more item to save 5%';
+        badgeEl.style.color = '#008779';
+      } else {
+        badgeEl.textContent = 'Add 2 items for 5% off, 3+ for 10% off';
+        badgeEl.style.color = '#64748b';
+      }
+    }
+
+    if (origPriceEl) {
+      if (discountPercent > 0) {
+        origPriceEl.style.display = 'block';
+        origPriceEl.textContent = 'PKR ' + Math.round(subtotal).toLocaleString();
+      } else {
+        origPriceEl.style.display = 'none';
+      }
+    }
+
+    if (finalPriceEl) {
+      finalPriceEl.textContent = 'PKR ' + Math.round(finalPrice).toLocaleString();
+    }
+
+    if (btn) {
+      btn.disabled = (totalCount === 0);
+    }
+
+    // Update active button states in all cards
+    var allCards = document.querySelectorAll('#enamels-bundle-builder-' + sectionId + ' .enamels-bundle-card');
+    allCards.forEach(function(card) {
+      var vId = card.getAttribute('data-active-variant-id');
+      var isSelected = false;
+      for (var j = 0; j < list.length; j++) {
+        if (list[j].variantId === vId) {
+          isSelected = true;
+          break;
+        }
+      }
+      var toggleBtn = card.querySelector('.btn-bundle-select');
+      if (toggleBtn) {
+        if (isSelected) {
+          toggleBtn.classList.add('selected');
+          toggleBtn.textContent = '✓ Added in Bundle';
+        } else {
+          toggleBtn.classList.remove('selected');
+          toggleBtn.textContent = '+ Add to Bundle';
+        }
+      }
+    });
+  }
+
+  window.enamelsSubmitBundleToCart = function(sectionId) {
+    var list = bundleState[sectionId] || [];
+    if (list.length === 0) return;
+
+    var btn = document.getElementById('btn-add-bundle-' + sectionId);
+    var txt = btn ? btn.querySelector('.btn-text') : null;
+    var load = btn ? btn.querySelector('.btn-loading') : null;
+    if (btn) btn.disabled = true;
+    if (txt) txt.style.display = 'none';
+    if (load) load.style.display = 'inline';
+
+    var items = list.map(function(it) {
+      return {
+        id: it.variantId,
+        quantity: 1,
+        properties: {
+          'Bundle Offer': 'Clinical Set Builder',
+          'Selected Option': it.option || 'Default'
+        }
+      };
+    });
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ items: items })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('Cart add failed');
+      return res.json();
+    })
+    .then(function() {
+      window.location.href = '/cart';
+    })
+    .catch(function(err) {
+      alert('Could not add bundle items. Redirecting to cart...');
+      window.location.href = '/cart';
+    });
+  };
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Build Your Bundle",
+  "tag": "section",
+  "class": "section-enamels-bundle-builder",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Tag",
+      "default": "CREATE YOUR COMPLETE CLINICAL SET"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "Build Your Clinical Bundle & Save"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery."
+    },
+    {
+      "type": "header",
+      "content": "Category Collections"
+    },
+    {
+      "type": "collection",
+      "id": "col_tops",
+      "label": "Scrub Tops Collection"
+    },
+    {
+      "type": "collection",
+      "id": "col_trousers",
+      "label": "Scrub Trousers Collection"
+    },
+    {
+      "type": "collection",
+      "id": "col_labcoats",
+      "label": "Lab Coats Collection"
+    },
+    {
+      "type": "collection",
+      "id": "col_caps",
+      "label": "Surgical Caps Collection"
+    },
+    {
+      "type": "collection",
+      "id": "col_accessories",
+      "label": "Accessories / Underscrubs Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Build Your Bundle",
+      "settings": {
+        "eyebrow": "CREATE YOUR COMPLETE CLINICAL SET",
+        "title": "Build Your Clinical Bundle & Save",
+        "subtitle": "Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery."
+      }
+    }
+  ]
+}
+{% endschema %}

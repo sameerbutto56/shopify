@@ -1,0 +1,294 @@
+{% comment %}
+  Snippet: enamels-bundle-product-grid.liquid
+  Renders a responsive product grid for the Bundle Builder tab with variant selection and Add to Bundle action.
+  Arguments:
+  - collection_obj: Collection object
+  - section_id: Section ID
+  - category_key: Category string (e.g. 'tops', 'trousers', 'labcoats', 'caps', 'accessories')
+{% endcomment %}
+
+<div class="bundle-products-grid">
+  {% if collection_obj != blank and collection_obj.products_count > 0 %}
+    {% for product in collection_obj.products limit: 12 %}
+      {%- liquid
+        assign first_variant = product.selected_or_first_available_variant
+        assign card_img = product.featured_image
+      -%}
+      <div
+        class="enamels-bundle-card"
+        id="bcard-{{ section_id }}-{{ product.id }}"
+        data-product-id="{{ product.id }}"
+        data-active-variant-id="{{ first_variant.id }}"
+        data-product-title="{{ product.title | escape }}"
+        data-product-price="{{ first_variant.price | divided_by: 100.0 }}"
+        data-product-img="{{ card_img | image_url: width: 120 }}"
+        data-category="{{ category_key }}"
+      >
+        <div class="bundle-card-img-wrap">
+          {% if card_img != blank %}
+            <img
+              src="{{ card_img | image_url: width: 420 }}"
+              alt="{{ product.title | escape }}"
+              loading="lazy"
+              decoding="async"
+              width="420"
+              height="420"
+              class="bundle-card-img"
+              id="bcard-img-{{ section_id }}-{{ product.id }}"
+            >
+          {% else %}
+            <div class="bundle-card-placeholder">🩺</div>
+          {% endif %}
+
+          {% if product.compare_at_price > product.price %}
+            <span class="bundle-sale-pill">SALE</span>
+          {% endif %}
+        </div>
+
+        <div class="bundle-card-body">
+          <h4 class="bundle-card-title">{{ product.title }}</h4>
+
+          <div class="bundle-card-price-row">
+            <span class="bundle-cur-price" id="bcard-price-{{ section_id }}-{{ product.id }}">
+              {{ first_variant.price | money }}
+            </span>
+            {% if product.compare_at_price > product.price %}
+              <span class="bundle-cmp-price">{{ product.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+
+          <!-- Variant Selector if multiple variants exist -->
+          {% if product.variants.size > 1 %}
+            <div class="bundle-card-variants">
+              <select
+                class="bundle-variant-select"
+                id="bcard-select-{{ section_id }}-{{ product.id }}"
+                onchange="window.enamelsOnBundleVariantChange('{{ section_id }}', '{{ product.id }}', this)"
+              >
+                {% for variant in product.variants %}
+                  <option
+                    value="{{ variant.id }}"
+                    data-price="{{ variant.price | divided_by: 100.0 }}"
+                    data-price-formatted="{{ variant.price | money }}"
+                    {% if variant.featured_image %}data-img="{{ variant.featured_image | image_url: width: 120 }}"{% endif %}
+                    {% if variant == first_variant %}selected{% endif %}
+                    {% unless variant.available %}disabled{% endunless %}
+                  >
+                    {{ variant.title }}{% unless variant.available %} (Sold Out){% endunless %}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+
+          <button
+            type="button"
+            class="btn-bundle-select"
+            id="btn-bselect-{{ section_id }}-{{ product.id }}"
+            onclick="window.enamelsTriggerCardToggle('{{ section_id }}', '{{ product.id }}')"
+            {% unless product.available %}disabled{% endunless %}
+          >
+            {% if product.available %}
+              + Add to Bundle
+            {% else %}
+              Sold Out
+            {% endif %}
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="bundle-empty-state" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 12px; border: 1px dashed #cbd5e1;">
+      <div style="font-size: 32px; margin-bottom: 8px;">🧺</div>
+      <p style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0 0 4px;">Collection currently being updated</p>
+      <p style="font-size: 12px; color: #64748b; margin: 0;">Select from our active collections in the other tabs above.</p>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .bundle-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1024px) {
+    .bundle-products-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+  @media (max-width: 640px) {
+    .bundle-products-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+  .enamels-bundle-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .enamels-bundle-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+    border-color: #008779;
+  }
+  .bundle-card-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #f8fafc;
+    overflow: hidden;
+  }
+  .bundle-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .bundle-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+  .bundle-sale-pill {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .bundle-card-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
+  .bundle-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 6px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 35px;
+  }
+  .bundle-card-price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .bundle-cur-price {
+    font-size: 14px;
+    font-weight: 800;
+    color: #008779;
+  }
+  .bundle-cmp-price {
+    font-size: 11px;
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+  .bundle-card-variants {
+    margin-bottom: 10px;
+  }
+  .bundle-variant-select {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    background: #f8fafc;
+    cursor: pointer;
+  }
+  .bundle-variant-select:focus {
+    border-color: #008779;
+    outline: none;
+  }
+  .btn-bundle-select {
+    width: 100%;
+    padding: 10px;
+    background: #ffffff;
+    border: 1.5px solid #008779;
+    color: #008779;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-bundle-select:hover:not(:disabled) {
+    background: #008779;
+    color: #ffffff;
+  }
+  .btn-bundle-select.selected {
+    background: #008779;
+    color: #ffffff;
+    border-color: #008779;
+  }
+  .btn-bundle-select:disabled {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+(function() {
+  window.enamelsOnBundleVariantChange = function(sectionId, prodId, selectEl) {
+    var card = document.getElementById('bcard-' + sectionId + '-' + prodId);
+    if (!card) return;
+    var opt = selectEl.options[selectEl.selectedIndex];
+    var vId = opt.value;
+    var price = parseFloat(opt.getAttribute('data-price')) || 0;
+    var priceFormatted = opt.getAttribute('data-price-formatted') || '';
+    var img = opt.getAttribute('data-img');
+
+    card.setAttribute('data-active-variant-id', vId);
+    card.setAttribute('data-product-price', price);
+    if (img) card.setAttribute('data-product-img', img);
+
+    var priceEl = document.getElementById('bcard-price-' + sectionId + '-' + prodId);
+    if (priceEl && priceFormatted) priceEl.textContent = priceFormatted;
+  };
+
+  window.enamelsTriggerCardToggle = function(sectionId, prodId) {
+    var card = document.getElementById('bcard-' + sectionId + '-' + prodId);
+    if (!card) return;
+    
+    var selectEl = document.getElementById('bcard-select-' + sectionId + '-' + prodId);
+    var selectedOptTitle = selectEl ? selectEl.options[selectEl.selectedIndex].text : '';
+
+    var itemData = {
+      productId: prodId,
+      variantId: card.getAttribute('data-active-variant-id'),
+      title: card.getAttribute('data-product-title'),
+      price: parseFloat(card.getAttribute('data-product-price')) || 0,
+      img: card.getAttribute('data-product-img'),
+      category: card.getAttribute('data-category'),
+      option: selectedOptTitle
+    };
+
+    window.enamelsToggleBundleItem(sectionId, itemData);
+  };
+})();
+</script>

@@ -656,6 +656,38 @@
         </div>
       </div>
 
+      <!-- 2B. Trouser Cut & Hem Style Selection -->
+      <div class="form-group" style="margin-bottom: 22px;">
+        <label class="form-label" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 13px; font-weight: 700; color: #102a43;">B. Choose Trouser Cut & Hem Style:</span>
+          <span style="font-size: 11px; color: #008779; font-weight: 600;">Standard in all Bespoke Sets</span>
+        </label>
+        <div class="enamels-trouser-styles-grid">
+          <button type="button" class="trouser-style-card active" id="tstyle-jogger" onclick="window.enamelsSetTrouserStyle('jogger')">
+            <span class="ts-badge">POPULAR</span>
+            <div style="font-size: 20px; margin-bottom: 6px;">🏃‍♂️</div>
+            <strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 3px;">Jogger Cut</strong>
+            <span style="font-size: 11px; color: #64748b; line-height: 1.35;">Ribbed elastic ankle cuffs, modern athletic fit</span>
+          </button>
+          <button type="button" class="trouser-style-card" id="tstyle-cargo" onclick="window.enamelsSetTrouserStyle('cargo')">
+            <span class="ts-badge">UTILITY</span>
+            <div style="font-size: 20px; margin-bottom: 6px;">🩺</div>
+            <strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 3px;">Cargo Utility</strong>
+            <span style="font-size: 11px; color: #64748b; line-height: 1.35;">6 multi-pockets with instrument loops</span>
+          </button>
+          <button type="button" class="trouser-style-card" id="tstyle-straight" onclick="window.enamelsSetTrouserStyle('straight')">
+            <div style="font-size: 20px; margin-bottom: 6px;">👔</div>
+            <strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 3px;">Straight / Classic</strong>
+            <span style="font-size: 11px; color: #64748b; line-height: 1.35;">Traditional clean clinical drape, unbanded hem</span>
+          </button>
+          <button type="button" class="trouser-style-card" id="tstyle-slim" onclick="window.enamelsSetTrouserStyle('slim')">
+            <div style="font-size: 20px; margin-bottom: 6px;">⚡</div>
+            <strong style="display: block; font-size: 13px; color: #102a43; margin-bottom: 3px;">Slim-Fit</strong>
+            <span style="font-size: 11px; color: #64748b; line-height: 1.35;">Tapered athletic profile with ankle slit</span>
+          </button>
+        </div>
+      </div>
+
       <!-- 3. Mandatory Fit Notice Banner -->
       <div class="enamels-mandatory-fit-notice" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: flex-start; gap: 10px;">
         <span style="font-size: 20px; line-height: 1;">⚠️</span>
@@ -1008,6 +1040,18 @@
             <div class="review-row-left">
               <span class="review-lbl">Size & Fit:</span>
               <strong id="rev-size-name">Size M (Standard)</strong>
+            </div>
+            <div class="review-row-right">
+              <span class="review-fee">+PKR 0</span>
+              <button type="button" class="btn-edit-step" onclick="window.enamelsGoStep(4)">Edit ✎</button>
+            </div>
+          </div>
+
+          <!-- Trouser Cut & Hem Style -->
+          <div class="review-row">
+            <div class="review-row-left">
+              <span class="review-lbl">Trouser Style:</span>
+              <strong id="rev-trouser-name">Jogger (Ribbed Ankle Cuffs)</strong>
             </div>
             <div class="review-row-right">
               <span class="review-fee">+PKR 0</span>
@@ -1557,6 +1601,54 @@
     border-color: #008779;
     background: #f0fdfa;
     box-shadow: 0 0 0 1px #008779;
+  }
+
+  .enamels-trouser-styles-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) {
+    .enamels-trouser-styles-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+  }
+  .trouser-style-card {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .trouser-style-card:hover {
+    border-color: #008779;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 135, 121, 0.08);
+  }
+  .trouser-style-card.active {
+    border-color: #008779;
+    background: #f0fdfa;
+    box-shadow: 0 0 0 1px #008779;
+  }
+  .trouser-style-card .ts-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #008779;
+    background: #e6fffa;
+    padding: 2px 6px;
+    border-radius: 4px;
   }
 
   .extra-emb-line-row {
@@ -2530,6 +2622,11 @@
       // Step 4: Size & Fit
       gender: 'male', // 'male' or 'female'
       femaleFit: 'slim', // 'slim', 'regular', 'loose'
+      trouserStyle: {
+        id: 'jogger',
+        name: 'Jogger (Ribbed Ankle Cuffs)',
+        desc: 'Ribbed elastic ankle cuffs, modern athletic fit'
+      },
       size: 'M',
       isCustomSize: false,
       unit: 'in',
@@ -2637,10 +2734,14 @@
       }
 
       var rSize = document.getElementById('rev-size-name');
+      var rTrouserName = document.getElementById('rev-trouser-name');
       var rMText = document.getElementById('rev-measurements-text');
       if (rSize) {
         var targetFit = getActiveFitTarget();
         rSize.textContent = (state.isCustomSize ? 'Custom Tailored Fit' : 'Size ' + state.size) + ' (' + targetFit.title + ')';
+      }
+      if (rTrouserName && state.trouserStyle) {
+        rTrouserName.textContent = state.trouserStyle.name;
       }
       if (rMText) {
         var m = state.measurements;
@@ -3083,6 +3184,23 @@
       updateReviewAndPaymentUI();
     };
 
+    // 4B. Trouser Style Handler (Jogger, Cargo, Straight, Slim)
+    window.enamelsSetTrouserStyle = function(styleKey) {
+      var styles = {
+        jogger: { id: 'jogger', name: 'Jogger (Ribbed Ankle Cuffs)', desc: 'Ribbed elastic ankle cuffs, modern athletic fit' },
+        cargo: { id: 'cargo', name: 'Cargo (Utility Multi-Pocket)', desc: '6 multi-pockets with instrument loops' },
+        straight: { id: 'straight', name: 'Straight / Classic (Clean Hem)', desc: 'Traditional clean clinical drape, unbanded hem' },
+        slim: { id: 'slim', name: 'Slim-Fit (Athletic Tapered)', desc: 'Tapered athletic profile with ankle slit' }
+      };
+      var chosen = styles[styleKey] || styles.jogger;
+      state.trouserStyle = chosen;
+      var cards = document.querySelectorAll('.trouser-style-card');
+      cards.forEach(function(c) { c.classList.remove('active'); });
+      var targetEl = document.getElementById('tstyle-' + styleKey);
+      if (targetEl) targetEl.classList.add('active');
+      updateReviewAndPaymentUI();
+    };
+
     // 4. Size & Fit Selection (with Enamels Standard Size Chart & Auto Custom Detection)
     window.enamelsSelectStandardSize = function(sizeKey) {
       if (sizeKey === 'Custom') {
@@ -3508,6 +3626,7 @@
         'Size': sizeDisplayName,
         'Size & Fit': (state.isCustomSize ? 'Custom Tailored Fit' : ('Size ' + state.size)) + ' (' + targetFit.title + ')',
         'Custom Sizing': state.isCustomSize ? 'Yes' : 'No',
+        'Trouser Style': state.trouserStyle ? state.trouserStyle.name : 'Jogger (Ribbed Ankle Cuffs)',
         'Advance Payment Required': '100% Advance Payment Required',
         'COD Available': 'No (Customized garments require full advance payment via Card or Online Bank Transfer)'
       };
@@ -3582,6 +3701,7 @@
           gender: state.gender === 'female' ? 'Female' : 'Male',
           femaleFit: state.femaleFit,
           fitLabel: targetFit.title,
+          trouserStyle: state.trouserStyle ? state.trouserStyle.name : 'Jogger (Ribbed Ankle Cuffs)',
           size: state.size,
           isCustomSize: state.isCustomSize,
           unit: state.unit,

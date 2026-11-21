@@ -39,7 +39,7 @@
             "fallback_asset": "banner-velora.jpg",
             "title": "Velora Series",
             "subtitle": "Luxury Tailored Micro-Drape Medical Scrubs",
-            "button_label": "Shop Velora →",
+            "button_label": "Shop Velora \u2192",
             "button_link": "/collections/all",
             "text_color": "#ffffff",
             "alt": "Enamels Velora Medical Apparel"
@@ -52,7 +52,7 @@
             "fallback_asset": "banner-clogs.jpg",
             "title": "Clinical Clogs & Footwear",
             "subtitle": "Hospital Shock Absorption & Fluid Resistance",
-            "button_label": "Explore Footwear →",
+            "button_label": "Explore Footwear \u2192",
             "button_link": "/collections/accessories",
             "text_color": "#ffffff",
             "alt": "Enamels Clinical Footwear"
@@ -65,7 +65,7 @@
             "fallback_asset": "banner-autumn.jpg",
             "title": "Autumn Edition",
             "subtitle": "Athletic 4-Way Mechanical Stretch Weaves",
-            "button_label": "Shop Autumn →",
+            "button_label": "Shop Autumn \u2192",
             "button_link": "/collections/all",
             "text_color": "#ffffff",
             "alt": "Enamels Autumn Medical Scrubs"
@@ -76,9 +76,9 @@
           "settings": {
             "visible": true,
             "fallback_asset": "banner-caps.jpg",
-            "title": "BunFit™ Caps",
+            "title": "BunFit\u2122 Caps",
             "subtitle": "Custom Engineered Surgical Scrub Headwear",
-            "button_label": "Shop Caps →",
+            "button_label": "Shop Caps \u2192",
             "button_link": "/collections/surgical-caps",
             "text_color": "#ffffff",
             "alt": "Enamels BunFit Surgical Caps"
@@ -369,6 +369,283 @@
       },
       "blocks": {},
       "block_order": []
+    },
+    "fabric_showcase": {
+      "type": "enamels-fabric-showcase",
+      "settings": {
+        "bg_color": "#ffffff",
+        "eyebrow": "ENGINEERED CLINICAL TEXTILES",
+        "title": "Explore Our Technical Fabrics",
+        "subtitle": "Precision-woven for intense hospital shifts. Discover the tactile science behind our antimicrobial, fluid-repellent, and 4-way stretch clinical weaves."
+      },
+      "blocks": {
+        "fab_velora": {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Velora\u2122 Micro-Drape",
+            "tagline": "Fluid-Repellent Silky Weave",
+            "description": "Ultra-fine clinical microfiber with hydrophobic droplet roll-off, featherweight softness, and effortless movement through 24-hour ward shifts.",
+            "badges": "Fluid Barrier, Wrinkle Free, Autoclave Safe, Zero Shrinkage",
+            "rating_softness": 5,
+            "rating_breathability": 4,
+            "rating_stretch": 5,
+            "rating_durability": 5,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        },
+        "fab_crown": {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Crown\u2122 Technical Stretch",
+            "tagline": "Heavy-Duty 4-Way Technical Twill",
+            "description": "Engineered for surgeons and intensive care physicians needing maximum tear resistance, four-way elasticity, and rich color retention.",
+            "badges": "4-Way Stretch, High Tensile Strength, Antimicrobial, Deep Color Lock",
+            "rating_softness": 4,
+            "rating_breathability": 5,
+            "rating_stretch": 5,
+            "rating_durability": 5,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        },
+        "fab_sprinter": {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Sprinter\u2122 FlexFit",
+            "tagline": "Athletic Moisture-Wicking Performance",
+            "description": "Inspired by athletic sportswear, Sprinter FlexFit keeps you cool under theater spotlights with rapid moisture evacuation and ribbed side-flex zones.",
+            "badges": "Cooling Tech, Fast Evaporation, Featherlight, 360\u00b0 Movement",
+            "rating_softness": 5,
+            "rating_breathability": 5,
+            "rating_stretch": 5,
+            "rating_durability": 4,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        },
+        "fab_helium": {
+          "type": "fabric_card",
+          "settings": {
+            "title": "Helium\u2122 Micro-Weave",
+            "tagline": "Featherlight Summer Clinical Fabric",
+            "description": "Specially formulated for hot clinical summers, Helium Micro-Weave delivers superior airflow without compromising opacity or professional structure.",
+            "badges": "Ultra Breathable, 100% Non-Sheer, Quick-Dry, Heat Dissipating",
+            "rating_softness": 4,
+            "rating_breathability": 5,
+            "rating_stretch": 4,
+            "rating_durability": 5,
+            "explore_link": "/collections/all",
+            "customize_link": "/pages/customize-your-own-scrub"
+          }
+        }
+      },
+      "block_order": [
+        "fab_velora",
+        "fab_crown",
+        "fab_sprinter",
+        "fab_helium"
+      ]
+    },
+    "bundle_builder": {
+      "type": "enamels-bundle-builder",
+      "settings": {
+        "bg_color": "#f8fafc",
+        "eyebrow": "CREATE YOUR COMPLETE CLINICAL SET",
+        "title": "Build Your Clinical Bundle & Save",
+        "subtitle": "Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery.",
+        "col_tops": "all",
+        "col_trousers": "all",
+        "col_labcoats": "all",
+        "col_caps": "all",
+        "col_accessories": "all"
+      }
+    },
+    "most_loved": {
+      "type": "enamels-product-carousel",
+      "settings": {
+        "collection": "all",
+        "title": "Most Loved by Medicos",
+        "subtitle": "Top-rated clinical sets chosen daily by surgeons, consultants, and medical officers across Pakistan.",
+        "layout_mode": "carousel",
+        "products_visible_desktop": "4",
+        "products_visible_tablet": "2.5",
+        "products_visible_mobile": "1.5",
+        "show_arrows": true,
+        "indicator_style": "scrollbar",
+        "show_color_swatches": true,
+        "show_sale_badge": true,
+        "show_view_all": true,
+        "view_all_label": "View All",
+        "view_all_link": "/collections/all"
+      }
+    },
+    "signature_tops": {
+      "type": "enamels-product-carousel",
+      "settings": {
+        "collection": "all",
+        "title": "Signature Scrub Tops",
+        "subtitle": "Modern tailoring, functional chest and pen pockets, and 4-way micro-stretch comfort.",
+        "layout_mode": "carousel",
+        "products_visible_desktop": "4",
+        "products_visible_tablet": "2.5",
+        "products_visible_mobile": "1.5",
+        "show_arrows": true,
+        "indicator_style": "scrollbar",
+        "show_color_swatches": true,
+        "show_sale_badge": true,
+        "show_view_all": true,
+        "view_all_label": "View Tops",
+        "view_all_link": "/collections/all"
+      }
+    },
+    "best_sellers": {
+      "type": "enamels-product-carousel",
+      "settings": {
+        "collection": "all",
+        "title": "Best Sellers",
+        "subtitle": "Our all-time best-selling clinical apparel and hospital sets.",
+        "layout_mode": "carousel",
+        "products_visible_desktop": "4",
+        "products_visible_tablet": "2.5",
+        "products_visible_mobile": "1.5",
+        "show_arrows": true,
+        "indicator_style": "scrollbar",
+        "show_color_swatches": true,
+        "show_sale_badge": true,
+        "show_view_all": true,
+        "view_all_label": "View Best Sellers",
+        "view_all_link": "/collections/all"
+      }
+    },
+    "featured_trousers": {
+      "type": "enamels-product-carousel",
+      "settings": {
+        "collection": "all",
+        "title": "Featured Scrub Trousers",
+        "subtitle": "Available in Jogger, Cargo, Straight, and Slim cuts with reinforced gear pockets.",
+        "layout_mode": "carousel",
+        "products_visible_desktop": "4",
+        "products_visible_tablet": "2.5",
+        "products_visible_mobile": "1.5",
+        "show_arrows": true,
+        "indicator_style": "scrollbar",
+        "show_color_swatches": true,
+        "show_sale_badge": true,
+        "show_view_all": true,
+        "view_all_label": "View Trousers",
+        "view_all_link": "/collections/all"
+      }
+    },
+    "brand_benefits": {
+      "type": "enamels-trust-badges",
+      "settings": {
+        "enable_section": true,
+        "trust_badges_bg": "#ffffff"
+      },
+      "blocks": {
+        "badge_shipping": {
+          "type": "trust_badge",
+          "settings": {
+            "icon_emoji": "\ud83d\ude9a",
+            "title": "Free Nationwide Shipping",
+            "subtitle": "On all prepaid clinical orders over PKR 5,000"
+          }
+        },
+        "badge_quality": {
+          "type": "trust_badge",
+          "settings": {
+            "icon_emoji": "\ud83d\udee1\ufe0f",
+            "title": "Authentic Clinical Weaves",
+            "subtitle": "Autoclave safe, wrinkle-free & fluid repellent"
+          }
+        },
+        "badge_custom": {
+          "type": "trust_badge",
+          "settings": {
+            "icon_emoji": "\ud83e\ude7a",
+            "title": "Customized Name & Logo",
+            "subtitle": "Precision laser engraving & hospital crest embroidery"
+          }
+        },
+        "badge_exchange": {
+          "type": "trust_badge",
+          "settings": {
+            "icon_emoji": "\ud83d\udd04",
+            "title": "Hassle-Free Size Exchange",
+            "subtitle": "Fast door-step exchanges across Pakistan"
+          }
+        }
+      },
+      "block_order": [
+        "badge_shipping",
+        "badge_quality",
+        "badge_custom",
+        "badge_exchange"
+      ]
+    },
+    "customer_reviews": {
+      "type": "enamels-testimonials",
+      "settings": {
+        "enable_section": true,
+        "testimonials_tag": "VERIFIED HEALTHCARE REVIEWS",
+        "testimonials_heading": "Trusted by 10,000+ Healthcare Specialists",
+        "testimonials_subheading": "Read real clinical feedback from doctors, surgeons, and nurses across premier medical institutes."
+      },
+      "blocks": {
+        "rev_1": {
+          "type": "testimonial",
+          "settings": {
+            "author": "Dr. Hamza Tariq",
+            "city": "Lahore (Shaukat Khanum)",
+            "review": "The Crown technical stretch is by far the best scrub fabric in Pakistan. Endured 14-hour OR shifts with zero wrinkles and great breathability.",
+            "rating": 5,
+            "verified_buyer": true
+          }
+        },
+        "rev_2": {
+          "type": "testimonial",
+          "settings": {
+            "author": "Dr. Ayesha Siddiqui",
+            "city": "Karachi (Aga Khan University Hospital)",
+            "review": "Customizing my name and department logo was so seamless. The fit is exceptionally flattering and comfortable.",
+            "rating": 5,
+            "verified_buyer": true
+          }
+        },
+        "rev_3": {
+          "type": "testimonial",
+          "settings": {
+            "author": "Dr. Bilal Farooq",
+            "city": "Islamabad (PIMS)",
+            "review": "Bought the 3-piece bundle with the jogger trousers. Pockets are smartly positioned for stethoscope, penlights, and phone.",
+            "rating": 5,
+            "verified_buyer": true
+          }
+        }
+      },
+      "block_order": [
+        "rev_1",
+        "rev_2",
+        "rev_3"
+      ]
+    },
+    "sale_promotions": {
+      "type": "enamels-sale-section",
+      "settings": {
+        "sale_collection": "all",
+        "filter_rule": "compare_at",
+        "header_tag": "LIMITED TIME CLINICAL OFFERS",
+        "heading": "Exclusive Clinical Promotions",
+        "subtext": "Special limited-time offers on genuine technical scrubs, lab coats, and surgical caps.",
+        "layout_mode": "carousel",
+        "products_visible_desktop": "4",
+        "products_visible_tablet": "2.5",
+        "products_visible_mobile": "1.5",
+        "show_arrows": true,
+        "show_sale_badge": true,
+        "show_discount_percentage": true
+      }
     }
   },
   "order": [
@@ -376,7 +653,15 @@
     "frontpage_announcement",
     "frontpage_categories",
     "frontpage_colors",
-    "frontpage_new_arrivals",
+    "fabric_showcase",
+    "bundle_builder",
+    "most_loved",
+    "signature_tops",
+    "best_sellers",
+    "featured_trousers",
+    "brand_benefits",
+    "customer_reviews",
+    "sale_promotions",
     "frontpage_lookbook"
   ]
 }
