@@ -1,0 +1,198 @@
+{% doc %}
+  Renders a single category pill card.
+  @param {object} block - Category pill block
+  @param {object} section - Section object
+  @param {string} [card_class] - Extra class e.g. enamels-cat-card--carousel, enamels-cat-card--mobile, enamels-cat-card--grid
+  @param {number} [stagger_index] - Optional stagger animation index
+{% enddoc %}
+
+{% liquid
+  assign col = block.settings.collection
+  assign card_title = block.settings.title | default: col.title
+  assign card_subtitle = block.settings.subtitle
+  assign card_badge = block.settings.badge_text
+  assign card_link = block.settings.link | default: col.url | default: '#'
+  assign card_img = block.settings.image
+  if card_img == blank and col.featured_image != blank
+    assign card_img = col.featured_image
+  endif
+  assign card_fallback = block.settings.fallback_asset
+  assign card_title_upper = card_title | upcase
+  assign card_link_lower = card_link | downcase
+  assign is_customizer_pill = false
+  assign is_bulk_pill = false
+  assign is_intl_pill = false
+
+  if card_link_lower contains 'customizer' or card_title_upper contains 'CUSTOMIZE'
+    assign is_customizer_pill = true
+  elsif card_link_lower contains 'bulk' or card_title_upper contains 'BULK'
+    assign is_bulk_pill = true
+  elsif card_link_lower contains 'intl' or card_link_lower contains 'international' or card_title_upper contains 'INTERNATIONAL'
+    assign is_intl_pill = true
+  endif
+
+  assign card_bg_val = block.settings.card_bg | default: section.settings.card_bg | default: '#dfdfdf'
+  if card_bg_val == blank or card_bg_val == 'rgba(0,0,0,0)'
+    assign card_bg_val = '#dfdfdf'
+  endif
+
+  assign show_card_arrow = false
+  if section.settings.show_pill_arrow and block.settings.show_arrow != false
+    assign show_card_arrow = true
+  elsif block.settings.show_arrow
+    assign show_card_arrow = true
+  endif
+
+  assign card_arrow_color = block.settings.arrow_color | default: section.settings.pill_arrow_color | default: '#111111'
+  assign card_arrow_style = block.settings.arrow_icon_override | default: 'default'
+  if card_arrow_style == 'default' or card_arrow_style == blank
+    assign card_arrow_style = section.settings.pill_arrow_style | default: 'chevron'
+  endif
+  assign card_arrow_size = section.settings.pill_arrow_size | default: 13
+
+  assign effective_mode = block.settings.display_mode | default: 'default'
+  if effective_mode == 'default' or effective_mode == blank
+    assign effective_mode = section.settings.pill_display_mode | default: 'image_cover'
+  endif
+
+  assign img_pos = block.settings.image_position | default: section.settings.pill_image_position | default: 'center'
+  assign img_fit = section.settings.pill_image_fit | default: 'cover'
+
+  assign has_image = false
+  if card_img != blank or card_fallback != blank
+    assign has_image = true
+  endif
+
+  assign is_full_image = false
+  if effective_mode == 'image_cover' and has_image
+    assign is_full_image = true
+  endif
+
+  assign card_target_url = card_link
+  if is_customizer_pill
+    assign card_target_url = '/pages/customizer'
+  elsif is_bulk_pill
+    assign card_target_url = '/pages/bulk-orders'
+  elsif is_intl_pill
+    assign card_target_url = '#international-delivery'
+  endif
+%}
+
+{% if is_full_image %}
+  <a
+    href="{{ card_target_url }}"
+    {% if is_customizer_pill %}
+      onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+    {% elsif is_bulk_pill %}
+      onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+    {% elsif is_intl_pill %}
+      onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
+    {% endif %}
+    class="enamels-cat-card {{ card_class }} enamels-cat-card--full-image {% if is_customizer_pill %}enamels-cat-card--customizer{% endif %}"
+    style="{% if stagger_index != blank %}--stagger-index: {{ stagger_index }};{% endif %} background-color: {{ card_bg_val }} !important;"
+    aria-label="{{ card_title | escape }}"
+    title="{{ card_title | escape }}"
+    {{ block.shopify_attributes }}
+  >
+    {% if is_customizer_pill %}
+      <span class="enamels-cat-advance-tag" aria-label="100% Advance Payment Required">
+        {{ block.settings.advance_payment_tag_text | default: '100% ADVANCE PAYMENT REQUIRED' }}
+      </span>
+    {% elsif card_badge != blank %}
+      <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+    {% endif %}
+
+    {% if card_img != blank %}
+      <img
+        src="{{ card_img | image_url: width: 600 }}"
+        alt="{{ card_title | escape }}"
+        class="enamels-cat-full-image"
+        loading="lazy"
+        width="240"
+        height="120"
+        style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
+      >
+    {% elsif card_fallback != blank %}
+      <img
+        src="{{ card_fallback | asset_url }}"
+        alt="{{ card_title | escape }}"
+        class="enamels-cat-full-image"
+        loading="lazy"
+        width="240"
+        height="120"
+        style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
+      >
+    {% endif %}
+  </a>
+{% else %}
+  <a
+    href="{{ card_target_url }}"
+    {% if is_customizer_pill %}
+      onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
+    {% elsif is_bulk_pill %}
+      onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
+    {% elsif is_intl_pill %}
+      onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
+    {% endif %}
+    class="enamels-cat-card {{ card_class }} {% if is_customizer_pill %}enamels-cat-card--customizer{% endif %}"
+    style="{% if stagger_index != blank %}--stagger-index: {{ stagger_index }};{% endif %} background-color: {{ card_bg_val }} !important;"
+    {{ block.shopify_attributes }}
+  >
+    {% if is_customizer_pill %}
+      <span class="enamels-cat-advance-tag" aria-label="100% Advance Payment Required">
+        {{ block.settings.advance_payment_tag_text | default: '100% ADVANCE PAYMENT REQUIRED' }}
+      </span>
+    {% elsif card_badge != blank %}
+      <span class="enamels-cat-card__badge">{{ card_badge }}</span>
+    {% endif %}
+
+    <div class="enamels-cat-card__content">
+      <span class="enamels-cat-card__title">{{ card_title }}</span>
+      {% if card_subtitle != blank %}
+        <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
+      {% endif %}
+    </div>
+
+    <div class="enamels-cat-card__media">
+      {% if card_img != blank %}
+        <img
+          src="{{ card_img | image_url: width: 320 }}"
+          alt="{{ card_title | escape }}"
+          loading="lazy"
+          width="120"
+          height="70"
+        >
+      {% elsif card_fallback != blank %}
+        <img
+          src="{{ card_fallback | asset_url }}"
+          alt="{{ card_title | escape }}"
+          loading="lazy"
+          width="120"
+          height="70"
+        >
+      {% endif %}
+    </div>
+
+    {% if show_card_arrow %}
+      <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
+        {% if card_arrow_style == 'arrow' %}
+          <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        {% elsif card_arrow_style == 'long_arrow' %}
+          <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
+          </svg>
+        {% elsif card_arrow_style == 'external' %}
+          <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        {% else %}
+          <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        {% endif %}
+      </span>
+    {% endif %}
+  </a>
+{% endif %}

@@ -46,8 +46,8 @@
       {% endif %}
     </div>
 
-    <!-- 1. Initial Collapsed Carousel -->
-    <div class="enamels-cats-carousel-wrap" data-carousel-wrap>
+    <!-- 1. Desktop / Tablet Carousel Track -->
+    <div class="enamels-cats-carousel-wrap enamels-cats-desktop-track" data-carousel-wrap>
       {% if section.settings.show_arrows != false or section.settings.show_arrows_mobile %}
         <button
           type="button"
@@ -73,179 +73,7 @@
 
       <div class="enamels-cats-track" data-carousel-track tabindex="0" role="region" aria-label="Category carousel">
         {% for block in section.blocks %}
-          {% assign col = block.settings.collection %}
-          {% assign card_title = block.settings.title | default: col.title %}
-          {% assign card_subtitle = block.settings.subtitle %}
-          {% assign card_badge = block.settings.badge_text %}
-          {% assign card_link = block.settings.link | default: col.url | default: '#' %}
-          {% assign card_img = block.settings.image %}
-          {% if card_img == blank and col.featured_image != blank %}
-            {% assign card_img = col.featured_image %}
-          {% endif %}
-          {% assign card_fallback = block.settings.fallback_asset %}
-          {% assign card_title_upper = card_title | upcase %}
-          {% assign card_link_lower = card_link | downcase %}
-          {% assign is_customizer_pill = false %}
-          {% assign is_bulk_pill = false %}
-          {% assign is_intl_pill = false %}
-
-          {% if card_link_lower contains 'customizer' or card_title_upper contains 'CUSTOMIZE' %}
-            {% assign is_customizer_pill = true %}
-          {% elsif card_link_lower contains 'bulk' or card_title_upper contains 'BULK' %}
-            {% assign is_bulk_pill = true %}
-          {% elsif card_link_lower contains 'intl' or card_link_lower contains 'international' or card_title_upper contains 'INTERNATIONAL' %}
-            {% assign is_intl_pill = true %}
-          {% endif %}
-
-          {%- assign card_bg_val = block.settings.card_bg | default: section.settings.card_bg | default: '#dfdfdf' -%}
-          {%- if card_bg_val == blank or card_bg_val == 'rgba(0,0,0,0)' -%}
-            {%- assign card_bg_val = '#dfdfdf' -%}
-          {%- endif -%}
-
-          {%- assign show_card_arrow = false -%}
-          {%- if section.settings.show_pill_arrow and block.settings.show_arrow != false -%}
-            {%- assign show_card_arrow = true -%}
-          {%- elsif block.settings.show_arrow -%}
-            {%- assign show_card_arrow = true -%}
-          {%- endif -%}
-
-          {%- assign card_arrow_color = block.settings.arrow_color | default: section.settings.pill_arrow_color | default: '#111111' -%}
-          {%- assign card_arrow_style = block.settings.arrow_icon_override | default: 'default' -%}
-          {%- if card_arrow_style == 'default' or card_arrow_style == blank -%}
-            {%- assign card_arrow_style = section.settings.pill_arrow_style | default: 'chevron' -%}
-          {%- endif -%}
-          {%- assign card_arrow_size = section.settings.pill_arrow_size | default: 13 -%}
-
-          {%- assign effective_mode = block.settings.display_mode | default: 'default' -%}
-          {%- if effective_mode == 'default' or effective_mode == blank -%}
-            {%- assign effective_mode = section.settings.pill_display_mode | default: 'image_cover' -%}
-          {%- endif -%}
-
-          {%- assign img_pos = block.settings.image_position | default: section.settings.pill_image_position | default: 'center' -%}
-          {%- assign img_fit = section.settings.pill_image_fit | default: 'cover' -%}
-
-          {%- assign has_image = false -%}
-          {%- if card_img != blank or card_fallback != blank -%}
-            {%- assign has_image = true -%}
-          {%- endif -%}
-
-          {%- assign is_full_image = false -%}
-          {%- if effective_mode == 'image_cover' and has_image -%}
-            {%- assign is_full_image = true -%}
-          {%- endif -%}
-
-          {%- if is_full_image -%}
-            <!-- Full-Size Image Only Pill Tile (Covers Complete Predefined Pill Area) -->
-            <a
-              href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
-              {% if is_customizer_pill %}
-                onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
-              {% elsif is_bulk_pill %}
-                onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
-              {% elsif is_intl_pill %}
-                onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
-              {% endif %}
-              class="enamels-cat-card enamels-cat-card--carousel enamels-cat-card--full-image"
-              style="background-color: {{ card_bg_val }} !important;"
-              aria-label="{{ card_title | escape }}"
-              title="{{ card_title | escape }}"
-              {{ block.shopify_attributes }}
-            >
-              {% if card_badge != blank %}
-                <span class="enamels-cat-card__badge">{{ card_badge }}</span>
-              {% endif %}
-
-              {% if card_img != blank %}
-                <img
-                  src="{{ card_img | image_url: width: 600 }}"
-                  alt="{{ card_title | escape }}"
-                  class="enamels-cat-full-image"
-                  loading="lazy"
-                  width="240"
-                  height="120"
-                  style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
-                >
-              {% elsif card_fallback != blank %}
-                <img
-                  src="{{ card_fallback | asset_url }}"
-                  alt="{{ card_title | escape }}"
-                  class="enamels-cat-full-image"
-                  loading="lazy"
-                  width="240"
-                  height="120"
-                  style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
-                >
-              {% endif %}
-            </a>
-          {%- else -%}
-            <!-- Standard Text + Small Side Thumbnail Pill Card -->
-            <a
-              href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
-              {% if is_customizer_pill %}
-                onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
-              {% elsif is_bulk_pill %}
-                onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
-              {% elsif is_intl_pill %}
-                onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
-              {% endif %}
-              class="enamels-cat-card enamels-cat-card--carousel"
-              style="background-color: {{ card_bg_val }} !important;"
-              {{ block.shopify_attributes }}
-            >
-              {% if card_badge != blank %}
-                <span class="enamels-cat-card__badge">{{ card_badge }}</span>
-              {% endif %}
-
-              <div class="enamels-cat-card__content">
-                <span class="enamels-cat-card__title">{{ card_title }}</span>
-                {% if card_subtitle != blank %}
-                  <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
-                {% endif %}
-              </div>
-
-              <div class="enamels-cat-card__media">
-                {% if card_img != blank %}
-                  <img
-                    src="{{ card_img | image_url: width: 320 }}"
-                    alt="{{ card_title | escape }}"
-                    loading="lazy"
-                    width="120"
-                    height="70"
-                  >
-                {% elsif card_fallback != blank %}
-                  <img
-                    src="{{ card_fallback | asset_url }}"
-                    alt="{{ card_title | escape }}"
-                    loading="lazy"
-                    width="120"
-                    height="70"
-                  >
-                {% endif %}
-              </div>
-
-              {% if show_card_arrow %}
-                <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
-                  {% if card_arrow_style == 'arrow' %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  {% elsif card_arrow_style == 'long_arrow' %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
-                    </svg>
-                  {% elsif card_arrow_style == 'external' %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                  {% else %}
-                    <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  {% endif %}
-                </span>
-              {% endif %}
-            </a>
-          {%- endif -%}
+          {% render 'enamels-category-card', block: block, section: section, card_class: 'enamels-cat-card--carousel', stagger_index: forloop.index %}
         {% endfor %}
       </div>
 
@@ -273,7 +101,31 @@
       {% endif %}
     </div>
 
-    <!-- 2. Expandable Grid View (Reveals underneath smoothly) -->
+    <!-- 2. Mobile Responsive 2-Pills-Per-Row Layout with Horizontal Paging for Additional Categories -->
+    <div class="enamels-cats-mobile-wrap" data-mobile-wrap>
+      <div class="enamels-cats-mobile-scroller" data-mobile-scroller tabindex="0" role="region" aria-label="Mobile category pills">
+        {% assign page_size = 6 %}
+        {% assign total_pages = section.blocks.size | plus: page_size | minus: 1 | divided_by: page_size %}
+        {% for page_idx in (1..total_pages) %}
+          {% assign page_offset = page_idx | minus: 1 | times: page_size %}
+          <div class="enamels-cats-mobile-page" data-page-index="{{ forloop.index0 }}">
+            {% for block in section.blocks offset: page_offset limit: page_size %}
+              {% render 'enamels-category-card', block: block, section: section, card_class: 'enamels-cat-card--mobile', stagger_index: forloop.index %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if total_pages > 1 %}
+        <div class="enamels-cats-mobile-pagination" aria-label="Category pages">
+          {% for page_idx in (1..total_pages) %}
+            <button type="button" class="enamels-cats-mobile-dot {% if forloop.first %}is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Go to category slide {{ forloop.index }}"></button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 3. Expandable Grid View (Reveals underneath smoothly) -->
     <div
       id="enamels-cats-drawer-{{ section.id }}"
       class="enamels-cats-drawer"
@@ -288,176 +140,7 @@
 
         <div class="enamels-cats-grid enamels-cats-grid--desktop-{{ section.settings.grid_cols_desktop | default: 6 }} enamels-cats-grid--tablet-{{ section.settings.grid_cols_tablet | default: 3 }} enamels-cats-grid--mobile-{{ section.settings.grid_cols_mobile | default: 2 }}">
           {% for block in section.blocks %}
-            {% assign col = block.settings.collection %}
-            {% assign card_title = block.settings.title | default: col.title %}
-            {% assign card_subtitle = block.settings.subtitle %}
-            {% assign card_badge = block.settings.badge_text %}
-            {% assign card_link = block.settings.link | default: col.url | default: '#' %}
-            {% assign card_img = block.settings.image %}
-            {% if card_img == blank and col.featured_image != blank %}
-              {% assign card_img = col.featured_image %}
-            {% endif %}
-            {% assign card_fallback = block.settings.fallback_asset %}
-            {% assign card_title_upper = card_title | upcase %}
-            {% assign card_link_lower = card_link | downcase %}
-            {% assign is_customizer_pill = false %}
-            {% assign is_bulk_pill = false %}
-            {% assign is_intl_pill = false %}
-
-            {% if card_link_lower contains 'customizer' or card_title_upper contains 'CUSTOMIZE' %}
-              {% assign is_customizer_pill = true %}
-            {% elsif card_link_lower contains 'bulk' or card_title_upper contains 'BULK' %}
-              {% assign is_bulk_pill = true %}
-            {% elsif card_link_lower contains 'intl' or card_link_lower contains 'international' or card_title_upper contains 'INTERNATIONAL' %}
-              {% assign is_intl_pill = true %}
-            {% endif %}
-
-            {%- assign card_bg_val = block.settings.card_bg | default: section.settings.card_bg | default: '#dfdfdf' -%}
-            {%- if card_bg_val == blank or card_bg_val == 'rgba(0,0,0,0)' -%}
-              {%- assign card_bg_val = '#dfdfdf' -%}
-            {%- endif -%}
-
-            {%- assign show_card_arrow = false -%}
-            {%- if section.settings.show_pill_arrow and block.settings.show_arrow != false -%}
-              {%- assign show_card_arrow = true -%}
-            {%- elsif block.settings.show_arrow -%}
-              {%- assign show_card_arrow = true -%}
-            {%- endif -%}
-
-            {%- assign card_arrow_color = block.settings.arrow_color | default: section.settings.pill_arrow_color | default: '#111111' -%}
-            {%- assign card_arrow_style = block.settings.arrow_icon_override | default: 'default' -%}
-            {%- if card_arrow_style == 'default' or card_arrow_style == blank -%}
-              {%- assign card_arrow_style = section.settings.pill_arrow_style | default: 'chevron' -%}
-            {%- endif -%}
-            {%- assign card_arrow_size = section.settings.pill_arrow_size | default: 13 -%}
-
-            {%- assign effective_mode = block.settings.display_mode | default: 'default' -%}
-            {%- if effective_mode == 'default' or effective_mode == blank -%}
-              {%- assign effective_mode = section.settings.pill_display_mode | default: 'image_cover' -%}
-            {%- endif -%}
-
-            {%- assign img_pos = block.settings.image_position | default: section.settings.pill_image_position | default: 'center' -%}
-            {%- assign img_fit = section.settings.pill_image_fit | default: 'cover' -%}
-
-            {%- assign has_image = false -%}
-            {%- if card_img != blank or card_fallback != blank -%}
-              {%- assign has_image = true -%}
-            {%- endif -%}
-
-            {%- assign is_full_image = false -%}
-            {%- if effective_mode == 'image_cover' and has_image -%}
-              {%- assign is_full_image = true -%}
-            {%- endif -%}
-
-            {%- if is_full_image -%}
-              <!-- Full-Size Image Only Pill Tile in Grid -->
-              <a
-                href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
-                {% if is_customizer_pill %}
-                  onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
-                {% elsif is_bulk_pill %}
-                  onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
-                {% elsif is_intl_pill %}
-                  onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
-                {% endif %}
-                class="enamels-cat-card enamels-cat-card--grid enamels-cat-card--full-image"
-                style="--stagger-index: {{ forloop.index }}; background-color: {{ card_bg_val }} !important;"
-                aria-label="{{ card_title | escape }}"
-                title="{{ card_title | escape }}"
-              >
-                {% if card_badge != blank %}
-                  <span class="enamels-cat-card__badge">{{ card_badge }}</span>
-                {% endif %}
-
-                {% if card_img != blank %}
-                  <img
-                    src="{{ card_img | image_url: width: 600 }}"
-                    alt="{{ card_title | escape }}"
-                    class="enamels-cat-full-image"
-                    loading="lazy"
-                    width="240"
-                    height="120"
-                    style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
-                  >
-                {% elsif card_fallback != blank %}
-                  <img
-                    src="{{ card_fallback | asset_url }}"
-                    alt="{{ card_title | escape }}"
-                    class="enamels-cat-full-image"
-                    loading="lazy"
-                    width="240"
-                    height="120"
-                    style="object-fit: {{ img_fit }} !important; object-position: {{ img_pos }} !important;"
-                  >
-                {% endif %}
-              </a>
-            {%- else -%}
-              <a
-                href="{% if is_customizer_pill %}#customizer{% elsif is_bulk_pill %}#bulk-orders{% elsif is_intl_pill %}#international-delivery{% else %}{{ card_link }}{% endif %}"
-                {% if is_customizer_pill %}
-                  onclick="if(typeof window.openCustomizerModal==='function'){window.openCustomizerModal(); return false;}"
-                {% elsif is_bulk_pill %}
-                  onclick="if(typeof window.openBulkOrdersModal==='function'){window.openBulkOrdersModal(); return false;}"
-                {% elsif is_intl_pill %}
-                  onclick="if(typeof window.openInternationalModal==='function'){window.openInternationalModal(); return false;}"
-                {% endif %}
-                class="enamels-cat-card enamels-cat-card--grid"
-                style="--stagger-index: {{ forloop.index }}; background-color: {{ card_bg_val }} !important;"
-              >
-                {% if card_badge != blank %}
-                  <span class="enamels-cat-card__badge">{{ card_badge }}</span>
-                {% endif %}
-
-                <div class="enamels-cat-card__content">
-                  <span class="enamels-cat-card__title">{{ card_title }}</span>
-                  {% if card_subtitle != blank %}
-                    <span class="enamels-cat-card__subtitle">{{ card_subtitle }}</span>
-                  {% endif %}
-                </div>
-
-                <div class="enamels-cat-card__media">
-                  {% if card_img != blank %}
-                    <img
-                      src="{{ card_img | image_url: width: 360 }}"
-                      alt="{{ card_title | escape }}"
-                      loading="lazy"
-                      width="140"
-                      height="80"
-                    >
-                  {% elsif card_fallback != blank %}
-                    <img
-                      src="{{ card_fallback | asset_url }}"
-                      alt="{{ card_title | escape }}"
-                      loading="lazy"
-                      width="140"
-                      height="80"
-                    >
-                  {% endif %}
-                </div>
-
-                {% if show_card_arrow %}
-                  <span class="enamels-cat-card__arrow enamels-cat-card__arrow--{{ card_arrow_style }}" style="color: {{ card_arrow_color }};" aria-hidden="true">
-                    {% if card_arrow_style == 'arrow' %}
-                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>
-                      </svg>
-                    {% elsif card_arrow_style == 'long_arrow' %}
-                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line><polyline points="15 6 21 12 15 18"></polyline>
-                      </svg>
-                    {% elsif card_arrow_style == 'external' %}
-                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
-                      </svg>
-                    {% else %}
-                      <svg viewBox="0 0 24 24" width="{{ card_arrow_size }}" height="{{ card_arrow_size }}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                      </svg>
-                    {% endif %}
-                  </span>
-                {% endif %}
-              </a>
-            {%- endif -%}
+            {% render 'enamels-category-card', block: block, section: section, card_class: 'enamels-cat-card--grid', stagger_index: forloop.index %}
           {% endfor %}
         </div>
       </div>
@@ -604,6 +287,18 @@
     align-items: center;
   }
 
+  @media (min-width: 768px) {
+    .enamels-cats-desktop-track {
+      display: flex !important;
+    }
+    .enamels-cats-mobile-wrap {
+      display: none !important;
+    }
+    .enamels-cats-desktop-track:not(.has-overflow) .enamels-cat-arrow {
+      display: none !important;
+    }
+  }
+
   .enamels-cat-arrow {
     position: absolute;
     top: 50%;
@@ -692,6 +387,35 @@
   .enamels-cat-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Red Payment Warning Ribbon (Top-Left Corner of Customize Pill) */
+  .enamels-cat-advance-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #dc2626;
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #ffffff !important;
+    font-size: 7.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-top-left-radius: var(--cats-card-radius, 8px);
+    border-bottom-right-radius: 6px;
+    line-height: 1.15;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.45);
+    z-index: 10;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    font-family: inherit;
+  }
+
+  .enamels-cat-card--customizer {
+    position: relative;
   }
 
   .enamels-cat-card--carousel {
@@ -949,8 +673,8 @@
     .enamels-cats-grid--tablet-2 { grid-template-columns: repeat(2, 1fr); }
   }
 
-  /* Mobile Adjustments */
-  @media (max-width: 640px) {
+  /* Mobile Adjustments (Two Pills Per Row & Horizontal Paging) */
+  @media (max-width: 767px) {
     #enamels-cats-{{ section.id }} {
       padding-top: var(--cats-pad-top-mob);
       padding-bottom: var(--cats-pad-bot-mob);
@@ -973,36 +697,87 @@
       padding: 6px 10px;
     }
 
-    .enamels-cat-arrow {
-      width: var(--cats-arrow-size-mob, 32px);
-      height: var(--cats-arrow-size-mob, 32px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
-    }
-
-    .enamels-cat-arrow--left {
-      left: 2px;
-    }
-
-    .enamels-cat-arrow--right {
-      right: 2px;
-    }
-
-    .enamels-cat-arrow--hide-mob {
+    /* Switch: Hide Desktop Carousel, Show Mobile 2-Pill Grid Track */
+    .enamels-cats-desktop-track {
       display: none !important;
     }
 
-    .enamels-cats-track {
-      gap: var(--cats-gap-mob);
+    .enamels-cats-mobile-wrap {
+      display: block !important;
+      width: 100%;
     }
 
-    .enamels-cat-card--carousel {
-      flex: 0 0 var(--cats-mob-card-w);
-      min-width: 160px;
+    .enamels-cats-mobile-scroller {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 12px;
+      width: 100%;
+      padding: 2px 0 6px;
+      scrollbar-width: none;
+      touch-action: pan-x pan-y;
+      overscroll-behavior-x: contain;
     }
 
-    .enamels-cat-card {
-      min-height: var(--cats-card-h-mob);
+    .enamels-cats-mobile-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .enamels-cats-mobile-page {
+      flex: 0 0 100%;
+      min-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--cats-gap-mob, 8px);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .enamels-cat-card--mobile {
+      width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      min-height: var(--cats-card-h-mob, 52px);
+      height: var(--cats-card-h-mob, 52px);
       padding: var(--cats-card-pad-v) var(--cats-card-pad-h);
+    }
+
+    .enamels-cat-advance-tag {
+      font-size: 6.8px;
+      padding: 2.5px 5.5px;
+      letter-spacing: 0.02em;
+    }
+
+    .enamels-cats-mobile-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .enamels-cats-mobile-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.2);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.25s ease, width 0.25s ease;
+    }
+
+    .enamels-cats-mobile-dot.is-active {
+      background-color: #008779;
+      width: 18px;
+      border-radius: 3px;
     }
 
     .enamels-cat-card__title {
@@ -1041,6 +816,14 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 2px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .enamels-cat-advance-tag {
+      font-size: 6.2px;
+      padding: 2px 4px;
+      letter-spacing: 0.01em;
     }
   }
 
@@ -1235,6 +1018,46 @@
             }
           }
         };
+      }
+
+      // Check Desktop Track Overflow
+      const carouselWrap = section.querySelector('.enamels-cats-desktop-track');
+      if (track && carouselWrap) {
+        const checkDesktopOverflow = () => {
+          const isOverflowing = track.scrollWidth > track.clientWidth + 4;
+          carouselWrap.classList.toggle('has-overflow', isOverflowing);
+        };
+        checkDesktopOverflow();
+        window.addEventListener('resize', checkDesktopOverflow, { passive: true });
+        setTimeout(checkDesktopOverflow, 150);
+      }
+
+      // Mobile Scroller Dot Synchronization & Click Navigation
+      const mobileScroller = section.querySelector('[data-mobile-scroller]');
+      const mobileDots = section.querySelectorAll('.enamels-cats-mobile-dot');
+
+      if (mobileScroller && mobileDots.length > 0) {
+        const updateMobileDots = () => {
+          const scrollLeft = mobileScroller.scrollLeft;
+          const pageWidth = mobileScroller.clientWidth || 1;
+          const pageIndex = Math.min(mobileDots.length - 1, Math.max(0, Math.round(scrollLeft / pageWidth)));
+          mobileDots.forEach((dot, idx) => {
+            dot.classList.toggle('is-active', idx === pageIndex);
+          });
+        };
+
+        mobileScroller.addEventListener('scroll', updateMobileDots, { passive: true });
+
+        mobileDots.forEach((dot, idx) => {
+          dot.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageWidth = mobileScroller.clientWidth;
+            mobileScroller.scrollTo({
+              left: idx * pageWidth,
+              behavior: 'smooth'
+            });
+          });
+        });
       }
     }
 
@@ -1912,6 +1735,13 @@
             { "value": "external", "label": "Corner Arrow (↗)" }
           ],
           "default": "default"
+        },
+        {
+          "type": "text",
+          "id": "advance_payment_tag_text",
+          "label": "Warning Tag Text",
+          "default": "100% ADVANCE PAYMENT REQUIRED",
+          "info": "Corner tag shown on Customize Your Own Scrub"
         }
       ]
     }
@@ -1925,7 +1755,7 @@
           "settings": {
             "title": "MEN",
             "subtitle": "Clinical Stretch Scrubs",
-            "link": "/collections/men-scrubs",
+            "link": "/collections/all?category=men",
             "fallback_asset": "enamels-cat-men.jpg"
           }
         },
@@ -1934,27 +1764,16 @@
           "settings": {
             "title": "WOMEN",
             "subtitle": "Tailored & FlexFit Scrubs",
-            "link": "/collections/women-scrubs",
+            "link": "/collections/all?category=women",
             "fallback_asset": "enamels-cat-women.jpg"
           }
         },
         {
           "type": "category_pill",
           "settings": {
-            "title": "NEW ARRIVALS",
-            "subtitle": "Autumn 2026 Editions",
-            "badge_text": "NEW",
-            "link": "/collections/new-arrivals",
-            "fallback_asset": "enamels-cat-new-arrivals.jpg"
-          }
-        },
-        {
-          "type": "category_pill",
-          "settings": {
-            "title": "CUSTOMIZE SCRUBS",
-            "subtitle": "Bespoke Doctor Embroidery",
-            "badge_text": "BESPOKE",
-            "link": "#customizer",
+            "title": "CUSTOMIZE YOUR OWN SCRUB",
+            "subtitle": "Bespoke Doctor Personalization",
+            "link": "/pages/customizer",
             "fallback_asset": "enamels-cat-customize.jpg"
           }
         },
@@ -1963,64 +1782,27 @@
           "settings": {
             "title": "BULK ORDERS",
             "subtitle": "Hospital & Clinic Bulk Supply",
-            "badge_text": "10+ UNITS",
-            "link": "#bulk-orders",
+            "link": "/pages/bulk-orders",
             "fallback_asset": "enamels-cat-intl-order.jpg"
           }
         },
         {
           "type": "category_pill",
           "settings": {
-            "title": "INTERNATIONAL ORDER",
-            "subtitle": "Worldwide Express Dispatch",
-            "link": "#international-delivery",
-            "fallback_asset": "enamels-cat-intl-order.jpg"
+            "title": "NEW ARRIVALS",
+            "subtitle": "Autumn 2026 Editions",
+            "badge_text": "NEW",
+            "link": "/collections/all",
+            "fallback_asset": "enamels-cat-new-arrivals.jpg"
           }
         },
         {
           "type": "category_pill",
           "settings": {
-            "title": "LABCOATS",
+            "title": "LAB COATS",
             "subtitle": "Helium & Tailored Coats",
-            "link": "/collections/lab-coats",
+            "link": "/collections/all?category=lab-coats",
             "fallback_asset": "enamels-cat-labcoats.jpg"
-          }
-        },
-        {
-          "type": "category_pill",
-          "settings": {
-            "title": "SURGICAL CAPS",
-            "subtitle": "BunFit™ & Printed Caps",
-            "link": "/collections/caps",
-            "fallback_asset": "cat-caps.jpg"
-          }
-        },
-        {
-          "type": "category_pill",
-          "settings": {
-            "title": "ARM SLEEVES",
-            "subtitle": "Gradient Compression",
-            "link": "/collections/accessories",
-            "fallback_asset": "cat-sprinter.jpg"
-          }
-        },
-        {
-          "type": "category_pill",
-          "settings": {
-            "title": "CLINICAL CLOGS",
-            "subtitle": "Ergonomic Shock Absorption",
-            "link": "/collections/accessories",
-            "fallback_asset": "cat-clogs.jpg"
-          }
-        },
-        {
-          "type": "category_pill",
-          "settings": {
-            "title": "HOME SERVICE",
-            "subtitle": "Lahore VIP Fitting Visit",
-            "badge_text": "VIP",
-            "link": "/pages/home-service",
-            "fallback_asset": "cat-home-service.jpg"
           }
         }
       ]

@@ -191,8 +191,8 @@
           "settings": {
             "title": "CUSTOMIZE YOUR OWN SCRUB",
             "subtitle": "Bespoke Doctor Personalization",
-            "badge_text": "CUSTOM",
-            "link": "#customizer",
+            "badge_text": "",
+            "link": "/pages/customizer",
             "fallback_asset": "enamels-cat-customize.jpg"
           }
         },
@@ -201,7 +201,7 @@
           "settings": {
             "title": "BULK ORDERS",
             "subtitle": "Hospital & Clinic Bulk Supply",
-            "link": "#bulk-orders",
+            "link": "/pages/bulk-orders",
             "fallback_asset": "enamels-cat-intl-order.jpg"
           }
         },
@@ -215,59 +215,13 @@
             "fallback_asset": "enamels-cat-new-arrivals.jpg"
           }
         },
-        "pill_intl": {
-          "type": "category_pill",
-          "settings": {
-            "title": "INTERNATIONAL ORDER",
-            "subtitle": "Worldwide Express Dispatch",
-            "link": "#international-delivery",
-            "fallback_asset": "enamels-cat-intl-order.jpg"
-          }
-        },
         "pill_labcoats": {
           "type": "category_pill",
           "settings": {
-            "title": "LABCOATS",
+            "title": "LAB COATS",
             "subtitle": "Helium & Tailored Coats",
             "link": "/collections/all?category=lab-coats",
             "fallback_asset": "enamels-cat-labcoats.jpg"
-          }
-        },
-        "pill_caps": {
-          "type": "category_pill",
-          "settings": {
-            "title": "SURGICAL CAPS",
-            "subtitle": "BunFit\u2122 & Printed Caps",
-            "link": "/collections/caps",
-            "fallback_asset": "cat-caps.jpg"
-          }
-        },
-        "pill_sleeves": {
-          "type": "category_pill",
-          "settings": {
-            "title": "ARM SLEEVES",
-            "subtitle": "Gradient Compression",
-            "link": "/collections/accessories",
-            "fallback_asset": "cat-sprinter.jpg"
-          }
-        },
-        "pill_clogs": {
-          "type": "category_pill",
-          "settings": {
-            "title": "CLINICAL CLOGS",
-            "subtitle": "Ergonomic Shock Absorption",
-            "link": "/collections/accessories",
-            "fallback_asset": "cat-clogs.jpg"
-          }
-        },
-        "pill_homeservice": {
-          "type": "category_pill",
-          "settings": {
-            "title": "HOME SERVICE",
-            "subtitle": "Lahore VIP Fitting Visit",
-            "badge_text": "VIP",
-            "link": "/pages/home-service",
-            "fallback_asset": "cat-home-service.jpg"
           }
         }
       },
@@ -277,12 +231,7 @@
         "pill_customize",
         "pill_bulk",
         "pill_new_arrivals",
-        "pill_intl",
-        "pill_labcoats",
-        "pill_caps",
-        "pill_sleeves",
-        "pill_clogs",
-        "pill_homeservice"
+        "pill_labcoats"
       ]
     },
     "frontpage_colors": {
