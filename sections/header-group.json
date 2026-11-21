@@ -14,6 +14,8 @@
         "show_account": true,
         "show_wishlist": true,
         "enable_sticky_header": true,
+        "show_nav_home": true,
+        "nav_home_label": "Home",
         "show_nav_scrubs": true,
         "show_nav_men": true,
         "show_nav_women": true,

@@ -164,6 +164,17 @@
   <nav class="enamels-nav-bar" id="enamels-desktop-navbar" aria-label="Main Store Navigation">
     <div class="page-container enamels-nav-container">
       <ul class="enamels-nav-list">
+        <!-- 0. HOME -->
+        <li class="enamels-nav-item {% if request.page_type == 'index' %}active{% endif %}" id="nav-item-home">
+          <a
+            href="{{ routes.root_url }}"
+            class="enamels-nav-link"
+            onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('home'); return false; }"
+          >
+            <span class="nav-link-text">Home</span>
+          </a>
+        </li>
+
         <!-- 1. MEN (Primary Category) -->
         <li class="enamels-nav-item" id="nav-item-men">
           <a
@@ -314,6 +325,13 @@
 
     <nav class="mobile-nav-body" aria-label="Mobile Navigation">
       <ul class="mobile-nav-list">
+        <!-- 0. Home -->
+        <li class="mobile-nav-item {% if request.page_type == 'index' %}active{% endif %}">
+          <a href="{{ routes.root_url }}" onclick="if(typeof window.navigateToView==='function'){window.navigateToView('home');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
+            <span>Home</span>
+          </a>
+        </li>
+
         <!-- 1. Men (Primary Category) -->
         <li class="mobile-nav-item">
           <a href="{{ routes.collections_url }}/all?gender=men" onclick="if(typeof window.navigateToGender==='function'){window.navigateToGender('men');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">

@@ -36,6 +36,7 @@
   assign use_custom_menu = section.settings.use_custom_shopify_menu | default: false
   assign custom_menu = linklists[section.settings.custom_menu]
 
+  assign nav_home_label = section.settings.nav_home_label | default: 'Home'
   assign nav_men_label = section.settings.nav_men_label | default: 'Men'
   assign nav_women_label = section.settings.nav_women_label | default: 'Women'
   assign nav_studio_label = section.settings.nav_studio_label | default: 'Customize Your Own Scrubs'
@@ -49,6 +50,11 @@
   assign nav_accessories_label = section.settings.nav_accessories_label | default: 'Essentials'
   assign nav_home_fitting_label = section.settings.nav_home_fitting_label | default: 'Book a Home Fitting'
   assign nav_home_fitting_badge = section.settings.nav_home_fitting_badge | default: 'LAHORE ONLY'
+
+  assign show_home = true
+  if section.settings.show_nav_home == false
+    assign show_home = false
+  endif
 
   assign show_men = true
   if section.settings.show_nav_men == false
@@ -274,6 +280,19 @@
             </li>
           {% endfor %}
         {% else %}
+          <!-- 0. HOME -->
+          {% if show_home %}
+          <li class="enamels-nav-item {% if request.page_type == 'index' %}active{% endif %}" id="nav-item-home">
+            <a
+              href="{{ routes.root_url }}"
+              class="enamels-nav-link"
+              onclick="if (typeof window.navigateToView === 'function') { window.navigateToView('home'); return false; }"
+            >
+              <span class="nav-link-text">{{ nav_home_label | escape }}</span>
+            </a>
+          </li>
+          {% endif %}
+
           <!-- 1. MEN (Primary Category) -->
           {% if show_men %}
           <li class="enamels-nav-item" id="nav-item-men">
@@ -483,6 +502,15 @@
             </li>
           {% endfor %}
         {% else %}
+          <!-- 0. Home -->
+          {% if show_home %}
+          <li class="mobile-nav-item {% if request.page_type == 'index' %}active{% endif %}">
+            <a href="{{ routes.root_url }}" onclick="if(typeof window.navigateToView==='function'){window.navigateToView('home');}if(typeof window.toggleMobileNavDrawer==='function') window.toggleMobileNavDrawer();" class="mobile-nav-link">
+              <span>{{ nav_home_label | escape }}</span>
+            </a>
+          </li>
+          {% endif %}
+
           <!-- 1. Men (Primary Category) -->
           {% if show_men %}
           <li class="mobile-nav-item">
@@ -713,6 +741,12 @@
     },
     {
       "type": "checkbox",
+      "id": "show_nav_home",
+      "label": "0. Show Home",
+      "default": true
+    },
+    {
+      "type": "checkbox",
       "id": "show_nav_men",
       "label": "1. Show Men's Collection",
       "default": true
@@ -774,6 +808,12 @@
     {
       "type": "header",
       "content": "Navigation Item Custom Labels"
+    },
+    {
+      "type": "text",
+      "id": "nav_home_label",
+      "label": "0. Home Nav Label",
+      "default": "Home"
     },
     {
       "type": "text",
