@@ -346,17 +346,6 @@
         "c10"
       ]
     },
-    "frontpage_new_arrivals": {
-      "type": "enamels-frontpage-new-arrivals",
-      "settings": {
-        "title": "New Arrivals",
-        "collection": "all",
-        "view_all_label": "View All",
-        "view_all_link": "/collections/all",
-        "padding_top": 16,
-        "padding_bottom": 32
-      }
-    },
     "frontpage_lookbook": {
       "type": "enamels-frontpage-lookbook",
       "settings": {
