@@ -173,8 +173,10 @@
           "settings": {
             "title": "MEN",
             "subtitle": "Clinical Stretch Scrubs",
-            "link": "/collections/all?category=men",
-            "fallback_asset": "enamels-cat-men.jpg"
+            "collection": "male-scrubs",
+            "link": "/collections/male-scrubs",
+            "fallback_asset": "enamels-cat-men.jpg",
+            "display_order": 1
           }
         },
         "pill_women": {
@@ -182,8 +184,10 @@
           "settings": {
             "title": "WOMEN",
             "subtitle": "Tailored & FlexFit Scrubs",
-            "link": "/collections/all?category=women",
-            "fallback_asset": "enamels-cat-women.jpg"
+            "collection": "female-scrubs",
+            "link": "/collections/female-scrubs",
+            "fallback_asset": "enamels-cat-women.jpg",
+            "display_order": 2
           }
         },
         "pill_customize": {
@@ -193,7 +197,10 @@
             "subtitle": "Bespoke Doctor Personalization",
             "badge_text": "",
             "link": "/pages/customizer",
-            "fallback_asset": "enamels-cat-customize.jpg"
+            "fallback_asset": "enamels-cat-customize.jpg",
+            "display_order": 3,
+            "show_advance_tag": true,
+            "advance_payment_tag_text": "100% ADVANCE PAYMENT REQUIRED"
           }
         },
         "pill_bulk": {
@@ -202,7 +209,8 @@
             "title": "BULK ORDERS",
             "subtitle": "Hospital & Clinic Bulk Supply",
             "link": "/pages/bulk-orders",
-            "fallback_asset": "enamels-cat-intl-order.jpg"
+            "fallback_asset": "enamels-cat-intl-order.jpg",
+            "display_order": 4
           }
         },
         "pill_new_arrivals": {
@@ -211,8 +219,10 @@
             "title": "NEW ARRIVALS",
             "subtitle": "Autumn 2026 Editions",
             "badge_text": "NEW",
+            "collection": "all",
             "link": "/collections/all",
-            "fallback_asset": "enamels-cat-new-arrivals.jpg"
+            "fallback_asset": "enamels-cat-new-arrivals.jpg",
+            "display_order": 5
           }
         },
         "pill_labcoats": {
@@ -220,8 +230,10 @@
           "settings": {
             "title": "LAB COATS",
             "subtitle": "Helium & Tailored Coats",
-            "link": "/collections/all?category=lab-coats",
-            "fallback_asset": "enamels-cat-labcoats.jpg"
+            "collection": "labcoat",
+            "link": "/collections/labcoat",
+            "fallback_asset": "enamels-cat-labcoats.jpg",
+            "display_order": 6
           }
         }
       },
@@ -257,7 +269,9 @@
           "settings": {
             "title": "SKY BLUE",
             "fallback_asset": "enamels-swatch-blue.jpg",
-            "link": "/collections/scrubs"
+            "collection": "basic-scrubs",
+            "color_code": "#6ba4b8",
+            "display_order": 1
           }
         },
         "c2": {
@@ -265,7 +279,9 @@
           "settings": {
             "title": "ROYAL GREEN",
             "fallback_asset": "enamels-swatch-green.jpg",
-            "link": "/collections/scrubs"
+            "collection": "crown",
+            "color_code": "#14532d",
+            "display_order": 2
           }
         },
         "c3": {
@@ -273,7 +289,9 @@
           "settings": {
             "title": "SEAGREEN",
             "fallback_asset": "enamels-swatch-seagreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "velora-by-enamels",
+            "color_code": "#0f766e",
+            "display_order": 3
           }
         },
         "c4": {
@@ -281,7 +299,9 @@
           "settings": {
             "title": "MUSTARD RUST",
             "fallback_asset": "enamels-swatch-mustard.jpg",
-            "link": "/collections/scrubs"
+            "collection": "sprinter",
+            "color_code": "#b45309",
+            "display_order": 4
           }
         },
         "c5": {
@@ -289,7 +309,9 @@
           "settings": {
             "title": "DARK GREEN",
             "fallback_asset": "enamels-swatch-darkgreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "flexfit",
+            "color_code": "#1b4332",
+            "display_order": 5
           }
         },
         "c6": {
@@ -297,7 +319,9 @@
           "settings": {
             "title": "MIDNIGHT BLACK",
             "fallback_asset": "enamels-swatch-green.jpg",
-            "link": "/collections/scrubs"
+            "collection": "designer-scrubs",
+            "color_code": "#18181b",
+            "display_order": 6
           }
         },
         "c7": {
@@ -305,7 +329,9 @@
           "settings": {
             "title": "DEEP NAVY",
             "fallback_asset": "enamels-swatch-darkgreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "gradient-collection",
+            "color_code": "#0f172a",
+            "display_order": 7
           }
         },
         "c8": {
@@ -313,7 +339,9 @@
           "settings": {
             "title": "MINT TEAL",
             "fallback_asset": "enamels-swatch-seagreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "female-scrubs",
+            "color_code": "#2dd4bf",
+            "display_order": 8
           }
         },
         "c9": {
@@ -321,7 +349,9 @@
           "settings": {
             "title": "BURGUNDY",
             "fallback_asset": "enamels-swatch-mustard.jpg",
-            "link": "/collections/scrubs"
+            "collection": "fatima-longline-scrubs",
+            "color_code": "#581c87",
+            "display_order": 9
           }
         },
         "c10": {
@@ -329,7 +359,9 @@
           "settings": {
             "title": "CLINICAL BLUE",
             "fallback_asset": "enamels-swatch-blue.jpg",
-            "link": "/collections/scrubs"
+            "collection": "male-scrubs",
+            "color_code": "#0284c7",
+            "display_order": 10
           }
         }
       },
@@ -380,7 +412,8 @@
             "rating_stretch": 5,
             "rating_durability": 5,
             "explore_link": "/collections/all",
-            "customize_link": "/pages/customize-your-own-scrub"
+            "customize_link": "/pages/customize-your-own-scrub",
+            "collection": "velora-by-enamels"
           }
         },
         "fab_crown": {
@@ -395,7 +428,8 @@
             "rating_stretch": 5,
             "rating_durability": 5,
             "explore_link": "/collections/all",
-            "customize_link": "/pages/customize-your-own-scrub"
+            "customize_link": "/pages/customize-your-own-scrub",
+            "collection": "crown"
           }
         },
         "fab_sprinter": {
@@ -410,7 +444,8 @@
             "rating_stretch": 5,
             "rating_durability": 4,
             "explore_link": "/collections/all",
-            "customize_link": "/pages/customize-your-own-scrub"
+            "customize_link": "/pages/customize-your-own-scrub",
+            "collection": "sprinter"
           }
         },
         "fab_helium": {
@@ -425,7 +460,8 @@
             "rating_stretch": 4,
             "rating_durability": 5,
             "explore_link": "/collections/all",
-            "customize_link": "/pages/customize-your-own-scrub"
+            "customize_link": "/pages/customize-your-own-scrub",
+            "collection": "basic-scrubs"
           }
         }
       },
@@ -443,11 +479,18 @@
         "eyebrow": "CREATE YOUR COMPLETE CLINICAL SET",
         "title": "Build Your Clinical Bundle & Save",
         "subtitle": "Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery.",
-        "col_tops": "all",
-        "col_trousers": "all",
-        "col_labcoats": "all",
-        "col_caps": "all",
-        "col_accessories": "all"
+        "col_tops": "male-scrubs",
+        "col_trousers": "basic-scrubs",
+        "col_labcoats": "labcoat",
+        "col_caps": "surgical-caps",
+        "col_accessories": "accessories",
+        "show_tier_ribbon": true,
+        "show_sticky_bar": true,
+        "tab_tops_show": true,
+        "tab_trousers_show": true,
+        "tab_labcoats_show": true,
+        "tab_caps_show": true,
+        "tab_accessories_show": true
       }
     },
     "most_loved": {

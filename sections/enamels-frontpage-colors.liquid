@@ -1,22 +1,67 @@
 {% comment %}
   Enamels Frontpage Colors Section — Rebuilt & Enlarged with Expandable View All
-  Features noticeably larger circular color swatches with rich fabric textures,
-  horizontal scrolling carousel with desktop arrows & mobile touch swipe,
-  and an expandable "View All" / "Show Less" grid revealing all configured hospital shades.
+  Features:
+  - Genuine Shopify Collection Navigation (opens assigned collection page directly)
+  - Safe fallbacks to prevent 404 pages if collection is not assigned
+  - In Theme Editor (design_mode), flags swatches missing collection assignment
+  - Noticeably larger circular color swatches with rich fabric textures
+  - Horizontal scrolling carousel with desktop arrows & mobile touch swipe
+  - Expandable "View All" / "Show Less" grid revealing all configured hospital shades
+  - Full Theme Editor customization (colors, fonts, sizes, padding, alignment)
 {% endcomment %}
+
+{%- liquid
+  # Robust Numerical Sorting of Color Blocks via Admin display_order
+  assign sort_keys = ''
+  for block in section.blocks
+    assign ord = block.settings.display_order
+    if ord == blank or ord == null
+      assign ord = forloop.index
+    endif
+    assign ord_num = ord | plus: 0
+    if ord_num <= 0
+      assign ord_num = 9999 | plus: forloop.index
+    endif
+    assign ord_padded = ord_num | prepend: '000000' | slice: -6, 6
+    assign idx_padded = forloop.index | prepend: '000000' | slice: -6, 6
+    assign item_key = ord_padded | append: '_' | append: idx_padded | append: ':::' | append: block.id
+    if sort_keys == ''
+      assign sort_keys = item_key
+    else
+      assign sort_keys = sort_keys | append: '|||' | append: item_key
+    endif
+  endfor
+  assign sorted_color_items = sort_keys | split: '|||' | sort
+
+  assign sec_bg = section.settings.section_bg | default: '#ffffff'
+  assign title_text = section.settings.title | default: 'Shop by colors'
+  assign subtitle_text = section.settings.subtitle
+  assign title_color = section.settings.title_color | default: '#102a43'
+  assign subtitle_color = section.settings.subtitle_color | default: '#64748b'
+  assign text_align = section.settings.text_alignment | default: 'left'
+  assign p_top = section.settings.padding_top | default: 16
+  assign p_bottom = section.settings.padding_bottom | default: 32
+-%}
 
 <section
   class="enamels-colors-section"
   id="enamels-colors-{{ section.id }}"
   data-section-id="{{ section.id }}"
+  style="background-color: {{ sec_bg }}; padding-top: {{ p_top }}px; padding-bottom: {{ p_bottom }}px;"
 >
   <div class="enamels-colors__container">
     <!-- Header -->
-    <div class="enamels-section-head">
+    <div class="enamels-section-head" style="text-align: {{ text_align }};">
       <div class="enamels-section-head__title-group">
-        <h2 class="enamels-section-head__title">{{ section.settings.title | default: 'Shop by colors' }}</h2>
-        {% if section.settings.subtitle != blank %}
-          <p class="enamels-section-head__subtitle">{{ section.settings.subtitle }}</p>
+        {% if title_text != blank %}
+          <h2 class="enamels-section-head__title" style="color: {{ title_color }};">
+            {{ title_text | escape }}
+          </h2>
+        {% endif %}
+        {% if subtitle_text != blank %}
+          <p class="enamels-section-head__subtitle" style="color: {{ subtitle_color }};">
+            {{ subtitle_text | escape }}
+          </p>
         {% endif %}
       </div>
 
@@ -59,42 +104,83 @@
       </button>
 
       <div class="enamels-color-track" data-color-track tabindex="0" role="region" aria-label="Color carousel">
-        {% for block in section.blocks %}
-          {% assign col = block.settings.collection %}
-          {% assign swatch_title = block.settings.title | default: col.title %}
-          {% assign swatch_link = block.settings.link | default: col.url | default: '/collections/scrubs' %}
-          {% assign swatch_img = block.settings.image %}
-          {% assign swatch_fallback = block.settings.fallback_asset %}
+        {% for item_key in sorted_color_items %}
+          {% assign target_block_id = item_key | split: ':::' | last %}
+          {% for block in section.blocks %}
+            {% if block.id == target_block_id %}
+              {%- liquid
+                assign col = block.settings.collection
+                assign swatch_title = block.settings.title
+                if swatch_title == blank and col != blank
+                  assign swatch_title = col.title
+                endif
+                if swatch_title == blank
+                  assign swatch_title = 'Clinical Color'
+                endif
 
-          <a
-            href="{{ swatch_link }}"
-            class="enamels-swatch-card enamels-swatch-card--carousel"
-            {{ block.shopify_attributes }}
-          >
-            <div
-              class="enamels-swatch-circle"
-              style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
-            >
-              {% if swatch_img != blank %}
-                <img
-                  src="{{ swatch_img | image_url: width: 200 }}"
-                  alt="{{ swatch_title | escape }}"
-                  loading="lazy"
-                  width="90"
-                  height="90"
+                assign swatch_img = block.settings.image
+                assign swatch_fallback = block.settings.fallback_asset
+
+                # Robust Collection Navigation Resolution:
+                # 1. Assigned Shopify collection picker
+                # 2. Custom valid link (excluding deprecated /collections/scrubs)
+                # 3. Collection matching handle
+                # 4. Safe fallback to /collections/all with color filter (never 404)
+                assign swatch_link = ''
+                assign has_assigned_col = false
+
+                if col != blank and col.url != blank
+                  assign swatch_link = col.url
+                  assign has_assigned_col = true
+                elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
+                  assign swatch_link = block.settings.link
+                  assign has_assigned_col = true
+                else
+                  assign col_slug = swatch_title | handleize
+                  if collections[col_slug] != blank and collections[col_slug].url != blank
+                    assign swatch_link = collections[col_slug].url
+                    assign has_assigned_col = true
+                  else
+                    assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
+                  endif
+                endif
+              -%}
+
+              <a
+                href="{{ swatch_link }}"
+                class="enamels-swatch-card enamels-swatch-card--carousel"
+                {{ block.shopify_attributes }}
+              >
+                <div
+                  class="enamels-swatch-circle"
+                  style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
                 >
-              {% elsif swatch_fallback != blank %}
-                <img
-                  src="{{ swatch_fallback | asset_url }}"
-                  alt="{{ swatch_title | escape }}"
-                  loading="lazy"
-                  width="90"
-                  height="90"
-                >
-              {% endif %}
-            </div>
-            <span class="enamels-swatch-name">{{ swatch_title }}</span>
-          </a>
+                  {% if swatch_img != blank %}
+                    <img
+                      src="{{ swatch_img | image_url: width: 200 }}"
+                      alt="{{ swatch_title | escape }}"
+                      loading="lazy"
+                      width="90"
+                      height="90"
+                    >
+                  {% elsif swatch_fallback != blank %}
+                    <img
+                      src="{{ swatch_fallback | asset_url }}"
+                      alt="{{ swatch_title | escape }}"
+                      loading="lazy"
+                      width="90"
+                      height="90"
+                    >
+                  {% endif %}
+                </div>
+                <span class="enamels-swatch-name">{{ swatch_title }}</span>
+                {% if request.design_mode and has_assigned_col == false %}
+                  <span class="enamels-unassigned-col-pill" title="Assign a Shopify Collection in the Theme Editor">⚠️ Pick Collection</span>
+                {% endif %}
+              </a>
+              {% break %}
+            {% endif %}
+          {% endfor %}
         {% endfor %}
       </div>
 
@@ -124,42 +210,79 @@
         </div>
 
         <div class="enamels-colors-grid enamels-colors-grid--desktop-{{ section.settings.grid_cols_desktop | default: 8 }} enamels-colors-grid--mobile-{{ section.settings.grid_cols_mobile | default: 4 }}">
-          {% for block in section.blocks %}
-            {% assign col = block.settings.collection %}
-            {% assign swatch_title = block.settings.title | default: col.title %}
-            {% assign swatch_link = block.settings.link | default: col.url | default: '/collections/scrubs' %}
-            {% assign swatch_img = block.settings.image %}
-            {% assign swatch_fallback = block.settings.fallback_asset %}
+          {% for item_key in sorted_color_items %}
+            {% assign target_block_id = item_key | split: ':::' | last %}
+            {% for block in section.blocks %}
+              {% if block.id == target_block_id %}
+                {%- liquid
+                  assign col = block.settings.collection
+                  assign swatch_title = block.settings.title
+                  if swatch_title == blank and col != blank
+                    assign swatch_title = col.title
+                  endif
+                  if swatch_title == blank
+                    assign swatch_title = 'Clinical Color'
+                  endif
 
-            <a
-              href="{{ swatch_link }}"
-              class="enamels-swatch-card enamels-swatch-card--grid"
-              style="--stagger-index: {{ forloop.index }};"
-            >
-              <div
-                class="enamels-swatch-circle"
-                style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
-              >
-                {% if swatch_img != blank %}
-                  <img
-                    src="{{ swatch_img | image_url: width: 200 }}"
-                    alt="{{ swatch_title | escape }}"
-                    loading="lazy"
-                    width="90"
-                    height="90"
+                  assign swatch_img = block.settings.image
+                  assign swatch_fallback = block.settings.fallback_asset
+
+                  assign swatch_link = ''
+                  assign has_assigned_col = false
+
+                  if col != blank and col.url != blank
+                    assign swatch_link = col.url
+                    assign has_assigned_col = true
+                  elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
+                    assign swatch_link = block.settings.link
+                    assign has_assigned_col = true
+                  else
+                    assign col_slug = swatch_title | handleize
+                    if collections[col_slug] != blank and collections[col_slug].url != blank
+                      assign swatch_link = collections[col_slug].url
+                      assign has_assigned_col = true
+                    else
+                      assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
+                    endif
+                  endif
+                -%}
+
+                <a
+                  href="{{ swatch_link }}"
+                  class="enamels-swatch-card enamels-swatch-card--grid"
+                  style="--stagger-index: {{ forloop.index }};"
+                  {{ block.shopify_attributes }}
+                >
+                  <div
+                    class="enamels-swatch-circle"
+                    style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
                   >
-                {% elsif swatch_fallback != blank %}
-                  <img
-                    src="{{ swatch_fallback | asset_url }}"
-                    alt="{{ swatch_title | escape }}"
-                    loading="lazy"
-                    width="90"
-                    height="90"
-                  >
-                {% endif %}
-              </div>
-              <span class="enamels-swatch-name">{{ swatch_title }}</span>
-            </a>
+                    {% if swatch_img != blank %}
+                      <img
+                        src="{{ swatch_img | image_url: width: 200 }}"
+                        alt="{{ swatch_title | escape }}"
+                        loading="lazy"
+                        width="90"
+                        height="90"
+                      >
+                    {% elsif swatch_fallback != blank %}
+                      <img
+                        src="{{ swatch_fallback | asset_url }}"
+                        alt="{{ swatch_title | escape }}"
+                        loading="lazy"
+                        width="90"
+                        height="90"
+                      >
+                    {% endif %}
+                  </div>
+                  <span class="enamels-swatch-name">{{ swatch_title }}</span>
+                  {% if request.design_mode and has_assigned_col == false %}
+                    <span class="enamels-unassigned-col-pill" title="Assign a Shopify Collection in the Theme Editor">⚠️ Pick Collection</span>
+                  {% endif %}
+                </a>
+                {% break %}
+              {% endif %}
+            {% endfor %}
           {% endfor %}
         </div>
       </div>
@@ -168,83 +291,89 @@
 </section>
 
 <style>
-  #enamels-colors-{{ section.id }} {
-    padding-top: {{ section.settings.padding_top | default: 16 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | default: 32 }}px;
+  .enamels-colors-section {
     position: relative;
+    overflow: hidden;
   }
 
-  #enamels-colors-{{ section.id }} .enamels-colors__container {
-    max-width: 1320px;
+  .enamels-colors__container {
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 16px;
   }
 
-  /* Carousel Wrap */
+  @media (min-width: 768px) {
+    .enamels-colors__container {
+      padding: 0 32px;
+    }
+  }
+
+  .enamels-section-head__title {
+    font-size: {{ section.settings.title_size_desktop | default: 26 }}px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+  }
+
+  @media (max-width: 640px) {
+    .enamels-section-head__title {
+      font-size: {{ section.settings.title_size_mobile | default: 20 }}px;
+    }
+  }
+
   .enamels-color-carousel-wrap {
     position: relative;
-    width: 100%;
     display: flex;
     align-items: center;
   }
 
-  /* Horizontal Track */
   .enamels-color-track {
     display: flex;
     gap: {{ section.settings.card_gap_desktop | default: 20 }}px;
     overflow-x: auto;
-    scroll-behavior: smooth;
+    overflow-y: hidden;
     scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding: 8px 4px;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 4px;
     width: 100%;
-    align-items: flex-start;
+    cursor: grab;
+    touch-action: pan-x pan-y;
   }
 
   .enamels-color-track::-webkit-scrollbar {
     display: none;
   }
 
-  /* Swatch Card Base */
   .enamels-swatch-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-decoration: none;
-    transition: transform 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+    flex-shrink: 0;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .enamels-swatch-card:hover {
     transform: translateY(-4px);
   }
 
-  .enamels-swatch-card--carousel {
-    flex: 0 0 auto;
-    width: {{ section.settings.circle_size_desktop | default: 86 }}px;
-  }
-
-  /* Noticeably LARGER Swatch Circle */
   .enamels-swatch-circle {
     width: {{ section.settings.circle_size_desktop | default: 86 }}px;
     height: {{ section.settings.circle_size_desktop | default: 86 }}px;
     border-radius: 50%;
     overflow: hidden;
-    margin-bottom: 8px;
-    position: relative;
-    background-color: #eaeaea;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: 2.5px solid #ffffff;
-    outline: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, outline-color 0.2s ease;
+    background: #e2e8f0;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
   }
 
   .enamels-swatch-card:hover .enamels-swatch-circle {
-    transform: scale(1.06);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
-    outline: 2px solid #111111;
+    border-color: #008779;
+    box-shadow: 0 6px 20px rgba(0, 135, 121, 0.25);
   }
 
   .enamels-swatch-circle img {
@@ -255,156 +384,199 @@
   }
 
   .enamels-swatch-name {
-    font-size: 0.74rem;
+    margin-top: 10px;
+    font-size: 12px;
     font-weight: 700;
-    color: #111111;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
+    color: #102a43;
     text-align: center;
-    letter-spacing: 0.04em;
+    max-width: 100px;
     line-height: 1.25;
-    word-break: break-word;
-    max-width: 100%;
   }
 
-  /* Expanded Color Grid */
+  .enamels-unassigned-col-pill {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 800;
+    color: #b45309;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-top: 4px;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  /* Expandable Grid Styles */
   .enamels-colors-grid {
     display: grid;
-    gap: 20px 16px;
-    justify-items: center;
+    gap: 20px 14px;
+    padding: 24px 0;
   }
 
-  .enamels-colors-grid--desktop-10 {
-    grid-template-columns: repeat(10, 1fr);
-  }
+  .enamels-colors-grid--desktop-6 { grid-template-columns: repeat(6, 1fr); }
+  .enamels-colors-grid--desktop-8 { grid-template-columns: repeat(8, 1fr); }
+  .enamels-colors-grid--desktop-10 { grid-template-columns: repeat(10, 1fr); }
 
-  .enamels-colors-grid--desktop-8 {
-    grid-template-columns: repeat(8, 1fr);
-  }
-
-  .enamels-colors-grid--desktop-6 {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  .enamels-swatch-card--grid {
-    width: 100%;
-    max-width: {{ section.settings.circle_size_desktop | default: 86 }}px;
-  }
-
-  .enamels-colors-drawer[aria-hidden="false"] .enamels-swatch-card--grid {
-    animation: enamelsCardFadeIn 0.35s ease forwards;
-    animation-delay: calc(var(--stagger-index, 1) * 0.025s);
-  }
-
-  /* Mobile Responsive */
-  @media (max-width: 767px) {
-    #enamels-colors-{{ section.id }} .enamels-colors__container {
-      padding: 0 12px;
-    }
-
+  @media (max-width: 768px) {
     .enamels-color-track {
       gap: {{ section.settings.card_gap_mobile | default: 14 }}px;
-      padding: 6px 2px;
-    }
-
-    .enamels-swatch-card--carousel {
-      width: {{ section.settings.circle_size_mobile | default: 76 }}px;
     }
 
     .enamels-swatch-circle {
       width: {{ section.settings.circle_size_mobile | default: 76 }}px;
       height: {{ section.settings.circle_size_mobile | default: 76 }}px;
-      margin-bottom: 6px;
     }
 
     .enamels-swatch-name {
-      font-size: 0.7rem;
+      font-size: 11px;
     }
 
-    .enamels-colors-grid--mobile-5 {
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px 8px;
-    }
-
-    .enamels-colors-grid--mobile-4 {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px 8px;
-    }
-
-    .enamels-colors-grid--mobile-3 {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px 10px;
-    }
-
-    .enamels-swatch-card--grid {
-      max-width: {{ section.settings.circle_size_mobile | default: 76 }}px;
-    }
+    .enamels-colors-grid--mobile-3 { grid-template-columns: repeat(3, 1fr); }
+    .enamels-colors-grid--mobile-4 { grid-template-columns: repeat(4, 1fr); }
+    .enamels-colors-grid--mobile-5 { grid-template-columns: repeat(5, 1fr); }
   }
 </style>
 
 <script>
   (function () {
-    const section = document.getElementById('enamels-colors-{{ section.id }}');
-    if (!section) return;
+    function initColorsSection(sec) {
+      if (!sec) return;
 
-    const toggleBtn = section.querySelector('[data-color-toggle]');
-    const drawer = section.querySelector('[data-color-drawer]');
-    const labelSpan = toggleBtn ? toggleBtn.querySelector('.enamels-cat-toggle-btn__label') : null;
-    const track = section.querySelector('[data-color-track]');
-    const prevBtn = section.querySelector('[data-color-prev]');
-    const nextBtn = section.querySelector('[data-color-next]');
+      const toggleBtn = sec.querySelector('[data-color-toggle]');
+      const drawer = sec.querySelector('[data-color-drawer]');
+      const labelSpan = toggleBtn ? toggleBtn.querySelector('.enamels-cat-toggle-btn__label') : null;
+      const track = sec.querySelector('[data-color-track]');
+      const prevBtn = sec.querySelector('[data-color-prev]');
+      const nextBtn = sec.querySelector('[data-color-next]');
 
-    // Carousel Navigation
-    if (track && prevBtn && nextBtn) {
-      const scrollStep = () => track.clientWidth * 0.65;
+      // Carousel Navigation
+      if (track && prevBtn && nextBtn) {
+        const scrollStep = () => track.clientWidth * 0.65;
 
-      prevBtn.addEventListener('click', () => {
-        track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
-      });
+        prevBtn.onclick = function() {
+          track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
+        };
 
-      nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
-      });
+        nextBtn.onclick = function() {
+          track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+        };
 
-      const updateArrows = () => {
-        const atStart = track.scrollLeft <= 5;
-        const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
-        prevBtn.style.opacity = atStart ? '0.3' : '1';
-        prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
-        nextBtn.style.opacity = atEnd ? '0.3' : '1';
-        nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
-      };
+        const updateArrows = () => {
+          const atStart = track.scrollLeft <= 5;
+          const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
+          prevBtn.style.opacity = atStart ? '0.3' : '1';
+          prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
+          nextBtn.style.opacity = atEnd ? '0.3' : '1';
+          nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+        };
 
-      track.addEventListener('scroll', updateArrows, { passive: true });
-      window.addEventListener('resize', updateArrows, { passive: true });
-      updateArrows();
-    }
+        track.addEventListener('scroll', updateArrows, { passive: true });
+        updateArrows();
 
-    // Expand / Collapse View All
-    if (toggleBtn && drawer && labelSpan) {
-      const labelCollapsed = labelSpan.getAttribute('data-label-collapsed') || 'View all';
-      const labelExpanded = labelSpan.getAttribute('data-label-expanded') || 'Show less';
+        // Mouse Drag to Scroll & Native Trackpad
+        let isDown = false;
+        let startX = 0;
+        let scrollStart = 0;
+        let hasMoved = false;
 
-      toggleBtn.addEventListener('click', function () {
-        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        track.addEventListener('mousedown', (e) => {
+          if (e.button !== 0) return;
+          isDown = true;
+          hasMoved = false;
+          startX = e.pageX - track.offsetLeft;
+          scrollStart = track.scrollLeft;
+          track.style.cursor = 'grabbing';
+          track.style.userSelect = 'none';
+        });
 
-        if (!isExpanded) {
-          // EXPAND
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          drawer.setAttribute('aria-hidden', 'false');
-          labelSpan.textContent = labelExpanded;
-        } else {
-          // COLLAPSE
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          drawer.setAttribute('aria-hidden', 'true');
-          labelSpan.textContent = labelCollapsed;
+        const stopDrag = () => {
+          if (!isDown) return;
+          isDown = false;
+          track.style.cursor = 'grab';
+          track.style.userSelect = '';
+          setTimeout(() => { hasMoved = false; }, 100);
+        };
 
-          const rect = section.getBoundingClientRect();
-          if (rect.top < 0) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.addEventListener('mouseup', stopDrag);
+        track.addEventListener('mouseleave', stopDrag);
+
+        track.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          const currentX = e.pageX - track.offsetLeft;
+          const walk = (currentX - startX) * 1.3;
+          if (Math.abs(walk) > 4) {
+            hasMoved = true;
           }
-        }
-      });
+          track.scrollLeft = scrollStart - walk;
+        });
+
+        // Suppress accidental card clicks if user was actively dragging
+        track.addEventListener('click', (e) => {
+          if (hasMoved) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
+
+        // Native Trackpad & Smooth Mouse Wheel
+        track.addEventListener('wheel', (e) => {
+          if (Math.abs(e.deltaX) > 3) return;
+          if (Math.abs(e.deltaY) > 0 && !e.shiftKey) {
+            const canScrollLeft = e.deltaY < 0 && track.scrollLeft > 0;
+            const canScrollRight = e.deltaY > 0 && track.scrollLeft < (track.scrollWidth - track.clientWidth - 2);
+            if (canScrollLeft || canScrollRight) {
+              track.scrollLeft += e.deltaY * 1.2;
+            }
+          }
+        }, { passive: true });
+      }
+
+      // Expand / Collapse View All
+      if (toggleBtn && drawer && labelSpan) {
+        const labelCollapsed = labelSpan.getAttribute('data-label-collapsed') || 'View all';
+        const labelExpanded = labelSpan.getAttribute('data-label-expanded') || 'Show less';
+
+        toggleBtn.onclick = function () {
+          const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+
+          if (!isExpanded) {
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            drawer.setAttribute('aria-hidden', 'false');
+            drawer.removeAttribute('hidden');
+            labelSpan.textContent = labelExpanded;
+          } else {
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            drawer.setAttribute('aria-hidden', 'true');
+            drawer.setAttribute('hidden', '');
+            labelSpan.textContent = labelCollapsed;
+
+            const rect = sec.getBoundingClientRect();
+            if (rect.top < 0) {
+              sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        };
+      }
     }
+
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', function() {
+      const sectionEl = document.getElementById('enamels-colors-{{ section.id }}');
+      initColorsSection(sectionEl);
+    });
+
+    // Theme Editor Live Lifecycle Support
+    document.addEventListener('shopify:section:load', function(e) {
+      if (e.target.id === 'enamels-colors-{{ section.id }}' || e.target.querySelector('#enamels-colors-{{ section.id }}')) {
+        const sec = document.getElementById('enamels-colors-{{ section.id }}');
+        initColorsSection(sec);
+      }
+    });
   })();
 </script>
 
@@ -415,6 +587,12 @@
   "class": "enamels-colors-section-wrapper",
   "settings": [
     {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
       "type": "text",
       "id": "title",
       "label": "Section Title",
@@ -423,34 +601,75 @@
     {
       "type": "text",
       "id": "subtitle",
-      "label": "Section Subtitle",
-      "info": "Optional description under title"
+      "label": "Section Subtitle"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Text Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Text Color",
+      "default": "#64748b"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left Aligned" },
+        { "value": "center", "label": "Center Aligned" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 18,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Font Size (Desktop)",
+      "default": 26
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 16,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Font Size (Mobile)",
+      "default": 20
     },
     {
       "type": "header",
-      "content": "Interactive Expand Controls"
+      "content": "View All Toggle Button"
     },
     {
       "type": "checkbox",
       "id": "enable_view_all",
-      "label": "Enable Expandable View All",
+      "label": "Enable 'View All' Toggle",
       "default": true
     },
     {
       "type": "text",
       "id": "view_all_label",
-      "label": "View All Button Label",
+      "label": "Collapsed Button Label",
       "default": "View all"
     },
     {
       "type": "text",
       "id": "show_less_label",
-      "label": "Show Less Button Label",
+      "label": "Expanded Button Label",
       "default": "Show less"
     },
     {
       "type": "header",
-      "content": "Circle Dimensions (Noticeably Larger)"
+      "content": "Swatch Dimensions & Spacing"
     },
     {
       "type": "range",
@@ -459,7 +678,7 @@
       "max": 120,
       "step": 2,
       "unit": "px",
-      "label": "Desktop Circle Diameter",
+      "label": "Circle Size (Desktop)",
       "default": 86
     },
     {
@@ -469,7 +688,7 @@
       "max": 100,
       "step": 2,
       "unit": "px",
-      "label": "Mobile Circle Diameter",
+      "label": "Circle Size (Mobile)",
       "default": 76
     },
     {
@@ -526,7 +745,7 @@
       "type": "range",
       "id": "padding_top",
       "min": 0,
-      "max": 60,
+      "max": 80,
       "step": 4,
       "unit": "px",
       "label": "Padding Top",
@@ -536,7 +755,7 @@
       "type": "range",
       "id": "padding_bottom",
       "min": 0,
-      "max": 60,
+      "max": 80,
       "step": 4,
       "unit": "px",
       "label": "Padding Bottom",
@@ -553,6 +772,13 @@
           "id": "title",
           "label": "Color Name",
           "default": "BLUE"
+        },
+        {
+          "type": "number",
+          "id": "display_order",
+          "label": "Display Order (Sorting)",
+          "default": 1,
+          "info": "Set 1, 2, 3... to arrange colors. Lowest numbers appear first. Internal sorting only - never shown to customers."
         },
         {
           "type": "color",
@@ -592,7 +818,7 @@
           "settings": {
             "title": "SKY BLUE",
             "fallback_asset": "enamels-swatch-blue.jpg",
-            "link": "/collections/scrubs"
+            "collection": "basic-scrubs"
           }
         },
         {
@@ -600,7 +826,7 @@
           "settings": {
             "title": "ROYAL GREEN",
             "fallback_asset": "enamels-swatch-green.jpg",
-            "link": "/collections/scrubs"
+            "collection": "crown"
           }
         },
         {
@@ -608,7 +834,7 @@
           "settings": {
             "title": "SEAGREEN",
             "fallback_asset": "enamels-swatch-seagreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "velora-by-enamels"
           }
         },
         {
@@ -616,7 +842,7 @@
           "settings": {
             "title": "MUSTARD RUST",
             "fallback_asset": "enamels-swatch-mustard.jpg",
-            "link": "/collections/scrubs"
+            "collection": "sprinter"
           }
         },
         {
@@ -624,7 +850,7 @@
           "settings": {
             "title": "DARK GREEN",
             "fallback_asset": "enamels-swatch-darkgreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "flexfit"
           }
         },
         {
@@ -632,7 +858,7 @@
           "settings": {
             "title": "MIDNIGHT BLACK",
             "fallback_asset": "enamels-swatch-green.jpg",
-            "link": "/collections/scrubs"
+            "collection": "designer-scrubs"
           }
         },
         {
@@ -640,7 +866,7 @@
           "settings": {
             "title": "DEEP NAVY",
             "fallback_asset": "enamels-swatch-darkgreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "gradient-collection"
           }
         },
         {
@@ -648,7 +874,7 @@
           "settings": {
             "title": "MINT TEAL",
             "fallback_asset": "enamels-swatch-seagreen.jpg",
-            "link": "/collections/scrubs"
+            "collection": "female-scrubs"
           }
         },
         {
@@ -656,7 +882,7 @@
           "settings": {
             "title": "BURGUNDY",
             "fallback_asset": "enamels-swatch-mustard.jpg",
-            "link": "/collections/scrubs"
+            "collection": "fatima-longline-scrubs"
           }
         },
         {
@@ -664,7 +890,7 @@
           "settings": {
             "title": "CLINICAL BLUE",
             "fallback_asset": "enamels-swatch-blue.jpg",
-            "link": "/collections/scrubs"
+            "collection": "male-scrubs"
           }
         }
       ]

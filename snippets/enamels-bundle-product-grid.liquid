@@ -5,11 +5,29 @@
   - collection_obj: Collection object
   - section_id: Section ID
   - category_key: Category string (e.g. 'tops', 'trousers', 'labcoats', 'caps', 'accessories')
+  - products_limit: Maximum items to render
+  - btn_add_label: Custom button text when not selected
+  - btn_added_label: Custom button text when selected
+  - empty_state_text: Custom text when collection has no products
+  - show_sale_pill: Boolean whether to render sale tag
+  - sale_pill_text: Custom badge text for sale items
 {% endcomment %}
+
+{%- liquid
+  assign p_limit = products_limit | default: 12
+  assign add_txt = btn_add_label | default: '+ Add to Bundle'
+  assign added_txt = btn_added_label | default: '✓ Added in Bundle'
+  assign empty_msg = empty_state_text | default: 'Collection currently being updated'
+  assign pill_txt = sale_pill_text | default: 'SALE'
+  assign show_pill = true
+  if show_sale_pill == false
+    assign show_pill = false
+  endif
+-%}
 
 <div class="bundle-products-grid">
   {% if collection_obj != blank and collection_obj.products_count > 0 %}
-    {% for product in collection_obj.products limit: 12 %}
+    {% for product in collection_obj.products limit: p_limit %}
       {%- liquid
         assign first_variant = product.selected_or_first_available_variant
         assign card_img = product.featured_image
@@ -40,8 +58,8 @@
             <div class="bundle-card-placeholder">🩺</div>
           {% endif %}
 
-          {% if product.compare_at_price > product.price %}
-            <span class="bundle-sale-pill">SALE</span>
+          {% if show_pill and product.compare_at_price > product.price %}
+            <span class="bundle-sale-pill">{{ pill_txt | escape }}</span>
           {% endif %}
         </div>
 
@@ -64,6 +82,7 @@
                 class="bundle-variant-select"
                 id="bcard-select-{{ section_id }}-{{ product.id }}"
                 onchange="window.enamelsOnBundleVariantChange('{{ section_id }}', '{{ product.id }}', this)"
+                aria-label="Select variant for {{ product.title | escape }}"
               >
                 {% for variant in product.variants %}
                   <option
@@ -89,7 +108,7 @@
             {% unless product.available %}disabled{% endunless %}
           >
             {% if product.available %}
-              + Add to Bundle
+              {{ add_txt }}
             {% else %}
               Sold Out
             {% endif %}
@@ -100,7 +119,7 @@
   {% else %}
     <div class="bundle-empty-state" style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #ffffff; border-radius: 12px; border: 1px dashed #cbd5e1;">
       <div style="font-size: 32px; margin-bottom: 8px;">🧺</div>
-      <p style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0 0 4px;">Collection currently being updated</p>
+      <p style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0 0 4px;">{{ empty_msg | escape }}</p>
       <p style="font-size: 12px; color: #64748b; margin: 0;">Select from our active collections in the other tabs above.</p>
     </div>
   {% endif %}
@@ -251,44 +270,3 @@
     cursor: not-allowed;
   }
 </style>
-
-<script>
-(function() {
-  window.enamelsOnBundleVariantChange = function(sectionId, prodId, selectEl) {
-    var card = document.getElementById('bcard-' + sectionId + '-' + prodId);
-    if (!card) return;
-    var opt = selectEl.options[selectEl.selectedIndex];
-    var vId = opt.value;
-    var price = parseFloat(opt.getAttribute('data-price')) || 0;
-    var priceFormatted = opt.getAttribute('data-price-formatted') || '';
-    var img = opt.getAttribute('data-img');
-
-    card.setAttribute('data-active-variant-id', vId);
-    card.setAttribute('data-product-price', price);
-    if (img) card.setAttribute('data-product-img', img);
-
-    var priceEl = document.getElementById('bcard-price-' + sectionId + '-' + prodId);
-    if (priceEl && priceFormatted) priceEl.textContent = priceFormatted;
-  };
-
-  window.enamelsTriggerCardToggle = function(sectionId, prodId) {
-    var card = document.getElementById('bcard-' + sectionId + '-' + prodId);
-    if (!card) return;
-    
-    var selectEl = document.getElementById('bcard-select-' + sectionId + '-' + prodId);
-    var selectedOptTitle = selectEl ? selectEl.options[selectEl.selectedIndex].text : '';
-
-    var itemData = {
-      productId: prodId,
-      variantId: card.getAttribute('data-active-variant-id'),
-      title: card.getAttribute('data-product-title'),
-      price: parseFloat(card.getAttribute('data-product-price')) || 0,
-      img: card.getAttribute('data-product-img'),
-      category: card.getAttribute('data-category'),
-      option: selectedOptTitle
-    };
-
-    window.enamelsToggleBundleItem(sectionId, itemData);
-  };
-})();
-</script>

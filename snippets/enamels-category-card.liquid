@@ -10,7 +10,14 @@
   assign col = block.settings.collection
   assign card_title = block.settings.title | default: col.title
   assign card_subtitle = block.settings.subtitle
-  assign card_badge = block.settings.badge_text
+  assign card_badge = block.settings.badge_text | strip
+  assign tag_text = block.settings.advance_payment_tag_text | strip
+  assign show_tag = false
+  if block.settings.show_advance_tag and tag_text != blank
+    assign show_tag = true
+  elsif block.settings.show_advance_tag == nil and is_customizer_pill and tag_text != blank
+    assign show_tag = true
+  endif
   assign card_link = block.settings.link | default: col.url | default: '#'
   assign card_img = block.settings.image
   if card_img == blank and col.featured_image != blank
@@ -94,9 +101,9 @@
     title="{{ card_title | escape }}"
     {{ block.shopify_attributes }}
   >
-    {% if is_customizer_pill %}
-      <span class="enamels-cat-advance-tag" aria-label="100% Advance Payment Required">
-        {{ block.settings.advance_payment_tag_text | default: '100% ADVANCE PAYMENT REQUIRED' }}
+    {% if show_tag %}
+      <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
+        {{ tag_text }}
       </span>
     {% elsif card_badge != blank %}
       <span class="enamels-cat-card__badge">{{ card_badge }}</span>
@@ -138,9 +145,9 @@
     style="{% if stagger_index != blank %}--stagger-index: {{ stagger_index }};{% endif %} background-color: {{ card_bg_val }} !important;"
     {{ block.shopify_attributes }}
   >
-    {% if is_customizer_pill %}
-      <span class="enamels-cat-advance-tag" aria-label="100% Advance Payment Required">
-        {{ block.settings.advance_payment_tag_text | default: '100% ADVANCE PAYMENT REQUIRED' }}
+    {% if show_tag %}
+      <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
+        {{ tag_text }}
       </span>
     {% elsif card_badge != blank %}
       <span class="enamels-cat-card__badge">{{ card_badge }}</span>

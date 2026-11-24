@@ -6,6 +6,30 @@
   - Show Less state: Collapses smoothly back to initial carousel with graceful scroll positioning.
 {% endcomment %}
 
+{%- liquid
+  # Robust Numerical Sorting of Blocks via Admin display_order
+  assign sort_keys = ''
+  for block in section.blocks
+    assign ord = block.settings.display_order
+    if ord == blank or ord == null
+      assign ord = forloop.index
+    endif
+    assign ord_num = ord | plus: 0
+    if ord_num <= 0
+      assign ord_num = 9999 | plus: forloop.index
+    endif
+    assign ord_padded = ord_num | prepend: '000000' | slice: -6, 6
+    assign idx_padded = forloop.index | prepend: '000000' | slice: -6, 6
+    assign item_key = ord_padded | append: '_' | append: idx_padded | append: ':::' | append: block.id
+    if sort_keys == ''
+      assign sort_keys = item_key
+    else
+      assign sort_keys = sort_keys | append: '|||' | append: item_key
+    endif
+  endfor
+  assign sorted_items_array = sort_keys | split: '|||' | sort
+-%}
+
 <section
   class="enamels-categories-section"
   id="enamels-cats-{{ section.id }}"
@@ -46,7 +70,7 @@
       {% endif %}
     </div>
 
-    <!-- 1. Desktop / Tablet Carousel Track -->
+    <!-- 1. Universal Carousel Track (Desktop & Mobile Touch-Swipe) -->
     <div class="enamels-cats-carousel-wrap enamels-cats-desktop-track" data-carousel-wrap>
       {% if section.settings.show_arrows != false or section.settings.show_arrows_mobile %}
         <button
@@ -72,8 +96,14 @@
       {% endif %}
 
       <div class="enamels-cats-track" data-carousel-track tabindex="0" role="region" aria-label="Category carousel">
-        {% for block in section.blocks %}
-          {% render 'enamels-category-card', block: block, section: section, card_class: 'enamels-cat-card--carousel', stagger_index: forloop.index %}
+        {% for item_key in sorted_items_array %}
+          {% assign target_block_id = item_key | split: ':::' | last %}
+          {% for b in section.blocks %}
+            {% if b.id == target_block_id %}
+              {% render 'enamels-category-card', block: b, section: section, card_class: 'enamels-cat-card--carousel', stagger_index: forloop.index %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
         {% endfor %}
       </div>
 
@@ -101,31 +131,7 @@
       {% endif %}
     </div>
 
-    <!-- 2. Mobile Responsive 2-Pills-Per-Row Layout with Horizontal Paging for Additional Categories -->
-    <div class="enamels-cats-mobile-wrap" data-mobile-wrap>
-      <div class="enamels-cats-mobile-scroller" data-mobile-scroller tabindex="0" role="region" aria-label="Mobile category pills">
-        {% assign page_size = 6 %}
-        {% assign total_pages = section.blocks.size | plus: page_size | minus: 1 | divided_by: page_size %}
-        {% for page_idx in (1..total_pages) %}
-          {% assign page_offset = page_idx | minus: 1 | times: page_size %}
-          <div class="enamels-cats-mobile-page" data-page-index="{{ forloop.index0 }}">
-            {% for block in section.blocks offset: page_offset limit: page_size %}
-              {% render 'enamels-category-card', block: block, section: section, card_class: 'enamels-cat-card--mobile', stagger_index: forloop.index %}
-            {% endfor %}
-          </div>
-        {% endfor %}
-      </div>
-
-      {% if total_pages > 1 %}
-        <div class="enamels-cats-mobile-pagination" aria-label="Category pages">
-          {% for page_idx in (1..total_pages) %}
-            <button type="button" class="enamels-cats-mobile-dot {% if forloop.first %}is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Go to category slide {{ forloop.index }}"></button>
-          {% endfor %}
-        </div>
-      {% endif %}
-    </div>
-
-    <!-- 3. Expandable Grid View (Reveals underneath smoothly) -->
+    <!-- 2. Expandable Grid View (Reveals underneath smoothly) -->
     <div
       id="enamels-cats-drawer-{{ section.id }}"
       class="enamels-cats-drawer"
@@ -139,8 +145,14 @@
         </div>
 
         <div class="enamels-cats-grid enamels-cats-grid--desktop-{{ section.settings.grid_cols_desktop | default: 6 }} enamels-cats-grid--tablet-{{ section.settings.grid_cols_tablet | default: 3 }} enamels-cats-grid--mobile-{{ section.settings.grid_cols_mobile | default: 2 }}">
-          {% for block in section.blocks %}
-            {% render 'enamels-category-card', block: block, section: section, card_class: 'enamels-cat-card--grid', stagger_index: forloop.index %}
+          {% for item_key in sorted_items_array %}
+            {% assign target_block_id = item_key | split: ':::' | last %}
+            {% for b in section.blocks %}
+              {% if b.id == target_block_id %}
+                {% render 'enamels-category-card', block: b, section: section, card_class: 'enamels-cat-card--grid', stagger_index: forloop.index %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
           {% endfor %}
         </div>
       </div>
@@ -287,16 +299,14 @@
     align-items: center;
   }
 
-  @media (min-width: 768px) {
-    .enamels-cats-desktop-track {
-      display: flex !important;
-    }
-    .enamels-cats-mobile-wrap {
-      display: none !important;
-    }
-    .enamels-cats-desktop-track:not(.has-overflow) .enamels-cat-arrow {
-      display: none !important;
-    }
+  .enamels-cats-desktop-track {
+    display: flex !important;
+  }
+  .enamels-cats-mobile-wrap {
+    display: none !important;
+  }
+  .enamels-cats-desktop-track:not(.has-overflow) .enamels-cat-arrow {
+    display: none !important;
   }
 
   .enamels-cat-arrow {
@@ -340,15 +350,13 @@
     display: none !important;
   }
 
-  /* Carousel Track */
+  /* Carousel Track - Native, Fluid 60fps/120fps Scrolling */
   .enamels-cats-track {
     display: flex;
     gap: var(--cats-gap-desk);
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding: 6px 2px;
@@ -420,19 +428,21 @@
 
   .enamels-cat-card--carousel {
     flex: 0 0 calc((100% - (var(--cats-gap-desk) * (var(--cats-visible-desk) - 1))) / var(--cats-visible-desk));
-    min-width: 0;
+    min-width: 195px;
   }
 
   @media (max-width: 1024px) {
     .enamels-cat-card--carousel {
       flex: 0 0 calc((100% - (var(--cats-gap-desk) * (var(--cats-visible-tab) - 1))) / var(--cats-visible-tab));
+      min-width: 180px;
     }
   }
 
   @media (max-width: 767px) {
     .enamels-cat-card--carousel {
-      flex: 0 0 calc((100% - (var(--cats-gap-mob) * (var(--cats-visible-mob) - 1))) / var(--cats-visible-mob));
-      min-width: 160px;
+      flex: 0 0 74%;
+      max-width: 270px;
+      min-width: 180px;
     }
   }
 
@@ -923,7 +933,7 @@
           e.preventDefault();
         });
 
-        // Mouse Drag to Scroll
+        // Mouse Drag-to-Scroll & Trackpad Handling
         let isDown = false;
         let startX = 0;
         let scrollStart = 0;
@@ -935,61 +945,53 @@
           hasMoved = false;
           startX = e.pageX - track.offsetLeft;
           scrollStart = track.scrollLeft;
-          track.style.scrollBehavior = 'auto';
           track.style.cursor = 'grabbing';
           track.style.userSelect = 'none';
         });
 
-        window.addEventListener('mouseup', () => {
+        const stopDrag = () => {
           if (!isDown) return;
           isDown = false;
-          track.style.scrollBehavior = 'smooth';
           track.style.cursor = 'grab';
           track.style.userSelect = '';
-          setTimeout(() => { hasMoved = false; }, 80);
-        });
+          setTimeout(() => { hasMoved = false; }, 100);
+        };
 
-        track.addEventListener('mouseleave', () => {
-          if (!isDown) return;
-          isDown = false;
-          track.style.scrollBehavior = 'smooth';
-          track.style.cursor = 'grab';
-          track.style.userSelect = '';
-        });
+        window.addEventListener('mouseup', stopDrag);
+        track.addEventListener('mouseleave', stopDrag);
 
         track.addEventListener('mousemove', (e) => {
           if (!isDown) return;
-          e.preventDefault();
           const currentX = e.pageX - track.offsetLeft;
-          const walk = (currentX - startX) * 1.5;
-          if (Math.abs(walk) > 5) {
+          const walk = (currentX - startX) * 1.3;
+          if (Math.abs(walk) > 4) {
             hasMoved = true;
           }
           track.scrollLeft = scrollStart - walk;
         });
 
-        // Suppress accidental card clicks if user was dragging
-        track.querySelectorAll('.enamels-cat-card').forEach((card) => {
-          card.addEventListener('click', (e) => {
-            if (hasMoved) {
-              e.preventDefault();
-              e.stopPropagation();
-              return false;
-            }
-          }, true);
-        });
+        // Suppress accidental card clicks if user was actively dragging
+        track.addEventListener('click', (e) => {
+          if (hasMoved) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
 
-        // Horizontal Mouse Wheel Scroll
+        // Native Trackpad & Smooth Mouse Wheel
         track.addEventListener('wheel', (e) => {
-          if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && !e.shiftKey) {
+          // If trackpad 2-finger horizontal scroll, let browser handle with native 120Hz momentum
+          if (Math.abs(e.deltaX) > 3) return;
+          // If vertical wheel on mouse, map to horizontal movement
+          if (Math.abs(e.deltaY) > 0 && !e.shiftKey) {
             const canScrollLeft = e.deltaY < 0 && track.scrollLeft > 0;
             const canScrollRight = e.deltaY > 0 && track.scrollLeft < (track.scrollWidth - track.clientWidth - 2);
             if (canScrollLeft || canScrollRight) {
-              e.preventDefault();
-              track.scrollLeft += e.deltaY;
+              track.scrollLeft += e.deltaY * 1.2;
             }
           }
-        }, { passive: false });
+        }, { passive: true });
       }
 
       // View All / Show Less Expand & Collapse
@@ -1737,11 +1739,25 @@
           "default": "default"
         },
         {
+          "type": "number",
+          "id": "display_order",
+          "label": "Display Order (Sorting)",
+          "default": 1,
+          "info": "Set 1, 2, 3... to arrange pills. Lowest number appears first. Internal sorting only - never shown to customers."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_advance_tag",
+          "label": "Show Warning / Corner Ribbon",
+          "default": false,
+          "info": "Enable or disable corner ribbon banner on this pill"
+        },
+        {
           "type": "text",
           "id": "advance_payment_tag_text",
-          "label": "Warning Tag Text",
-          "default": "100% ADVANCE PAYMENT REQUIRED",
-          "info": "Corner tag shown on Customize Your Own Scrub"
+          "label": "Warning Ribbon Text",
+          "default": "",
+          "info": "Optional ribbon text (e.g. 100% ADVANCE PAYMENT REQUIRED). Clear text or uncheck box above to remove completely."
         }
       ]
     }

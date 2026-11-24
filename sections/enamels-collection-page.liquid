@@ -18,13 +18,18 @@
 {%- liquid
   # 1. Target Collection Resolution
   assign target_col = collection
-  if target_col == blank or target_col.products.size == 0
+  if target_col == blank
     if section.settings.collection != blank
       assign target_col = collections[section.settings.collection]
     endif
   endif
-  if target_col == blank or target_col.products.size == 0
+  if target_col == blank
     assign target_col = collections['all']
+  endif
+
+  assign is_specific_col = false
+  if collection != blank and collection.handle != 'all' and collection.handle != blank
+    assign is_specific_col = true
   endif
 
   # 2. Gender Context Resolution
@@ -32,9 +37,9 @@
   assign query_str = request.path | append: '?' | append: request.query_string | downcase
 
   if initial_gender == 'auto'
-    if query_str contains 'gender=men' or query_str contains 'category=men' or collection.handle contains 'men' or request.path contains '/men'
+    if query_str contains 'gender=men' or query_str contains 'category=men' or collection.handle contains 'male' or collection.handle contains 'men' or request.path contains '/men' or request.path contains '/male-scrubs'
       assign current_gender = 'men'
-    elsif query_str contains 'gender=women' or query_str contains 'category=women' or collection.handle contains 'women' or request.path contains '/women'
+    elsif query_str contains 'gender=women' or query_str contains 'category=women' or collection.handle contains 'female' or collection.handle contains 'women' or request.path contains '/women' or request.path contains '/female-scrubs'
       assign current_gender = 'women'
     else
       assign current_gender = 'all'
@@ -73,7 +78,9 @@
   # 4. Heading & Subtitle
   assign title_text = section.settings.title
   if title_text == blank or title_text == 'New Arrivals' or title_text == "Collection"
-    if current_gender == 'men'
+    if collection != blank and collection.title != blank and collection.handle != 'all'
+      assign title_text = collection.title
+    elsif current_gender == 'men'
       assign title_text = "Men's Collection"
     elsif current_gender == 'women'
       assign title_text = "Women's Collection"
@@ -139,6 +146,7 @@
   data-initial-gender="{{ current_gender }}"
   data-initial-category="{{ current_cat }}"
   data-initial-article="{{ current_article }}"
+  data-is-specific-collection="{% if is_specific_col %}true{% else %}false{% endif %}"
   style="
     --cat-page-max-w: {{ container_max_w }}px;
     --cat-page-pad-top-desk: {{ pad_top_desk }}px;
@@ -359,20 +367,23 @@
               {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
               <button
                 type="button"
-                class="enamels-carousel-item{% if current_cat == cat_key %} is-active{% endif %}"
+                class="enamels-cat-pill-btn{% if current_cat == cat_key %} is-active{% endif %}"
                 data-category-target="{{ cat_key }}"
                 {{ block.shopify_attributes }}
               >
-                <div class="enamels-carousel-item__thumb">
+                <div class="enamels-cat-pill-btn__content">
+                  <span class="enamels-cat-pill-btn__title">{{ cat_name }}</span>
+                  <span class="enamels-cat-pill-btn__sub">Collection</span>
+                </div>
+                <div class="enamels-cat-pill-btn__media">
                   {%- if cat_img != blank -%}
-                    <img src="{{ cat_img | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                    <img src="{{ cat_img | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
                   {%- elsif col.products.first.featured_media != blank -%}
-                    <img src="{{ col.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                    <img src="{{ col.products.first.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
                   {%- else -%}
-                    <div class="enamels-cat-thumb-placeholder">🩺</div>
+                    <span class="enamels-cat-pill-btn__placeholder">🩺</span>
                   {%- endif -%}
                 </div>
-                <span class="enamels-carousel-item__name">{{ cat_name }}</span>
               </button>
             {%- endif -%}
           {%- endfor -%}
@@ -386,19 +397,22 @@
             {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
             <button
               type="button"
-              class="enamels-carousel-item{% if current_cat == cat_key %} is-active{% endif %}"
+              class="enamels-cat-pill-btn{% if current_cat == cat_key %} is-active{% endif %}"
               data-category-target="{{ cat_key }}"
             >
-              <div class="enamels-carousel-item__thumb">
+              <div class="enamels-cat-pill-btn__content">
+                <span class="enamels-cat-pill-btn__title">{{ cat_name }}</span>
+                <span class="enamels-cat-pill-btn__sub">Collection</span>
+              </div>
+              <div class="enamels-cat-pill-btn__media">
                 {%- if col.featured_image != blank -%}
-                  <img src="{{ col.featured_image | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                  <img src="{{ col.featured_image | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
                 {%- elsif col.products.first.featured_media != blank -%}
-                  <img src="{{ col.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ cat_name | escape }}" width="90" height="90" loading="lazy">
+                  <img src="{{ col.products.first.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
                 {%- else -%}
-                  <div class="enamels-cat-thumb-placeholder">🩺</div>
+                  <span class="enamels-cat-pill-btn__placeholder">🩺</span>
                 {%- endif -%}
               </div>
-              <span class="enamels-carousel-item__name">{{ cat_name }}</span>
             </button>
           {%- endfor -%}
         {%- endif -%}
@@ -424,19 +438,22 @@
               {%- endif -%}
               <button
                 type="button"
-                class="enamels-carousel-item{% if current_cat == c_key %} is-active{% endif %}"
+                class="enamels-cat-pill-btn{% if current_cat == c_key %} is-active{% endif %}"
                 data-category-target="{{ c_key }}"
               >
-                <div class="enamels-carousel-item__thumb">
+                <div class="enamels-cat-pill-btn__content">
+                  <span class="enamels-cat-pill-btn__title">{{ c_title }}</span>
+                  <span class="enamels-cat-pill-btn__sub">Collection</span>
+                </div>
+                <div class="enamels-cat-pill-btn__media">
                   {%- if c.featured_image != blank -%}
-                    <img src="{{ c.featured_image | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
+                    <img src="{{ c.featured_image | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ c_title | escape }}" width="44" height="44" loading="lazy">
                   {%- elsif c.products.first.featured_media != blank -%}
-                    <img src="{{ c.products.first.featured_media | image_url: width: 180, height: 180, crop: 'center' }}" alt="{{ c_title | escape }}" width="90" height="90" loading="lazy">
+                    <img src="{{ c.products.first.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ c_title | escape }}" width="44" height="44" loading="lazy">
                   {%- else -%}
-                    <div class="enamels-cat-thumb-placeholder">🩺</div>
+                    <span class="enamels-cat-pill-btn__placeholder">🩺</span>
                   {%- endif -%}
                 </div>
-                <span class="enamels-carousel-item__name">{{ c_title }}</span>
               </button>
             {%- endif -%}
           {%- endfor -%}
@@ -445,13 +462,16 @@
         <!-- Universal "View All" Pill -->
         <button
           type="button"
-          class="enamels-carousel-item{% if current_cat == 'all' %} is-active{% endif %}"
+          class="enamels-cat-pill-btn{% if current_cat == 'all' %} is-active{% endif %}"
           data-category-target="all"
         >
-          <div class="enamels-carousel-item__thumb enamels-view-all-thumb">
+          <div class="enamels-cat-pill-btn__content">
+            <span class="enamels-cat-pill-btn__title">ALL APPAREL</span>
+            <span class="enamels-cat-pill-btn__sub">Complete Store</span>
+          </div>
+          <div class="enamels-cat-pill-btn__media enamels-view-all-thumb">
             <span class="enamels-all-grid-icon">▦</span>
           </div>
-          <span class="enamels-carousel-item__name">View All</span>
         </button>
       </div>
     </div>
@@ -501,195 +521,225 @@
     <div class="enamels-cat-page__grid" id="enamels-cat-product-grid">
 
       {%- assign rendered_count = 0 -%}
-      {%- if target_col.products.size > 0 -%}
-        {%- for prod in target_col.products -%}
-          {%- liquid
-            assign rendered_count = rendered_count | plus: 1
-            assign prod_title_lower = prod.title | downcase
-            assign prod_type_lower = prod.type | downcase
-            assign prod_tags_string = prod.tags | join: ' ' | downcase
-            assign prod_vendor_lower = prod.vendor | downcase
+      {%- paginate target_col.products by 48 -%}
+        {%- if target_col.products.size > 0 -%}
+          {%- for prod in target_col.products -%}
+            {%- liquid
+              assign rendered_count = rendered_count | plus: 1
+              assign prod_title_lower = prod.title | downcase
+              assign prod_type_lower = prod.type | downcase
+              assign prod_tags_string = prod.tags | join: ' ' | downcase
+              assign prod_vendor_lower = prod.vendor | downcase
 
-            # Gender Detection
-            assign is_men = false
-            assign is_women = false
-            assign is_unisex = false
+              # Gender Detection via Genuine Collection Membership & Metadata
+              assign is_men = false
+              assign is_women = false
+              assign is_unisex = false
 
-            if prod_tags_string contains 'unisex' or prod_title_lower contains 'unisex'
-              assign is_unisex = true
-            endif
+              for col_item in prod.collections
+                if col_item.handle contains 'male' or col_item.handle contains 'men'
+                  assign is_men = true
+                elsif col_item.handle contains 'female' or col_item.handle contains 'women'
+                  assign is_women = true
+                endif
+              endfor
 
-            assign cleaned_tags_men = prod_tags_string | replace: 'women', ''
-            assign cleaned_title_men = prod_title_lower | replace: 'women', ''
-            if cleaned_tags_men contains 'men' or cleaned_title_men contains 'men' or prod_tags_string contains 'male' or prod_title_lower contains 'male'
-              assign is_men = true
-            endif
+              if prod_tags_string contains 'unisex' or prod_title_lower contains 'unisex'
+                assign is_unisex = true
+              endif
 
-            if prod_tags_string contains 'women' or prod_title_lower contains 'women' or prod_tags_string contains 'female' or prod_title_lower contains 'female' or prod_tags_string contains 'ladies' or prod_title_lower contains 'ladies'
-              assign is_women = true
-            endif
-
-            if is_men == false and is_women == false
-              assign is_unisex = true
-            endif
-
-            # Category Detection
-            assign prod_cat = 'scrubs'
-            if prod_type_lower contains 'lab' or prod_tags_string contains 'lab coat' or prod_title_lower contains 'lab coat'
-              assign prod_cat = 'lab-coats'
-            elsif prod_type_lower contains 'white' or prod_tags_string contains 'white coat' or prod_title_lower contains 'white coat'
-              assign prod_cat = 'white-coats'
-            elsif prod_type_lower contains 'cap' or prod_tags_string contains 'cap' or prod_title_lower contains 'cap' or prod_title_lower contains 'bunfit'
-              assign prod_cat = 'caps'
-            elsif prod_type_lower contains 'sleeve' or prod_tags_string contains 'sleeve' or prod_title_lower contains 'sleeve'
-              assign prod_cat = 'sleeves'
-            elsif prod_type_lower contains 'access' or prod_tags_string contains 'accessory' or prod_tags_string contains 'accessories' or prod_title_lower contains 'clog' or prod_title_lower contains 'mask' or prod_title_lower contains 'badge'
-              assign prod_cat = 'accessories'
-            endif
-
-            # Article / Series Detection
-            assign prod_article = 'other'
-            assign prod_series_display = ''
-            for s in detected_series_list
-              if s != blank
-                assign s_clean = s | strip
-                assign s_h = s_clean | downcase | replace: ' ', '-'
-                assign s_down = s_clean | downcase
-                if prod_title_lower contains s_down or prod_tags_string contains s_down
-                  assign prod_article = s_h
-                  assign prod_series_display = s_clean | append: ' Series'
-                  break
+              if is_men == false
+                assign cleaned_tags_men = prod_tags_string | replace: 'women', ''
+                assign cleaned_title_men = prod_title_lower | replace: 'women', ''
+                if cleaned_tags_men contains 'men' or cleaned_title_men contains 'men' or prod_tags_string contains 'male' or prod_title_lower contains 'male'
+                  assign is_men = true
                 endif
               endif
-            endfor
 
-            # Color Options & Swatches
-            assign color_values = ''
-            for option in prod.options_with_values
-              assign opt_name_lower = option.name | downcase
-              if opt_name_lower contains 'color' or opt_name_lower contains 'colour'
-                assign color_values = option.values
-                break
+              if is_women == false
+                if prod_tags_string contains 'women' or prod_title_lower contains 'women' or prod_tags_string contains 'female' or prod_title_lower contains 'female' or prod_tags_string contains 'ladies' or prod_title_lower contains 'ladies'
+                  assign is_women = true
+                endif
               endif
-            endfor
-          -%}
 
-          <div
-            class="enamels-cat-card"
-            data-product-id="{{ prod.id }}"
-            data-gender="{% if is_unisex %}unisex{% elsif is_men and is_women %}unisex{% elsif is_men %}men{% elsif is_women %}women{% else %}unisex{% endif %}"
-            data-category="{{ prod_cat }}"
-            data-article="{{ prod_article }}"
-            data-title="{{ prod.title | escape }}"
-            data-price="{{ prod.price }}"
-          >
-            <a href="{{ prod.url }}" class="enamels-cat-card__link">
-              <div class="enamels-cat-card__media">
-                {% if prod.featured_media != blank %}
-                  <img
-                    src="{{ prod.featured_media | image_url: width: 600 }}"
-                    srcset="{{ prod.featured_media | image_url: width: 360 }} 360w, {{ prod.featured_media | image_url: width: 600 }} 600w, {{ prod.featured_media | image_url: width: 900 }} 900w"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                    alt="{{ prod.featured_media.alt | default: prod.title | escape }}"
-                    loading="lazy"
-                    width="300"
-                    height="450"
-                    class="enamels-cat-card__primary-img"
-                  >
-                  {% if prod.media.size > 1 %}
+              # If currently browsing a specific collection, strictly honor collection membership
+              if collection.handle contains 'male' or collection.handle contains 'men'
+                assign is_men = true
+                assign is_women = false
+                assign is_unisex = false
+              elsif collection.handle contains 'female' or collection.handle contains 'women'
+                assign is_women = true
+                assign is_men = false
+                assign is_unisex = false
+              elsif is_men == false and is_women == false
+                assign is_unisex = true
+              endif
+
+              # Category Detection
+              assign prod_cat = 'scrubs'
+              if prod_type_lower contains 'lab' or prod_tags_string contains 'lab coat' or prod_title_lower contains 'lab coat'
+                assign prod_cat = 'lab-coats'
+              elsif prod_type_lower contains 'white' or prod_tags_string contains 'white coat' or prod_title_lower contains 'white coat'
+                assign prod_cat = 'white-coats'
+              elsif prod_type_lower contains 'cap' or prod_tags_string contains 'cap' or prod_title_lower contains 'cap' or prod_title_lower contains 'bunfit'
+                assign prod_cat = 'caps'
+              elsif prod_type_lower contains 'sleeve' or prod_tags_string contains 'sleeve' or prod_title_lower contains 'sleeve'
+                assign prod_cat = 'sleeves'
+              elsif prod_type_lower contains 'access' or prod_tags_string contains 'accessory' or prod_tags_string contains 'accessories' or prod_title_lower contains 'clog' or prod_title_lower contains 'mask' or prod_title_lower contains 'badge'
+                assign prod_cat = 'accessories'
+              endif
+
+              # Article / Series Detection
+              assign prod_article = 'other'
+              assign prod_series_display = ''
+              for s in detected_series_list
+                if s != blank
+                  assign s_clean = s | strip
+                  assign s_h = s_clean | downcase | replace: ' ', '-'
+                  assign s_down = s_clean | downcase
+                  if prod_title_lower contains s_down or prod_tags_string contains s_down
+                    assign prod_article = s_h
+                    assign prod_series_display = s_clean | append: ' Series'
+                    break
+                  endif
+                endif
+              endfor
+
+              # Color Options & Swatches
+              assign color_values = ''
+              for option in prod.options_with_values
+                assign opt_name_lower = option.name | downcase
+                if opt_name_lower contains 'color' or opt_name_lower contains 'colour'
+                  assign color_values = option.values
+                  break
+                endif
+              endfor
+            -%}
+
+            <div
+              class="enamels-col-card"
+              data-product-id="{{ prod.id }}"
+              data-gender="{% if is_unisex %}unisex{% elsif is_men and is_women %}unisex{% elsif is_men %}men{% elsif is_women %}women{% else %}unisex{% endif %}"
+              data-category="{{ prod_cat }}"
+              data-article="{{ prod_article }}"
+              data-title="{{ prod.title | escape }}"
+              data-price="{{ prod.price }}"
+            >
+              <a href="{{ prod.url }}" class="enamels-col-card__link">
+                <!-- Standardized 1200x1800 (2:3 Portrait) Media Frame -->
+                <div class="enamels-col-card__media">
+                  {% if prod.featured_media != blank %}
                     <img
-                      src="{{ prod.media[1] | image_url: width: 600 }}"
-                      alt="{{ prod.title | escape }}"
+                      src="{{ prod.featured_media | image_url: width: 600 }}"
+                      srcset="{{ prod.featured_media | image_url: width: 360 }} 360w, {{ prod.featured_media | image_url: width: 600 }} 600w, {{ prod.featured_media | image_url: width: 900 }} 900w"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                      alt="{{ prod.featured_media.alt | default: prod.title | escape }}"
                       loading="lazy"
                       width="300"
                       height="450"
-                      class="enamels-cat-card__secondary-img"
+                      class="enamels-col-card__primary-img"
                     >
+                    {% if prod.media.size > 1 %}
+                      <img
+                        src="{{ prod.media[1] | image_url: width: 600 }}"
+                        alt="{{ prod.title | escape }}"
+                        loading="lazy"
+                        width="300"
+                        height="450"
+                        class="enamels-col-card__secondary-img"
+                      >
+                    {% endif %}
+                  {% else %}
+                    <div class="enamels-col-card__placeholder">
+                      <span>Enamels</span>
+                    </div>
                   {% endif %}
-                {% else %}
-                  <div class="enamels-cat-card__placeholder">
-                    <span>Enamels</span>
-                  </div>
-                {% endif %}
 
-                {% if prod.compare_at_price > prod.price %}
-                  {% assign discount_pct = prod.compare_at_price | minus: prod.price | times: 100.0 | divided_by: prod.compare_at_price | round %}
-                  <span class="enamels-cat-card__badge-sale">SAVE {{ discount_pct }}%</span>
-                {% endif %}
-              </div>
-
-              <div class="enamels-cat-card__info">
-                {% if prod_series_display != blank %}
-                  <span class="enamels-cat-card__series">
-                    {{ prod_series_display }}
-                  </span>
-                {% else %}
-                  <span class="enamels-cat-card__series enamels-cat-card__series--empty">&nbsp;</span>
-                {% endif %}
-
-                <span class="enamels-cat-card__title">{{ prod.title | escape }}</span>
-
-                <div class="enamels-cat-card__price-row">
-                  <span class="enamels-cat-card__price">{{ prod.price | money_without_trailing_zeros }}</span>
                   {% if prod.compare_at_price > prod.price %}
-                    <span class="enamels-cat-card__compare-price">{{ prod.compare_at_price | money_without_trailing_zeros }}</span>
+                    {% assign discount_pct = prod.compare_at_price | minus: prod.price | times: 100.0 | divided_by: prod.compare_at_price | round %}
+                    <span class="enamels-col-card__badge-sale">SAVE {{ discount_pct }}%</span>
                   {% endif %}
                 </div>
 
-                {% if show_swatches and color_values != blank and color_values.size > 0 %}
-                  <div class="enamels-cat-card__swatches" title="{{ color_values.size }} colors available">
-                    {% for color in color_values limit: 5 %}
-                      {%- liquid
-                        assign c_lower = color | downcase
-                        assign hex = '#0f172a'
-                        if c_lower contains 'navy' or c_lower contains 'dark blue'
-                          assign hex = '#0f172a'
-                        elsif c_lower contains 'royal' or c_lower contains 'blue'
-                          assign hex = '#1d4ed8'
-                        elsif c_lower contains 'ceil' or c_lower contains 'sky' or c_lower contains 'light blue'
-                          assign hex = '#7dd3fc'
-                        elsif c_lower contains 'caribbean' or c_lower contains 'aqua'
-                          assign hex = '#0284c7'
-                        elsif c_lower contains 'black'
-                          assign hex = '#18181b'
-                        elsif c_lower contains 'white'
-                          assign hex = '#ffffff'
-                        elsif c_lower contains 'wine' or c_lower contains 'burgundy' or c_lower contains 'maroon'
-                          assign hex = '#581c87'
-                        elsif c_lower contains 'plum' or c_lower contains 'purple' or c_lower contains 'violet'
-                          assign hex = '#701a75'
-                        elsif c_lower contains 'olive'
-                          assign hex = '#556b2f'
-                        elsif c_lower contains 'sage' or c_lower contains 'sea green' or c_lower contains 'seagreen'
-                          assign hex = '#84a98c'
-                        elsif c_lower contains 'hunter' or c_lower contains 'dark green' or c_lower contains 'green'
-                          assign hex = '#14532d'
-                        elsif c_lower contains 'charcoal' or c_lower contains 'grey' or c_lower contains 'gray'
-                          assign hex = '#334155'
-                        elsif c_lower contains 'rust' or c_lower contains 'terracotta' or c_lower contains 'brown'
-                          assign hex = '#9a3412'
-                        elsif c_lower contains 'khaki' or c_lower contains 'beige'
-                          assign hex = '#c2b280'
-                        elsif c_lower contains 'teal'
-                          assign hex = '#0d9488'
-                        endif
-                      -%}
-                      <span
-                        class="enamels-color-dot"
-                        style="background-color: {{ hex }}; {% if hex == '#ffffff' %}border: 1px solid #cbd5e1;{% endif %}"
-                        title="{{ color | escape }}"
-                      ></span>
-                    {% endfor %}
-                    {% if color_values.size > 5 %}
-                      <span class="enamels-color-more">+{{ color_values.size | minus: 5 }}</span>
+                <div class="enamels-col-card__info">
+                  {% if prod_series_display != blank %}
+                    <span class="enamels-col-card__series">
+                      {{ prod_series_display }}
+                    </span>
+                  {% else %}
+                    <span class="enamels-col-card__series enamels-col-card__series--empty">&nbsp;</span>
+                  {% endif %}
+
+                  <span class="enamels-col-card__title">{{ prod.title | escape }}</span>
+
+                  <div class="enamels-col-card__price-row">
+                    <span class="enamels-col-card__price">{{ prod.price | money_without_trailing_zeros }}</span>
+                    {% if prod.compare_at_price > prod.price %}
+                      <span class="enamels-col-card__compare-price">{{ prod.compare_at_price | money_without_trailing_zeros }}</span>
                     {% endif %}
                   </div>
-                {% endif %}
-              </div>
-            </a>
+
+                  {% if show_swatches and color_values != blank and color_values.size > 0 %}
+                    <div class="enamels-col-card__swatches" title="{{ color_values.size }} colors available">
+                      {% for color in color_values limit: 5 %}
+                        {%- liquid
+                          assign c_lower = color | downcase
+                          assign hex = '#0f172a'
+                          if c_lower contains 'navy' or c_lower contains 'dark blue'
+                            assign hex = '#0f172a'
+                          elsif c_lower contains 'royal' or c_lower contains 'blue'
+                            assign hex = '#1d4ed8'
+                          elsif c_lower contains 'ceil' or c_lower contains 'sky' or c_lower contains 'light blue'
+                            assign hex = '#7dd3fc'
+                          elsif c_lower contains 'caribbean' or c_lower contains 'aqua'
+                            assign hex = '#0284c7'
+                          elsif c_lower contains 'black'
+                            assign hex = '#18181b'
+                          elsif c_lower contains 'white'
+                            assign hex = '#ffffff'
+                          elsif c_lower contains 'wine' or c_lower contains 'burgundy' or c_lower contains 'maroon'
+                            assign hex = '#581c87'
+                          elsif c_lower contains 'plum' or c_lower contains 'purple' or c_lower contains 'violet'
+                            assign hex = '#701a75'
+                          elsif c_lower contains 'olive'
+                            assign hex = '#556b2f'
+                          elsif c_lower contains 'sage' or c_lower contains 'sea green' or c_lower contains 'seagreen'
+                            assign hex = '#84a98c'
+                          elsif c_lower contains 'hunter' or c_lower contains 'dark green' or c_lower contains 'green'
+                            assign hex = '#14532d'
+                          elsif c_lower contains 'charcoal' or c_lower contains 'grey' or c_lower contains 'gray'
+                            assign hex = '#334155'
+                          elsif c_lower contains 'rust' or c_lower contains 'terracotta' or c_lower contains 'brown'
+                            assign hex = '#9a3412'
+                          elsif c_lower contains 'khaki' or c_lower contains 'beige'
+                            assign hex = '#c2b280'
+                          elsif c_lower contains 'teal'
+                            assign hex = '#0d9488'
+                          endif
+                        -%}
+                        <span
+                          class="enamels-color-dot"
+                          style="background-color: {{ hex }}; {% if hex == '#ffffff' %}border: 1px solid #cbd5e1;{% endif %}"
+                          title="{{ color | escape }}"
+                        ></span>
+                      {% endfor %}
+                      {% if color_values.size > 5 %}
+                        <span class="enamels-color-more">+{{ color_values.size | minus: 5 }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </a>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- if paginate.pages > 1 -%}
+          <div class="enamels-col-pagination" style="grid-column: 1 / -1; margin-top: 32px; text-align: center;">
+            {% render 'pagination-controls', paginate: paginate %}
           </div>
-        {%- endfor -%}
-      {%- endif -%}
+        {%- endif -%}
+      {%- endpaginate -%}
 
       {%- comment -%}
         Empty State: Rendered only when the genuine collection has 0 products
@@ -845,7 +895,8 @@
       }
 
       // 5. Filter Product Cards
-      var cards = container.querySelectorAll('.enamels-cat-card');
+      var cards = container.querySelectorAll('.enamels-col-card');
+      var isSpecificCollection = container.getAttribute('data-is-specific-collection') === 'true';
       var visibleCount = 0;
 
       cards.forEach(function(card) {
@@ -854,13 +905,15 @@
         var cardArticle = card.getAttribute('data-article') || 'other';
 
         // Gender check (Strict Isolation)
-        var matchGender = false;
-        if (state.gender === 'all') {
-          matchGender = true;
-        } else if (state.gender === 'men') {
-          matchGender = (cardGender === 'men' || cardGender === 'unisex');
-        } else if (state.gender === 'women') {
-          matchGender = (cardGender === 'women' || cardGender === 'unisex');
+        var matchGender = true;
+        if (!isSpecificCollection) {
+          if (state.gender === 'all') {
+            matchGender = true;
+          } else if (state.gender === 'men') {
+            matchGender = (cardGender === 'men');
+          } else if (state.gender === 'women') {
+            matchGender = (cardGender === 'women');
+          }
         }
 
         // Category check
@@ -906,18 +959,29 @@
     }
 
     function setupEventListeners() {
-      // Gender tabs
+      // Gender tabs - Route directly to dedicated collection
       var genderTabs = container.querySelectorAll('.enamels-gender-tab');
       genderTabs.forEach(function(tab) {
         tab.addEventListener('click', function() {
-          state.gender = tab.getAttribute('data-gender-target') || 'all';
+          var targetGender = tab.getAttribute('data-gender-target') || 'all';
+          if (targetGender === 'men' && !window.location.pathname.includes('/male-scrubs')) {
+            window.location.href = '/collections/male-scrubs';
+            return;
+          } else if (targetGender === 'women' && !window.location.pathname.includes('/female-scrubs')) {
+            window.location.href = '/collections/female-scrubs';
+            return;
+          } else if (targetGender === 'all' && window.location.pathname !== '/collections/all') {
+            window.location.href = '/collections/all';
+            return;
+          }
+          state.gender = targetGender;
           updateUrlState();
           renderFilterUI();
         });
       });
 
-      // Category carousel items
-      var catItems = container.querySelectorAll('.enamels-carousel-item');
+      // Category carousel pill buttons
+      var catItems = container.querySelectorAll('.enamels-cat-pill-btn');
       catItems.forEach(function(item) {
         item.addEventListener('click', function() {
           var targetCat = item.getAttribute('data-category-target') || 'all';
@@ -953,18 +1017,79 @@
       if (clearBtn) clearBtn.addEventListener('click', resetAllFilters);
       if (resetBtn) resetBtn.addEventListener('click', resetAllFilters);
 
-      // Category carousel arrow scrolling
+      // Category carousel arrow scrolling, mouse drag & trackpad
       var carousel = container.querySelector('#enamels-cat-carousel');
       var prevBtn = container.querySelector('.enamels-carousel-btn.prev-btn');
       var nextBtn = container.querySelector('.enamels-carousel-btn.next-btn');
 
-      if (carousel && prevBtn && nextBtn) {
-        prevBtn.addEventListener('click', function() {
-          carousel.scrollBy({ left: -240, behavior: 'smooth' });
+      if (carousel) {
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function() {
+            carousel.scrollBy({ left: -260, behavior: 'smooth' });
+          });
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function() {
+            carousel.scrollBy({ left: 260, behavior: 'smooth' });
+          });
+        }
+
+        // Mouse Drag to Scroll
+        let isDown = false;
+        let startX = 0;
+        let scrollStart = 0;
+        let hasMoved = false;
+
+        carousel.addEventListener('mousedown', function(e) {
+          if (e.button !== 0) return;
+          isDown = true;
+          hasMoved = false;
+          startX = e.pageX - carousel.offsetLeft;
+          scrollStart = carousel.scrollLeft;
+          carousel.style.cursor = 'grabbing';
+          carousel.style.userSelect = 'none';
         });
-        nextBtn.addEventListener('click', function() {
-          carousel.scrollBy({ left: 240, behavior: 'smooth' });
+
+        const stopDrag = function() {
+          if (!isDown) return;
+          isDown = false;
+          carousel.style.cursor = 'grab';
+          carousel.style.userSelect = '';
+          setTimeout(function() { hasMoved = false; }, 100);
+        };
+
+        window.addEventListener('mouseup', stopDrag);
+        carousel.addEventListener('mouseleave', stopDrag);
+
+        carousel.addEventListener('mousemove', function(e) {
+          if (!isDown) return;
+          const currentX = e.pageX - carousel.offsetLeft;
+          const walk = (currentX - startX) * 1.3;
+          if (Math.abs(walk) > 4) {
+            hasMoved = true;
+          }
+          carousel.scrollLeft = scrollStart - walk;
         });
+
+        carousel.addEventListener('click', function(e) {
+          if (hasMoved) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        }, true);
+
+        // Native Trackpad & Smooth Mouse Wheel
+        carousel.addEventListener('wheel', function(e) {
+          if (Math.abs(e.deltaX) > 3) return;
+          if (Math.abs(e.deltaY) > 0 && !e.shiftKey) {
+            const canScrollLeft = e.deltaY < 0 && carousel.scrollLeft > 0;
+            const canScrollRight = e.deltaY > 0 && carousel.scrollLeft < (carousel.scrollWidth - carousel.clientWidth - 2);
+            if (canScrollLeft || canScrollRight) {
+              carousel.scrollLeft += e.deltaY * 1.2;
+            }
+          }
+        }, { passive: true });
       }
     }
 
@@ -1174,77 +1299,144 @@
     display: none;
   }
 
-  .enamels-carousel-item {
+  .enamels-cat-carousel-wrap {
+    position: relative;
+    width: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .enamels-cat-carousel {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 6px 2px 10px;
+    width: 100%;
+    align-items: stretch;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+  }
+
+  .enamels-cat-carousel:active {
+    cursor: grabbing;
+  }
+
+  .enamels-cat-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .enamels-cat-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background-color: #dfdfdf;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 12px;
     cursor: pointer;
     flex: 0 0 auto;
-    width: 100px;
-    text-align: center;
-    transition: transform 0.2s ease;
+    min-width: 170px;
+    min-height: 52px;
+    text-align: left;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    box-sizing: border-box;
+    font-family: inherit;
+    user-select: none;
   }
 
   @media (max-width: 640px) {
-    .enamels-carousel-item {
-      width: 82px;
-      gap: 6px;
+    .enamels-cat-pill-btn {
+      min-width: 145px;
+      min-height: 46px;
+      padding: 5px 10px;
+      gap: 8px;
     }
   }
 
-  .enamels-carousel-item:hover {
+  .enamels-cat-pill-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background-color: #d6d6d6;
   }
 
-  .enamels-carousel-item__thumb {
-    width: 80px;
-    height: 80px;
-    border-radius: 12px;
+  .enamels-cat-pill-btn.is-active {
+    background-color: #ffffff !important;
+    border-color: #102a43 !important;
+    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.12);
+  }
+
+  .enamels-cat-pill-btn__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .enamels-cat-pill-btn__title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #111111;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+
+  .enamels-cat-pill-btn.is-active .enamels-cat-pill-btn__title {
+    color: #102a43;
+  }
+
+  .enamels-cat-pill-btn__sub {
+    font-size: 10px;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+
+  .enamels-cat-pill-btn__media {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
     overflow: hidden;
     background-color: #f1f5f9;
-    border: 2px solid transparent;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    flex: 0 0 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   @media (max-width: 640px) {
-    .enamels-carousel-item__thumb {
-      width: 68px;
-      height: 68px;
-      border-radius: 10px;
+    .enamels-cat-pill-btn__media {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
     }
   }
 
-  .enamels-carousel-item.is-active .enamels-carousel-item__thumb {
-    border-color: #0284c7;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
-  }
-
-  .enamels-carousel-item__thumb img {
+  .enamels-cat-pill-btn__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
 
-  .enamels-carousel-item__name {
-    font-size: 11px;
-    font-weight: 600;
-    color: #334155;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-  }
-
-  .enamels-carousel-item.is-active .enamels-carousel-item__name {
-    color: #0284c7;
-    font-weight: 700;
+  .enamels-cat-pill-btn__placeholder,
+  .enamels-all-grid-icon {
+    font-size: 16px;
+    color: #64748b;
   }
 
   /* 4. Article Sub-Filter Bar */
@@ -1380,6 +1572,7 @@
     }
   }
 
+  .enamels-col-card,
   .enamels-cat-card {
     display: flex;
     flex-direction: column;
@@ -1387,6 +1580,7 @@
     height: 100%;
   }
 
+  .enamels-col-card__link,
   .enamels-cat-card__link {
     text-decoration: none;
     color: inherit;
@@ -1395,9 +1589,10 @@
     height: 100%;
   }
 
+  .enamels-col-card__media,
   .enamels-cat-card__media {
     width: 100% !important;
-    aspect-ratio: var(--cat-card-aspect, 2 / 3) !important;
+    aspect-ratio: 2 / 3 !important;
     border-radius: var(--cat-card-radius, 8px);
     overflow: hidden !important;
     background-color: var(--cat-card-bg, #f8fafc) !important;
@@ -1408,13 +1603,17 @@
     justify-content: center !important;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     box-sizing: border-box !important;
+    padding: 8px !important;
   }
 
+  .enamels-col-card:hover .enamels-col-card__media,
   .enamels-cat-card:hover .enamels-cat-card__media {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
 
+  .enamels-col-card__primary-img,
+  .enamels-col-card__secondary-img,
   .enamels-cat-card__primary-img,
   .enamels-cat-card__secondary-img {
     position: absolute !important;
@@ -1424,24 +1623,27 @@
     height: 100% !important;
     max-width: 100% !important;
     max-height: 100% !important;
-    object-fit: var(--cat-card-fit, contain) !important;
-    object-position: var(--cat-card-pos, center center) !important;
-    padding: 6px !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    padding: 8px !important;
     box-sizing: border-box !important;
     display: block !important;
     margin: 0 !important;
     transition: opacity 0.3s ease;
   }
 
+  .enamels-col-card__secondary-img,
   .enamels-cat-card__secondary-img {
     opacity: 0;
     pointer-events: none;
   }
 
+  .enamels-col-card:hover .enamels-col-card__secondary-img,
   .enamels-cat-card:hover .enamels-cat-card__secondary-img {
     opacity: 1;
   }
 
+  .enamels-col-card__badge-sale,
   .enamels-cat-card__badge-sale {
     position: absolute;
     top: 8px;
@@ -1456,6 +1658,7 @@
     z-index: 2;
   }
 
+  .enamels-col-card__placeholder,
   .enamels-cat-card__placeholder {
     position: absolute !important;
     top: 0 !important;
@@ -1471,6 +1674,7 @@
     font-size: 14px;
   }
 
+  .enamels-col-card__info,
   .enamels-cat-card__info {
     display: flex;
     flex-direction: column;
@@ -1478,6 +1682,7 @@
     flex-grow: 1;
   }
 
+  .enamels-col-card__series,
   .enamels-cat-card__series {
     font-size: 10px;
     font-weight: 700;
@@ -1489,34 +1694,42 @@
     line-height: 1.4;
   }
 
+  .enamels-col-card__series--empty,
   .enamels-cat-card__series--empty {
     visibility: hidden;
   }
 
+  .enamels-col-card__title,
   .enamels-cat-card__title {
     font-size: var(--cat-title-size-desk, 12px);
     font-weight: 600;
     letter-spacing: 0.02em;
     color: #111111;
     text-transform: uppercase;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
+    white-space: normal;
+    min-height: 2.7em;
+    line-height: 1.35;
   }
 
+  .enamels-col-card__price-row,
   .enamels-cat-card__price-row {
     display: flex;
     align-items: center;
     gap: 6px;
   }
 
+  .enamels-col-card__price,
   .enamels-cat-card__price {
     font-size: var(--cat-price-size-desk, 12px);
     font-weight: 700;
     color: #102a43;
   }
 
+  .enamels-col-card__compare-price,
   .enamels-cat-card__compare-price {
     font-size: 11px;
     font-weight: 500;
@@ -1524,6 +1737,7 @@
     text-decoration: line-through;
   }
 
+  .enamels-col-card__swatches,
   .enamels-cat-card__swatches {
     display: flex;
     align-items: center;
@@ -1547,9 +1761,11 @@
   }
 
   @media (max-width: 640px) {
+    .enamels-col-card__title,
     .enamels-cat-card__title {
       font-size: var(--cat-title-size-mob, 11px);
     }
+    .enamels-col-card__price,
     .enamels-cat-card__price {
       font-size: var(--cat-price-size-mob, 11px);
     }

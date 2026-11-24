@@ -1,172 +1,315 @@
 {% comment %}
   Section: enamels-bundle-builder.liquid
-  Description: Interactive Clinical Bundle Builder with category tabs, real variant pickers, live discount calculation, and multi-item cart submission.
+  Description: Interactive Clinical Bundle Builder with category tabs, real variant pickers,
+  live tiered discount calculation, and multi-item cart submission.
+  Full Shopify Theme Editor editability for every text, color, button, icon, and collection.
 {% endcomment %}
 
 {%- liquid
   assign bg_color = section.settings.bg_color | default: '#f8fafc'
-  assign eyebrow = section.settings.eyebrow | default: 'CREATE YOUR COMPLETE CLINICAL SET'
-  assign title = section.settings.title | default: 'Build Your Clinical Bundle & Save'
-  assign subtitle = section.settings.subtitle | default: 'Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery.'
+  assign max_w = section.settings.container_width | default: 1320
+  assign p_top = section.settings.padding_top | default: 48
+  assign p_bottom = section.settings.padding_bottom | default: 80
 
+  assign show_eyebrow = section.settings.show_eyebrow
+  assign eyebrow = section.settings.eyebrow | default: 'CREATE YOUR COMPLETE CLINICAL SET'
+  assign eyebrow_bg = section.settings.eyebrow_bg | default: '#e6fffa'
+  assign eyebrow_color = section.settings.eyebrow_color | default: '#008779'
+
+  assign title = section.settings.title | default: 'Build Your Clinical Bundle & Save'
+  assign title_size_desk = section.settings.title_size_desktop | default: 32
+  assign title_size_mob = section.settings.title_size_mobile | default: 24
+  assign title_color = section.settings.title_color | default: '#0f172a'
+
+  assign subtitle = section.settings.subtitle | default: 'Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery.'
+  assign subtitle_color = section.settings.subtitle_color | default: '#64748b'
+  assign text_align = section.settings.text_alignment | default: 'center'
+
+  # Tier Ribbon Settings
+  assign show_tier_ribbon = section.settings.show_tier_ribbon
+  assign tier1_count = section.settings.tier1_count | default: 2
+  assign tier1_discount = section.settings.tier1_discount | default: 5
+  assign tier1_text = section.settings.tier1_text | default: 'Pick Any 2: Save 5%'
+
+  assign tier2_count = section.settings.tier2_count | default: 3
+  assign tier2_discount = section.settings.tier2_discount | default: 10
+  assign tier2_text = section.settings.tier2_text | default: 'Pick Any 3+: Save 10%'
+
+  assign shipping_text = section.settings.shipping_text | default: 'Nationwide Free Shipping'
+  assign shipping_icon = section.settings.shipping_icon | default: '🚚'
+
+  # Tab 1: Tops
+  assign show_tab_tops = section.settings.tab_tops_show
+  assign tab_tops_label = section.settings.tab_tops_label | default: '1. Scrub Tops'
+  assign tab_tops_icon = section.settings.tab_tops_icon | default: '🥼'
   assign col_tops = collections[section.settings.col_tops]
+
+  # Tab 2: Trousers
+  assign show_tab_trousers = section.settings.tab_trousers_show
+  assign tab_trousers_label = section.settings.tab_trousers_label | default: '2. Scrub Trousers'
+  assign tab_trousers_icon = section.settings.tab_trousers_icon | default: '👖'
   assign col_trousers = collections[section.settings.col_trousers]
+
+  # Tab 3: Lab Coats
+  assign show_tab_labcoats = section.settings.tab_labcoats_show
+  assign tab_labcoats_label = section.settings.tab_labcoats_label | default: '3. Lab Coats'
+  assign tab_labcoats_icon = section.settings.tab_labcoats_icon | default: '🩺'
   assign col_labcoats = collections[section.settings.col_labcoats]
+
+  # Tab 4: Caps
+  assign show_tab_caps = section.settings.tab_caps_show
+  assign tab_caps_label = section.settings.tab_caps_label | default: '4. Surgical Caps'
+  assign tab_caps_icon = section.settings.tab_caps_icon | default: '🧢'
   assign col_caps = collections[section.settings.col_caps]
+
+  # Tab 5: Accessories
+  assign show_tab_accessories = section.settings.tab_accessories_show
+  assign tab_accessories_label = section.settings.tab_accessories_label | default: '5. Underscrubs / Gear'
+  assign tab_accessories_icon = section.settings.tab_accessories_icon | default: '✨'
   assign col_accessories = collections[section.settings.col_accessories]
 
-  if col_tops == blank and collections['tops'] != blank
-    assign col_tops = collections['tops']
-  endif
-  if col_trousers == blank and collections['trousers'] != blank
-    assign col_trousers = collections['trousers']
-  endif
-  if col_labcoats == blank and collections['lab-coats'] != blank
-    assign col_labcoats = collections['lab-coats']
-  endif
-  if col_caps == blank and collections['caps'] != blank
-    assign col_caps = collections['caps']
-  endif
-  if col_accessories == blank and collections['accessories'] != blank
-    assign col_accessories = collections['accessories']
-  endif
+  # Card & Action Settings
+  assign products_limit = section.settings.products_limit | default: 12
+  assign btn_add_label = section.settings.btn_add_label | default: '+ Add to Bundle'
+  assign btn_added_label = section.settings.btn_added_label | default: '✓ Added in Bundle'
+  assign empty_state_text = section.settings.empty_state_text | default: 'Collection currently being updated'
+  assign show_sale_pill = section.settings.show_sale_pill
+  assign sale_pill_text = section.settings.sale_pill_text | default: 'SALE'
 
-  # Fallback to general collections if specific ones are empty
-  if col_tops == blank
-    assign col_tops = collections['all']
-  endif
+  # Sticky Bar Settings
+  assign show_sticky_bar = section.settings.show_sticky_bar
+  assign empty_tray_hint = section.settings.empty_tray_hint | default: 'Select items to start your bundle'
+  assign btn_cart_label = section.settings.btn_cart_label | default: 'Add Bundle to Cart'
+  assign btn_cart_bg = section.settings.btn_cart_bg | default: '#008779'
+  assign btn_cart_text_color = section.settings.btn_cart_text_color | default: '#ffffff'
+  assign redirect_target = section.settings.redirect_target | default: 'cart'
 -%}
 
-<section class="enamels-bundle-builder-section" id="enamels-bundle-builder-{{ section.id }}" style="background-color: {{ bg_color }};" aria-label="{{ title | escape }}">
-  <div class="page-container" style="max-width: 1320px; margin: 0 auto; padding: 60px 20px 100px;">
+<section
+  class="enamels-bundle-builder-section"
+  id="enamels-bundle-builder-{{ section.id }}"
+  data-section-id="{{ section.id }}"
+  data-tier1-count="{{ tier1_count }}"
+  data-tier1-discount="{{ tier1_discount }}"
+  data-tier2-count="{{ tier2_count }}"
+  data-tier2-discount="{{ tier2_discount }}"
+  data-btn-add-label="{{ btn_add_label | escape }}"
+  data-btn-added-label="{{ btn_added_label | escape }}"
+  data-redirect="{{ redirect_target }}"
+  style="background-color: {{ bg_color }}; padding-top: {{ p_top }}px; padding-bottom: {% if show_sticky_bar %}calc({{ p_bottom }}px + 60px){% else %}{{ p_bottom }}px{% endif %};"
+  aria-label="{{ title | escape }}"
+>
+  <div class="page-container" style="max-width: {{ max_w }}px; margin: 0 auto; padding-left: 20px; padding-right: 20px;">
     
     <!-- Section Header -->
-    <div class="bundle-header" style="text-align: center; max-width: 760px; margin: 0 auto 36px;">
-      {% if eyebrow != blank %}
-        <span class="bundle-eyebrow">{{ eyebrow | escape }}</span>
+    <div class="bundle-header" style="text-align: {{ text_align }}; max-width: 800px; margin: 0 auto 36px;">
+      {% if show_eyebrow and eyebrow != blank %}
+        <span class="bundle-eyebrow" style="background-color: {{ eyebrow_bg }}; color: {{ eyebrow_color }};">
+          {{ eyebrow | escape }}
+        </span>
       {% endif %}
       {% if title != blank %}
-        <h2 class="bundle-title">{{ title | escape }}</h2>
+        <h2 class="bundle-title" style="color: {{ title_color }};">
+          {{ title | escape }}
+        </h2>
       {% endif %}
       {% if subtitle != blank %}
-        <p class="bundle-subtitle">{{ subtitle | escape }}</p>
+        <p class="bundle-subtitle" style="color: {{ subtitle_color }};">
+          {{ subtitle | escape }}
+        </p>
       {% endif %}
 
       <!-- Tiered Discount Ribbon -->
-      <div class="bundle-tiers-ribbon">
-        <div class="tier-step active" id="tier-step-1">
-          <span class="tier-bullet">1</span>
-          <span class="tier-label">Pick Any 2: <strong>5% Off</strong></span>
+      {% if show_tier_ribbon %}
+        <div class="bundle-tiers-ribbon">
+          <div class="tier-step active" id="tier-step-1-{{ section.id }}">
+            <span class="tier-bullet">1</span>
+            <span class="tier-label">{{ tier1_text | escape }}</span>
+          </div>
+          <div class="tier-divider"></div>
+          <div class="tier-step" id="tier-step-2-{{ section.id }}">
+            <span class="tier-bullet">2</span>
+            <span class="tier-label">{{ tier2_text | escape }}</span>
+          </div>
+          <div class="tier-divider"></div>
+          <div class="tier-step">
+            <span class="tier-bullet">{{ shipping_icon | escape }}</span>
+            <span class="tier-label">{{ shipping_text | escape }}</span>
+          </div>
         </div>
-        <div class="tier-divider"></div>
-        <div class="tier-step" id="tier-step-2">
-          <span class="tier-bullet">2</span>
-          <span class="tier-label">Pick Any 3+: <strong>10% Off</strong></span>
-        </div>
-        <div class="tier-divider"></div>
-        <div class="tier-step">
-          <span class="tier-bullet">🚚</span>
-          <span class="tier-label">Nationwide <strong>Free Shipping</strong></span>
-        </div>
-      </div>
+      {% endif %}
     </div>
 
     <!-- Category Tabs Navigation -->
     <div class="bundle-tabs-container">
       <div class="bundle-tabs-scroller" role="tablist">
-        <button type="button" class="bundle-tab-btn active" role="tab" aria-selected="true" data-tab="tops" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'tops')">
-          <span class="tab-icon">🥼</span>
-          <span class="tab-text">1. Scrub Tops</span>
-          <span class="tab-count-badge" id="b-count-tops-{{ section.id }}">0</span>
-        </button>
+        {% if show_tab_tops %}
+          <button type="button" class="bundle-tab-btn active" role="tab" aria-selected="true" data-tab="tops" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'tops')">
+            <span class="tab-icon">{{ tab_tops_icon }}</span>
+            <span class="tab-text">{{ tab_tops_label | escape }}</span>
+            <span class="tab-count-badge" id="b-count-tops-{{ section.id }}">0</span>
+          </button>
+        {% endif %}
 
-        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="trousers" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'trousers')">
-          <span class="tab-icon">👖</span>
-          <span class="tab-text">2. Scrub Trousers</span>
-          <span class="tab-count-badge" id="b-count-trousers-{{ section.id }}">0</span>
-        </button>
+        {% if show_tab_trousers %}
+          <button type="button" class="bundle-tab-btn {% unless show_tab_tops %}active{% endunless %}" role="tab" aria-selected="{% if show_tab_tops %}false{% else %}true{% endif %}" data-tab="trousers" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'trousers')">
+            <span class="tab-icon">{{ tab_trousers_icon }}</span>
+            <span class="tab-text">{{ tab_trousers_label | escape }}</span>
+            <span class="tab-count-badge" id="b-count-trousers-{{ section.id }}">0</span>
+          </button>
+        {% endif %}
 
-        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="labcoats" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'labcoats')">
-          <span class="tab-icon">🩺</span>
-          <span class="tab-text">3. Lab Coats</span>
-          <span class="tab-count-badge" id="b-count-labcoats-{{ section.id }}">0</span>
-        </button>
+        {% if show_tab_labcoats %}
+          <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="labcoats" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'labcoats')">
+            <span class="tab-icon">{{ tab_labcoats_icon }}</span>
+            <span class="tab-text">{{ tab_labcoats_label | escape }}</span>
+            <span class="tab-count-badge" id="b-count-labcoats-{{ section.id }}">0</span>
+          </button>
+        {% endif %}
 
-        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="caps" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'caps')">
-          <span class="tab-icon">🧢</span>
-          <span class="tab-text">4. Surgical Caps</span>
-          <span class="tab-count-badge" id="b-count-caps-{{ section.id }}">0</span>
-        </button>
+        {% if show_tab_caps %}
+          <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="caps" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'caps')">
+            <span class="tab-icon">{{ tab_caps_icon }}</span>
+            <span class="tab-text">{{ tab_caps_label | escape }}</span>
+            <span class="tab-count-badge" id="b-count-caps-{{ section.id }}">0</span>
+          </button>
+        {% endif %}
 
-        <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="accessories" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'accessories')">
-          <span class="tab-icon">✨</span>
-          <span class="tab-text">5. Underscrubs / Gear</span>
-          <span class="tab-count-badge" id="b-count-accessories-{{ section.id }}">0</span>
-        </button>
+        {% if show_tab_accessories %}
+          <button type="button" class="bundle-tab-btn" role="tab" aria-selected="false" data-tab="accessories" onclick="window.enamelsSwitchBundleTab('{{ section.id }}', 'accessories')">
+            <span class="tab-icon">{{ tab_accessories_icon }}</span>
+            <span class="tab-text">{{ tab_accessories_label | escape }}</span>
+            <span class="tab-count-badge" id="b-count-accessories-{{ section.id }}">0</span>
+          </button>
+        {% endif %}
       </div>
     </div>
 
     <!-- Tab Panels Container -->
     <div class="bundle-tab-panels">
-      
-      <!-- Panel 1: Tops -->
-      <div class="bundle-panel active" id="bpanel-{{ section.id }}-tops" role="tabpanel">
-        {% render 'enamels-bundle-product-grid', collection_obj: col_tops, section_id: section.id, category_key: 'tops' %}
-      </div>
+      {% if show_tab_tops %}
+        <div class="bundle-panel active" id="bpanel-{{ section.id }}-tops" role="tabpanel">
+          {% render 'enamels-bundle-product-grid',
+            collection_obj: col_tops,
+            section_id: section.id,
+            category_key: 'tops',
+            products_limit: products_limit,
+            btn_add_label: btn_add_label,
+            btn_added_label: btn_added_label,
+            empty_state_text: empty_state_text,
+            show_sale_pill: show_sale_pill,
+            sale_pill_text: sale_pill_text
+          %}
+        </div>
+      {% endif %}
 
-      <!-- Panel 2: Trousers -->
-      <div class="bundle-panel" id="bpanel-{{ section.id }}-trousers" role="tabpanel" style="display: none;">
-        {% render 'enamels-bundle-product-grid', collection_obj: col_trousers, section_id: section.id, category_key: 'trousers' %}
-      </div>
+      {% if show_tab_trousers %}
+        <div class="bundle-panel {% unless show_tab_tops %}active{% endunless %}" id="bpanel-{{ section.id }}-trousers" role="tabpanel" style="{% if show_tab_tops %}display: none;{% endif %}">
+          {% render 'enamels-bundle-product-grid',
+            collection_obj: col_trousers,
+            section_id: section.id,
+            category_key: 'trousers',
+            products_limit: products_limit,
+            btn_add_label: btn_add_label,
+            btn_added_label: btn_added_label,
+            empty_state_text: empty_state_text,
+            show_sale_pill: show_sale_pill,
+            sale_pill_text: sale_pill_text
+          %}
+        </div>
+      {% endif %}
 
-      <!-- Panel 3: Lab Coats -->
-      <div class="bundle-panel" id="bpanel-{{ section.id }}-labcoats" role="tabpanel" style="display: none;">
-        {% render 'enamels-bundle-product-grid', collection_obj: col_labcoats, section_id: section.id, category_key: 'labcoats' %}
-      </div>
+      {% if show_tab_labcoats %}
+        <div class="bundle-panel" id="bpanel-{{ section.id }}-labcoats" role="tabpanel" style="display: none;">
+          {% render 'enamels-bundle-product-grid',
+            collection_obj: col_labcoats,
+            section_id: section.id,
+            category_key: 'labcoats',
+            products_limit: products_limit,
+            btn_add_label: btn_add_label,
+            btn_added_label: btn_added_label,
+            empty_state_text: empty_state_text,
+            show_sale_pill: show_sale_pill,
+            sale_pill_text: sale_pill_text
+          %}
+        </div>
+      {% endif %}
 
-      <!-- Panel 4: Caps -->
-      <div class="bundle-panel" id="bpanel-{{ section.id }}-caps" role="tabpanel" style="display: none;">
-        {% render 'enamels-bundle-product-grid', collection_obj: col_caps, section_id: section.id, category_key: 'caps' %}
-      </div>
+      {% if show_tab_caps %}
+        <div class="bundle-panel" id="bpanel-{{ section.id }}-caps" role="tabpanel" style="display: none;">
+          {% render 'enamels-bundle-product-grid',
+            collection_obj: col_caps,
+            section_id: section.id,
+            category_key: 'caps',
+            products_limit: products_limit,
+            btn_add_label: btn_add_label,
+            btn_added_label: btn_added_label,
+            empty_state_text: empty_state_text,
+            show_sale_pill: show_sale_pill,
+            sale_pill_text: sale_pill_text
+          %}
+        </div>
+      {% endif %}
 
-      <!-- Panel 5: Accessories -->
-      <div class="bundle-panel" id="bpanel-{{ section.id }}-accessories" role="tabpanel" style="display: none;">
-        {% render 'enamels-bundle-product-grid', collection_obj: col_accessories, section_id: section.id, category_key: 'accessories' %}
-      </div>
-
+      {% if show_tab_accessories %}
+        <div class="bundle-panel" id="bpanel-{{ section.id }}-accessories" role="tabpanel" style="display: none;">
+          {% render 'enamels-bundle-product-grid',
+            collection_obj: col_accessories,
+            section_id: section.id,
+            category_key: 'accessories',
+            products_limit: products_limit,
+            btn_add_label: btn_add_label,
+            btn_added_label: btn_added_label,
+            empty_state_text: empty_state_text,
+            show_sale_pill: show_sale_pill,
+            sale_pill_text: sale_pill_text
+          %}
+        </div>
+      {% endif %}
     </div>
 
   </div>
 
   <!-- Sticky Bottom Bundle Summary Bar -->
-  <div class="enamels-sticky-bundle-bar" id="sticky-bundle-bar-{{ section.id }}">
-    <div class="page-container" style="max-width: 1320px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-      
-      <!-- Selected Items Mini Previews -->
-      <div class="bundle-bar-left" style="display: flex; align-items: center; gap: 14px;">
-        <div class="bundle-bar-items-tray" id="bundle-tray-{{ section.id }}">
-          <div class="tray-empty-hint">Select items to start your bundle</div>
+  {% if show_sticky_bar %}
+    <div class="enamels-sticky-bundle-bar" id="sticky-bundle-bar-{{ section.id }}">
+      <div class="page-container" style="max-width: {{ max_w }}px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        
+        <!-- Selected Items Mini Previews -->
+        <div class="bundle-bar-left" style="display: flex; align-items: center; gap: 14px;">
+          <div class="bundle-bar-items-tray" id="bundle-tray-{{ section.id }}">
+            <div class="tray-empty-hint">{{ empty_tray_hint | escape }}</div>
+          </div>
+          <div class="bundle-bar-meta">
+            <div class="bundle-count-line"><strong id="bundle-total-count-{{ section.id }}">0</strong> items selected</div>
+            <div class="bundle-discount-badge" id="bundle-tier-badge-{{ section.id }}">
+              Add {{ tier1_count }} items for {{ tier1_discount }}% off
+            </div>
+          </div>
         </div>
-        <div class="bundle-bar-meta">
-          <div class="bundle-count-line"><strong id="bundle-total-count-{{ section.id }}">0</strong> items selected</div>
-          <div class="bundle-discount-badge" id="bundle-tier-badge-{{ section.id }}">Add 2 items for 5% off</div>
-        </div>
-      </div>
 
-      <!-- Price & Checkout CTA -->
-      <div class="bundle-bar-right" style="display: flex; align-items: center; gap: 16px;">
-        <div class="bundle-price-box" style="text-align: right;">
-          <div class="bundle-original-price" id="bundle-original-price-{{ section.id }}" style="display: none;">PKR 0</div>
-          <div class="bundle-final-price" id="bundle-final-price-{{ section.id }}">PKR 0</div>
+        <!-- Price & Checkout CTA -->
+        <div class="bundle-bar-right" style="display: flex; align-items: center; gap: 16px;">
+          <div class="bundle-price-box" style="text-align: right;">
+            <div class="bundle-original-price" id="bundle-original-price-{{ section.id }}" style="display: none;">PKR 0</div>
+            <div class="bundle-final-price" id="bundle-final-price-{{ section.id }}">PKR 0</div>
+          </div>
+          <button
+            type="button"
+            class="btn-add-bundle-cart"
+            id="btn-add-bundle-{{ section.id }}"
+            disabled
+            onclick="window.enamelsSubmitBundleToCart('{{ section.id }}')"
+            style="background-color: {{ btn_cart_bg }}; color: {{ btn_cart_text_color }};"
+          >
+            <span class="btn-text">{{ btn_cart_label | escape }}</span>
+            <span class="btn-loading" style="display: none;">Adding to Cart...</span>
+          </button>
         </div>
-        <button type="button" class="btn-add-bundle-cart" id="btn-add-bundle-{{ section.id }}" disabled onclick="window.enamelsSubmitBundleToCart('{{ section.id }}')">
-          <span class="btn-text">Add Bundle to Cart</span>
-          <span class="btn-loading" style="display: none;">Adding to Cart...</span>
-        </button>
-      </div>
 
+      </div>
     </div>
-  </div>
+  {% endif %}
 </section>
 
 <style>
@@ -180,22 +323,23 @@
     font-weight: 800;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: #008779;
-    background: #e6fffa;
     padding: 6px 14px;
     border-radius: 999px;
     margin-bottom: 12px;
   }
   .bundle-title {
-    font-size: 32px;
+    font-size: {{ title_size_desk }}px;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: #0f172a;
     margin: 0 0 12px;
+  }
+  @media (max-width: 640px) {
+    .bundle-title {
+      font-size: {{ title_size_mob }}px !important;
+    }
   }
   .bundle-subtitle {
     font-size: 15px;
-    color: #64748b;
     line-height: 1.6;
     margin: 0 auto 24px;
   }
@@ -355,8 +499,6 @@
   }
   .btn-add-bundle-cart {
     padding: 14px 28px;
-    background: #008779;
-    color: #ffffff;
     font-size: 14px;
     font-weight: 700;
     border: none;
@@ -365,12 +507,13 @@
     transition: all 0.2s ease;
   }
   .btn-add-bundle-cart:hover:not(:disabled) {
-    background: #006f63;
+    opacity: 0.9;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 135, 121, 0.25);
   }
   .btn-add-bundle-cart:disabled {
-    background: #cbd5e1;
+    background: #cbd5e1 !important;
+    color: #94a3b8 !important;
     cursor: not-allowed;
   }
 </style>
@@ -425,6 +568,16 @@
   };
 
   function renderBundleSummary(sectionId) {
+    var sectionEl = document.getElementById('enamels-bundle-builder-' + sectionId);
+    if (!sectionEl) return;
+
+    var t1Count = parseInt(sectionEl.getAttribute('data-tier1-count')) || 2;
+    var t1Disc = parseInt(sectionEl.getAttribute('data-tier1-discount')) || 5;
+    var t2Count = parseInt(sectionEl.getAttribute('data-tier2-count')) || 3;
+    var t2Disc = parseInt(sectionEl.getAttribute('data-tier2-discount')) || 10;
+    var btnAddTxt = sectionEl.getAttribute('data-btn-add-label') || '+ Add to Bundle';
+    var btnAddedTxt = sectionEl.getAttribute('data-btn-added-label') || '✓ Added in Bundle';
+
     var list = bundleState[sectionId] || [];
     var totalCount = list.length;
     var subtotal = 0;
@@ -454,7 +607,8 @@
     // Render Tray Thumbs
     if (trayEl) {
       if (totalCount === 0) {
-        trayEl.innerHTML = '<div class="tray-empty-hint">Select items to start your bundle</div>';
+        var emptyHint = sectionEl.querySelector('.tray-empty-hint');
+        trayEl.innerHTML = '<div class="tray-empty-hint">' + (emptyHint ? emptyHint.textContent : 'Select items to start your bundle') + '</div>';
       } else {
         var html = '';
         list.forEach(function(it) {
@@ -464,28 +618,30 @@
       }
     }
 
-    // Calculate Discount Tiers
+    // Dynamic Discount Tiers Calculation from Section Attributes
     var discountPercent = 0;
-    if (totalCount >= 3) {
-      discountPercent = 10;
-    } else if (totalCount >= 2) {
-      discountPercent = 5;
+    if (totalCount >= t2Count) {
+      discountPercent = t2Disc;
+    } else if (totalCount >= t1Count) {
+      discountPercent = t1Disc;
     }
 
     var finalPrice = subtotal * (1 - (discountPercent / 100));
 
     if (badgeEl) {
-      if (discountPercent === 10) {
-        badgeEl.textContent = '🎉 10% Bundle Discount Applied!';
+      if (discountPercent === t2Disc && t2Disc > 0) {
+        badgeEl.textContent = '🎉 ' + t2Disc + '% Bundle Discount Applied!';
         badgeEl.style.color = '#15803d';
-      } else if (discountPercent === 5) {
-        badgeEl.textContent = '✨ 5% Bundle Discount Applied! Add 1 more for 10% off';
+      } else if (discountPercent === t1Disc && t1Disc > 0) {
+        var diff = t2Count - totalCount;
+        badgeEl.textContent = '✨ ' + t1Disc + '% Bundle Discount Applied! Add ' + diff + ' more for ' + t2Disc + '% off';
         badgeEl.style.color = '#008779';
-      } else if (totalCount === 1) {
-        badgeEl.textContent = 'Add 1 more item to save 5%';
+      } else if (totalCount > 0 && totalCount < t1Count) {
+        var needed = t1Count - totalCount;
+        badgeEl.textContent = 'Add ' + needed + ' more item to save ' + t1Disc + '%';
         badgeEl.style.color = '#008779';
       } else {
-        badgeEl.textContent = 'Add 2 items for 5% off, 3+ for 10% off';
+        badgeEl.textContent = 'Add ' + t1Count + ' items for ' + t1Disc + '% off, ' + t2Count + '+ for ' + t2Disc + '% off';
         badgeEl.style.color = '#64748b';
       }
     }
@@ -522,18 +678,21 @@
       if (toggleBtn) {
         if (isSelected) {
           toggleBtn.classList.add('selected');
-          toggleBtn.textContent = '✓ Added in Bundle';
+          toggleBtn.textContent = btnAddedTxt;
         } else {
           toggleBtn.classList.remove('selected');
-          toggleBtn.textContent = '+ Add to Bundle';
+          toggleBtn.textContent = btnAddTxt;
         }
       }
     });
   }
 
   window.enamelsSubmitBundleToCart = function(sectionId) {
+    var sectionEl = document.getElementById('enamels-bundle-builder-' + sectionId);
     var list = bundleState[sectionId] || [];
     if (list.length === 0) return;
+
+    var redirectTarget = (sectionEl && sectionEl.getAttribute('data-redirect') === 'checkout') ? '/checkout' : '/cart';
 
     var btn = document.getElementById('btn-add-bundle-' + sectionId);
     var txt = btn ? btn.querySelector('.btn-text') : null;
@@ -563,13 +722,21 @@
       return res.json();
     })
     .then(function() {
-      window.location.href = '/cart';
+      window.location.href = redirectTarget;
     })
     .catch(function(err) {
-      alert('Could not add bundle items. Redirecting to cart...');
-      window.location.href = '/cart';
+      window.location.href = redirectTarget;
     });
   };
+
+  // Theme Editor Live Synchronization
+  document.addEventListener('shopify:section:load', function(e) {
+    if (e.target.classList.contains('section-enamels-bundle-builder') || e.target.querySelector('.enamels-bundle-builder-section')) {
+      var s = e.target.querySelector('.enamels-bundle-builder-section') || e.target;
+      var sid = s.getAttribute('data-section-id');
+      if (sid) renderBundleSummary(sid);
+    }
+  });
 })();
 </script>
 
@@ -580,22 +747,114 @@
   "class": "section-enamels-bundle-builder",
   "settings": [
     {
+      "type": "header",
+      "content": "Section Header & Layout"
+    },
+    {
       "type": "color",
       "id": "bg_color",
       "label": "Background Color",
       "default": "#f8fafc"
     },
     {
+      "type": "range",
+      "id": "container_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 20,
+      "unit": "px",
+      "label": "Container Max Width",
+      "default": 1320
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 80
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left Aligned" },
+        { "value": "center", "label": "Center Aligned" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow & Headings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_eyebrow",
+      "label": "Show Eyebrow Badge",
+      "default": true
+    },
+    {
       "type": "text",
       "id": "eyebrow",
-      "label": "Eyebrow Tag",
+      "label": "Eyebrow Tag Text",
       "default": "CREATE YOUR COMPLETE CLINICAL SET"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_bg",
+      "label": "Eyebrow Background",
+      "default": "#e6fffa"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow Text Color",
+      "default": "#008779"
     },
     {
       "type": "text",
       "id": "title",
-      "label": "Section Heading",
+      "label": "Main Heading",
       "default": "Build Your Clinical Bundle & Save"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "min": 22,
+      "max": 44,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Font Size (Desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "min": 18,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Font Size (Mobile)",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Heading Color",
+      "default": "#0f172a"
     },
     {
       "type": "textarea",
@@ -604,8 +863,92 @@
       "default": "Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery."
     },
     {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#64748b"
+    },
+    {
       "type": "header",
-      "content": "Category Collections"
+      "content": "Discount Tiers Ribbon"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tier_ribbon",
+      "label": "Show Tiered Discount Ribbon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tier1_count",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Tier 1: Min Items Count",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "tier1_discount",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "label": "Tier 1: Discount Percentage",
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "tier1_text",
+      "label": "Tier 1: Promo Text",
+      "default": "Pick Any 2: Save 5%"
+    },
+    {
+      "type": "range",
+      "id": "tier2_count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Tier 2: Min Items Count",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "tier2_discount",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "label": "Tier 2: Discount Percentage",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "tier2_text",
+      "label": "Tier 2: Promo Text",
+      "default": "Pick Any 3+: Save 10%"
+    },
+    {
+      "type": "text",
+      "id": "shipping_text",
+      "label": "Shipping Guarantee Text",
+      "default": "Nationwide Free Shipping"
+    },
+    {
+      "type": "text",
+      "id": "shipping_icon",
+      "label": "Shipping Emoji/Icon",
+      "default": "🚚"
+    },
+    {
+      "type": "header",
+      "content": "Tab 1: Scrub Tops"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_tops_show",
+      "label": "Show Tops Tab",
+      "default": true
     },
     {
       "type": "collection",
@@ -613,9 +956,53 @@
       "label": "Scrub Tops Collection"
     },
     {
+      "type": "text",
+      "id": "tab_tops_label",
+      "label": "Tops Tab Label",
+      "default": "1. Scrub Tops"
+    },
+    {
+      "type": "text",
+      "id": "tab_tops_icon",
+      "label": "Tops Tab Icon/Emoji",
+      "default": "🥼"
+    },
+    {
+      "type": "header",
+      "content": "Tab 2: Scrub Trousers"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_trousers_show",
+      "label": "Show Trousers Tab",
+      "default": true
+    },
+    {
       "type": "collection",
       "id": "col_trousers",
       "label": "Scrub Trousers Collection"
+    },
+    {
+      "type": "text",
+      "id": "tab_trousers_label",
+      "label": "Trousers Tab Label",
+      "default": "2. Scrub Trousers"
+    },
+    {
+      "type": "text",
+      "id": "tab_trousers_icon",
+      "label": "Trousers Tab Icon/Emoji",
+      "default": "👖"
+    },
+    {
+      "type": "header",
+      "content": "Tab 3: Lab Coats"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_labcoats_show",
+      "label": "Show Lab Coats Tab",
+      "default": true
     },
     {
       "type": "collection",
@@ -623,21 +1010,163 @@
       "label": "Lab Coats Collection"
     },
     {
+      "type": "text",
+      "id": "tab_labcoats_label",
+      "label": "Lab Coats Tab Label",
+      "default": "3. Lab Coats"
+    },
+    {
+      "type": "text",
+      "id": "tab_labcoats_icon",
+      "label": "Lab Coats Tab Icon/Emoji",
+      "default": "🩺"
+    },
+    {
+      "type": "header",
+      "content": "Tab 4: Surgical Caps"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_caps_show",
+      "label": "Show Surgical Caps Tab",
+      "default": true
+    },
+    {
       "type": "collection",
       "id": "col_caps",
       "label": "Surgical Caps Collection"
     },
     {
+      "type": "text",
+      "id": "tab_caps_label",
+      "label": "Caps Tab Label",
+      "default": "4. Surgical Caps"
+    },
+    {
+      "type": "text",
+      "id": "tab_caps_icon",
+      "label": "Caps Tab Icon/Emoji",
+      "default": "🧢"
+    },
+    {
+      "type": "header",
+      "content": "Tab 5: Accessories / Underscrubs"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_accessories_show",
+      "label": "Show Accessories Tab",
+      "default": true
+    },
+    {
       "type": "collection",
       "id": "col_accessories",
-      "label": "Accessories / Underscrubs Collection"
+      "label": "Accessories Collection"
+    },
+    {
+      "type": "text",
+      "id": "tab_accessories_label",
+      "label": "Accessories Tab Label",
+      "default": "5. Underscrubs / Gear"
+    },
+    {
+      "type": "text",
+      "id": "tab_accessories_icon",
+      "label": "Accessories Tab Icon/Emoji",
+      "default": "✨"
+    },
+    {
+      "type": "header",
+      "content": "Product Cards & Action Buttons"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 4,
+      "max": 36,
+      "step": 4,
+      "label": "Max Products Per Tab",
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "btn_add_label",
+      "label": "Add Button Label",
+      "default": "+ Add to Bundle"
+    },
+    {
+      "type": "text",
+      "id": "btn_added_label",
+      "label": "Added Button Label",
+      "default": "✓ Added in Bundle"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_pill",
+      "label": "Show Sale Pill",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sale_pill_text",
+      "label": "Sale Badge Text",
+      "default": "SALE"
+    },
+    {
+      "type": "text",
+      "id": "empty_state_text",
+      "label": "Empty State Message",
+      "default": "Collection currently being updated"
+    },
+    {
+      "type": "header",
+      "content": "Sticky Summary Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sticky_bar",
+      "label": "Show Sticky Summary Bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "empty_tray_hint",
+      "label": "Empty Tray Hint",
+      "default": "Select items to start your bundle"
+    },
+    {
+      "type": "text",
+      "id": "btn_cart_label",
+      "label": "Cart Action Button Label",
+      "default": "Add Bundle to Cart"
+    },
+    {
+      "type": "color",
+      "id": "btn_cart_bg",
+      "label": "Button Background Color",
+      "default": "#008779"
+    },
+    {
+      "type": "color",
+      "id": "btn_cart_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "redirect_target",
+      "label": "Button Redirect Target",
+      "options": [
+        { "value": "cart", "label": "Go to Cart (/cart)" },
+        { "value": "checkout", "label": "Go to Checkout (/checkout)" }
+      ],
+      "default": "cart"
     }
   ],
   "presets": [
     {
       "name": "Build Your Bundle",
       "settings": {
-        "eyebrow": "CREATE YOUR COMPLETE CLINICAL SET",
         "title": "Build Your Clinical Bundle & Save",
         "subtitle": "Mix and match tops, trousers, lab coats, and accessories. Unlock up to 10% instant bundle savings and free clinical delivery."
       }
