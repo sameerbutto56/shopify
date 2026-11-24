@@ -166,6 +166,14 @@
     --cat-head-size-desk: {{ heading_size_desk }}px;
     --cat-head-size-mob: {{ heading_size_mob }}px;
     --cat-head-align: {{ heading_align }};
+    --cat-pill-w: {{ section.settings.pill_width | default: 170 }}px;
+    --cat-pill-h: {{ section.settings.pill_height | default: 52 }}px;
+    --cat-pill-radius: {{ section.settings.pill_radius | default: 8 }}px;
+    --cat-pill-bg: {{ section.settings.pill_bg | default: '#dfdfdf' }};
+    --cat-pill-active-bg: {{ section.settings.pill_active_bg | default: '#ffffff' }};
+    --cat-pill-active-border: {{ section.settings.pill_active_border | default: '#102a43' }};
+    --cat-pill-img-fit: {{ section.settings.pill_image_fit | default: 'cover' }};
+    --cat-pill-img-pos: {{ section.settings.pill_image_position | default: 'center' }};
     --cat-title-size-desk: {{ section.settings.card_title_size_desktop | default: 12 }}px;
     --cat-title-size-mob: {{ section.settings.card_title_size_mobile | default: 11 }}px;
     --cat-price-size-desk: {{ section.settings.card_price_size_desktop | default: 12 }}px;
@@ -337,7 +345,7 @@
     {% if show_category_carousel %}
     <div class="enamels-cat-carousel-wrap">
       <div class="enamels-cat-carousel-header">
-        <span class="enamels-cat-carousel-title">SELECT CATEGORY</span>
+        <span class="enamels-cat-carousel-title">{{ section.settings.carousel_title | default: 'SELECT CATEGORY' }}</span>
         <div class="enamels-cat-carousel-arrows">
           <button type="button" class="enamels-carousel-btn prev-btn" aria-label="Previous Categories">‹</button>
           <button type="button" class="enamels-carousel-btn next-btn" aria-label="Next Categories">›</button>
@@ -346,58 +354,116 @@
 
       <div class="enamels-cat-carousel" id="enamels-cat-carousel">
         {%- assign rendered_cat_pills = 0 -%}
-        
-        {%- comment -%} Priority 1: Merchant Blocks in Studio {%- endcomment -%}
-        {%- if section.blocks.size > 0 -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'category_filter' -%}
-              {%- assign col = block.settings.collection -%}
-              {%- assign cat_name = block.settings.title | default: col.title -%}
-              {%- assign cat_key = block.settings.category_key -%}
-              {%- if cat_key == blank and col != blank -%}
-                {%- assign cat_key = col.handle -%}
+
+        {%- comment -%} Priority 1: Merchant Category Blocks Sorted Numerically by display_order {%- endcomment -%}
+        {%- assign cat_pill_sort_string = '' -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'category_pill' or block.type == 'category_filter' -%}
+            {%- if block.settings.show_pill != false -%}
+              {%- assign b_order = block.settings.display_order | default: forloop.index -%}
+              {%- if b_order < 10 -%}
+                {%- assign pad_order = '0000' | append: b_order -%}
+              {%- elsif b_order < 100 -%}
+                {%- assign pad_order = '000' | append: b_order -%}
+              {%- elsif b_order < 1000 -%}
+                {%- assign pad_order = '00' | append: b_order -%}
+              {%- else -%}
+                {%- assign pad_order = b_order -%}
               {%- endif -%}
-              {%- if cat_key == blank -%}
-                {%- assign cat_key = cat_name | handleize -%}
+              {%- assign item_entry = pad_order | append: ':::' | append: block.id -%}
+              {%- if cat_pill_sort_string == '' -%}
+                {%- assign cat_pill_sort_string = item_entry -%}
+              {%- else -%}
+                {%- assign cat_pill_sort_string = cat_pill_sort_string | append: '|||' | append: item_entry -%}
               {%- endif -%}
-              {%- assign cat_img = block.settings.image -%}
-              {%- if cat_img == blank and col.featured_image != blank -%}
-                {%- assign cat_img = col.featured_image -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if cat_pill_sort_string != '' -%}
+          {%- assign sorted_cat_pill_items = cat_pill_sort_string | split: '|||' | sort -%}
+          {%- for sort_item in sorted_cat_pill_items -%}
+            {%- assign target_block_id = sort_item | split: ':::' | last -%}
+            {%- assign cur_block = nil -%}
+            {%- for b in section.blocks -%}
+              {%- if b.id == target_block_id -%}
+                {%- assign cur_block = b -%}
+                {%- break -%}
               {%- endif -%}
+            {%- endfor -%}
+
+            {%- if cur_block != nil -%}
+              {%- assign pill_col = cur_block.settings.collection -%}
+              {%- assign pill_name = cur_block.settings.title | default: pill_col.title | default: 'Category' -%}
+              {%- assign pill_dest_url = cur_block.settings.link | default: pill_col.url | default: '#' -%}
+              {%- assign pill_sub = cur_block.settings.subtitle | default: 'Collection' -%}
+              {%- assign pill_img = cur_block.settings.image -%}
+              {%- if pill_img == blank and pill_col.featured_image != blank -%}
+                {%- assign pill_img = pill_col.featured_image -%}
+              {%- elsif pill_img == blank and pill_col.products.first.featured_media != blank -%}
+                {%- assign pill_img = pill_col.products.first.featured_media -%}
+              {%- endif -%}
+              {%- assign pill_key = cur_block.settings.category_key -%}
+              {%- if pill_key == blank and pill_col != blank -%}
+                {%- assign pill_key = pill_col.handle -%}
+              {%- endif -%}
+              {%- if pill_key == blank -%}
+                {%- assign pill_key = pill_name | handleize -%}
+              {%- endif -%}
+
+              {%- assign is_active = false -%}
+              {%- if pill_col != blank and target_col != blank and target_col.handle == pill_col.handle -%}
+                {%- assign is_active = true -%}
+              {%- elsif request.path == pill_dest_url -%}
+                {%- assign is_active = true -%}
+              {%- elsif current_cat == pill_key -%}
+                {%- assign is_active = true -%}
+              {%- endif -%}
+
               {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
-              <button
-                type="button"
-                class="enamels-cat-pill-btn{% if current_cat == cat_key %} is-active{% endif %}"
-                data-category-target="{{ cat_key }}"
-                {{ block.shopify_attributes }}
+              <a
+                href="{{ pill_dest_url }}"
+                class="enamels-cat-pill-btn{% if is_active %} is-active{% endif %}"
+                data-category-target="{{ pill_key }}"
+                style="{% if cur_block.settings.card_bg != blank %}background-color: {{ cur_block.settings.card_bg }} !important;{% endif %}"
+                {{ cur_block.shopify_attributes }}
               >
                 <div class="enamels-cat-pill-btn__content">
-                  <span class="enamels-cat-pill-btn__title">{{ cat_name }}</span>
-                  <span class="enamels-cat-pill-btn__sub">Collection</span>
+                  <span class="enamels-cat-pill-btn__title">{{ pill_name }}</span>
+                  {%- if pill_sub != blank -%}
+                    <span class="enamels-cat-pill-btn__sub">{{ pill_sub }}</span>
+                  {%- endif -%}
                 </div>
                 <div class="enamels-cat-pill-btn__media">
-                  {%- if cat_img != blank -%}
-                    <img src="{{ cat_img | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
-                  {%- elsif col.products.first.featured_media != blank -%}
-                    <img src="{{ col.products.first.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
+                  {%- if pill_img != blank -%}
+                    <img src="{{ pill_img | image_url: width: 160 }}" alt="{{ pill_name | escape }}" width="44" height="44" loading="lazy">
                   {%- else -%}
                     <span class="enamels-cat-pill-btn__placeholder">🩺</span>
                   {%- endif -%}
                 </div>
-              </button>
+                {%- if cur_block.settings.badge_text != blank -%}
+                  <span class="enamels-cat-advance-tag">{{ cur_block.settings.badge_text }}</span>
+                {%- endif -%}
+              </a>
             {%- endif -%}
           {%- endfor -%}
         {%- endif -%}
 
-        {%- comment -%} Priority 2: Collection List setting {%- endcomment -%}
+        {%- comment -%} Priority 2: Custom Category Collections List setting {%- endcomment -%}
         {%- if rendered_cat_pills == 0 and section.settings.category_collections != blank -%}
           {%- for col in section.settings.category_collections -%}
             {%- assign cat_name = col.title -%}
             {%- assign cat_key = col.handle -%}
+            {%- assign is_active = false -%}
+            {%- if target_col != blank and target_col.handle == col.handle -%}
+              {%- assign is_active = true -%}
+            {%- elsif current_cat == cat_key -%}
+              {%- assign is_active = true -%}
+            {%- endif -%}
             {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
-            <button
-              type="button"
-              class="enamels-cat-pill-btn{% if current_cat == cat_key %} is-active{% endif %}"
+            <a
+              href="{{ col.url }}"
+              class="enamels-cat-pill-btn{% if is_active %} is-active{% endif %}"
               data-category-target="{{ cat_key }}"
             >
               <div class="enamels-cat-pill-btn__content">
@@ -406,39 +472,34 @@
               </div>
               <div class="enamels-cat-pill-btn__media">
                 {%- if col.featured_image != blank -%}
-                  <img src="{{ col.featured_image | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
+                  <img src="{{ col.featured_image | image_url: width: 160 }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
                 {%- elsif col.products.first.featured_media != blank -%}
-                  <img src="{{ col.products.first.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
+                  <img src="{{ col.products.first.featured_media | image_url: width: 160 }}" alt="{{ cat_name | escape }}" width="44" height="44" loading="lazy">
                 {%- else -%}
                   <span class="enamels-cat-pill-btn__placeholder">🩺</span>
                 {%- endif -%}
               </div>
-            </button>
+            </a>
           {%- endfor -%}
         {%- endif -%}
 
         {%- comment -%} Priority 3: Automatic Discovery from genuine store collections {%- endcomment -%}
         {%- if rendered_cat_pills == 0 -%}
-          {%- assign default_cat_handles = 'scrubs,basic-scrubs,male-scrubs,female-scrubs,lab-coats,white-coats,surgical-caps,caps,sleeves,accessories,clogs' | split: ',' -%}
+          {%- assign default_cat_handles = 'male-scrubs,female-scrubs,labcoat,gradient-collection,surgical-caps,flexfit,velora-by-enamels,winter-collection,accessories' | split: ',' -%}
           {%- for h in default_cat_handles -%}
             {%- assign c = collections[h] -%}
             {%- if c != blank and c.products_count > 0 -%}
               {%- assign c_title = c.title -%}
               {%- assign c_key = h -%}
-              {%- if h contains 'scrub' -%}
-                {%- assign c_key = 'scrubs' -%}
-              {%- elsif h contains 'lab' or h contains 'white' -%}
-                {%- assign c_key = 'lab-coats' -%}
-              {%- elsif h contains 'cap' -%}
-                {%- assign c_key = 'caps' -%}
-              {%- elsif h contains 'sleeve' -%}
-                {%- assign c_key = 'sleeves' -%}
-              {%- elsif h contains 'clog' or h contains 'access' -%}
-                {%- assign c_key = 'accessories' -%}
+              {%- assign is_active = false -%}
+              {%- if target_col != blank and target_col.handle == c.handle -%}
+                {%- assign is_active = true -%}
+              {%- elsif current_cat == c_key -%}
+                {%- assign is_active = true -%}
               {%- endif -%}
-              <button
-                type="button"
-                class="enamels-cat-pill-btn{% if current_cat == c_key %} is-active{% endif %}"
+              <a
+                href="{{ c.url }}"
+                class="enamels-cat-pill-btn{% if is_active %} is-active{% endif %}"
                 data-category-target="{{ c_key }}"
               >
                 <div class="enamels-cat-pill-btn__content">
@@ -447,22 +508,22 @@
                 </div>
                 <div class="enamels-cat-pill-btn__media">
                   {%- if c.featured_image != blank -%}
-                    <img src="{{ c.featured_image | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ c_title | escape }}" width="44" height="44" loading="lazy">
+                    <img src="{{ c.featured_image | image_url: width: 160 }}" alt="{{ c_title | escape }}" width="44" height="44" loading="lazy">
                   {%- elsif c.products.first.featured_media != blank -%}
-                    <img src="{{ c.products.first.featured_media | image_url: width: 120, height: 120, crop: 'center' }}" alt="{{ c_title | escape }}" width="44" height="44" loading="lazy">
+                    <img src="{{ c.products.first.featured_media | image_url: width: 160 }}" alt="{{ c_title | escape }}" width="44" height="44" loading="lazy">
                   {%- else -%}
                     <span class="enamels-cat-pill-btn__placeholder">🩺</span>
                   {%- endif -%}
                 </div>
-              </button>
+              </a>
             {%- endif -%}
           {%- endfor -%}
         {%- endif -%}
 
         <!-- Universal "View All" Pill -->
-        <button
-          type="button"
-          class="enamels-cat-pill-btn{% if current_cat == 'all' %} is-active{% endif %}"
+        <a
+          href="/collections/all"
+          class="enamels-cat-pill-btn{% if current_cat == 'all' and is_specific_col == false %} is-active{% endif %}"
           data-category-target="all"
         >
           <div class="enamels-cat-pill-btn__content">
@@ -472,7 +533,7 @@
           <div class="enamels-cat-pill-btn__media enamels-view-all-thumb">
             <span class="enamels-all-grid-icon">▦</span>
           </div>
-        </button>
+        </a>
       </div>
     </div>
     {% endif %}
@@ -1336,15 +1397,19 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background-color: #dfdfdf;
+    background-color: var(--cat-pill-bg, #dfdfdf);
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: var(--cat-pill-radius, 8px);
     padding: 6px 12px;
     cursor: pointer;
     flex: 0 0 auto;
-    min-width: 170px;
-    min-height: 52px;
+    min-width: var(--cat-pill-w, 170px);
+    min-height: var(--cat-pill-h, 52px);
     text-align: left;
+    text-decoration: none !important;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
     transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
     box-sizing: border-box;
     font-family: inherit;
@@ -1353,8 +1418,8 @@
 
   @media (max-width: 640px) {
     .enamels-cat-pill-btn {
-      min-width: 145px;
-      min-height: 46px;
+      min-width: calc(var(--cat-pill-w, 170px) * 0.85);
+      min-height: calc(var(--cat-pill-h, 52px) * 0.88);
       padding: 5px 10px;
       gap: 8px;
     }
@@ -1367,8 +1432,8 @@
   }
 
   .enamels-cat-pill-btn.is-active {
-    background-color: #ffffff !important;
-    border-color: #102a43 !important;
+    background-color: var(--cat-pill-active-bg, #ffffff) !important;
+    border-color: var(--cat-pill-active-border, #102a43) !important;
     box-shadow: 0 2px 8px rgba(16, 42, 67, 0.12);
   }
 
@@ -1429,8 +1494,30 @@
   .enamels-cat-pill-btn__media img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: var(--cat-pill-img-fit, cover) !important;
+    object-position: var(--cat-pill-img-pos, center) !important;
     display: block;
+  }
+
+  .enamels-cat-pill-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #dc2626;
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #ffffff !important;
+    font-size: 7.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-top-left-radius: var(--cat-pill-radius, 8px);
+    border-bottom-right-radius: 6px;
+    line-height: 1.15;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.45);
+    z-index: 10;
+    pointer-events: none;
   }
 
   .enamels-cat-pill-btn__placeholder,
@@ -1895,6 +1982,81 @@
       "default": true
     },
     {
+      "type": "text",
+      "id": "carousel_title",
+      "label": "Carousel Heading Title",
+      "default": "SELECT CATEGORY"
+    },
+    {
+      "type": "range",
+      "id": "pill_width",
+      "label": "Pill Width (Desktop)",
+      "min": 130,
+      "max": 260,
+      "step": 5,
+      "unit": "px",
+      "default": 170
+    },
+    {
+      "type": "range",
+      "id": "pill_height",
+      "label": "Pill Height (Desktop)",
+      "min": 38,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "pill_radius",
+      "label": "Pill Corner Radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "pill_bg",
+      "label": "Pill Background Color",
+      "default": "#dfdfdf"
+    },
+    {
+      "type": "color",
+      "id": "pill_active_bg",
+      "label": "Active Pill Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "pill_active_border",
+      "label": "Active Pill Border Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "select",
+      "id": "pill_image_fit",
+      "label": "Thumbnail Image Fit",
+      "options": [
+        { "value": "cover", "label": "Cover (Fill entire box)" },
+        { "value": "contain", "label": "Contain (Preserve full image)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "pill_image_position",
+      "label": "Thumbnail Image Position",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
       "type": "collection_list",
       "id": "category_collections",
       "label": "Custom Category Collections Picker",
@@ -2170,6 +2332,66 @@
     }
   ],
   "blocks": [
+    {
+      "type": "category_pill",
+      "name": "Category Pill",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_pill",
+          "label": "Show this category pill",
+          "default": true
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Shopify Collection",
+          "info": "Products will be pulled from this genuine collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Thumbnail Image",
+          "info": "Upload any custom thumbnail for this pill. Completely independent of collection image."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Title Override",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle Label",
+          "default": "Collection"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom Destination Link",
+          "info": "Optional custom URL override; defaults to collection URL"
+        },
+        {
+          "type": "number",
+          "id": "display_order",
+          "label": "Display Order (Sorting)",
+          "default": 1,
+          "info": "Numeric display position (e.g. 1, 2, 3...). Lower numbers appear first. Hidden from customers."
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Optional Badge / Tag Text",
+          "info": "e.g. NEW, SALE, 100% ADVANCE"
+        },
+        {
+          "type": "color",
+          "id": "card_bg",
+          "label": "Pill Background Override"
+        }
+      ]
+    },
     {
       "type": "category_filter",
       "name": "Category Tab",

@@ -29,7 +29,9 @@
             "cta2_label": "SHOP WOMEN",
             "cta2_link": "/collections/all?category=women",
             "text_color": "#102a43",
-            "alt": "Enamels Clinical Doctor Scrubs"
+            "alt": "Enamels Clinical Doctor Scrubs",
+            "image": "shopify://shop_images/WhatsApp_Image_2025-10-28_at_4.24.12_PM_1.jpg",
+            "image_mobile": "shopify://shop_images/BANNER-2-crown_jpg.jpg"
           }
         },
         "slide_2": {
@@ -42,7 +44,8 @@
             "button_label": "Shop Velora \u2192",
             "button_link": "/collections/all",
             "text_color": "#ffffff",
-            "alt": "Enamels Velora Medical Apparel"
+            "alt": "Enamels Velora Medical Apparel",
+            "image": "shopify://shop_images/BANNER-2-crown_jpg.jpg"
           }
         },
         "slide_3": {
@@ -55,7 +58,8 @@
             "button_label": "Explore Footwear \u2192",
             "button_link": "/collections/accessories",
             "text_color": "#ffffff",
-            "alt": "Enamels Clinical Footwear"
+            "alt": "Enamels Clinical Footwear",
+            "image": "shopify://shop_images/IMG_2597.jpg"
           }
         },
         "slide_4": {
@@ -68,7 +72,8 @@
             "button_label": "Shop Autumn \u2192",
             "button_link": "/collections/all",
             "text_color": "#ffffff",
-            "alt": "Enamels Autumn Medical Scrubs"
+            "alt": "Enamels Autumn Medical Scrubs",
+            "image": "shopify://shop_images/1_d487e054-b14f-442f-92b1-7fb20163b2ea.jpg"
           }
         },
         "slide_5": {
@@ -81,7 +86,8 @@
             "button_label": "Shop Caps \u2192",
             "button_link": "/collections/surgical-caps",
             "text_color": "#ffffff",
-            "alt": "Enamels BunFit Surgical Caps"
+            "alt": "Enamels BunFit Surgical Caps",
+            "image": "shopify://shop_images/BANNER-2-caps_jpg.jpg"
           }
         }
       },
@@ -176,7 +182,8 @@
             "collection": "male-scrubs",
             "link": "/collections/male-scrubs",
             "fallback_asset": "enamels-cat-men.jpg",
-            "display_order": 1
+            "display_order": 1,
+            "image": "shopify://shop_images/Men_s_Scrubs.jpg"
           }
         },
         "pill_women": {
@@ -187,7 +194,8 @@
             "collection": "female-scrubs",
             "link": "/collections/female-scrubs",
             "fallback_asset": "enamels-cat-women.jpg",
-            "display_order": 2
+            "display_order": 2,
+            "image": "shopify://shop_images/women_Scrubs.jpg"
           }
         },
         "pill_customize": {
@@ -200,7 +208,8 @@
             "fallback_asset": "enamels-cat-customize.jpg",
             "display_order": 3,
             "show_advance_tag": true,
-            "advance_payment_tag_text": "100% ADVANCE PAYMENT REQUIRED"
+            "advance_payment_tag_text": "100% ADVANCE PAYMENT REQUIRED",
+            "image": "shopify://shop_images/1_e6e257ef-3270-4abe-bdd0-594a76b6a92a.jpg"
           }
         },
         "pill_bulk": {
@@ -210,7 +219,8 @@
             "subtitle": "Hospital & Clinic Bulk Supply",
             "link": "/pages/bulk-orders",
             "fallback_asset": "enamels-cat-intl-order.jpg",
-            "display_order": 4
+            "display_order": 4,
+            "image": "shopify://shop_images/thumbnail-500x500-flexfit.jpg"
           }
         },
         "pill_new_arrivals": {
@@ -222,7 +232,8 @@
             "collection": "all",
             "link": "/collections/all",
             "fallback_asset": "enamels-cat-new-arrivals.jpg",
-            "display_order": 5
+            "display_order": 5,
+            "image": "shopify://shop_images/32.jpg"
           }
         },
         "pill_labcoats": {
@@ -233,7 +244,8 @@
             "collection": "labcoat",
             "link": "/collections/labcoat",
             "fallback_asset": "enamels-cat-labcoats.jpg",
-            "display_order": 6
+            "display_order": 6,
+            "image": "shopify://shop_images/Lab_Coat.webp"
           }
         }
       },
@@ -413,7 +425,8 @@
             "rating_durability": 5,
             "explore_link": "/collections/all",
             "customize_link": "/pages/customize-your-own-scrub",
-            "collection": "velora-by-enamels"
+            "collection": "velora-by-enamels",
+            "image": "shopify://shop_images/thumbnail-500x500-vILORA.jpg"
           }
         },
         "fab_crown": {
@@ -429,7 +442,8 @@
             "rating_durability": 5,
             "explore_link": "/collections/all",
             "customize_link": "/pages/customize-your-own-scrub",
-            "collection": "crown"
+            "collection": "crown",
+            "image": "shopify://shop_images/thumbnail-500x500-crown.jpg_1.jpg"
           }
         },
         "fab_sprinter": {
@@ -445,7 +459,8 @@
             "rating_durability": 4,
             "explore_link": "/collections/all",
             "customize_link": "/pages/customize-your-own-scrub",
-            "collection": "sprinter"
+            "collection": "sprinter",
+            "image": "shopify://shop_images/thumbnail-500x500-sprinter_jpg_fa84358c-d26d-4608-a213-6ce818fac90c.jpg"
           }
         },
         "fab_helium": {
@@ -461,7 +476,8 @@
             "rating_durability": 5,
             "explore_link": "/collections/all",
             "customize_link": "/pages/customize-your-own-scrub",
-            "collection": "basic-scrubs"
+            "collection": "basic-scrubs",
+            "image": "shopify://shop_images/thumbnail-500x500-LAB.jpg_1.jpg"
           }
         }
       },

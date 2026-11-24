@@ -11,8 +11,91 @@
         "banner_height_desktop": 270,
         "banner_height_mobile": 175,
         "banner_radius": 16,
-        "banner_bg": "#e8e8e8"
-      }
+        "banner_bg": "#e8e8e8",
+        "carousel_title": "SELECT CATEGORIES"
+      },
+      "blocks": {
+        "men_scrubs": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection": "male-scrubs",
+            "image": "shopify://shop_images/Men_s_Scrubs.jpg",
+            "title": "Men Scrubs",
+            "subtitle": "Clinical Scrubs",
+            "link": "/collections/male-scrubs",
+            "display_order": 1
+          }
+        },
+        "men_labcoats": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection": "labcoat",
+            "image": "shopify://shop_images/Lab_Coat.webp",
+            "title": "Lab Coats",
+            "subtitle": "Doctor Coats",
+            "link": "/collections/labcoat",
+            "display_order": 2
+          }
+        },
+        "men_caps": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection": "surgical-caps",
+            "image": "shopify://shop_images/thumbnail-500x500-cap_jpg.jpg",
+            "title": "Surgical Caps",
+            "subtitle": "Theater Headwear",
+            "link": "/collections/surgical-caps",
+            "display_order": 3
+          }
+        },
+        "men_clogs": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection": "accessories",
+            "image": "shopify://shop_images/IMG_2597.jpg",
+            "title": "Clinical Clogs",
+            "subtitle": "Medical Footwear",
+            "link": "/collections/accessories",
+            "display_order": 4
+          }
+        },
+        "men_accessories": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection": "accessories",
+            "image": "shopify://shop_images/thumbnail-500x500-socks_jpg_05ca5a98-624d-4e80-b5cc-de0301a18750.jpg",
+            "title": "Accessories",
+            "subtitle": "Socks & Sleeves",
+            "link": "/collections/accessories",
+            "display_order": 5
+          }
+        },
+        "men_all": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection": "all",
+            "image": "shopify://shop_images/thumbnail-500x500-flexfit.jpg",
+            "title": "All Apparel",
+            "subtitle": "Complete Store",
+            "link": "/collections/all",
+            "display_order": 6
+          }
+        }
+      },
+      "block_order": [
+        "men_scrubs",
+        "men_labcoats",
+        "men_caps",
+        "men_clogs",
+        "men_accessories",
+        "men_all"
+      ]
     }
   },
   "order": [
