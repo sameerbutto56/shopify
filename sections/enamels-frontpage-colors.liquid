@@ -90,8 +90,8 @@
       {% endif %}
     </div>
 
-    <!-- 1. Initial Horizontal Carousel with Large Swatches -->
-    <div class="enamels-color-carousel-wrap" data-color-carousel>
+    <!-- 1. Desktop & Tablet Horizontal Carousel with Large Swatches -->
+    <div class="enamels-color-carousel-wrap enamels-color-desktop-wrap" data-color-carousel>
       <button
         type="button"
         class="enamels-cat-arrow enamels-cat-arrow--left"
@@ -104,90 +104,78 @@
       </button>
 
       <div class="enamels-color-track" data-color-track tabindex="0" role="region" aria-label="Color carousel">
-        {% for set_idx in (1..4) %}
-          {% assign is_primary = false %}
-          {% if set_idx == 2 %}
-            {% assign is_primary = true %}
-          {% endif %}
-          {% for item_key in sorted_color_items %}
-            {% assign target_block_id = item_key | split: ':::' | last %}
-            {% for block in section.blocks %}
-              {% if block.id == target_block_id %}
-                {%- liquid
-                  assign col = block.settings.collection
-                  assign swatch_title = block.settings.title
-                  if swatch_title == blank and col != blank
-                    assign swatch_title = col.title
-                  endif
-                  if swatch_title == blank
-                    assign swatch_title = 'Clinical Color'
-                  endif
+        {% for item_key in sorted_color_items %}
+          {% assign target_block_id = item_key | split: ':::' | last %}
+          {% for block in section.blocks %}
+            {% if block.id == target_block_id %}
+              {%- liquid
+                assign col = block.settings.collection
+                assign swatch_title = block.settings.title
+                if swatch_title == blank and col != blank
+                  assign swatch_title = col.title
+                endif
+                if swatch_title == blank
+                  assign swatch_title = 'Clinical Color'
+                endif
 
-                  assign swatch_img = block.settings.image
-                  assign swatch_fallback = block.settings.fallback_asset
+                assign swatch_img = block.settings.image
+                assign swatch_fallback = block.settings.fallback_asset
 
-                  # Robust Collection Navigation Resolution:
-                  # 1. Assigned Shopify collection picker
-                  # 2. Custom valid link (excluding deprecated /collections/scrubs)
-                  # 3. Collection matching handle
-                  # 4. Safe fallback to /collections/all with color filter (never 404)
-                  assign swatch_link = ''
-                  assign has_assigned_col = false
+                assign swatch_link = ''
+                assign has_assigned_col = false
 
-                  if col != blank and col.url != blank
-                    assign swatch_link = col.url
-                    assign has_assigned_col = true
-                  elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
-                    assign swatch_link = block.settings.link
+                if col != blank and col.url != blank
+                  assign swatch_link = col.url
+                  assign has_assigned_col = true
+                elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
+                  assign swatch_link = block.settings.link
+                  assign has_assigned_col = true
+                else
+                  assign col_slug = swatch_title | handleize
+                  if collections[col_slug] != blank and collections[col_slug].url != blank
+                    assign swatch_link = collections[col_slug].url
                     assign has_assigned_col = true
                   else
-                    assign col_slug = swatch_title | handleize
-                    if collections[col_slug] != blank and collections[col_slug].url != blank
-                      assign swatch_link = collections[col_slug].url
-                      assign has_assigned_col = true
-                    else
-                      assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
-                    endif
+                    assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
                   endif
-                -%}
+                endif
+              -%}
 
-                <a
-                  href="{{ swatch_link }}"
-                  class="enamels-swatch-card enamels-swatch-card--carousel"
-                  data-block-id="{{ block.id }}"
-                  data-set-index="{{ set_idx }}"
-                  {% if is_primary %}{{ block.shopify_attributes }}{% endif %}
+              <a
+                href="{{ swatch_link }}"
+                class="enamels-swatch-card enamels-swatch-card--carousel"
+                data-block-id="{{ block.id }}"
+                {{ block.shopify_attributes }}
+              >
+                <div
+                  class="enamels-swatch-circle"
+                  style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
                 >
-                  <div
-                    class="enamels-swatch-circle"
-                    style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
-                  >
-                    {% if swatch_img != blank %}
-                      <img
-                        src="{{ swatch_img | image_url: width: 200 }}"
-                        alt="{{ swatch_title | escape }}"
-                        loading="lazy"
-                        width="90"
-                        height="90"
-                      >
-                    {% elsif swatch_fallback != blank %}
-                      <img
-                        src="{{ swatch_fallback | asset_url }}"
-                        alt="{{ swatch_title | escape }}"
-                        loading="lazy"
-                        width="90"
-                        height="90"
-                      >
-                    {% endif %}
-                  </div>
-                  <span class="enamels-swatch-name">{{ swatch_title }}</span>
-                  {% if request.design_mode and has_assigned_col == false and is_primary %}
-                    <span class="enamels-unassigned-col-pill" title="Assign a Shopify Collection in the Theme Editor">⚠️ Pick Collection</span>
+                  {% if swatch_img != blank %}
+                    <img
+                      src="{{ swatch_img | image_url: width: 200 }}"
+                      alt="{{ swatch_title | escape }}"
+                      loading="lazy"
+                      width="90"
+                      height="90"
+                    >
+                  {% elsif swatch_fallback != blank %}
+                    <img
+                      src="{{ swatch_fallback | asset_url }}"
+                      alt="{{ swatch_title | escape }}"
+                      loading="lazy"
+                      width="90"
+                      height="90"
+                    >
                   {% endif %}
-                </a>
-                {% break %}
-              {% endif %}
-            {% endfor %}
+                </div>
+                <span class="enamels-swatch-name">{{ swatch_title }}</span>
+                {% if request.design_mode and has_assigned_col == false %}
+                  <span class="enamels-unassigned-col-pill" title="Assign a Shopify Collection in the Theme Editor">⚠️ Pick Collection</span>
+                {% endif %}
+              </a>
+              {% break %}
+            {% endif %}
           {% endfor %}
         {% endfor %}
       </div>
@@ -204,7 +192,103 @@
       </button>
     </div>
 
-    <!-- 2. Expandable Full Color Palette Drawer -->
+    <!-- 2. Mobile Responsive 2x2 Grid Layout (4 Swatches by Default) with Touch-Swipe Horizontal Paging -->
+    <div class="enamels-color-mobile-wrap" data-color-mobile-wrap>
+      <div class="enamels-color-mobile-scroller" data-color-mobile-scroller tabindex="0" role="region" aria-label="Mobile color swatches">
+        {% assign page_size = 4 %}
+        {% assign total_items = sorted_color_items.size %}
+        {% assign total_pages = total_items | plus: page_size | minus: 1 | divided_by: page_size %}
+        {% for page_idx in (1..total_pages) %}
+          {% assign page_offset = page_idx | minus: 1 | times: page_size %}
+          <div class="enamels-color-mobile-page" data-page-index="{{ forloop.index0 }}">
+            {% for i in (1..page_size) %}
+              {% assign item_idx = page_offset | plus: forloop.index0 %}
+              {% if item_idx < total_items %}
+                {% assign item_key = sorted_color_items[item_idx] %}
+                {% assign target_block_id = item_key | split: ':::' | last %}
+                {% for block in section.blocks %}
+                  {% if block.id == target_block_id %}
+                    {%- liquid
+                      assign col = block.settings.collection
+                      assign swatch_title = block.settings.title
+                      if swatch_title == blank and col != blank
+                        assign swatch_title = col.title
+                      endif
+                      if swatch_title == blank
+                        assign swatch_title = 'Clinical Color'
+                      endif
+
+                      assign swatch_img = block.settings.image
+                      assign swatch_fallback = block.settings.fallback_asset
+
+                      assign swatch_link = ''
+                      assign has_assigned_col = false
+
+                      if col != blank and col.url != blank
+                        assign swatch_link = col.url
+                        assign has_assigned_col = true
+                      elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
+                        assign swatch_link = block.settings.link
+                        assign has_assigned_col = true
+                      else
+                        assign col_slug = swatch_title | handleize
+                        if collections[col_slug] != blank and collections[col_slug].url != blank
+                          assign swatch_link = collections[col_slug].url
+                          assign has_assigned_col = true
+                        else
+                          assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
+                        endif
+                      endif
+                    -%}
+
+                    <a
+                      href="{{ swatch_link }}"
+                      class="enamels-swatch-card enamels-swatch-card--mobile"
+                      data-block-id="{{ block.id }}"
+                    >
+                      <div
+                        class="enamels-swatch-circle"
+                        style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
+                      >
+                        {% if swatch_img != blank %}
+                          <img
+                            src="{{ swatch_img | image_url: width: 200 }}"
+                            alt="{{ swatch_title | escape }}"
+                            loading="lazy"
+                            width="76"
+                            height="76"
+                          >
+                        {% elsif swatch_fallback != blank %}
+                          <img
+                            src="{{ swatch_fallback | asset_url }}"
+                            alt="{{ swatch_title | escape }}"
+                            loading="lazy"
+                            width="76"
+                            height="76"
+                          >
+                        {% endif %}
+                      </div>
+                      <span class="enamels-swatch-name">{{ swatch_title }}</span>
+                    </a>
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if total_pages > 1 %}
+        <div class="enamels-color-mobile-pagination" aria-label="Color pages">
+          {% for page_idx in (1..total_pages) %}
+            <button type="button" class="enamels-color-mobile-dot {% if forloop.first %}is-active{% endif %}" data-dot-index="{{ forloop.index0 }}" aria-label="Go to color slide {{ forloop.index }}"></button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 3. Expandable Full Color Palette Drawer -->
     <div
       id="enamels-colors-drawer-{{ section.id }}"
       class="enamels-cats-drawer enamels-colors-drawer"
@@ -217,7 +301,7 @@
           <span class="enamels-cats-drawer__hint">Select any clinical color to view matching scrubs</span>
         </div>
 
-        <div class="enamels-colors-grid enamels-colors-grid--desktop-{{ section.settings.grid_cols_desktop | default: 8 }} enamels-colors-grid--mobile-{{ section.settings.grid_cols_mobile | default: 4 }}">
+        <div class="enamels-colors-grid enamels-colors-grid--desktop-{{ section.settings.grid_cols_desktop | default: 8 }} enamels-colors-grid--mobile-2">
           {% for item_key in sorted_color_items %}
             {% assign target_block_id = item_key | split: ':::' | last %}
             {% for block in section.blocks %}
@@ -333,6 +417,13 @@
     position: relative;
     display: flex;
     align-items: center;
+  }
+
+  .enamels-color-desktop-wrap {
+    display: flex !important;
+  }
+  .enamels-color-mobile-wrap {
+    display: none !important;
   }
 
   .enamels-color-carousel-wrap .enamels-cat-arrow {
@@ -473,22 +564,119 @@
   .enamels-colors-grid--desktop-10 { grid-template-columns: repeat(10, 1fr); }
 
   @media (max-width: 768px) {
-    .enamels-color-track {
-      gap: {{ section.settings.card_gap_mobile | default: 14 }}px;
+    .enamels-color-desktop-wrap {
+      display: none !important;
     }
 
-    .enamels-swatch-circle {
+    .enamels-color-mobile-wrap {
+      display: block !important;
+      width: 100%;
+    }
+
+    .enamels-color-mobile-scroller {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 12px;
+      width: 100%;
+      padding: 4px 0 10px;
+      scrollbar-width: none;
+      touch-action: pan-x pan-y;
+      overscroll-behavior-x: contain;
+    }
+
+    .enamels-color-mobile-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .enamels-color-mobile-page {
+      flex: 0 0 100%;
+      min-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 12px;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      align-items: start;
+    }
+
+    .enamels-swatch-card--mobile {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      padding: 4px 0;
+    }
+
+    .enamels-color-mobile-wrap .enamels-swatch-circle {
       width: {{ section.settings.circle_size_mobile | default: 76 }}px;
       height: {{ section.settings.circle_size_mobile | default: 76 }}px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 42, 67, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e2e8f0;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .enamels-swatch-name {
+    .enamels-color-mobile-wrap .enamels-swatch-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .enamels-color-mobile-wrap .enamels-swatch-name {
+      margin-top: 8px;
       font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #102a43;
+      text-align: center;
+      max-width: 120px;
+      line-height: 1.25;
     }
 
-    .enamels-colors-grid--mobile-3 { grid-template-columns: repeat(3, 1fr); }
-    .enamels-colors-grid--mobile-4 { grid-template-columns: repeat(4, 1fr); }
-    .enamels-colors-grid--mobile-5 { grid-template-columns: repeat(5, 1fr); }
+    .enamels-color-mobile-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .enamels-color-mobile-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.2);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.25s ease, width 0.25s ease;
+    }
+
+    .enamels-color-mobile-dot.is-active {
+      background-color: #008779;
+      width: 18px;
+      border-radius: 3px;
+    }
+
+    .enamels-colors-grid--mobile-2 {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 20px 12px !important;
+    }
   }
 </style>
 
@@ -504,125 +692,63 @@
       const prevBtn = sec.querySelector('[data-color-prev]');
       const nextBtn = sec.querySelector('[data-color-next]');
 
-      const singleSetCount = {{ sorted_color_items.size | default: 8 }};
-
-      if (track && singleSetCount > 1) {
-        let setDistance = 0;
-        let isAdjusting = false;
-
-        const updateMetrics = () => {
-          if (!track || track.children.length < singleSetCount * 2) return;
-          const first = track.children[0];
-          const secondSetFirst = track.children[singleSetCount];
-          if (first && secondSetFirst) {
-            const dist = secondSetFirst.offsetLeft - first.offsetLeft;
-            if (dist > 0) {
-              if (setDistance > 0 && track.scrollLeft > 0) {
-                const ratio = track.scrollLeft / setDistance;
-                setDistance = dist;
-                track.scrollLeft = ratio * setDistance;
-              } else {
-                setDistance = dist;
-                track.scrollLeft = setDistance * 1.5;
-              }
-            }
-          }
-        };
-
-        const handleLoop = () => {
-          if (isAdjusting || !setDistance || setDistance <= 0) return;
-          const current = track.scrollLeft;
-          if (current >= setDistance * 2.5) {
-            isAdjusting = true;
-            track.scrollLeft = current - setDistance;
-            requestAnimationFrame(() => { isAdjusting = false; });
-          } else if (current <= setDistance * 0.5) {
-            isAdjusting = true;
-            track.scrollLeft = current + setDistance;
-            requestAnimationFrame(() => { isAdjusting = false; });
-          }
-        };
-
-        track.addEventListener('scroll', handleLoop, { passive: true });
-        window.addEventListener('resize', updateMetrics, { passive: true });
-
-        // Initialize position on load
-        updateMetrics();
-        setTimeout(updateMetrics, 50);
-        setTimeout(updateMetrics, 200);
-        setTimeout(updateMetrics, 600);
-
-        // Arrow Navigation - Infinite Smooth Cycling
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // Desktop Carousel Navigation
+      if (track && prevBtn && nextBtn) {
         const scrollStep = () => track.clientWidth * 0.65;
 
-        if (prevBtn) {
-          prevBtn.style.opacity = '1';
-          prevBtn.style.pointerEvents = 'auto';
-          prevBtn.onclick = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            track.scrollBy({ left: -scrollStep(), behavior: prefersReduced ? 'auto' : 'smooth' });
-          };
-        }
-
-        if (nextBtn) {
-          nextBtn.style.opacity = '1';
-          nextBtn.style.pointerEvents = 'auto';
-          nextBtn.onclick = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            track.scrollBy({ left: scrollStep(), behavior: prefersReduced ? 'auto' : 'smooth' });
-          };
-        }
-
-        // Prevent native HTML5 link drag which kills mouse dragging
-        track.addEventListener('dragstart', (e) => {
+        prevBtn.onclick = function (e) {
           e.preventDefault();
-        });
-
-        // Mouse Drag to Scroll
-        let isDown = false;
-        let startX = 0;
-        let hasMoved = false;
-
-        track.addEventListener('mousedown', (e) => {
-          if (e.button !== 0) return;
-          isDown = true;
-          hasMoved = false;
-          startX = e.pageX - track.offsetLeft;
-          track.style.cursor = 'grabbing';
-          track.style.userSelect = 'none';
-        });
-
-        const stopDrag = () => {
-          if (!isDown) return;
-          isDown = false;
-          track.style.cursor = 'grab';
-          track.style.userSelect = '';
-          setTimeout(() => { hasMoved = false; }, 80);
+          track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
         };
 
-        window.addEventListener('mouseup', stopDrag);
-        track.addEventListener('mouseleave', stopDrag);
+        nextBtn.onclick = function (e) {
+          e.preventDefault();
+          track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
+        };
 
-        track.addEventListener('mousemove', (e) => {
-          if (!isDown) return;
-          const currentX = e.pageX - track.offsetLeft;
-          const dx = currentX - startX;
-          if (Math.abs(dx) > 3) {
-            hasMoved = true;
-          }
-          track.scrollLeft -= dx;
-          startX = currentX;
-          handleLoop();
-        });
+        const updateArrows = () => {
+          const atStart = track.scrollLeft <= 5;
+          const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
+          prevBtn.style.opacity = atStart ? '0.35' : '1';
+          nextBtn.style.opacity = atEnd ? '0.35' : '1';
+        };
 
-        // Mobile Touch Swiping Tracking (prevents accidental swatch clicks during swipe)
+        track.addEventListener('scroll', updateArrows, { passive: true });
+        updateArrows();
+      }
+
+      // Mobile Scroller Dot Synchronization & Click Navigation
+      const mobileScroller = sec.querySelector('[data-color-mobile-scroller]');
+      const mobileDots = sec.querySelectorAll('.enamels-color-mobile-dot');
+
+      if (mobileScroller && mobileDots.length > 0) {
         let touchStartX = 0;
         let touchStartY = 0;
+        let hasMoved = false;
 
-        track.addEventListener('touchstart', (e) => {
+        const updateMobileDots = () => {
+          const scrollLeft = mobileScroller.scrollLeft;
+          const pageWidth = mobileScroller.clientWidth || 1;
+          const pageIndex = Math.min(mobileDots.length - 1, Math.max(0, Math.round(scrollLeft / pageWidth)));
+          mobileDots.forEach((dot, idx) => {
+            dot.classList.toggle('is-active', idx === pageIndex);
+          });
+        };
+
+        mobileScroller.addEventListener('scroll', updateMobileDots, { passive: true });
+
+        mobileDots.forEach((dot, idx) => {
+          dot.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageWidth = mobileScroller.clientWidth;
+            mobileScroller.scrollTo({
+              left: idx * pageWidth,
+              behavior: 'smooth'
+            });
+          });
+        });
+
+        mobileScroller.addEventListener('touchstart', (e) => {
           if (e.touches && e.touches[0]) {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
@@ -630,7 +756,7 @@
           }
         }, { passive: true });
 
-        track.addEventListener('touchmove', (e) => {
+        mobileScroller.addEventListener('touchmove', (e) => {
           if (e.touches && e.touches[0]) {
             const dx = e.touches[0].clientX - touchStartX;
             const dy = e.touches[0].clientY - touchStartY;
@@ -640,12 +766,7 @@
           }
         }, { passive: true });
 
-        track.addEventListener('touchend', () => {
-          setTimeout(() => { hasMoved = false; }, 80);
-        }, { passive: true });
-
-        // Suppress accidental card clicks if user was actively dragging/swiping
-        track.addEventListener('click', (e) => {
+        mobileScroller.addEventListener('click', (e) => {
           if (hasMoved) {
             e.preventDefault();
             e.stopPropagation();
@@ -653,16 +774,8 @@
           }
         }, true);
 
-        // Native Trackpad & Smooth Mouse Wheel
-        track.addEventListener('wheel', (e) => {
-          if (Math.abs(e.deltaX) > 3) {
-            handleLoop();
-            return;
-          }
-          if (Math.abs(e.deltaY) > 0 && !e.shiftKey) {
-            track.scrollLeft += e.deltaY * 1.2;
-            handleLoop();
-          }
+        mobileScroller.addEventListener('touchend', () => {
+          setTimeout(() => { hasMoved = false; }, 80);
         }, { passive: true });
       }
 
