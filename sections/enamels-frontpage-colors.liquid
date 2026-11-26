@@ -104,82 +104,90 @@
       </button>
 
       <div class="enamels-color-track" data-color-track tabindex="0" role="region" aria-label="Color carousel">
-        {% for item_key in sorted_color_items %}
-          {% assign target_block_id = item_key | split: ':::' | last %}
-          {% for block in section.blocks %}
-            {% if block.id == target_block_id %}
-              {%- liquid
-                assign col = block.settings.collection
-                assign swatch_title = block.settings.title
-                if swatch_title == blank and col != blank
-                  assign swatch_title = col.title
-                endif
-                if swatch_title == blank
-                  assign swatch_title = 'Clinical Color'
-                endif
+        {% for set_idx in (1..4) %}
+          {% assign is_primary = false %}
+          {% if set_idx == 2 %}
+            {% assign is_primary = true %}
+          {% endif %}
+          {% for item_key in sorted_color_items %}
+            {% assign target_block_id = item_key | split: ':::' | last %}
+            {% for block in section.blocks %}
+              {% if block.id == target_block_id %}
+                {%- liquid
+                  assign col = block.settings.collection
+                  assign swatch_title = block.settings.title
+                  if swatch_title == blank and col != blank
+                    assign swatch_title = col.title
+                  endif
+                  if swatch_title == blank
+                    assign swatch_title = 'Clinical Color'
+                  endif
 
-                assign swatch_img = block.settings.image
-                assign swatch_fallback = block.settings.fallback_asset
+                  assign swatch_img = block.settings.image
+                  assign swatch_fallback = block.settings.fallback_asset
 
-                # Robust Collection Navigation Resolution:
-                # 1. Assigned Shopify collection picker
-                # 2. Custom valid link (excluding deprecated /collections/scrubs)
-                # 3. Collection matching handle
-                # 4. Safe fallback to /collections/all with color filter (never 404)
-                assign swatch_link = ''
-                assign has_assigned_col = false
+                  # Robust Collection Navigation Resolution:
+                  # 1. Assigned Shopify collection picker
+                  # 2. Custom valid link (excluding deprecated /collections/scrubs)
+                  # 3. Collection matching handle
+                  # 4. Safe fallback to /collections/all with color filter (never 404)
+                  assign swatch_link = ''
+                  assign has_assigned_col = false
 
-                if col != blank and col.url != blank
-                  assign swatch_link = col.url
-                  assign has_assigned_col = true
-                elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
-                  assign swatch_link = block.settings.link
-                  assign has_assigned_col = true
-                else
-                  assign col_slug = swatch_title | handleize
-                  if collections[col_slug] != blank and collections[col_slug].url != blank
-                    assign swatch_link = collections[col_slug].url
+                  if col != blank and col.url != blank
+                    assign swatch_link = col.url
+                    assign has_assigned_col = true
+                  elsif block.settings.link != blank and block.settings.link != '/collections/scrubs'
+                    assign swatch_link = block.settings.link
                     assign has_assigned_col = true
                   else
-                    assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
+                    assign col_slug = swatch_title | handleize
+                    if collections[col_slug] != blank and collections[col_slug].url != blank
+                      assign swatch_link = collections[col_slug].url
+                      assign has_assigned_col = true
+                    else
+                      assign swatch_link = routes.all_products_collection_url | append: '?filter.v.option.color=' | append: swatch_title
+                    endif
                   endif
-                endif
-              -%}
+                -%}
 
-              <a
-                href="{{ swatch_link }}"
-                class="enamels-swatch-card enamels-swatch-card--carousel"
-                {{ block.shopify_attributes }}
-              >
-                <div
-                  class="enamels-swatch-circle"
-                  style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
+                <a
+                  href="{{ swatch_link }}"
+                  class="enamels-swatch-card enamels-swatch-card--carousel"
+                  data-block-id="{{ block.id }}"
+                  data-set-index="{{ set_idx }}"
+                  {% if is_primary %}{{ block.shopify_attributes }}{% endif %}
                 >
-                  {% if swatch_img != blank %}
-                    <img
-                      src="{{ swatch_img | image_url: width: 200 }}"
-                      alt="{{ swatch_title | escape }}"
-                      loading="lazy"
-                      width="90"
-                      height="90"
-                    >
-                  {% elsif swatch_fallback != blank %}
-                    <img
-                      src="{{ swatch_fallback | asset_url }}"
-                      alt="{{ swatch_title | escape }}"
-                      loading="lazy"
-                      width="90"
-                      height="90"
-                    >
+                  <div
+                    class="enamels-swatch-circle"
+                    style="{% if block.settings.color_code != blank %}background-color: {{ block.settings.color_code }};{% endif %}"
+                  >
+                    {% if swatch_img != blank %}
+                      <img
+                        src="{{ swatch_img | image_url: width: 200 }}"
+                        alt="{{ swatch_title | escape }}"
+                        loading="lazy"
+                        width="90"
+                        height="90"
+                      >
+                    {% elsif swatch_fallback != blank %}
+                      <img
+                        src="{{ swatch_fallback | asset_url }}"
+                        alt="{{ swatch_title | escape }}"
+                        loading="lazy"
+                        width="90"
+                        height="90"
+                      >
+                    {% endif %}
+                  </div>
+                  <span class="enamels-swatch-name">{{ swatch_title }}</span>
+                  {% if request.design_mode and has_assigned_col == false and is_primary %}
+                    <span class="enamels-unassigned-col-pill" title="Assign a Shopify Collection in the Theme Editor">⚠️ Pick Collection</span>
                   {% endif %}
-                </div>
-                <span class="enamels-swatch-name">{{ swatch_title }}</span>
-                {% if request.design_mode and has_assigned_col == false %}
-                  <span class="enamels-unassigned-col-pill" title="Assign a Shopify Collection in the Theme Editor">⚠️ Pick Collection</span>
-                {% endif %}
-              </a>
-              {% break %}
-            {% endif %}
+                </a>
+                {% break %}
+              {% endif %}
+            {% endfor %}
           {% endfor %}
         {% endfor %}
       </div>
@@ -327,6 +335,49 @@
     align-items: center;
   }
 
+  .enamels-color-carousel-wrap .enamels-cat-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    color: #111111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 8;
+    padding: 0;
+    transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+    opacity: 1;
+    outline: none;
+  }
+
+  .enamels-color-carousel-wrap .enamels-cat-arrow:hover {
+    background-color: #f7f7f7;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
+  }
+
+  .enamels-color-carousel-wrap .enamels-cat-arrow--left {
+    left: -14px;
+  }
+
+  .enamels-color-carousel-wrap .enamels-cat-arrow--right {
+    right: -14px;
+  }
+
+  @media (max-width: 768px) {
+    .enamels-color-carousel-wrap .enamels-cat-arrow {
+      display: none;
+    }
+  }
+
   .enamels-color-track {
     display: flex;
     gap: {{ section.settings.card_gap_desktop | default: 20 }}px;
@@ -453,34 +504,86 @@
       const prevBtn = sec.querySelector('[data-color-prev]');
       const nextBtn = sec.querySelector('[data-color-next]');
 
-      // Carousel Navigation
-      if (track && prevBtn && nextBtn) {
+      const singleSetCount = {{ sorted_color_items.size | default: 8 }};
+
+      if (track && singleSetCount > 1) {
+        let setDistance = 0;
+        let isAdjusting = false;
+
+        const updateMetrics = () => {
+          if (!track || track.children.length < singleSetCount * 2) return;
+          const first = track.children[0];
+          const secondSetFirst = track.children[singleSetCount];
+          if (first && secondSetFirst) {
+            const dist = secondSetFirst.offsetLeft - first.offsetLeft;
+            if (dist > 0) {
+              if (setDistance > 0 && track.scrollLeft > 0) {
+                const ratio = track.scrollLeft / setDistance;
+                setDistance = dist;
+                track.scrollLeft = ratio * setDistance;
+              } else {
+                setDistance = dist;
+                track.scrollLeft = setDistance * 1.5;
+              }
+            }
+          }
+        };
+
+        const handleLoop = () => {
+          if (isAdjusting || !setDistance || setDistance <= 0) return;
+          const current = track.scrollLeft;
+          if (current >= setDistance * 2.5) {
+            isAdjusting = true;
+            track.scrollLeft = current - setDistance;
+            requestAnimationFrame(() => { isAdjusting = false; });
+          } else if (current <= setDistance * 0.5) {
+            isAdjusting = true;
+            track.scrollLeft = current + setDistance;
+            requestAnimationFrame(() => { isAdjusting = false; });
+          }
+        };
+
+        track.addEventListener('scroll', handleLoop, { passive: true });
+        window.addEventListener('resize', updateMetrics, { passive: true });
+
+        // Initialize position on load
+        updateMetrics();
+        setTimeout(updateMetrics, 50);
+        setTimeout(updateMetrics, 200);
+        setTimeout(updateMetrics, 600);
+
+        // Arrow Navigation - Infinite Smooth Cycling
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const scrollStep = () => track.clientWidth * 0.65;
 
-        prevBtn.onclick = function() {
-          track.scrollBy({ left: -scrollStep(), behavior: 'smooth' });
-        };
+        if (prevBtn) {
+          prevBtn.style.opacity = '1';
+          prevBtn.style.pointerEvents = 'auto';
+          prevBtn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            track.scrollBy({ left: -scrollStep(), behavior: prefersReduced ? 'auto' : 'smooth' });
+          };
+        }
 
-        nextBtn.onclick = function() {
-          track.scrollBy({ left: scrollStep(), behavior: 'smooth' });
-        };
+        if (nextBtn) {
+          nextBtn.style.opacity = '1';
+          nextBtn.style.pointerEvents = 'auto';
+          nextBtn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            track.scrollBy({ left: scrollStep(), behavior: prefersReduced ? 'auto' : 'smooth' });
+          };
+        }
 
-        const updateArrows = () => {
-          const atStart = track.scrollLeft <= 5;
-          const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 5;
-          prevBtn.style.opacity = atStart ? '0.3' : '1';
-          prevBtn.style.pointerEvents = atStart ? 'none' : 'auto';
-          nextBtn.style.opacity = atEnd ? '0.3' : '1';
-          nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
-        };
+        // Prevent native HTML5 link drag which kills mouse dragging
+        track.addEventListener('dragstart', (e) => {
+          e.preventDefault();
+        });
 
-        track.addEventListener('scroll', updateArrows, { passive: true });
-        updateArrows();
-
-        // Mouse Drag to Scroll & Native Trackpad
+        // Mouse Drag to Scroll
         let isDown = false;
         let startX = 0;
-        let scrollStart = 0;
         let hasMoved = false;
 
         track.addEventListener('mousedown', (e) => {
@@ -488,7 +591,6 @@
           isDown = true;
           hasMoved = false;
           startX = e.pageX - track.offsetLeft;
-          scrollStart = track.scrollLeft;
           track.style.cursor = 'grabbing';
           track.style.userSelect = 'none';
         });
@@ -498,7 +600,7 @@
           isDown = false;
           track.style.cursor = 'grab';
           track.style.userSelect = '';
-          setTimeout(() => { hasMoved = false; }, 100);
+          setTimeout(() => { hasMoved = false; }, 80);
         };
 
         window.addEventListener('mouseup', stopDrag);
@@ -507,14 +609,42 @@
         track.addEventListener('mousemove', (e) => {
           if (!isDown) return;
           const currentX = e.pageX - track.offsetLeft;
-          const walk = (currentX - startX) * 1.3;
-          if (Math.abs(walk) > 4) {
+          const dx = currentX - startX;
+          if (Math.abs(dx) > 3) {
             hasMoved = true;
           }
-          track.scrollLeft = scrollStart - walk;
+          track.scrollLeft -= dx;
+          startX = currentX;
+          handleLoop();
         });
 
-        // Suppress accidental card clicks if user was actively dragging
+        // Mobile Touch Swiping Tracking (prevents accidental swatch clicks during swipe)
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        track.addEventListener('touchstart', (e) => {
+          if (e.touches && e.touches[0]) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            hasMoved = false;
+          }
+        }, { passive: true });
+
+        track.addEventListener('touchmove', (e) => {
+          if (e.touches && e.touches[0]) {
+            const dx = e.touches[0].clientX - touchStartX;
+            const dy = e.touches[0].clientY - touchStartY;
+            if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+              hasMoved = true;
+            }
+          }
+        }, { passive: true });
+
+        track.addEventListener('touchend', () => {
+          setTimeout(() => { hasMoved = false; }, 80);
+        }, { passive: true });
+
+        // Suppress accidental card clicks if user was actively dragging/swiping
         track.addEventListener('click', (e) => {
           if (hasMoved) {
             e.preventDefault();
@@ -525,13 +655,13 @@
 
         // Native Trackpad & Smooth Mouse Wheel
         track.addEventListener('wheel', (e) => {
-          if (Math.abs(e.deltaX) > 3) return;
+          if (Math.abs(e.deltaX) > 3) {
+            handleLoop();
+            return;
+          }
           if (Math.abs(e.deltaY) > 0 && !e.shiftKey) {
-            const canScrollLeft = e.deltaY < 0 && track.scrollLeft > 0;
-            const canScrollRight = e.deltaY > 0 && track.scrollLeft < (track.scrollWidth - track.clientWidth - 2);
-            if (canScrollLeft || canScrollRight) {
-              track.scrollLeft += e.deltaY * 1.2;
-            }
+            track.scrollLeft += e.deltaY * 1.2;
+            handleLoop();
           }
         }, { passive: true });
       }
@@ -572,6 +702,12 @@
 
     // Theme Editor Live Lifecycle Support
     document.addEventListener('shopify:section:load', function(e) {
+      if (e.target.id === 'enamels-colors-{{ section.id }}' || e.target.querySelector('#enamels-colors-{{ section.id }}')) {
+        const sec = document.getElementById('enamels-colors-{{ section.id }}');
+        initColorsSection(sec);
+      }
+    });
+    document.addEventListener('shopify:section:select', function(e) {
       if (e.target.id === 'enamels-colors-{{ section.id }}' || e.target.querySelector('#enamels-colors-{{ section.id }}')) {
         const sec = document.getElementById('enamels-colors-{{ section.id }}');
         initColorsSection(sec);

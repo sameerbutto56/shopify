@@ -99,7 +99,8 @@
     style="{% if stagger_index != blank %}--stagger-index: {{ stagger_index }};{% endif %} background-color: {{ card_bg_val }} !important;"
     aria-label="{{ card_title | escape }}"
     title="{{ card_title | escape }}"
-    {{ block.shopify_attributes }}
+    data-block-id="{{ block.id }}"
+    {% unless is_clone %}{{ block.shopify_attributes }}{% endunless %}
   >
     {% if show_tag %}
       <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
@@ -143,7 +144,8 @@
     {% endif %}
     class="enamels-cat-card {{ card_class }} {% if is_customizer_pill %}enamels-cat-card--customizer{% endif %}"
     style="{% if stagger_index != blank %}--stagger-index: {{ stagger_index }};{% endif %} background-color: {{ card_bg_val }} !important;"
-    {{ block.shopify_attributes }}
+    data-block-id="{{ block.id }}"
+    {% unless is_clone %}{{ block.shopify_attributes }}{% endunless %}
   >
     {% if show_tag %}
       <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
