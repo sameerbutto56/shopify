@@ -178,6 +178,11 @@
     endif
   endif
 
+  assign show_top_heading = section.settings.show_top_heading | default: false
+  if section.settings.top_heading_text != blank
+    assign title_text = section.settings.top_heading_text
+  endif
+
   assign show_collection_desc = section.settings.show_collection_description
   if show_collection_desc == nil
     assign show_collection_desc = true
@@ -187,6 +192,15 @@
   if section.settings.desc_source == 'collection_description' and target_col != blank and target_col.description != blank
     assign sec_desc = target_col.description
   endif
+
+  assign show_desc_heading = section.settings.show_desc_heading
+  if show_desc_heading == nil
+    assign show_desc_heading = true
+  endif
+  assign desc_heading = section.settings.desc_heading | default: 'About This Collection'
+  assign desc_heading_color = section.settings.desc_heading_color | default: '#102a43'
+  assign desc_heading_size = section.settings.desc_heading_size | default: 22
+  assign desc_alignment = section.settings.desc_alignment | default: 'left'
 
   # 7. Grid & Product Card Sizing Settings
   assign container_max_w = section.settings.container_max_width | default: 1320
@@ -738,6 +752,8 @@
                   href="{{ pill_dest_url }}"
                   class="enamels-cat-card enamels-cat-card--carousel enamels-cat-card--full-image{% if is_active %} is-active{% endif %}"
                   data-category-target="{{ pill_key }}"
+                  data-pill-scope="{{ cur_scope }}"
+                  data-base-href="{{ pill_dest_url }}"
                   style="{% if cur_block.settings.card_bg != blank %}background-color: {{ cur_block.settings.card_bg }} !important;{% endif %}"
                   title="{{ pill_name | escape }}"
                   {{ cur_block.shopify_attributes }}
@@ -774,6 +790,8 @@
                   href="{{ pill_dest_url }}"
                   class="enamels-cat-card enamels-cat-card--carousel{% if is_active %} is-active{% endif %}"
                   data-category-target="{{ pill_key }}"
+                  data-pill-scope="{{ cur_scope }}"
+                  data-base-href="{{ pill_dest_url }}"
                   style="{% if cur_block.settings.card_bg != blank %}background-color: {{ cur_block.settings.card_bg }} !important;{% endif %}"
                   title="{{ pill_name | escape }}"
                   {{ cur_block.shopify_attributes }}
@@ -921,28 +939,28 @@
       </div>
     {%- endif -%}
 
-    <!-- 5. Collection Heading & Active Counter Bar (Fully Editable) -->
-    {%- if show_collection_header -%}
+    <!-- 5. Top Heading & Counter Toolbar (Clean, Minimal, Zero Clutter) -->
+    {%- if show_top_heading and title_text != blank -%}
       <div class="enamels-cat-page__head-row align-{{ heading_align }}">
         <div class="enamels-cat-page__head">
-          {%- if title_text != blank -%}
-            <h1
-              class="enamels-cat-page__title"
-              id="enamels-cat-page-title"
-              style="font-size: {{ heading_size_desk }}px; color: {{ heading_color }};"
-            >
-              {{ title_text }}
-            </h1>
-          {%- endif -%}
-          {%- if show_collection_desc and sec_desc != blank -%}
-            <div class="enamels-cat-page__desc">
-              {{ sec_desc }}
-            </div>
-          {%- endif -%}
+          <h1
+            class="enamels-cat-page__title"
+            id="enamels-cat-page-title"
+            style="font-size: {{ heading_size_desk }}px; color: {{ heading_color }};"
+          >
+            {{ title_text }}
+          </h1>
           {%- if section.settings.show_product_count -%}
             <p class="enamels-cat-page__counter" id="enamels-cat-product-counter">Showing products</p>
           {%- endif -%}
         </div>
+        <button type="button" class="enamels-cat-clear-btn" id="enamels-clear-filter-btn" style="display: none;">
+          Clear Filters ✕
+        </button>
+      </div>
+    {%- elsif section.settings.show_product_count -%}
+      <div class="enamels-cat-page__head-row" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <p class="enamels-cat-page__counter" id="enamels-cat-product-counter" style="margin: 0; font-size: 13px; font-weight: 600; color: #64748b;">Showing products</p>
         <button type="button" class="enamels-cat-clear-btn" id="enamels-clear-filter-btn" style="display: none;">
           Clear Filters ✕
         </button>
@@ -1192,6 +1210,20 @@
 
     </div>
 
+    <!-- 7. Bottom Collection Description Section (SEO & Brand Storytelling at the very bottom) -->
+    {%- if show_collection_desc and sec_desc != blank -%}
+      <section class="enamels-cat-page__footer-desc align-{{ desc_alignment | default: 'left' }}" id="enamels-cat-page-footer-desc" aria-label="About this collection">
+        {%- if show_desc_heading and desc_heading != blank -%}
+          <h2 class="enamels-cat-page__footer-desc-heading" style="color: {{ desc_heading_color }}; font-size: {{ desc_heading_size }}px;">
+            {{ desc_heading }}
+          </h2>
+        {%- endif -%}
+        <div class="enamels-cat-page__footer-desc-content rte">
+          {{ sec_desc }}
+        </div>
+      </section>
+    {%- endif -%}
+
   </div>
 </div>
 
@@ -1210,12 +1242,19 @@
       try {
         var params = new URLSearchParams(window.location.search);
         var g = params.get('gender') || params.get('category');
-        if (g && (g === 'men' || g === 'women')) {
+        var storedGender = null;
+        try {
+          storedGender = sessionStorage.getItem('enamels_gender') || localStorage.getItem('enamels_gender');
+        } catch(err) {}
+
+        if (g && (g === 'men' || g === 'women' || g === 'all')) {
           state.gender = g;
-        } else if (window.location.pathname.indexOf('men') !== -1 && window.location.pathname.indexOf('women') === -1) {
+        } else if (window.location.pathname.indexOf('male-scrubs') !== -1 || (window.location.pathname.indexOf('men') !== -1 && window.location.pathname.indexOf('women') === -1)) {
           state.gender = 'men';
-        } else if (window.location.pathname.indexOf('women') !== -1) {
+        } else if (window.location.pathname.indexOf('female-scrubs') !== -1 || window.location.pathname.indexOf('women') !== -1) {
           state.gender = 'women';
+        } else if (storedGender && (storedGender === 'men' || storedGender === 'women' || storedGender === 'all')) {
+          state.gender = storedGender;
         }
 
         var cat = params.get('cat');
@@ -1256,6 +1295,47 @@
       } catch(e) {}
     }
 
+    function updatePillLinks() {
+      var pillLinks = container.querySelectorAll('.enamels-cat-card--carousel');
+      pillLinks.forEach(function(link) {
+        try {
+          var rawHref = link.getAttribute('data-base-href') || link.getAttribute('href');
+          if (!rawHref) return;
+          if (!link.getAttribute('data-base-href')) {
+            link.setAttribute('data-base-href', rawHref);
+          }
+          var url = new URL(rawHref, window.location.origin);
+          if (state.gender && state.gender !== 'all') {
+            url.searchParams.set('gender', state.gender);
+          } else {
+            url.searchParams.delete('gender');
+          }
+          link.setAttribute('href', url.pathname + (url.search ? url.search : ''));
+        } catch(e) {}
+      });
+    }
+
+    function filterCategoryPills() {
+      var pills = container.querySelectorAll('.enamels-cat-card--carousel');
+      pills.forEach(function(pill) {
+        var pillScope = pill.getAttribute('data-pill-scope') || 'all';
+        var pillTarget = (pill.getAttribute('data-category-target') || '').toLowerCase();
+        var pillTitle = (pill.getAttribute('title') || '').toLowerCase();
+
+        var show = true;
+        if (state.gender === 'men') {
+          if (pillScope === 'women_only' || pillTarget.indexOf('women') !== -1 || pillTarget.indexOf('female') !== -1 || pillTitle.indexOf('women') !== -1) {
+            show = false;
+          }
+        } else if (state.gender === 'women') {
+          if (pillScope === 'men_only' || pillTarget.indexOf('male') !== -1 || pillTarget.indexOf('men') !== -1 || pillTitle.indexOf('men') !== -1) {
+            show = false;
+          }
+        }
+        pill.style.display = show ? '' : 'none';
+      });
+    }
+
     function renderFilterUI() {
       // 1. Gender Tabs UI
       var genderTabs = container.querySelectorAll('.enamels-gender-tab');
@@ -1267,6 +1347,10 @@
           tab.classList.remove('is-active');
         }
       });
+
+      // Update Pill Links with gender context so user doesn't lose Men/Women when clicking another category
+      updatePillLinks();
+      filterCategoryPills();
 
       // 2. Article Sub-Filter Bar Visibility & Active State
       var articleBar = container.querySelector('#enamels-article-filters');
@@ -1287,9 +1371,8 @@
         }
       }
 
-      // 3. Filter Product Cards if on general page with article filters
+      // 3. Filter Product Cards across all collections
       var cards = container.querySelectorAll('.enamels-col-card');
-      var isSpecificCollection = container.getAttribute('data-is-specific-collection') === 'true';
       var visibleCount = 0;
 
       cards.forEach(function(card) {
@@ -1298,14 +1381,12 @@
         var cardArticle = card.getAttribute('data-article') || 'other';
 
         var matchGender = true;
-        if (!isSpecificCollection) {
-          if (state.gender === 'all') {
-            matchGender = true;
-          } else if (state.gender === 'men') {
-            matchGender = (cardGender === 'men');
-          } else if (state.gender === 'women') {
-            matchGender = (cardGender === 'women');
-          }
+        if (state.gender === 'men') {
+          matchGender = (cardGender === 'men' || cardGender === 'unisex');
+        } else if (state.gender === 'women') {
+          matchGender = (cardGender === 'women' || cardGender === 'unisex');
+        } else {
+          matchGender = true;
         }
 
         var matchCat = true;
@@ -1347,19 +1428,36 @@
       // Gender tabs
       var genderTabs = container.querySelectorAll('.enamels-gender-tab');
       genderTabs.forEach(function(tab) {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function(e) {
+          e.preventDefault();
           var targetGender = tab.getAttribute('data-gender-target') || 'all';
-          if (targetGender === 'men' && !window.location.pathname.includes('/male-scrubs')) {
-            window.location.href = '/collections/male-scrubs';
-            return;
-          } else if (targetGender === 'women' && !window.location.pathname.includes('/female-scrubs')) {
-            window.location.href = '/collections/female-scrubs';
-            return;
-          } else if (targetGender === 'all' && window.location.pathname !== '/collections/all') {
-            window.location.href = '/collections/all';
+
+          var path = window.location.pathname;
+          // When on female-scrubs specifically and clicking men: switch to male-scrubs
+          if (targetGender === 'men' && (path.indexOf('female-scrubs') !== -1 || path.indexOf('/women') !== -1)) {
+            try {
+              sessionStorage.setItem('enamels_gender', 'men');
+              localStorage.setItem('enamels_gender', 'men');
+            } catch(e) {}
+            window.location.href = '/collections/male-scrubs?gender=men';
             return;
           }
+          // When on male-scrubs specifically and clicking women: switch to female-scrubs
+          if (targetGender === 'women' && (path.indexOf('male-scrubs') !== -1 || path.indexOf('/men') !== -1)) {
+            try {
+              sessionStorage.setItem('enamels_gender', 'women');
+              localStorage.setItem('enamels_gender', 'women');
+            } catch(e) {}
+            window.location.href = '/collections/female-scrubs?gender=women';
+            return;
+          }
+
           state.gender = targetGender;
+          try {
+            sessionStorage.setItem('enamels_gender', targetGender);
+            localStorage.setItem('enamels_gender', targetGender);
+          } catch(e) {}
+
           updateUrlState();
           renderFilterUI();
         });
@@ -1379,8 +1477,13 @@
       var clearBtn = container.querySelector('#enamels-clear-filter-btn');
       var resetBtn = container.querySelector('#enamels-cat-reset-btn');
       function resetAllFilters() {
+        state.gender = 'all';
         state.category = 'all';
         state.article = 'all';
+        try {
+          sessionStorage.setItem('enamels_gender', 'all');
+          localStorage.setItem('enamels_gender', 'all');
+        } catch(e) {}
         updateUrlState();
         renderFilterUI();
       }
@@ -2380,6 +2483,45 @@
   .enamels-cat-empty__btn:hover {
     background: #1e3a5f;
   }
+
+  /* 7. Bottom Collection Description Section */
+  .enamels-cat-page__footer-desc {
+    margin-top: 48px;
+    padding: 32px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    clear: both;
+  }
+  .enamels-cat-page__footer-desc.align-center {
+    text-align: center;
+  }
+  .enamels-cat-page__footer-desc.align-right {
+    text-align: right;
+  }
+  .enamels-cat-page__footer-desc.align-left {
+    text-align: left;
+  }
+  .enamels-cat-page__footer-desc-heading {
+    margin: 0 0 14px 0;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .enamels-cat-page__footer-desc-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #475569;
+  }
+  .enamels-cat-page__footer-desc-content p:last-child {
+    margin-bottom: 0;
+  }
+  @media (max-width: 767px) {
+    .enamels-cat-page__footer-desc {
+      margin-top: 32px;
+      padding: 20px 16px;
+      border-radius: 8px;
+    }
+  }
 </style>
 
 {% schema %}
@@ -2957,20 +3099,20 @@
       "default": true
     },
     {
-      "type": "select",
-      "id": "heading_source",
-      "label": "Heading Text Source",
-      "options": [
-        { "value": "collection_title", "label": "Use Collection's Genuine Title" },
-        { "value": "custom", "label": "Use Custom Title Below" }
-      ],
-      "default": "collection_title"
+      "type": "header",
+      "content": "📝 Top Heading (Above Products)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top_heading",
+      "label": "Show Top Heading Above Products",
+      "default": false,
+      "info": "Turn off to keep page clean and transition straight to products."
     },
     {
       "type": "text",
-      "id": "title",
-      "label": "Custom Section Heading",
-      "default": "New Arrivals"
+      "id": "top_heading_text",
+      "label": "Top Heading Override Text"
     },
     {
       "type": "color",
@@ -3011,30 +3153,73 @@
     },
     {
       "type": "checkbox",
-      "id": "show_collection_description",
-      "label": "Show Collection Description Below Heading",
+      "id": "show_product_count",
+      "label": "Show Product Counter",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "📖 Bottom Collection Description (Below Products)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_description",
+      "label": "Show Description Section at Bottom",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_desc_heading",
+      "label": "Show Description Section Heading",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "desc_heading",
+      "label": "Description Section Heading",
+      "default": "About This Collection"
     },
     {
       "type": "select",
       "id": "desc_source",
       "label": "Description Source",
       "options": [
-        { "value": "collection_description", "label": "Use Collection's Genuine Description" },
+        { "value": "collection_description", "label": "Use Collection's Description" },
         { "value": "custom", "label": "Use Custom Description Below" }
       ],
       "default": "collection_description"
     },
     {
-      "type": "textarea",
+      "type": "richtext",
       "id": "custom_description",
       "label": "Custom Description Text"
     },
     {
-      "type": "checkbox",
-      "id": "show_product_count",
-      "label": "Show Product Counter (e.g. 'Showing 18 products')",
-      "default": true
+      "type": "select",
+      "id": "desc_alignment",
+      "label": "Description Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "desc_heading_color",
+      "label": "Description Heading Color",
+      "default": "#102a43"
+    },
+    {
+      "type": "range",
+      "id": "desc_heading_size",
+      "min": 16,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "label": "Description Heading Font Size",
+      "default": 22
     },
     {
       "type": "header",

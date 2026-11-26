@@ -2284,10 +2284,37 @@
         "content": "Cart Upsells"
       },
       {
+        "type": "checkbox",
+        "id": "show_cart_upsell",
+        "label": "Enable Cart Drawer Upsells",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_upsell_heading",
+        "label": "Cart Upsell Heading",
+        "default": "Frequently Added Together"
+      },
+      {
+        "type": "text",
+        "id": "cart_upsell_subheading",
+        "label": "Cart Upsell Subheading",
+        "default": "Complete your clinical uniform with matching essentials."
+      },
+      {
         "type": "collection",
         "id": "cart_upsell_collection",
         "label": "Cart Drawer Upsell Collection",
         "info": "Select a collection of accessories or add-ons to show in the cart drawer."
+      },
+      {
+        "type": "range",
+        "id": "cart_upsell_limit",
+        "min": 1,
+        "max": 6,
+        "step": 1,
+        "label": "Number of Upsell Items",
+        "default": 3
       }
     ]
   },

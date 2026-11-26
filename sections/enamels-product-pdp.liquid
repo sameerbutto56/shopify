@@ -676,41 +676,78 @@
               {%- endif -%}
 
             {%- when 'cross_sell_bundle' -%}
-              <!-- Complementary Clinical Essentials Bundle Block -->
-              <div class="pdp-cross-sell-block" {{ block.shopify_attributes }}>
-                <h3 class="pdp-cross-sell-heading">{{ block.settings.heading | default: 'Frequently Paired Clinical Essentials' }}</h3>
-                <p class="pdp-cross-sell-subheading">{{ block.settings.subheading | default: 'Add matching surgical cap and compression arm sleeves to complete your uniform.' }}</p>
+              <!-- Complementary Clinical Essentials Bundle Block (Collection-Driven) -->
+              {%- liquid
+                assign bundle_col = block.settings.addon_collection
+                if bundle_col == blank or bundle_col.products_count == 0
+                  assign bundle_col = collections['accessories']
+                endif
+                if bundle_col == blank or bundle_col.products_count == 0
+                  assign bundle_col = collections['surgical-caps']
+                endif
+                assign bundle_limit = block.settings.products_to_show | default: 2
+              -%}
 
-                <div class="pdp-bundle-items-row">
-                  <!-- Companion 1: Surgical Scrub Cap -->
-                  <div class="pdp-bundle-item">
-                    <div class="pdp-bundle-item-left">
-                      <input type="checkbox" id="pdp-add-cap-{{ section.id }}" class="pdp-bundle-checkbox" data-addon-type="cap" data-price="145000" />
-                      <label for="pdp-add-cap-{{ section.id }}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <img src="{{ 'demo-bunfit-extra-volume-scrub-cap-navy.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="BunFit Scrub Cap" class="pdp-bundle-thumb" width="90" height="90" loading="lazy" />
-                        <div>
-                          <div class="pdp-bundle-title">BunFit™ Surgical Cap (Matching Navy)</div>
-                          <div class="pdp-bundle-price">+PKR 1,450</div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
+              {%- if bundle_col != blank and bundle_col.products_count > 0 -%}
+                <div class="pdp-cross-sell-block" {{ block.shopify_attributes }}>
+                  <h3 class="pdp-cross-sell-heading">{{ block.settings.heading | default: 'Frequently Paired Clinical Essentials' }}</h3>
+                  {%- if block.settings.subheading != blank -%}
+                    <p class="pdp-cross-sell-subheading">{{ block.settings.subheading }}</p>
+                  {%- endif -%}
 
-                  <!-- Companion 2: Compression Arm Sleeves -->
-                  <div class="pdp-bundle-item">
-                    <div class="pdp-bundle-item-left">
-                      <input type="checkbox" id="pdp-add-sleeves-{{ section.id }}" class="pdp-bundle-checkbox" data-addon-type="sleeves" data-price="75000" />
-                      <label for="pdp-add-sleeves-{{ section.id }}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <img src="{{ 'demo-med-sleeves-compression-arms.jpg' | asset_img_url: '100x100' | default: featured_media | image_url: width: 90 }}" alt="Med Sleeves" class="pdp-bundle-thumb" width="90" height="90" loading="lazy" />
-                        <div>
-                          <div class="pdp-bundle-title">Med Sleeves Graduated Compression Arms</div>
-                          <div class="pdp-bundle-price">+PKR 750</div>
+                  <div class="pdp-bundle-items-row">
+                    {%- assign b_count = 0 -%}
+                    {%- for bundle_prod in bundle_col.products -%}
+                      {%- if bundle_prod.id != product.id and bundle_prod.available -%}
+                        {%- if b_count >= bundle_limit -%}{%- break -%}{%- endif -%}
+                        {%- assign b_count = b_count | plus: 1 -%}
+                        <div class="pdp-bundle-item" data-bundle-product-id="{{ bundle_prod.id }}">
+                          <div class="pdp-bundle-item-left">
+                            <input
+                              type="checkbox"
+                              id="pdp-addon-{{ bundle_prod.id }}-{{ section.id }}"
+                              class="pdp-bundle-checkbox"
+                              data-variant-id="{{ bundle_prod.first_available_variant.id }}"
+                              data-price="{{ bundle_prod.price }}"
+                            />
+                            <label for="pdp-addon-{{ bundle_prod.id }}-{{ section.id }}" style="display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1;">
+                              {%- if bundle_prod.featured_image != blank -%}
+                                <img
+                                  src="{{ bundle_prod.featured_image | image_url: width: 140 }}"
+                                  alt="{{ bundle_prod.title | escape }}"
+                                  class="pdp-bundle-thumb"
+                                  width="64"
+                                  height="64"
+                                  loading="lazy"
+                                />
+                              {%- else -%}
+                                <div class="pdp-bundle-thumb" style="display: flex; align-items: center; justify-content: center; background: #e2e8f0; font-size: 20px; width: 64px; height: 64px; border-radius: 6px;">🩺</div>
+                              {%- endif -%}
+                              <div style="flex: 1; min-width: 0;">
+                                <div class="pdp-bundle-title" title="{{ bundle_prod.title | escape }}">{{ bundle_prod.title | truncate: 34 }}</div>
+                                <div class="pdp-bundle-price">+{{ bundle_prod.price | money }}</div>
+                                {%- if bundle_prod.variants.size > 1 -%}
+                                  <div style="margin-top: 4px;">
+                                    <select
+                                      class="pdp-bundle-variant-select"
+                                      style="font-size: 11px; padding: 2px 6px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff;"
+                                      onchange="var cb = this.closest('.pdp-bundle-item').querySelector('.pdp-bundle-checkbox'); cb.setAttribute('data-variant-id', this.value); if (typeof updateTotalPriceWithAddons === 'function') updateTotalPriceWithAddons();"
+                                    >
+                                      {%- for b_var in bundle_prod.variants -%}
+                                        <option value="{{ b_var.id }}" {% unless b_var.available %}disabled{% endunless %}>{{ b_var.title }}</option>
+                                      {%- endfor -%}
+                                    </select>
+                                  </div>
+                                {%- endif -%}
+                              </div>
+                            </label>
+                          </div>
                         </div>
-                      </label>
-                    </div>
+                      {%- endif -%}
+                    {%- endfor -%}
                   </div>
                 </div>
-              </div>
+              {%- endif -%}
 
             {%- when 'bullet_features' -%}
               <!-- "About This Item" Amazon-Style Bullet List -->
@@ -1888,25 +1925,17 @@
         }
       ];
 
-      // Check for checked bundle companion items (Caps, Sleeves)
-      const capCheckbox = document.getElementById('pdp-add-cap-' + sectionId);
-      const sleevesCheckbox = document.getElementById('pdp-add-sleeves-' + sectionId);
-
-      // Find real matching companion variant IDs from catalogue or demo items
-      if (capCheckbox && capCheckbox.checked) {
-        itemsPayload.push({
-          id: activeVariant.id,
-          quantity: 1,
-          properties: { 'Add-on': 'Matching BunFit Scrub Cap' }
-        });
-      }
-      if (sleevesCheckbox && sleevesCheckbox.checked) {
-        itemsPayload.push({
-          id: activeVariant.id,
-          quantity: 1,
-          properties: { 'Add-on': 'Med Sleeves Graduated Compression' }
-        });
-      }
+      // Check for checked bundle companion add-on items
+      const bundleCheckboxes = document.querySelectorAll('.pdp-bundle-checkbox:checked');
+      bundleCheckboxes.forEach(function(cb) {
+        const addonVarId = cb.getAttribute('data-variant-id');
+        if (addonVarId) {
+          itemsPayload.push({
+            id: parseInt(addonVarId, 10),
+            quantity: 1
+          });
+        }
+      });
 
       try {
         const response = await fetch('/cart/add.js', {
@@ -2496,6 +2525,21 @@
           "id": "subheading",
           "label": "Subheading",
           "default": "Add matching surgical cap and compression arm sleeves to complete your uniform."
+        },
+        {
+          "type": "collection",
+          "id": "addon_collection",
+          "label": "Add-on Products Collection",
+          "info": "Select the accessories or caps collection to display add-ons."
+        },
+        {
+          "type": "range",
+          "id": "products_to_show",
+          "min": 1,
+          "max": 4,
+          "step": 1,
+          "label": "Maximum Add-ons to Display",
+          "default": 2
         }
       ]
     },
