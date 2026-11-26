@@ -1,0 +1,71 @@
+{
+  "sections": {
+    "collection_page": {
+      "type": "enamels-collection-page",
+      "settings": {
+        "title": "Surgical Caps",
+        "gender_filter": "auto",
+        "show_category_carousel": true,
+        "show_article_filter": false,
+        "show_color_swatches": true,
+        "banner_width": "container",
+        "banner_sizing_mode": "aspect_ratio",
+        "banner_aspect_ratio": "2000 / 767",
+        "banner_aspect_ratio_mobile": "same",
+        "banner_width_desktop": 2000,
+        "banner_height_desktop": 770,
+        "banner_height_tablet": 520,
+        "banner_height_mobile": 320,
+        "banner_radius": 0,
+        "banner_bg": "#e8e8e8",
+        "banner_img_fit": "contain",
+        "banner_img_pos": "center",
+        "show_banner_text": false,
+        "banner_heading": "",
+        "banner_description": "",
+        "carousel_title": "Explore Scrub Caps",
+        "pill_display_mode": "image_cover",
+        "show_view_all_pill": false,
+        "show_article_heading": false,
+        "article_heading_text": "SERIES / ARTICLE:",
+        "article_all_label": "All Caps",
+        "article_filter_style": "clean"
+      },
+      "blocks": {
+        "caps_bunfit": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "caps_only",
+            "collection": "surgical-caps",
+            "image": "shopify://shop_images/thumbnail-500x500-cap_jpg.jpg",
+            "title": "BunFit Caps",
+            "subtitle": "Extra Volume",
+            "link": "/collections/surgical-caps",
+            "display_order": 1
+          }
+        },
+        "caps_kennedy": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "caps_only",
+            "collection": "kennedy-series-surgical-caps",
+            "image": "shopify://shop_images/thumbnail-500x500-cap_jpg.jpg",
+            "title": "Kennedy Series",
+            "subtitle": "Classic Fit",
+            "link": "/collections/kennedy-series-surgical-caps",
+            "display_order": 2
+          }
+        }
+      },
+      "block_order": [
+        "caps_bunfit",
+        "caps_kennedy"
+      ]
+    }
+  },
+  "order": [
+    "collection_page"
+  ]
+}

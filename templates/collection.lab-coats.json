@@ -1,0 +1,85 @@
+{
+  "sections": {
+    "collection_page": {
+      "type": "enamels-collection-page",
+      "settings": {
+        "title": "Exclusive Medical Lab Coats",
+        "gender_filter": "auto",
+        "show_category_carousel": true,
+        "show_article_filter": false,
+        "show_color_swatches": true,
+        "banner_width": "container",
+        "banner_sizing_mode": "aspect_ratio",
+        "banner_aspect_ratio": "2000 / 767",
+        "banner_aspect_ratio_mobile": "same",
+        "banner_width_desktop": 2000,
+        "banner_height_desktop": 770,
+        "banner_height_tablet": 520,
+        "banner_height_mobile": 320,
+        "banner_radius": 0,
+        "banner_bg": "#e8e8e8",
+        "banner_img_fit": "contain",
+        "banner_img_pos": "center",
+        "show_banner_text": false,
+        "banner_heading": "",
+        "banner_description": "",
+        "carousel_title": "Explore Lab Coats",
+        "pill_display_mode": "image_cover",
+        "show_view_all_pill": false,
+        "show_article_heading": false,
+        "article_heading_text": "SERIES / ARTICLE:",
+        "article_all_label": "All Coats",
+        "article_filter_style": "clean"
+      },
+      "blocks": {
+        "lc_all": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "labcoats_only",
+            "collection": "labcoat",
+            "image": "shopify://shop_images/Lab_Coat.webp",
+            "title": "All Lab Coats",
+            "subtitle": "Helium & Classic",
+            "link": "/collections/labcoat",
+            "display_order": 1
+          }
+        },
+        "lc_doctor": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "labcoats_only",
+            "collection": "labcoat",
+            "image": "shopify://shop_images/Lab_Coat.webp",
+            "title": "Doctor Coats",
+            "subtitle": "Clinical Tailoring",
+            "link": "/collections/labcoat",
+            "display_order": 2
+          }
+        },
+        "lc_jackets": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "labcoats_only",
+            "collection": "jackets-only",
+            "image": "shopify://shop_images/thumbnail-500x500-flexfit.jpg",
+            "title": "Medical Jackets",
+            "subtitle": "Hospital Jackets",
+            "link": "/collections/jackets-only",
+            "display_order": 3
+          }
+        }
+      },
+      "block_order": [
+        "lc_all",
+        "lc_doctor",
+        "lc_jackets"
+      ]
+    }
+  },
+  "order": [
+    "collection_page"
+  ]
+}

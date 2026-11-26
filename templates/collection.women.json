@@ -1,0 +1,127 @@
+{
+  "sections": {
+    "collection_page": {
+      "type": "enamels-collection-page",
+      "settings": {
+        "title": "Women's Medical Scrubs",
+        "gender_filter": "women",
+        "show_category_carousel": true,
+        "show_article_filter": true,
+        "show_color_swatches": true,
+        "banner_width": "container",
+        "banner_sizing_mode": "aspect_ratio",
+        "banner_aspect_ratio": "2000 / 767",
+        "banner_aspect_ratio_mobile": "same",
+        "banner_width_desktop": 2000,
+        "banner_height_desktop": 770,
+        "banner_height_tablet": 520,
+        "banner_height_mobile": 320,
+        "banner_radius": 0,
+        "banner_bg": "#e8e8e8",
+        "banner_img_fit": "contain",
+        "banner_img_pos": "center",
+        "show_banner_text": false,
+        "banner_heading": "",
+        "banner_description": "",
+        "carousel_title": "Explore Categories",
+        "pill_display_mode": "image_cover",
+        "show_view_all_pill": false,
+        "show_article_heading": true,
+        "article_heading_text": "SERIES / ARTICLE:",
+        "article_all_label": "All Scrubs",
+        "article_filter_style": "boxed"
+      },
+      "blocks": {
+        "women_scrubs": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "women_only",
+            "collection": "female-scrubs",
+            "image": "shopify://shop_images/women_Scrubs.jpg",
+            "title": "Women Scrubs",
+            "subtitle": "Tailored Scrubs",
+            "link": "/collections/female-scrubs",
+            "display_order": 1
+          }
+        },
+        "women_labcoats": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "all",
+            "collection": "labcoat",
+            "image": "shopify://shop_images/Lab_Coat.webp",
+            "title": "Lab Coats",
+            "subtitle": "Doctor Coats",
+            "link": "/collections/labcoat",
+            "display_order": 2
+          }
+        },
+        "women_caps": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "all",
+            "collection": "surgical-caps",
+            "image": "shopify://shop_images/thumbnail-500x500-cap_jpg.jpg",
+            "title": "Surgical Caps",
+            "subtitle": "Theater Headwear",
+            "link": "/collections/surgical-caps",
+            "display_order": 3
+          }
+        },
+        "women_clogs": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "all",
+            "collection": "accessories",
+            "image": "shopify://shop_images/IMG_2597.jpg",
+            "title": "Clinical Clogs",
+            "subtitle": "Medical Footwear",
+            "link": "/collections/accessories",
+            "display_order": 4
+          }
+        },
+        "women_accessories": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "all",
+            "collection": "accessories",
+            "image": "shopify://shop_images/thumbnail-500x500-socks_jpg_05ca5a98-624d-4e80-b5cc-de0301a18750.jpg",
+            "title": "Accessories",
+            "subtitle": "Socks & Sleeves",
+            "link": "/collections/accessories",
+            "display_order": 5
+          }
+        },
+        "women_all": {
+          "type": "category_pill",
+          "settings": {
+            "show_pill": true,
+            "collection_scope": "women_only",
+            "collection": "all",
+            "image": "shopify://shop_images/thumbnail-500x500-vILORA.jpg",
+            "title": "All Apparel",
+            "subtitle": "Complete Store",
+            "link": "/collections/all",
+            "display_order": 6
+          }
+        }
+      },
+      "block_order": [
+        "women_scrubs",
+        "women_labcoats",
+        "women_caps",
+        "women_clogs",
+        "women_accessories",
+        "women_all"
+      ]
+    }
+  },
+  "order": [
+    "collection_page"
+  ]
+}

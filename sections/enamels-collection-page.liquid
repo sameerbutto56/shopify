@@ -69,7 +69,7 @@
     assign current_article = 'flexwell'
   endif
 
-  # 4. Banner Sizing & Image Resolution (Zero hardcoded fallback assets)
+  # 4. Banner Sizing & Image Resolution (Matches Homepage Hero Banner Dimensions)
   assign show_banner = section.settings.show_banner
   if show_banner == nil
     assign show_banner = true
@@ -89,12 +89,22 @@
     assign banner_img_mob = banner_img
   endif
 
-  assign banner_h_desk = section.settings.banner_height_desktop | default: 270
-  assign banner_h_mob = section.settings.banner_height_mobile | default: 175
-  assign banner_radius = section.settings.banner_radius | default: 16
+  assign banner_sizing_mode = section.settings.banner_sizing_mode | default: 'aspect_ratio'
+  assign banner_aspect = section.settings.banner_aspect_ratio | default: '2000 / 767'
+  assign banner_aspect_mob = section.settings.banner_aspect_ratio_mobile | default: 'same'
+  if banner_aspect_mob == 'same' or banner_aspect_mob == blank
+    assign banner_aspect_mob = banner_aspect
+  endif
+
+  assign banner_w_desk = section.settings.banner_width_desktop | default: 2000
+  assign banner_h_desk = section.settings.banner_height_desktop | default: 770
+  assign banner_h_tab = section.settings.banner_height_tablet | default: 520
+  assign banner_h_mob = section.settings.banner_height_mobile | default: 320
+
+  assign banner_radius = section.settings.banner_radius | default: 0
   assign banner_bg = section.settings.banner_bg | default: '#e8e8e8'
   assign banner_width = section.settings.banner_width | default: 'container'
-  assign banner_img_fit = section.settings.banner_img_fit | default: 'cover'
+  assign banner_img_fit = section.settings.banner_img_fit | default: 'contain'
   assign banner_img_pos = section.settings.banner_img_pos | default: 'center'
   assign banner_overlay_color = section.settings.banner_overlay_color | default: '#000000'
   assign banner_overlay_opacity = section.settings.banner_overlay_opacity | default: 0
@@ -318,12 +328,18 @@
           class="enamels-cat-page__banner-wrapper banner-width-{{ banner_width }}"
         >
           <div
-            class="enamels-cat-page__banner"
+            class="enamels-cat-page__banner sizing-{{ banner_sizing_mode }}"
             style="
+              --banner-w-desk: {{ banner_w_desk }}px;
               --banner-h-desk: {{ banner_h_desk }}px;
+              --banner-h-tab: {{ banner_h_tab }}px;
               --banner-h-mob: {{ banner_h_mob }}px;
+              --banner-aspect: {{ banner_aspect }};
+              --banner-aspect-mob: {{ banner_aspect_mob }};
               --banner-radius: {{ banner_radius }}px;
               --banner-bg: {{ banner_bg }};
+              --banner-img-fit: {{ banner_img_fit }};
+              --banner-img-pos: {{ banner_img_pos }};
             "
           >
             {%- if has_banner_media -%}
@@ -335,7 +351,7 @@
                   src="{{ banner_img | image_url: width: 2000 }}"
                   alt="{{ b_heading | default: target_col.title | escape }}"
                   class="enamels-cat-page__banner-img"
-                  style="object-fit: {{ banner_img_fit }} !important; object-position: {{ banner_img_pos }} !important;"
+                  style="object-fit: var(--banner-img-fit, {{ banner_img_fit }}) !important; object-position: var(--banner-img-pos, {{ banner_img_pos }}) !important;"
                   loading="eager"
                   fetchpriority="high"
                   width="1400"
@@ -586,38 +602,104 @@
                   assign pill_name = 'Category'
                 endif
 
-                assign pill_dest_url = cur_block.settings.link
-                if pill_dest_url == blank and pill_col != blank
-                  assign pill_dest_url = pill_col.url
+                assign pill_col_handle = ''
+                if pill_col != blank
+                  assign pill_col_handle = pill_col.handle | downcase
                 endif
-                if pill_dest_url == blank
-                  assign pill_dest_url = routes.all_products_collection_url
-                endif
+                assign pill_name_down = pill_name | downcase
+                assign current_col_handle = target_col.handle | downcase
 
-                assign pill_sub = cur_block.settings.subtitle
-                
-                # Independent Custom Thumbnail (Never overridden by first product image!)
-                assign pill_img = cur_block.settings.image
-                if pill_img == blank and pill_col.featured_image != blank
-                  assign pill_img = pill_col.featured_image
-                endif
+                # Collection Scope Isolation
+                assign cur_scope = cur_block.settings.collection_scope | default: 'auto'
+                assign should_render_pill = true
 
-                assign pill_key = cur_block.settings.category_key
-                if pill_key == blank and pill_col != blank
-                  assign pill_key = pill_col.handle
+                if cur_block.settings.show_pill == false
+                  assign should_render_pill = false
+                elsif cur_scope == 'men_only'
+                  unless current_col_handle == 'male-scrubs' or current_gender == 'men' or current_col_handle contains 'men'
+                    assign should_render_pill = false
+                  endunless
+                elsif cur_scope == 'women_only'
+                  unless current_col_handle == 'female-scrubs' or current_gender == 'women' or current_col_handle contains 'women'
+                    assign should_render_pill = false
+                  endunless
+                elsif cur_scope == 'labcoats_only'
+                  unless current_col_handle == 'labcoat' or current_col_handle contains 'lab'
+                    assign should_render_pill = false
+                  endunless
+                elsif cur_scope == 'caps_only'
+                  unless current_col_handle == 'surgical-caps' or current_col_handle contains 'cap'
+                    assign should_render_pill = false
+                  endunless
+                elsif cur_scope == 'accessories_only'
+                  unless current_col_handle == 'accessories' or current_col_handle == 'accessories-1' or current_col_handle == 'clogs' or current_col_handle == 'socks' or current_col_handle == 'sleeves'
+                    assign should_render_pill = false
+                  endunless
+                elsif cur_scope == 'specific'
+                  assign spec_handle = cur_block.settings.specific_collection_handle | downcase | strip
+                  if spec_handle != blank and spec_handle != current_col_handle
+                    assign should_render_pill = false
+                  endif
+                elsif cur_scope == 'auto'
+                  # Smart Auto-Detection: Prevent cross-contamination
+                  if current_col_handle == 'male-scrubs' or current_gender == 'men'
+                    if pill_col_handle == 'female-scrubs' or pill_name_down contains 'women'
+                      assign should_render_pill = false
+                    endif
+                  elsif current_col_handle == 'female-scrubs' or current_gender == 'women'
+                    if pill_col_handle == 'male-scrubs' or pill_name_down contains 'men'
+                      assign should_render_pill = false
+                    endif
+                  elsif current_col_handle == 'labcoat' or current_col_handle contains 'lab'
+                    if pill_col_handle == 'male-scrubs' or pill_col_handle == 'female-scrubs' or pill_name_down contains 'scrub'
+                      assign should_render_pill = false
+                    endif
+                  elsif current_col_handle == 'accessories' or current_col_handle == 'accessories-1' or current_col_handle == 'clogs' or current_col_handle == 'socks'
+                    if pill_col_handle == 'male-scrubs' or pill_col_handle == 'female-scrubs' or pill_col_handle == 'labcoat'
+                      assign should_render_pill = false
+                    endif
+                  elsif current_col_handle == 'surgical-caps'
+                    if pill_col_handle == 'male-scrubs' or pill_col_handle == 'female-scrubs' or pill_col_handle == 'labcoat'
+                      assign should_render_pill = false
+                    endif
+                  endif
                 endif
-                if pill_key == blank
-                  assign pill_key = pill_name | handleize
-                endif
+              -%}
 
-                assign is_active = false
-                if pill_col != blank and target_col != blank and target_col.handle == pill_col.handle
-                  assign is_active = true
-                elsif request.path == pill_dest_url
-                  assign is_active = true
-                endif
+              {%- if should_render_pill -%}
+                {%- liquid
+                  assign pill_dest_url = cur_block.settings.link
+                  if pill_dest_url == blank and pill_col != blank
+                    assign pill_dest_url = pill_col.url
+                  endif
+                  if pill_dest_url == blank
+                    assign pill_dest_url = routes.all_products_collection_url
+                  endif
 
-                assign rendered_cat_pills = rendered_cat_pills | plus: 1
+                  assign pill_sub = cur_block.settings.subtitle
+                  
+                  # Independent Custom Thumbnail (Never overridden by first product image!)
+                  assign pill_img = cur_block.settings.image
+                  if pill_img == blank and pill_col.featured_image != blank
+                    assign pill_img = pill_col.featured_image
+                  endif
+
+                  assign pill_key = cur_block.settings.category_key
+                  if pill_key == blank and pill_col != blank
+                    assign pill_key = pill_col.handle
+                  endif
+                  if pill_key == blank
+                    assign pill_key = pill_name | handleize
+                  endif
+
+                  assign is_active = false
+                  if pill_col != blank and target_col != blank and target_col.handle == pill_col.handle
+                    assign is_active = true
+                  elsif request.path == pill_dest_url
+                    assign is_active = true
+                  endif
+
+                  assign rendered_cat_pills = rendered_cat_pills | plus: 1
 
                 # Advance payment tag text
                 assign tag_text = cur_block.settings.advance_payment_tag_text | strip
@@ -727,6 +809,7 @@
                   </div>
                 </a>
               {%- endif -%}
+            {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
         {%- endif -%}
@@ -1395,12 +1478,15 @@
     padding: 0 16px;
   }
 
-  /* 1. Hero Banner */
+  /* 1. Hero Banner (Matches Homepage Hero Dimensions & Sizing System) */
   .enamels-cat-page__banner-wrapper {
     width: 100%;
-    margin-bottom: 24px;
+    max-width: var(--banner-w-desk, 2000px);
+    margin: 0 auto 24px auto;
+    padding: 0;
   }
   .banner-width-full_width {
+    max-width: 100%;
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
@@ -1412,8 +1498,11 @@
   .enamels-cat-page__banner {
     position: relative;
     width: 100%;
-    height: var(--banner-h-desk, 270px);
-    border-radius: var(--banner-radius, 16px);
+    aspect-ratio: var(--banner-aspect, 2000 / 767);
+    height: auto;
+    max-height: var(--banner-h-desk, 770px);
+    min-height: 0;
+    border-radius: var(--banner-radius, 0px);
     overflow: hidden;
     background-color: var(--banner-bg, #e8e8e8);
     display: flex;
@@ -1421,19 +1510,50 @@
     box-sizing: border-box;
   }
 
+  .enamels-cat-page__banner.sizing-fixed_height {
+    height: var(--banner-h-desk, 770px);
+    aspect-ratio: auto;
+    max-height: none;
+  }
+
+  @media (max-width: 1024px) {
+    .enamels-cat-page__banner {
+      max-height: var(--banner-h-tab, 520px);
+    }
+    .enamels-cat-page__banner.sizing-fixed_height {
+      height: var(--banner-h-tab, 520px);
+    }
+  }
+
   @media (max-width: 767px) {
     .enamels-cat-page {
       padding-top: var(--cat-page-pad-top-mob, 12px);
       padding-bottom: var(--cat-page-pad-bot-mob, 30px);
     }
-    .enamels-cat-page__banner {
-      height: var(--banner-h-mob, 175px);
-      border-radius: calc(var(--banner-radius, 16px) * 0.75);
+    .enamels-cat-page__banner-wrapper {
       margin-bottom: 16px;
+    }
+    .enamels-cat-page__banner {
+      aspect-ratio: var(--banner-aspect-mob, var(--banner-aspect, 2000 / 767));
+      max-height: var(--banner-h-mob, 320px);
+      border-radius: var(--banner-radius, 0px);
+    }
+    .enamels-cat-page__banner.sizing-fixed_height {
+      height: var(--banner-h-mob, 320px);
     }
   }
 
-  .enamels-cat-page__banner-picture,
+  .enamels-cat-page__banner-picture {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
   .enamels-cat-page__banner-img {
     position: absolute;
     top: 0;
@@ -1442,6 +1562,8 @@
     height: 100%;
     display: block;
     z-index: 1;
+    object-fit: var(--banner-img-fit, contain) !important;
+    object-position: var(--banner-img-pos, center) !important;
   }
 
   .enamels-cat-page__banner-overlay {
@@ -2302,22 +2424,80 @@
       "default": "container"
     },
     {
+      "type": "select",
+      "id": "banner_sizing_mode",
+      "label": "Banner Sizing Mode",
+      "options": [
+        { "value": "aspect_ratio", "label": "Aspect Ratio Mode (Recommended)" },
+        { "value": "fixed_height", "label": "Fixed Height Mode" }
+      ],
+      "default": "aspect_ratio"
+    },
+    {
+      "type": "select",
+      "id": "banner_aspect_ratio",
+      "label": "Banner Aspect Ratio Desktop",
+      "options": [
+        { "value": "2000 / 767", "label": "2.61:1 (2000x767 Standard Hero)" },
+        { "value": "16 / 9", "label": "16:9 Landscape" },
+        { "value": "21 / 9", "label": "21:9 Ultra-Wide Cinematic" },
+        { "value": "3 / 1", "label": "3:1 Panoramic Banner" },
+        { "value": "auto", "label": "Auto / Adapt to Height" }
+      ],
+      "default": "2000 / 767"
+    },
+    {
+      "type": "select",
+      "id": "banner_aspect_ratio_mobile",
+      "label": "Banner Aspect Ratio Mobile",
+      "options": [
+        { "value": "same", "label": "Same as Desktop" },
+        { "value": "4 / 3", "label": "4:3 Proportional Mobile" },
+        { "value": "16 / 9", "label": "16:9 Mobile Wide" },
+        { "value": "1 / 1", "label": "1:1 Square Mobile" },
+        { "value": "auto", "label": "Auto / Adapt to Height" }
+      ],
+      "default": "same"
+    },
+    {
+      "type": "range",
+      "id": "banner_width_desktop",
+      "label": "Banner Max Width Desktop (px)",
+      "min": 1000,
+      "max": 2500,
+      "step": 50,
+      "unit": "px",
+      "default": 2000
+    },
+    {
       "type": "range",
       "id": "banner_height_desktop",
-      "label": "Desktop Banner Height (px)",
-      "min": 120,
-      "max": 600,
+      "label": "Desktop Max Height (px)",
+      "min": 200,
+      "max": 900,
       "step": 10,
-      "default": 270
+      "unit": "px",
+      "default": 770
+    },
+    {
+      "type": "range",
+      "id": "banner_height_tablet",
+      "label": "Tablet Max Height (px)",
+      "min": 200,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 520
     },
     {
       "type": "range",
       "id": "banner_height_mobile",
-      "label": "Mobile Banner Height (px)",
-      "min": 80,
-      "max": 400,
-      "step": 5,
-      "default": 175
+      "label": "Mobile Max Height (px)",
+      "min": 150,
+      "max": 550,
+      "step": 10,
+      "unit": "px",
+      "default": 320
     },
     {
       "type": "range",
@@ -2326,7 +2506,7 @@
       "min": 0,
       "max": 40,
       "step": 2,
-      "default": 16
+      "default": 0
     },
     {
       "type": "color",
@@ -2339,10 +2519,10 @@
       "id": "banner_img_fit",
       "label": "Banner Image Fit",
       "options": [
-        { "value": "cover", "label": "Cover (Fill entire banner)" },
-        { "value": "contain", "label": "Contain (Show entire image uncropped)" }
+        { "value": "contain", "label": "Contain (Preserves Image)" },
+        { "value": "cover", "label": "Cover (Fills Container)" }
       ],
-      "default": "cover"
+      "default": "contain"
     },
     {
       "type": "select",
@@ -2352,7 +2532,8 @@
         { "value": "center", "label": "Center" },
         { "value": "top", "label": "Top" },
         { "value": "bottom", "label": "Bottom" },
-        { "value": "right center", "label": "Right Center" }
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" }
       ],
       "default": "center"
     },
@@ -3125,6 +3306,29 @@
           "id": "show_pill",
           "label": "Show this category pill",
           "default": true
+        },
+        {
+          "type": "select",
+          "id": "collection_scope",
+          "label": "Show on Collections",
+          "options": [
+            { "value": "auto", "label": "Auto-Detect (Matches target collection/gender)" },
+            { "value": "all", "label": "All Collections" },
+            { "value": "men_only", "label": "Men's Collections Only (male-scrubs)" },
+            { "value": "women_only", "label": "Women's Collections Only (female-scrubs)" },
+            { "value": "labcoats_only", "label": "Lab Coats Only (labcoat)" },
+            { "value": "caps_only", "label": "Surgical Caps Only (surgical-caps)" },
+            { "value": "accessories_only", "label": "Accessories Only (accessories)" },
+            { "value": "specific", "label": "Specific Collection Handle..." }
+          ],
+          "default": "auto",
+          "info": "Prevents mixing unrelated categories across collections."
+        },
+        {
+          "type": "text",
+          "id": "specific_collection_handle",
+          "label": "Specific Collection Handle",
+          "info": "Enter collection handle (e.g. male-scrubs, labcoat) if 'Specific Collection' is chosen above."
         },
         {
           "type": "collection",
