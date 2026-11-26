@@ -99,26 +99,25 @@
   assign banner_overlay_color = section.settings.banner_overlay_color | default: '#000000'
   assign banner_overlay_opacity = section.settings.banner_overlay_opacity | default: 0
 
-  # Banner Text Content
-  assign show_banner_text = section.settings.show_banner_text
-  if show_banner_text == nil
+  # Banner Text Content (Default: OFF / No forced overlay text)
+  assign show_banner_text = false
+  if section.settings.show_banner_text == true
     assign show_banner_text = true
   endif
 
-  assign b_head_source = section.settings.banner_heading_source | default: 'collection_title'
-  assign b_heading = section.settings.banner_heading
-  if b_head_source == 'collection_title' and target_col != blank and target_col.title != blank
+  # Only use explicitly entered custom heading and description - NEVER force collection title or description
+  assign b_heading = section.settings.banner_heading | strip
+  if section.settings.auto_collection_title and b_heading == blank and target_col != blank
     assign b_heading = target_col.title
   endif
 
-  assign b_desc_source = section.settings.banner_desc_source | default: 'collection_description'
-  assign b_desc = section.settings.banner_description
-  if b_desc_source == 'collection_description' and target_col != blank and target_col.description != blank
+  assign b_desc = section.settings.banner_description | strip
+  if section.settings.auto_collection_description and b_desc == blank and target_col != blank
     assign b_desc = target_col.description
   endif
 
-  assign b_eyebrow = section.settings.banner_eyebrow
-  assign b_btn_text = section.settings.banner_button_text
+  assign b_eyebrow = section.settings.banner_eyebrow | strip
+  assign b_btn_text = section.settings.banner_button_text | strip
   assign b_btn_link = section.settings.banner_button_link
 
   assign b_head_color = section.settings.banner_heading_color | default: '#ffffff'
@@ -215,10 +214,23 @@
   assign heading_align = section.settings.heading_alignment | default: 'left'
   assign heading_color = section.settings.heading_color | default: '#0f172a'
 
-  assign show_article_filter = section.settings.show_article_filter
-  if show_article_filter == nil
-    assign show_article_filter = true
+  assign show_article_filter = true
+  if section.settings.show_article_filter == false
+    assign show_article_filter = false
   endif
+
+  assign show_article_heading = true
+  if section.settings.show_article_heading == false
+    assign show_article_heading = false
+  endif
+
+  assign article_heading_text = section.settings.article_heading_text
+  if section.settings.article_heading_text == nil
+    assign article_heading_text = 'SERIES / ARTICLE:'
+  endif
+
+  assign article_all_lbl = section.settings.article_all_label | default: 'All Scrubs'
+  assign article_box_style = section.settings.article_filter_style | default: 'boxed'
   assign show_swatches = section.settings.show_color_swatches
   if show_swatches == nil
     assign show_swatches = true
@@ -332,7 +344,7 @@
               </picture>
             {%- endif -%}
 
-            {%- if banner_overlay_opacity > 0 -%}
+            {%- if banner_overlay_opacity > 0 and has_banner_content -%}
               <div
                 class="enamels-cat-page__banner-overlay"
                 style="background-color: {{ banner_overlay_color }}; opacity: {{ banner_overlay_opacity | divided_by: 100.0 }};"
@@ -795,31 +807,35 @@
 
     <!-- 4. Dynamic Article Sub-Filter Bar (Under Scrubs) -->
     {%- if show_article_filter and detected_series_list.size > 0 -%}
-    <div class="enamels-article-filters" id="enamels-article-filters">
-      <span class="enamels-article-filters__label">SERIES / ARTICLE:</span>
-      <div class="enamels-article-filters__list">
-        <button
-          type="button"
-          class="enamels-article-pill{% if current_article == 'all' %} is-active{% endif %}"
-          data-article-target="all"
-        >
-          All Scrubs
-        </button>
-        {%- for s in detected_series_list -%}
-          {%- if s != blank -%}
-            {%- assign s_clean = s | strip -%}
-            {%- assign s_handle = s_clean | downcase | replace: ' ', '-' -%}
-            <button
-              type="button"
-              class="enamels-article-pill{% if current_article == s_handle %} is-active{% endif %}"
-              data-article-target="{{ s_handle }}"
-            >
-              {{ s_clean }} Series
-            </button>
-          {%- endif -%}
-        {%- endfor -%}
+      <div class="enamels-article-filters style-{{ article_box_style }}" id="enamels-article-filters">
+        {%- if show_article_heading and article_heading_text != blank -%}
+          <span class="enamels-article-filters__label">
+            {{ article_heading_text }}
+          </span>
+        {%- endif -%}
+        <div class="enamels-article-filters__list">
+          <button
+            type="button"
+            class="enamels-article-pill{% if current_article == 'all' %} is-active{% endif %}"
+            data-article-target="all"
+          >
+            {{ article_all_lbl }}
+          </button>
+          {%- for s in detected_series_list -%}
+            {%- if s != blank -%}
+              {%- assign s_clean = s | strip -%}
+              {%- assign s_handle = s_clean | downcase | replace: ' ', '-' -%}
+              <button
+                type="button"
+                class="enamels-article-pill{% if current_article == s_handle %} is-active{% endif %}"
+                data-article-target="{{ s_handle }}"
+              >
+                {{ s_clean }} Series
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
       </div>
-    </div>
     {%- endif -%}
 
     <!-- 5. Collection Heading & Active Counter Bar (Fully Editable) -->
@@ -1906,6 +1922,14 @@
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
+    box-sizing: border-box;
+  }
+
+  .enamels-article-filters.style-clean {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 16px !important;
   }
 
   .enamels-article-filters__label {
@@ -2355,7 +2379,32 @@
       "type": "checkbox",
       "id": "show_banner_text",
       "label": "Show Banner Text / Overlay Content",
-      "default": true
+      "default": false,
+      "info": "Disabled by default. Turn ON only to show overlay text over the banner."
+    },
+    {
+      "type": "text",
+      "id": "banner_heading",
+      "label": "Banner Main Heading",
+      "info": "Leave empty to display no heading. Does not force collection title."
+    },
+    {
+      "type": "textarea",
+      "id": "banner_description",
+      "label": "Banner Subheading / Description",
+      "info": "Leave empty to display no description. Does not force collection description."
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_collection_title",
+      "label": "Auto-use Collection Title if heading empty",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_collection_description",
+      "label": "Auto-use Collection Description if empty",
+      "default": false
     },
     {
       "type": "text",
@@ -2373,21 +2422,6 @@
       "id": "banner_eyebrow_color",
       "label": "Eyebrow Text Color",
       "default": "#ffffff"
-    },
-    {
-      "type": "select",
-      "id": "banner_heading_source",
-      "label": "Banner Heading Source",
-      "options": [
-        { "value": "collection_title", "label": "Use Collection's Genuine Title" },
-        { "value": "custom", "label": "Use Custom Heading Below" }
-      ],
-      "default": "collection_title"
-    },
-    {
-      "type": "text",
-      "id": "banner_heading",
-      "label": "Custom Banner Heading"
     },
     {
       "type": "color",
@@ -2426,21 +2460,6 @@
         { "value": "900", "label": "Black (900)" }
       ],
       "default": "800"
-    },
-    {
-      "type": "select",
-      "id": "banner_desc_source",
-      "label": "Banner Description Source",
-      "options": [
-        { "value": "collection_description", "label": "Use Collection's Genuine Description" },
-        { "value": "custom", "label": "Use Custom Description Below" }
-      ],
-      "default": "collection_description"
-    },
-    {
-      "type": "textarea",
-      "id": "banner_description",
-      "label": "Custom Banner Description"
     },
     {
       "type": "color",
@@ -2706,10 +2725,45 @@
       "default": true
     },
     {
+      "type": "header",
+      "content": "🏷️ Article & Series Filter Bar"
+    },
+    {
       "type": "checkbox",
       "id": "show_article_filter",
-      "label": "Show Article Sub-Filter (Scrubs Series)",
-      "default": true
+      "label": "Show Article & Series Container",
+      "default": true,
+      "info": "Turn OFF to completely remove the Article & Series box from the storefront."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_article_heading",
+      "label": "Show Article & Series Heading Label",
+      "default": true,
+      "info": "Turn OFF to hide only the heading text without leaving an empty box or gap."
+    },
+    {
+      "type": "text",
+      "id": "article_heading_text",
+      "label": "Article & Series Heading Text",
+      "default": "SERIES / ARTICLE:",
+      "info": "Leave empty to display no heading text."
+    },
+    {
+      "type": "text",
+      "id": "article_all_label",
+      "label": "First Pill Label (All)",
+      "default": "All Scrubs"
+    },
+    {
+      "type": "select",
+      "id": "article_filter_style",
+      "label": "Container Box Style",
+      "options": [
+        { "value": "boxed", "label": "Boxed (Background & Border)" },
+        { "value": "clean", "label": "Clean (Pills Only, No Box)" }
+      ],
+      "default": "boxed"
     },
     {
       "type": "header",

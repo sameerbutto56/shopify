@@ -14,7 +14,14 @@
         "banner_bg": "#e8e8e8",
         "carousel_title": "Explore Categories",
         "pill_display_mode": "image_cover",
-        "show_view_all_pill": false
+        "show_view_all_pill": false,
+        "show_banner_text": false,
+        "banner_heading": "",
+        "banner_description": "",
+        "show_article_heading": true,
+        "article_heading_text": "SERIES / ARTICLE:",
+        "article_all_label": "All Scrubs",
+        "article_filter_style": "boxed"
       },
       "blocks": {
         "women_scrubs": {
