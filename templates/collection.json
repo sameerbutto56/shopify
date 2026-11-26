@@ -29,7 +29,13 @@
         "show_article_heading": true,
         "article_heading_text": "SERIES / ARTICLE:",
         "article_all_label": "All Scrubs",
-        "article_filter_style": "boxed"
+        "article_filter_style": "boxed",
+        "show_top_heading": false,
+        "show_collection_description": true,
+        "show_desc_heading": true,
+        "desc_heading": "",
+        "desc_source": "collection_description",
+        "desc_alignment": "left"
       },
       "blocks": {
         "cp_men": {

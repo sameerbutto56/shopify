@@ -197,7 +197,14 @@
   if show_desc_heading == nil
     assign show_desc_heading = true
   endif
-  assign desc_heading = section.settings.desc_heading | default: 'About This Collection'
+  assign desc_heading = section.settings.desc_heading
+  if desc_heading == blank and target_col != blank and target_col.title != blank
+    assign desc_heading = target_col.title
+  endif
+  if desc_heading == blank
+    assign desc_heading = 'About This Collection'
+  endif
+  assign desc_subheading = section.settings.desc_subheading
   assign desc_heading_color = section.settings.desc_heading_color | default: '#102a43'
   assign desc_heading_size = section.settings.desc_heading_size | default: 22
   assign desc_alignment = section.settings.desc_alignment | default: 'left'
@@ -1213,6 +1220,11 @@
     <!-- 7. Bottom Collection Description Section (SEO & Brand Storytelling at the very bottom) -->
     {%- if show_collection_desc and sec_desc != blank -%}
       <section class="enamels-cat-page__footer-desc align-{{ desc_alignment | default: 'left' }}" id="enamels-cat-page-footer-desc" aria-label="About this collection">
+        {%- if desc_subheading != blank -%}
+          <span class="enamels-cat-page__footer-desc-subheading" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 6px;">
+            {{ desc_subheading }}
+          </span>
+        {%- endif -%}
         {%- if show_desc_heading and desc_heading != blank -%}
           <h2 class="enamels-cat-page__footer-desc-heading" style="color: {{ desc_heading_color }}; font-size: {{ desc_heading_size }}px;">
             {{ desc_heading }}
@@ -3177,7 +3189,13 @@
       "type": "text",
       "id": "desc_heading",
       "label": "Description Section Heading",
-      "default": "About This Collection"
+      "info": "Leave blank to auto-use the Collection Title."
+    },
+    {
+      "type": "text",
+      "id": "desc_subheading",
+      "label": "Description Eyebrow / Subheading",
+      "info": "Optional small text above the heading, e.g. Men's Scrub Lines."
     },
     {
       "type": "select",
