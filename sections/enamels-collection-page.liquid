@@ -164,50 +164,30 @@
     assign show_collection_header = true
   endif
 
-  assign head_source = section.settings.heading_source | default: 'collection_title'
-  assign title_text = section.settings.title
-  if head_source == 'collection_title'
-    if target_col != blank and target_col.title != blank and target_col.handle != 'all'
-      assign title_text = target_col.title
-    elsif current_gender == 'men'
-      assign title_text = "Men's Collection"
-    elsif current_gender == 'women'
-      assign title_text = "Women's Collection"
-    else
-      assign title_text = "All Products"
-    endif
-  endif
-
-  assign show_top_heading = section.settings.show_top_heading | default: false
-  if section.settings.top_heading_text != blank
-    assign title_text = section.settings.top_heading_text
-  endif
-
-  assign show_collection_desc = section.settings.show_collection_description
-  if show_collection_desc == nil
+  # 6. Bottom Collection Description Settings (Default: OFF / Unchecked)
+  assign show_collection_desc = false
+  if section.settings.show_collection_description == true
     assign show_collection_desc = true
   endif
 
-  assign sec_desc = section.settings.custom_description
-  if section.settings.desc_source == 'collection_description' and target_col != blank and target_col.description != blank
-    assign sec_desc = target_col.description
-  endif
-
-  assign show_desc_heading = section.settings.show_desc_heading
-  if show_desc_heading == nil
-    assign show_desc_heading = true
-  endif
-  assign desc_heading = section.settings.desc_heading
-  if desc_heading == blank and target_col != blank and target_col.title != blank
+  # Heading: Explicitly configured, not forced
+  assign desc_heading = section.settings.desc_heading | strip
+  if section.settings.auto_desc_heading and desc_heading == blank and target_col != blank and target_col.title != blank
     assign desc_heading = target_col.title
   endif
-  if desc_heading == blank
-    assign desc_heading = 'About This Collection'
+
+  # Description Content:
+  assign sec_desc = section.settings.custom_description | strip
+  if section.settings.desc_source == 'collection_description' and target_col != blank and target_col.description != blank
+    assign sec_desc = target_col.description | strip
   endif
-  assign desc_subheading = section.settings.desc_subheading
+
+  assign desc_subheading = section.settings.desc_subheading | strip
   assign desc_heading_color = section.settings.desc_heading_color | default: '#102a43'
   assign desc_heading_size = section.settings.desc_heading_size | default: 22
   assign desc_alignment = section.settings.desc_alignment | default: 'left'
+  assign desc_pad_top = section.settings.desc_padding_top | default: 40
+  assign desc_pad_bottom = section.settings.desc_padding_bottom | default: 40
 
   # 7. Grid & Product Card Sizing Settings
   assign container_max_w = section.settings.container_max_width | default: 1320
@@ -946,26 +926,8 @@
       </div>
     {%- endif -%}
 
-    <!-- 5. Top Heading & Counter Toolbar (Clean, Minimal, Zero Clutter) -->
-    {%- if show_top_heading and title_text != blank -%}
-      <div class="enamels-cat-page__head-row align-{{ heading_align }}">
-        <div class="enamels-cat-page__head">
-          <h1
-            class="enamels-cat-page__title"
-            id="enamels-cat-page-title"
-            style="font-size: {{ heading_size_desk }}px; color: {{ heading_color }};"
-          >
-            {{ title_text }}
-          </h1>
-          {%- if section.settings.show_product_count -%}
-            <p class="enamels-cat-page__counter" id="enamels-cat-product-counter">Showing products</p>
-          {%- endif -%}
-        </div>
-        <button type="button" class="enamels-cat-clear-btn" id="enamels-clear-filter-btn" style="display: none;">
-          Clear Filters ✕
-        </button>
-      </div>
-    {%- elsif section.settings.show_product_count -%}
+    <!-- 5. Active Counter Toolbar (Clean, Minimal, Zero Clutter) -->
+    {%- if section.settings.show_product_count -%}
       <div class="enamels-cat-page__head-row" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
         <p class="enamels-cat-page__counter" id="enamels-cat-product-counter" style="margin: 0; font-size: 13px; font-weight: 600; color: #64748b;">Showing products</p>
         <button type="button" class="enamels-cat-clear-btn" id="enamels-clear-filter-btn" style="display: none;">
@@ -1217,23 +1179,32 @@
 
     </div>
 
-    <!-- 7. Bottom Collection Description Section (SEO & Brand Storytelling at the very bottom) -->
-    {%- if show_collection_desc and sec_desc != blank -%}
-      <section class="enamels-cat-page__footer-desc align-{{ desc_alignment | default: 'left' }}" id="enamels-cat-page-footer-desc" aria-label="About this collection">
-        {%- if desc_subheading != blank -%}
-          <span class="enamels-cat-page__footer-desc-subheading" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 6px;">
-            {{ desc_subheading }}
-          </span>
-        {%- endif -%}
-        {%- if show_desc_heading and desc_heading != blank -%}
-          <h2 class="enamels-cat-page__footer-desc-heading" style="color: {{ desc_heading_color }}; font-size: {{ desc_heading_size }}px;">
-            {{ desc_heading }}
-          </h2>
-        {%- endif -%}
-        <div class="enamels-cat-page__footer-desc-content rte">
-          {{ sec_desc }}
-        </div>
-      </section>
+    <!-- 7. Bottom Collection Description Section (Rendered ONLY when Show Collection Description is ON) -->
+    {%- if show_collection_desc -%}
+      {%- if desc_heading != blank or sec_desc != blank or desc_subheading != blank -%}
+        <section
+          class="enamels-cat-page__footer-desc align-{{ desc_alignment | default: 'left' }}"
+          id="enamels-cat-page-footer-desc"
+          aria-label="About this collection"
+          style="padding-top: {{ desc_pad_top }}px; padding-bottom: {{ desc_pad_bottom }}px;"
+        >
+          {%- if desc_subheading != blank -%}
+            <span class="enamels-cat-page__footer-desc-subheading" style="display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 8px;">
+              {{ desc_subheading }}
+            </span>
+          {%- endif -%}
+          {%- if desc_heading != blank -%}
+            <h2 class="enamels-cat-page__footer-desc-heading" style="color: {{ desc_heading_color }}; font-size: {{ desc_heading_size }}px; margin: 0 0 14px 0; font-weight: 700; line-height: 1.3;">
+              {{ desc_heading }}
+            </h2>
+          {%- endif -%}
+          {%- if sec_desc != blank -%}
+            <div class="enamels-cat-page__footer-desc-content rte" style="font-size: 14px; line-height: 1.7; color: #475569;">
+              {{ sec_desc }}
+            </div>
+          {%- endif -%}
+        </section>
+      {%- endif -%}
     {%- endif -%}
 
   </div>
@@ -3102,105 +3073,37 @@
     },
     {
       "type": "header",
-      "content": "📋 Collection Section Heading"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_collection_header",
-      "label": "Show Collection Section Title & Info",
-      "default": true
-    },
-    {
-      "type": "header",
-      "content": "📝 Top Heading (Above Products)"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_top_heading",
-      "label": "Show Top Heading Above Products",
-      "default": false,
-      "info": "Turn off to keep page clean and transition straight to products."
-    },
-    {
-      "type": "text",
-      "id": "top_heading_text",
-      "label": "Top Heading Override Text"
-    },
-    {
-      "type": "color",
-      "id": "heading_color",
-      "label": "Heading Color",
-      "default": "#0f172a"
-    },
-    {
-      "type": "range",
-      "id": "heading_size_desktop",
-      "min": 16,
-      "max": 48,
-      "step": 1,
-      "unit": "px",
-      "label": "Heading Font Size (Desktop)",
-      "default": 22
-    },
-    {
-      "type": "range",
-      "id": "heading_size_mobile",
-      "min": 14,
-      "max": 32,
-      "step": 1,
-      "unit": "px",
-      "label": "Heading Font Size (Mobile)",
-      "default": 18
-    },
-    {
-      "type": "select",
-      "id": "heading_alignment",
-      "label": "Heading Alignment",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
-      ],
-      "default": "left"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_product_count",
-      "label": "Show Product Counter",
-      "default": true
-    },
-    {
-      "type": "header",
-      "content": "📖 Bottom Collection Description (Below Products)"
+      "content": "📖 Collection Description (Bottom of Page)"
     },
     {
       "type": "checkbox",
       "id": "show_collection_description",
-      "label": "Show Description Section at Bottom",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_desc_heading",
-      "label": "Show Description Section Heading",
-      "default": true
+      "label": "Show Collection Description",
+      "default": false,
+      "info": "Disabled by default. Displays heading & description at the very bottom."
     },
     {
       "type": "text",
       "id": "desc_heading",
-      "label": "Description Section Heading",
-      "info": "Leave blank to auto-use the Collection Title."
+      "label": "Collection Heading",
+      "info": "Leave blank if you do not want a heading."
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_desc_heading",
+      "label": "Auto-use Collection Title if heading empty",
+      "default": false
     },
     {
       "type": "text",
       "id": "desc_subheading",
-      "label": "Description Eyebrow / Subheading",
-      "info": "Optional small text above the heading, e.g. Men's Scrub Lines."
+      "label": "Collection Subheading / Eyebrow",
+      "info": "Optional text above heading, e.g. Men's Scrub Lines."
     },
     {
       "type": "select",
       "id": "desc_source",
-      "label": "Description Source",
+      "label": "Description Content Source",
       "options": [
         { "value": "collection_description", "label": "Use Collection's Description" },
         { "value": "custom", "label": "Use Custom Description Below" }
@@ -3210,12 +3113,12 @@
     {
       "type": "richtext",
       "id": "custom_description",
-      "label": "Custom Description Text"
+      "label": "Custom Description Content"
     },
     {
       "type": "select",
       "id": "desc_alignment",
-      "label": "Description Text Alignment",
+      "label": "Text Alignment",
       "options": [
         { "value": "left", "label": "Left" },
         { "value": "center", "label": "Center" },
@@ -3226,7 +3129,7 @@
     {
       "type": "color",
       "id": "desc_heading_color",
-      "label": "Description Heading Color",
+      "label": "Heading Text Color",
       "default": "#102a43"
     },
     {
@@ -3236,8 +3139,38 @@
       "max": 36,
       "step": 2,
       "unit": "px",
-      "label": "Description Heading Font Size",
+      "label": "Heading Font Size",
       "default": 22
+    },
+    {
+      "type": "range",
+      "id": "desc_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Spacing (Padding Top)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desc_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Spacing (Padding Bottom)",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "🛍️ Product Counter & Grid Toolbar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show Product Counter",
+      "default": true
     },
     {
       "type": "header",

@@ -29,7 +29,13 @@
         "show_article_heading": false,
         "article_heading_text": "SERIES / ARTICLE:",
         "article_all_label": "All Caps",
-        "article_filter_style": "clean"
+        "article_filter_style": "clean",
+        "show_collection_description": false,
+        "desc_heading": "",
+        "auto_desc_heading": false,
+        "desc_subheading": "",
+        "desc_source": "collection_description",
+        "desc_alignment": "left"
       },
       "blocks": {
         "caps_bunfit": {

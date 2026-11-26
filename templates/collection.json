@@ -30,10 +30,10 @@
         "article_heading_text": "SERIES / ARTICLE:",
         "article_all_label": "All Scrubs",
         "article_filter_style": "boxed",
-        "show_top_heading": false,
-        "show_collection_description": true,
-        "show_desc_heading": true,
+        "show_collection_description": false,
         "desc_heading": "",
+        "auto_desc_heading": false,
+        "desc_subheading": "",
         "desc_source": "collection_description",
         "desc_alignment": "left"
       },
