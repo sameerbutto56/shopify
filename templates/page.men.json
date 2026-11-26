@@ -12,7 +12,9 @@
         "banner_height_mobile": 175,
         "banner_radius": 16,
         "banner_bg": "#e8e8e8",
-        "carousel_title": "Explore Categories"
+        "carousel_title": "Explore Categories",
+        "pill_display_mode": "image_cover",
+        "show_view_all_pill": false
       },
       "blocks": {
         "men_scrubs": {

@@ -273,7 +273,9 @@
     --cat-head-align: {{ heading_align }};
     --cat-head-color: {{ heading_color }};
     --cat-pill-w: {{ section.settings.pill_width | default: 170 }}px;
-    --cat-pill-h: {{ section.settings.pill_height | default: 52 }}px;
+    --cat-pill-w-mob: {{ section.settings.pill_width_mobile | default: 150 }}px;
+    --cat-pill-h: {{ section.settings.pill_height | default: 56 }}px;
+    --cat-pill-h-mob: {{ section.settings.pill_height_mobile | default: 52 }}px;
     --cat-pill-radius: {{ section.settings.pill_radius | default: 8 }}px;
     --cat-pill-bg: {{ section.settings.pill_bg | default: '#dfdfdf' }};
     --cat-pill-active-bg: {{ section.settings.pill_active_bg | default: '#ffffff' }};
@@ -614,43 +616,105 @@
                   assign tag_text = cur_block.settings.badge_text | strip
                   assign show_tag = true
                 endif
+
+                # Display mode: image_cover (full-fill thumbnail), image_with_overlay, or text_with_thumb
+                assign cur_mode = cur_block.settings.display_mode | default: 'default'
+                if cur_mode == 'default' or cur_mode == blank
+                  assign cur_mode = section.settings.pill_display_mode | default: 'image_cover'
+                endif
+
+                assign is_full_img_pill = false
+                if cur_mode != 'text_with_thumb' and pill_img != blank
+                  assign is_full_img_pill = true
+                endif
+
+                assign cur_img_fit = cur_block.settings.image_fit | default: 'inherit'
+                if cur_img_fit == 'inherit' or cur_img_fit == blank
+                  assign cur_img_fit = section.settings.pill_image_fit | default: 'cover'
+                endif
+
+                assign cur_img_pos = cur_block.settings.image_position | default: 'inherit'
+                if cur_img_pos == 'inherit' or cur_img_pos == blank
+                  assign cur_img_pos = section.settings.pill_image_position | default: 'center'
+                endif
               -%}
 
-              <a
-                href="{{ pill_dest_url }}"
-                class="enamels-cat-card enamels-cat-card--carousel{% if is_active %} is-active{% endif %}"
-                data-category-target="{{ pill_key }}"
-                style="{% if cur_block.settings.card_bg != blank %}background-color: {{ cur_block.settings.card_bg }} !important;{% endif %}"
-                title="{{ pill_name | escape }}"
-                {{ cur_block.shopify_attributes }}
-              >
-                {%- if show_tag -%}
-                  <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
-                    {{ tag_text }}
-                  </span>
-                {%- endif -%}
-
-                <div class="enamels-cat-card__content">
-                  <span class="enamels-cat-card__title">{{ pill_name }}</span>
-                  {%- if pill_sub != blank -%}
-                    <span class="enamels-cat-card__subtitle">{{ pill_sub }}</span>
+              {%- if is_full_img_pill -%}
+                <a
+                  href="{{ pill_dest_url }}"
+                  class="enamels-cat-card enamels-cat-card--carousel enamels-cat-card--full-image{% if is_active %} is-active{% endif %}"
+                  data-category-target="{{ pill_key }}"
+                  style="{% if cur_block.settings.card_bg != blank %}background-color: {{ cur_block.settings.card_bg }} !important;{% endif %}"
+                  title="{{ pill_name | escape }}"
+                  {{ cur_block.shopify_attributes }}
+                >
+                  {%- if show_tag -%}
+                    <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
+                      {{ tag_text }}
+                    </span>
+                  {%- elsif cur_block.settings.badge_text != blank -%}
+                    <span class="enamels-cat-card__badge">{{ cur_block.settings.badge_text }}</span>
                   {%- endif -%}
-                </div>
 
-                <div class="enamels-cat-card__media">
-                  {%- if pill_img != blank -%}
-                    <img
-                      src="{{ pill_img | image_url: width: 320 }}"
-                      alt="{{ pill_name | escape }}"
-                      width="120"
-                      height="70"
-                      loading="lazy"
-                    >
-                  {%- else -%}
-                    <span class="enamels-cat-pill-btn__placeholder">🩺</span>
+                  <img
+                    src="{{ pill_img | image_url: width: 600 }}"
+                    alt="{{ pill_name | escape }}"
+                    class="enamels-cat-full-image"
+                    loading="lazy"
+                    width="240"
+                    height="120"
+                    style="object-fit: {{ cur_img_fit }} !important; object-position: {{ cur_img_pos }} !important;"
+                  >
+
+                  {%- if cur_mode == 'image_with_overlay' -%}
+                    <div class="enamels-cat-card__overlay">
+                      <span class="enamels-cat-card__overlay-title">{{ pill_name }}</span>
+                      {%- if pill_sub != blank -%}
+                        <span class="enamels-cat-card__overlay-subtitle">{{ pill_sub }}</span>
+                      {%- endif -%}
+                    </div>
                   {%- endif -%}
-                </div>
-              </a>
+                </a>
+              {%- else -%}
+                <a
+                  href="{{ pill_dest_url }}"
+                  class="enamels-cat-card enamels-cat-card--carousel{% if is_active %} is-active{% endif %}"
+                  data-category-target="{{ pill_key }}"
+                  style="{% if cur_block.settings.card_bg != blank %}background-color: {{ cur_block.settings.card_bg }} !important;{% endif %}"
+                  title="{{ pill_name | escape }}"
+                  {{ cur_block.shopify_attributes }}
+                >
+                  {%- if show_tag -%}
+                    <span class="enamels-cat-advance-tag" aria-label="{{ tag_text | escape }}">
+                      {{ tag_text }}
+                    </span>
+                  {%- elsif cur_block.settings.badge_text != blank -%}
+                    <span class="enamels-cat-card__badge">{{ cur_block.settings.badge_text }}</span>
+                  {%- endif -%}
+
+                  <div class="enamels-cat-card__content">
+                    <span class="enamels-cat-card__title">{{ pill_name }}</span>
+                    {%- if pill_sub != blank -%}
+                      <span class="enamels-cat-card__subtitle">{{ pill_sub }}</span>
+                    {%- endif -%}
+                  </div>
+
+                  <div class="enamels-cat-card__media">
+                    {%- if pill_img != blank -%}
+                      <img
+                        src="{{ pill_img | image_url: width: 320 }}"
+                        alt="{{ pill_name | escape }}"
+                        width="120"
+                        height="70"
+                        loading="lazy"
+                        style="object-fit: {{ cur_img_fit }} !important; object-position: {{ cur_img_pos }} !important;"
+                      >
+                    {%- else -%}
+                      <span class="enamels-cat-pill-btn__placeholder">🩺</span>
+                    {%- endif -%}
+                  </div>
+                </a>
+              {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
         {%- endif -%}
@@ -665,40 +729,66 @@
               {%- assign is_active = true -%}
             {%- endif -%}
             {%- assign rendered_cat_pills = rendered_cat_pills | plus: 1 -%}
-            <a
-              href="{{ col.url }}"
-              class="enamels-cat-card enamels-cat-card--carousel{% if is_active %} is-active{% endif %}"
-              data-category-target="{{ cat_key }}"
-            >
-              <div class="enamels-cat-card__content">
-                <span class="enamels-cat-card__title">{{ cat_name }}</span>
-                <span class="enamels-cat-card__subtitle">Collection</span>
-              </div>
-              <div class="enamels-cat-card__media">
-                {%- if col.featured_image != blank -%}
-                  <img src="{{ col.featured_image | image_url: width: 320 }}" alt="{{ cat_name | escape }}" width="120" height="70" loading="lazy">
-                {%- else -%}
-                  <span class="enamels-cat-pill-btn__placeholder">🩺</span>
-                {%- endif -%}
-              </div>
-            </a>
+            {%- assign fb_is_full = false -%}
+            {%- if section.settings.pill_display_mode != 'text_with_thumb' and col.featured_image != blank -%}
+              {%- assign fb_is_full = true -%}
+            {%- endif -%}
+
+            {%- if fb_is_full -%}
+              <a
+                href="{{ col.url }}"
+                class="enamels-cat-card enamels-cat-card--carousel enamels-cat-card--full-image{% if is_active %} is-active{% endif %}"
+                data-category-target="{{ cat_key }}"
+                title="{{ cat_name | escape }}"
+              >
+                <img
+                  src="{{ col.featured_image | image_url: width: 600 }}"
+                  alt="{{ cat_name | escape }}"
+                  class="enamels-cat-full-image"
+                  width="240"
+                  height="120"
+                  loading="lazy"
+                  style="object-fit: {{ section.settings.pill_image_fit | default: 'cover' }} !important; object-position: {{ section.settings.pill_image_position | default: 'center' }} !important;"
+                >
+              </a>
+            {%- else -%}
+              <a
+                href="{{ col.url }}"
+                class="enamels-cat-card enamels-cat-card--carousel{% if is_active %} is-active{% endif %}"
+                data-category-target="{{ cat_key }}"
+              >
+                <div class="enamels-cat-card__content">
+                  <span class="enamels-cat-card__title">{{ cat_name }}</span>
+                  <span class="enamels-cat-card__subtitle">Collection</span>
+                </div>
+                <div class="enamels-cat-card__media">
+                  {%- if col.featured_image != blank -%}
+                    <img src="{{ col.featured_image | image_url: width: 320 }}" alt="{{ cat_name | escape }}" width="120" height="70" loading="lazy">
+                  {%- else -%}
+                    <span class="enamels-cat-pill-btn__placeholder">🩺</span>
+                  {%- endif -%}
+                </div>
+              </a>
+            {%- endif -%}
           {%- endfor -%}
         {%- endif -%}
 
-        <!-- Universal "View All" Pill -->
-        <a
-          href="/collections/all"
-          class="enamels-cat-card enamels-cat-card--carousel{% if current_cat == 'all' and is_specific_col == false and request.path == '/collections/all' %} is-active{% endif %}"
-          data-category-target="all"
-        >
-          <div class="enamels-cat-card__content">
-            <span class="enamels-cat-card__title">ALL APPAREL</span>
-            <span class="enamels-cat-card__subtitle">Complete Store</span>
-          </div>
-          <div class="enamels-cat-card__media enamels-view-all-thumb">
-            <span class="enamels-all-grid-icon">▦</span>
-          </div>
-        </a>
+        {%- if section.settings.show_view_all_pill -%}
+          <!-- Universal "View All" Pill -->
+          <a
+            href="/collections/all"
+            class="enamels-cat-card enamels-cat-card--carousel{% if current_cat == 'all' and is_specific_col == false and request.path == '/collections/all' %} is-active{% endif %}"
+            data-category-target="all"
+          >
+            <div class="enamels-cat-card__content">
+              <span class="enamels-cat-card__title">ALL APPAREL</span>
+              <span class="enamels-cat-card__subtitle">Complete Store</span>
+            </div>
+            <div class="enamels-cat-card__media enamels-view-all-thumb">
+              <span class="enamels-all-grid-icon">▦</span>
+            </div>
+          </a>
+        {%- endif -%}
       </div>
     </div>
     {%- endif -%}
@@ -1659,9 +1749,123 @@
     text-overflow: ellipsis;
   }
 
+  /* Full-Size Thumbnail Pill (fills the entire card box) */
+  .enamels-cat-card--full-image {
+    padding: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: block !important;
+    height: var(--cat-pill-h, 56px) !important;
+    min-height: var(--cat-pill-h, 56px) !important;
+    max-height: var(--cat-pill-h, 56px) !important;
+    width: var(--cat-pill-w, 170px) !important;
+    min-width: var(--cat-pill-w, 170px) !important;
+    flex: 0 0 var(--cat-pill-w, 170px) !important;
+    border-radius: var(--cat-pill-radius, 8px) !important;
+    box-sizing: border-box !important;
+    border: 2px solid transparent !important;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+  }
+
+  @media (max-width: 767px) {
+    .enamels-cat-card--full-image {
+      height: var(--cat-pill-h-mob, 52px) !important;
+      min-height: var(--cat-pill-h-mob, 52px) !important;
+      max-height: var(--cat-pill-h-mob, 52px) !important;
+      width: var(--cat-pill-w-mob, 150px) !important;
+      min-width: var(--cat-pill-w-mob, 150px) !important;
+      flex: 0 0 var(--cat-pill-w-mob, 150px) !important;
+    }
+  }
+
+  .enamels-cat-card--full-image .enamels-cat-full-image {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: var(--cat-pill-img-fit, cover) !important;
+    object-position: var(--cat-pill-img-pos, center) !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: var(--cat-pill-radius, 8px) !important;
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1) !important;
+  }
+
+  .enamels-cat-card--full-image:hover .enamels-cat-full-image {
+    transform: scale(1.04);
+  }
+
+  .enamels-cat-card--full-image.is-active {
+    border-color: var(--cat-pill-active-border, #102a43) !important;
+    box-shadow: 0 0 0 2px var(--cat-pill-active-border, #102a43), 0 4px 14px rgba(16, 42, 67, 0.2) !important;
+    outline: none !important;
+  }
+
+  .enamels-cat-card--full-image .enamels-cat-advance-tag {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+  }
+
+  .enamels-cat-card--full-image .enamels-cat-card__badge {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 10;
+  }
+
+  .enamels-cat-card--full-image .enamels-cat-card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.75) 100%);
+    padding: 12px 10px 6px;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+  }
+
+  .enamels-cat-card--full-image .enamels-cat-card__overlay-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .enamels-cat-card--full-image .enamels-cat-card__overlay-subtitle {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .enamels-cat-card__media {
-    flex: 0 0 44px !important;
-    height: 44px !important;
+    flex: 0 0 54px !important;
+    height: 100% !important;
+    max-height: var(--cat-pill-h, 56px) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: flex-end !important;
@@ -1672,8 +1876,8 @@
 
   .enamels-cat-card__media img {
     height: 100% !important;
-    width: auto !important;
-    max-height: 44px !important;
+    width: 100% !important;
+    max-height: var(--cat-pill-h, 56px) !important;
     object-fit: var(--cat-pill-img-fit, cover) !important;
     object-position: var(--cat-pill-img-pos, center) !important;
     display: block !important;
@@ -2384,6 +2588,17 @@
       "default": "700"
     },
     {
+      "type": "select",
+      "id": "pill_display_mode",
+      "label": "Category Pill Display Style",
+      "options": [
+        { "value": "image_cover", "label": "Full-Fill Thumbnail (Image fills entire box - Recommended)" },
+        { "value": "image_with_overlay", "label": "Full-Fill Thumbnail with Text Overlay" },
+        { "value": "text_with_thumb", "label": "Text with Side Thumbnail" }
+      ],
+      "default": "image_cover"
+    },
+    {
       "type": "range",
       "id": "pill_width",
       "label": "Pill Width (Desktop)",
@@ -2395,13 +2610,39 @@
     },
     {
       "type": "range",
+      "id": "pill_width_mobile",
+      "label": "Pill Width (Mobile)",
+      "min": 120,
+      "max": 220,
+      "step": 5,
+      "unit": "px",
+      "default": 150
+    },
+    {
+      "type": "range",
       "id": "pill_height",
       "label": "Pill Height (Desktop)",
       "min": 38,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "pill_height_mobile",
+      "label": "Pill Height (Mobile)",
+      "min": 36,
       "max": 70,
       "step": 2,
       "unit": "px",
       "default": 52
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all_pill",
+      "label": "Show 'All Apparel' View All Pill",
+      "default": false
     },
     {
       "type": "range",
@@ -2842,6 +3083,18 @@
           "id": "image",
           "label": "Custom Thumbnail Image",
           "info": "Upload any custom thumbnail for this pill. Completely independent of collection image."
+        },
+        {
+          "type": "select",
+          "id": "display_mode",
+          "label": "Pill Display Style",
+          "options": [
+            { "value": "default", "label": "Default (Use Section Setting)" },
+            { "value": "image_cover", "label": "Full-Fill Thumbnail (Image fills entire box)" },
+            { "value": "image_with_overlay", "label": "Full-Fill Thumbnail with Text Overlay" },
+            { "value": "text_with_thumb", "label": "Text with Side Thumbnail" }
+          ],
+          "default": "default"
         },
         {
           "type": "text",
