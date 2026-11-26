@@ -293,8 +293,10 @@
       {%- assign has_banner_media = false -%}
       {%- if banner_img != blank -%}{%- assign has_banner_media = true -%}{%- endif -%}
       {%- assign has_banner_content = false -%}
-      {%- if show_banner_text and (b_heading != blank or b_desc != blank or b_eyebrow != blank or b_btn_text != blank) -%}
-        {%- assign has_banner_content = true -%}
+      {%- if show_banner_text -%}
+        {%- if b_heading != blank or b_desc != blank or b_eyebrow != blank or b_btn_text != blank -%}
+          {%- assign has_banner_content = true -%}
+        {%- endif -%}
       {%- endif -%}
 
       {%- if has_banner_media or has_banner_content -%}
@@ -483,7 +485,14 @@
     <div class="enamels-cat-carousel-wrap">
       
       <!-- Proper Heading Replacing "Select Category" (Fully Editable, Clearable, Removable) -->
-      {%- if show_carousel_heading and (carousel_title != blank or carousel_subtitle != blank) -%}
+      {%- assign has_carousel_head = false -%}
+      {%- if show_carousel_heading -%}
+        {%- if carousel_title != blank or carousel_subtitle != blank -%}
+          {%- assign has_carousel_head = true -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if has_carousel_head -%}
         <div class="enamels-cat-carousel-header align-{{ carousel_head_align }}">
           <div class="enamels-cat-carousel-title-group">
             {%- if carousel_title != blank -%}
