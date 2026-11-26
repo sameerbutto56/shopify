@@ -1,7 +1,8 @@
 {% comment %}
   Section: enamels-fabric-showcase.liquid
   Description: Fully customizable Technical Fabric Showcase section with interactive specs,
-  performance rating meters, full responsive controls, and individual element visibility toggles.
+  performance rating meters, strict 2-column grid layout, independent responsive display controls,
+  and individual element visibility toggles.
   Complete editability in Shopify Studio with zero unwanted fallbacks.
 {% endcomment %}
 
@@ -12,16 +13,25 @@
   assign p_bottom = section.settings.padding_bottom | default: 48
 
   # Header Settings (strictly no hardcoded fallback output)
-  assign show_header = section.settings.show_header
+  assign show_header = true
+  if section.settings.show_header == false
+    assign show_header = false
+  endif
   assign header_align = section.settings.header_alignment | default: 'center'
 
-  assign show_eyebrow = section.settings.show_eyebrow
+  assign show_eyebrow = true
+  if section.settings.show_eyebrow == false
+    assign show_eyebrow = false
+  endif
   assign eyebrow = section.settings.eyebrow
   assign eyebrow_bg = section.settings.eyebrow_bg | default: '#e6fffa'
   assign eyebrow_color = section.settings.eyebrow_color | default: '#008779'
   assign eyebrow_size = section.settings.eyebrow_size | default: 11
 
-  assign show_title = section.settings.show_title
+  assign show_title = true
+  if section.settings.show_title == false
+    assign show_title = false
+  endif
   assign title = section.settings.title
   assign title_size_desk = section.settings.title_size_desktop | default: 32
   assign title_size_mob = section.settings.title_size_mobile | default: 24
@@ -29,25 +39,35 @@
   assign title_transform = section.settings.title_transform | default: 'none'
   assign title_color = section.settings.title_color | default: '#0f172a'
 
-  assign show_subtitle = section.settings.show_subtitle
+  assign show_subtitle = true
+  if section.settings.show_subtitle == false
+    assign show_subtitle = false
+  endif
   assign subtitle = section.settings.subtitle
   assign subtitle_color = section.settings.subtitle_color | default: '#64748b'
   assign subtitle_size = section.settings.subtitle_size | default: 15
 
-  # Grid & Layout Settings
+  # Grid & Layout Settings (Strict 2-Column Responsive System)
   assign desk_cols = section.settings.desktop_columns | default: '2'
-  assign tab_cols = section.settings.tablet_columns | default: '1'
-  assign mob_layout = section.settings.mobile_columns | default: '1_col'
-  assign grid_gap = section.settings.grid_gap | default: 28
+  assign tab_cols = section.settings.tablet_columns | default: '2'
+  assign mob_layout = section.settings.mobile_columns | default: '2'
+  assign gap_h = section.settings.grid_gap_horizontal | default: section.settings.grid_gap | default: 28
+  assign gap_v = section.settings.grid_gap_vertical | default: section.settings.grid_gap | default: 28
+  assign gap_mob_h = section.settings.grid_gap_mobile_horizontal | default: 12
+  assign gap_mob_v = section.settings.grid_gap_mobile_vertical | default: 16
+  assign grid_align = section.settings.grid_alignment | default: 'stretch'
 
   # Card Styling Settings
+  assign card_max_w = section.settings.card_max_width | default: 0
+  assign card_min_h = section.settings.card_min_height | default: 0
+  assign card_padding = section.settings.card_padding | default: 24
+  assign card_border_w = section.settings.card_border_width | default: 1
+  assign card_radius = section.settings.card_border_radius | default: 16
   assign card_bg_global = section.settings.card_bg | default: '#ffffff'
   assign card_border_global = section.settings.card_border_color | default: '#e2e8f0'
-  assign card_radius = section.settings.card_border_radius | default: 16
+  assign card_hover_border = section.settings.card_hover_border_color | default: '#008779'
   assign card_shadow = section.settings.card_shadow | default: 'hover_elevate'
-  assign card_padding = section.settings.card_padding | default: 24
   assign card_align = section.settings.card_text_alignment | default: 'left'
-  assign card_min_h = section.settings.card_min_height | default: 0
 
   # Typography (Cards)
   assign card_title_size = section.settings.card_title_size | default: 20
@@ -58,18 +78,29 @@
   assign card_desc_color = section.settings.card_desc_color | default: '#475569'
 
   # Image Global Settings
-  assign show_images_global = section.settings.show_images
+  assign show_images_global = true
+  if section.settings.show_images == false
+    assign show_images_global = false
+  endif
   assign img_ratio_global = section.settings.image_aspect_ratio | default: '16_9'
+  assign img_max_h = section.settings.image_max_height | default: 0
   assign img_fit_global = section.settings.image_fit | default: 'cover'
+  assign img_pos_global = section.settings.image_position | default: 'center'
   assign img_radius = section.settings.image_radius | default: 0
 
   # Badges Global Settings
-  assign show_badges_global = section.settings.show_badges
+  assign show_badges_global = true
+  if section.settings.show_badges == false
+    assign show_badges_global = false
+  endif
   assign badge_bg = section.settings.badge_bg | default: 'rgba(255, 255, 255, 0.95)'
   assign badge_text_color = section.settings.badge_text_color | default: '#0f172a'
 
   # Performance Metrics Global Settings
-  assign show_metrics_global = section.settings.show_metrics
+  assign show_metrics_global = true
+  if section.settings.show_metrics == false
+    assign show_metrics_global = false
+  endif
   assign metrics_bg = section.settings.metrics_bg | default: '#f8fafc'
   assign metrics_border = section.settings.metrics_border_color | default: '#edf2f7'
   assign meter_start_color = section.settings.meter_fill_color_start | default: '#008779'
@@ -81,12 +112,18 @@
   assign meter_dur = section.settings.meter_dur_label
 
   # Action Buttons Global Settings
-  assign show_exp_btn_global = section.settings.show_explore_button
+  assign show_exp_btn_global = true
+  if section.settings.show_explore_button == false
+    assign show_exp_btn_global = false
+  endif
   assign btn_exp_lbl_global = section.settings.btn_explore_label
   assign btn_exp_bg = section.settings.btn_explore_bg | default: '#0f172a'
   assign btn_exp_color = section.settings.btn_explore_color | default: '#ffffff'
 
-  assign show_cust_btn_global = section.settings.show_customize_button
+  assign show_cust_btn_global = true
+  if section.settings.show_customize_button == false
+    assign show_cust_btn_global = false
+  endif
   assign btn_cust_lbl_global = section.settings.btn_customize_label
   assign btn_cust_bg = section.settings.btn_customize_bg | default: '#f0fdfa'
   assign btn_cust_color = section.settings.btn_customize_color | default: '#008779'
@@ -132,8 +169,11 @@
       {%- endif -%}
     {%- endif -%}
 
-    <!-- Fabric Grid -->
-    <div class="fabric-cards-grid grid-desk-{{ desk_cols }} grid-tab-{{ tab_cols }} layout-mob-{{ mob_layout }}" style="gap: {{ grid_gap }}px;">
+    <!-- Fabric Grid (Strict Two-Column Flow: Card 1 & 2 in Row 1; Card 3 & 4 in Row 2; etc.) -->
+    <div
+      class="fabric-cards-grid grid-desk-{{ desk_cols }} grid-tab-{{ tab_cols }} layout-mob-{{ mob_layout }}"
+      style="--fab-gap-h: {{ gap_h }}px; --fab-gap-v: {{ gap_v }}px; --fab-gap-mob-h: {{ gap_mob_h }}px; --fab-gap-mob-v: {{ gap_mob_v }}px;"
+    >
       {% for block in section.blocks %}
         {%- liquid
           # Card Enable Check
@@ -164,7 +204,7 @@
             assign card_img_fit = block.settings.image_fit
           endif
 
-          assign card_img_pos = block.settings.image_position | default: 'center'
+          assign card_img_pos = block.settings.image_position | default: img_pos_global
 
           # Metric ratings
           assign b_soft = block.settings.rating_softness | default: 5
@@ -244,7 +284,7 @@
         <div
           class="enamels-fabric-card shadow-style-{{ card_shadow }}"
           id="shopify-block-{{ block.id }}"
-          style="background-color: {{ this_card_bg }}; border-color: {{ card_border_global }}; border-radius: {{ card_radius }}px; {% if card_min_h > 0 %}min-height: {{ card_min_h }}px;{% endif %}"
+          style="background-color: {{ this_card_bg }}; border-color: {{ card_border_global }}; border-width: {{ card_border_w }}px; border-radius: {{ card_radius }}px; {% if card_min_h > 0 %}min-height: {{ card_min_h }}px;{% endif %} {% if card_max_w > 0 %}max-width: {{ card_max_w }}px; margin-left: auto; margin-right: auto;{% endif %}"
           {{ block.shopify_attributes }}
         >
           
@@ -252,7 +292,7 @@
           {%- if card_show_img and b_image != blank -%}
             <div
               class="fabric-card-media-wrap aspect-ratio-{{ card_ratio }}"
-              style="border-top-left-radius: {{ card_radius }}px; border-top-right-radius: {{ card_radius }}px; {% if img_radius > 0 %}border-radius: {{ img_radius }}px; overflow: hidden; margin: 12px 12px 0;{% endif %}"
+              style="border-top-left-radius: {{ card_radius }}px; border-top-right-radius: {{ card_radius }}px; {% if img_radius > 0 %}border-radius: {{ img_radius }}px; overflow: hidden; margin: 12px 12px 0;{% endif %} {% if img_max_h > 0 %}max-height: {{ img_max_h }}px;{% endif %}"
             >
               <img
                 src="{{ b_image | image_url: width: 700 }}"
@@ -262,6 +302,7 @@
                 width="700"
                 height="400"
                 class="fabric-card-img img-fit-{{ card_img_fit }} img-pos-{{ card_img_pos }}"
+                style="{% if img_max_h > 0 %}max-height: {{ img_max_h }}px;{% endif %}"
               >
 
               {%- if card_show_badges -%}
@@ -291,7 +332,7 @@
             </div>
           {%- endif -%}
 
-          <!-- Card Content Body -->
+          <!-- Card Content Body (Flex Layout with Equal-Height Bottom Pinning) -->
           <div class="fabric-card-body align-{{ card_align }}" style="padding: {{ card_padding }}px;">
             <div class="fabric-card-meta">
               {%- if b_name != blank -%}
@@ -383,7 +424,7 @@
               {%- endif -%}
             {%- endif -%}
 
-            <!-- Action CTAs (Only if at least one button is enabled and has text) -->
+            <!-- Action CTAs (Anchored at the bottom) -->
             {%- if card_show_explore or card_show_cust -%}
               <div class="fabric-actions-row {% if card_show_explore and card_show_cust %}two-buttons{% else %}single-button{% endif %}">
                 {%- if card_show_explore and b_exp_lbl != blank -%}
@@ -468,65 +509,106 @@
     margin: 0;
   }
 
-  /* Grid Layouts */
-  .fabric-cards-grid {
-    display: grid;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .grid-desk-1 { grid-template-columns: 1fr; }
-  .grid-desk-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-desk-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .grid-desk-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-
-  @media (max-width: 991px) and (min-width: 641px) {
-    .grid-tab-1 { grid-template-columns: 1fr; }
-    .grid-tab-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Strict CSS Grid Layout */
+  #enamels-fabrics-{{ section.id }} .fabric-cards-grid {
+    display: grid !important;
+    grid-template-columns: repeat({{ desk_cols }}, minmax(0, 1fr)) !important;
+    column-gap: var(--fab-gap-h, 28px) !important;
+    row-gap: var(--fab-gap-v, 28px) !important;
+    align-items: {{ grid_align }} !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  /* Mobile Layout Modes */
+  /* Tablet: Independent Column System (Defaults to 2 Columns) */
+  @media (max-width: 991px) {
+    #enamels-fabrics-{{ section.id }} .fabric-cards-grid {
+      grid-template-columns: repeat({{ tab_cols }}, minmax(0, 1fr)) !important;
+      column-gap: calc(var(--fab-gap-h, 28px) * 0.75) !important;
+      row-gap: calc(var(--fab-gap-v, 28px) * 0.85) !important;
+    }
+  }
+
+  /* Mobile: Configurable (2 Columns, 1 Column, or Horizontal Carousel) */
   @media (max-width: 640px) {
-    .layout-mob-1_col {
-      grid-template-columns: 1fr !important;
-    }
-    .layout-mob-2_col {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      gap: 12px !important;
-    }
-    .layout-mob-scroll {
-      display: flex !important;
-      overflow-x: auto !important;
-      scroll-snap-type: x mandatory !important;
-      -webkit-overflow-scrolling: touch !important;
-      padding-bottom: 16px !important;
-      margin-left: -20px !important;
-      margin-right: -20px !important;
-      padding-left: 20px !important;
-      padding-right: 20px !important;
-      scrollbar-width: thin;
-    }
-    .layout-mob-scroll::-webkit-scrollbar {
-      height: 4px;
-    }
-    .layout-mob-scroll::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    .layout-mob-scroll .enamels-fabric-card {
-      flex: 0 0 calc(85vw - 20px);
-      max-width: 380px;
-      scroll-snap-align: start;
-    }
+    {% if mob_layout == '2' or mob_layout == '2_col' %}
+      #enamels-fabrics-{{ section.id }} .fabric-cards-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        column-gap: var(--fab-gap-mob-h, 12px) !important;
+        row-gap: var(--fab-gap-mob-v, 16px) !important;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-card-body {
+        padding: 14px !important;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-card-title {
+        font-size: 16px !important;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-card-tagline {
+        font-size: 10px !important;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-card-desc {
+        font-size: 11px !important;
+        line-height: 1.4 !important;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-metrics-panel {
+        padding: 10px !important;
+        gap: 8px !important;
+      }
+      #enamels-fabrics-{{ section.id }} .metric-info {
+        font-size: 10px !important;
+      }
+      #enamels-fabrics-{{ section.id }} .btn-fabric-explore,
+      #enamels-fabrics-{{ section.id }} .btn-fabric-customize {
+        padding: 8px 10px !important;
+        font-size: 11px !important;
+      }
+    {% elsif mob_layout == '1' or mob_layout == '1_col' %}
+      #enamels-fabrics-{{ section.id }} .fabric-cards-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        row-gap: var(--fab-gap-mob-v, 16px) !important;
+      }
+    {% elsif mob_layout == 'scroll' %}
+      #enamels-fabrics-{{ section.id }} .fabric-cards-grid {
+        display: flex !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 16px !important;
+        margin-left: -20px !important;
+        margin-right: -20px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        gap: var(--fab-gap-mob-h, 12px) !important;
+        scrollbar-width: thin;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-cards-grid::-webkit-scrollbar {
+        height: 4px;
+      }
+      #enamels-fabrics-{{ section.id }} .fabric-cards-grid::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      #enamels-fabrics-{{ section.id }} .enamels-fabric-card {
+        flex: 0 0 calc(85vw - 20px) !important;
+        max-width: 380px !important;
+        scroll-snap-align: start !important;
+      }
+    {% endif %}
   }
 
-  /* Card Containers */
-  .enamels-fabric-card {
-    border: 1px solid;
+  /* Equal Height Card Containers & Content Flow */
+  #enamels-fabrics-{{ section.id }} .enamels-fabric-card {
+    border-style: solid;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-    box-sizing: border-box;
   }
   .shadow-style-none {
     box-shadow: none;
@@ -543,7 +625,6 @@
   .shadow-style-hover_elevate:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 30px rgba(0, 135, 121, 0.12);
-    border-color: #008779 !important;
   }
 
   /* Card Media */
@@ -557,6 +638,7 @@
   .aspect-ratio-4_3 { aspect-ratio: 4 / 3; }
   .aspect-ratio-1_1 { aspect-ratio: 1 / 1; }
   .aspect-ratio-3_2 { aspect-ratio: 3 / 2; }
+  .aspect-ratio-2_1 { aspect-ratio: 2 / 1; }
   .aspect-ratio-auto { height: auto; min-height: 220px; }
 
   .fabric-card-img {
@@ -600,13 +682,13 @@
     line-height: 1.3;
   }
 
-  /* Card Body */
-  .fabric-card-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    justify-content: space-between;
-    box-sizing: border-box;
+  /* Card Body (Vertical Alignment & Spacing) */
+  #enamels-fabrics-{{ section.id }} .fabric-card-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    justify-content: space-between !important;
+    box-sizing: border-box !important;
   }
   .fabric-card-body.align-center {
     text-align: center;
@@ -628,17 +710,19 @@
     margin-bottom: 12px;
     line-height: 1.3;
   }
-  .fabric-card-desc {
+  #enamels-fabrics-{{ section.id }} .fabric-card-desc {
+    flex-grow: 1 !important;
+    margin: 0 0 16px 0 !important;
     line-height: 1.6;
-    margin: 0 0 20px;
   }
 
   /* Metrics Panel */
-  .fabric-metrics-panel {
+  #enamels-fabrics-{{ section.id }} .fabric-metrics-panel {
     border: 1px solid;
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 24px;
+    margin-top: auto !important;
+    margin-bottom: 16px !important;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -677,10 +761,10 @@
   }
 
   /* Actions Row */
-  .fabric-actions-row {
+  #enamels-fabrics-{{ section.id }} .fabric-actions-row {
     display: grid;
     gap: 10px;
-    margin-top: auto;
+    margin-top: auto !important;
   }
   .fabric-actions-row.two-buttons {
     grid-template-columns: 1fr 1fr;
@@ -778,7 +862,7 @@
     },
     {
       "type": "header",
-      "content": "📐 Grid & Columns"
+      "content": "📐 Grid & Columns (Configurable 2-Column System)"
     },
     {
       "type": "select",
@@ -786,7 +870,7 @@
       "label": "Cards Per Row (Desktop)",
       "options": [
         { "value": "1", "label": "1 Column" },
-        { "value": "2", "label": "2 Columns (Recommended)" },
+        { "value": "2", "label": "2 Columns (Recommended: 2 Cards Side-by-Side)" },
         { "value": "3", "label": "3 Columns" },
         { "value": "4", "label": "4 Columns" }
       ],
@@ -798,30 +882,72 @@
       "label": "Cards Per Row (Tablet)",
       "options": [
         { "value": "1", "label": "1 Column" },
-        { "value": "2", "label": "2 Columns" }
+        { "value": "2", "label": "2 Columns (Recommended)" },
+        { "value": "3", "label": "3 Columns" }
       ],
-      "default": "1"
+      "default": "2"
     },
     {
       "type": "select",
       "id": "mobile_columns",
-      "label": "Mobile Layout",
+      "label": "Cards Per Row (Mobile)",
       "options": [
-        { "value": "1_col", "label": "1 Card Per Row (Vertical Stack)" },
-        { "value": "2_col", "label": "2 Cards Per Row (Compact Grid)" },
+        { "value": "2", "label": "2 Cards Per Row (Side by Side - Recommended)" },
+        { "value": "1", "label": "1 Card Per Row (Vertical Stack)" },
         { "value": "scroll", "label": "Swipeable Horizontal Carousel" }
       ],
-      "default": "1_col"
+      "default": "2"
     },
     {
       "type": "range",
-      "id": "grid_gap",
-      "min": 12,
+      "id": "grid_gap_horizontal",
+      "min": 8,
       "max": 60,
       "step": 2,
       "unit": "px",
-      "label": "Gap Between Cards",
+      "label": "Horizontal Gap Between Cards (Columns)",
       "default": 28
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_vertical",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical Gap Between Rows",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile_horizontal",
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Horizontal Gap",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile_vertical",
+      "min": 6,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile Vertical Gap",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "grid_alignment",
+      "label": "Grid Cards Vertical Alignment",
+      "options": [
+        { "value": "stretch", "label": "Stretch (Equal Height Cards - Recommended)" },
+        { "value": "start", "label": "Top Aligned" },
+        { "value": "center", "label": "Centered" }
+      ],
+      "default": "stretch"
     },
     {
       "type": "header",
@@ -969,7 +1095,37 @@
     },
     {
       "type": "header",
-      "content": "🃏 Card Container Styling"
+      "content": "🃏 Card Dimensions & Styling"
+    },
+    {
+      "type": "range",
+      "id": "card_max_width",
+      "min": 0,
+      "max": 900,
+      "step": 20,
+      "unit": "px",
+      "label": "Card Max Width (0 = 100% full column width)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_min_height",
+      "min": 0,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Card Minimum Height (0 = auto equal height)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Inner Padding",
+      "default": 24
     },
     {
       "type": "color",
@@ -978,10 +1134,26 @@
       "default": "#ffffff"
     },
     {
+      "type": "range",
+      "id": "card_border_width",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Border Width",
+      "default": 1
+    },
+    {
       "type": "color",
       "id": "card_border_color",
       "label": "Card Border Color",
       "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "card_hover_border_color",
+      "label": "Card Hover Border Color",
+      "default": "#008779"
     },
     {
       "type": "range",
@@ -1004,26 +1176,6 @@
         { "value": "hover_elevate", "label": "Subtle + Hover Elevate" }
       ],
       "default": "hover_elevate"
-    },
-    {
-      "type": "range",
-      "id": "card_padding",
-      "min": 12,
-      "max": 48,
-      "step": 2,
-      "unit": "px",
-      "label": "Card Inner Padding",
-      "default": 24
-    },
-    {
-      "type": "range",
-      "id": "card_min_height",
-      "min": 0,
-      "max": 600,
-      "step": 20,
-      "unit": "px",
-      "label": "Card Minimum Height (0 = auto)",
-      "default": 0
     },
     {
       "type": "select",
@@ -1089,7 +1241,7 @@
     },
     {
       "type": "header",
-      "content": "🖼️ Fabric Images Global Settings"
+      "content": "🖼️ Fabric Images & Aspect Ratio"
     },
     {
       "type": "checkbox",
@@ -1106,9 +1258,20 @@
         { "value": "4_3", "label": "4:3 Standard" },
         { "value": "1_1", "label": "1:1 Square" },
         { "value": "3_2", "label": "3:2 Classic" },
+        { "value": "2_1", "label": "2:1 Wide Cinema" },
         { "value": "auto", "label": "Natural Height" }
       ],
       "default": "16_9"
+    },
+    {
+      "type": "range",
+      "id": "image_max_height",
+      "min": 0,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "label": "Image Maximum Height (0 = aspect-ratio controlled)",
+      "default": 0
     },
     {
       "type": "select",
@@ -1119,6 +1282,17 @@
         { "value": "contain", "label": "Contain (Fit full image inside)" }
       ],
       "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position / Focal Point",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
     },
     {
       "type": "range",
@@ -1334,6 +1508,7 @@
             { "value": "4_3", "label": "4:3 Standard" },
             { "value": "1_1", "label": "1:1 Square" },
             { "value": "3_2", "label": "3:2 Classic" },
+            { "value": "2_1", "label": "2:1 Wide Cinema" },
             { "value": "auto", "label": "Natural Height" }
           ],
           "default": "inherit"
